@@ -5,6 +5,44 @@ from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
 
 
+class HealthMonitorHttp(object):
+    PROPERTIES = (
+        HTTP_REQUEST,
+        HTTP_RESPONSE,
+        HTTP_RESPONSE_CODE
+    ) = ("http_request",
+         "http_response",
+         "http_response_code")
+
+    properties_schema = {
+        HTTP_REQUEST: properties.Schema(
+            properties.Schema.STRING,
+            _('Request String URL.'),
+            required=False,
+        ),
+        HTTP_RESPONSE: properties.Schema(
+            properties.Schema.STRING,
+            _('Request String URL.'),
+            required=False,
+        ),
+        HTTP_RESPONSE_CODE: properties.Schema(
+            properties.Schema.LIST,
+            schema=properties.Schema(
+                properties.Schema.STRING,
+                _('One of HTTP code types.'),
+                constraints=[
+                    constraints.AllowedValues([
+                        'HTTP_2XX',
+                        'HTTP_3XX',
+                        'HTTP_4XX',
+                        'HTTP_5XX']),
+                ]
+            ),
+            required=False,
+        )
+    }
+
+
 class AviHealthMonitor(AviResource):
     """A resource for Avi HealthMonitor
     """
@@ -18,6 +56,7 @@ class AviHealthMonitor(AviResource):
         SUCCESSFUL_CHECKS,
         FAILED_CHECKS,
         TYPE,
+        HTTP_MONITOR,
     ) = (
         'name',
         'send_interval',
@@ -25,6 +64,7 @@ class AviHealthMonitor(AviResource):
         'successful_checks',
         'failed_checks',
         'type',
+        'http_monitor',
     )
 
     ATTRIBUTES = (
@@ -91,6 +131,12 @@ class AviHealthMonitor(AviResource):
             required=True,
             update_allowed=True
         ),
+        HTTP_MONITOR: properties.Schema(
+            properties.Schema.MAP,
+            schema=HealthMonitorHttp.properties_schema,
+            description=_('Spec for HTTP monitor if type is HTTP'),
+            required=False,
+        )
     }
 
     attributes_schema = {

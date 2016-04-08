@@ -9,4 +9,9 @@ resources:
       failed_checks: 2 
       successful_checks: 2 
       send_interval: 2
-      type: HEALTH_MONITOR_TCP
+      type: HEALTH_MONITOR_HTTP
+      http_monitor:
+        http_response_code:
+          - HTTP_2XX
+          - HTTP_3XX
+        http_request: "GET / HTTP/1.0"

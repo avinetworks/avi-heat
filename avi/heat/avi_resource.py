@@ -3,6 +3,7 @@ import logging
 from heat.engine import resource
 from avi.sdk.avi_api import ApiSession
 from avi.sdk.avi_api import ObjectNotFound
+from heat.engine import properties
 
 LOG = logging.getLogger(__name__)
 
@@ -40,17 +41,29 @@ class AviResource(resource.Resource):
         )
         return api_session
 
-    def handle_create(self):
-        res_def = dict()
-        for k, v in self.properties.items():
+    def create_clean_dict(self, input_dict):
+        newdict = dict()
+        for k, v in input_dict.items():
             if v is None:
                 continue
-            res_def[k] = v
+            if isinstance(v, dict):
+                newdict[k] = self.create_clean_dict(v)
+            else:
+                newdict[k] = v
+        return newdict
+
+    def handle_create(self):
+        res_def = self.create_clean_dict(self.properties)
         client = self.get_avi_client()
-        obj = client.post(self.resource_name,
-                          data=res_def,
-                          tenant_uuid=self.get_avi_tenant_uuid()
-                          ).json()
+        try:
+            obj = client.post(self.resource_name,
+                              data=res_def,
+                              tenant_uuid=self.get_avi_tenant_uuid()
+                              ).json()
+        except Exception as e:
+            LOG.exception("Error during creation: %s, resname %s, resdef %s",
+                          e, self.resource_name, res_def)
+            raise
         self.resource_id_set(obj['uuid'])
 
     def _show_resource(self):
