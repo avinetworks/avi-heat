@@ -1,0 +1,12 @@
+HeatTemplateFormatVersion: '2012-12-12'
+Description: Template to Avi Heat resources
+Resources:
+  hm:
+    Type: Avi::HealthMonitor
+    Properties:
+      name: "mytesthm"
+      receive_timeout: 2
+      failed_checks: 2 
+      successful_checks: 2 
+      send_interval: 2
+      type: TCP
