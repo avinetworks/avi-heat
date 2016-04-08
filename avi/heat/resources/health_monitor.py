@@ -3,16 +3,13 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
-from avi.sdk.avi_api import ObjectNotFound
-import logging
-
-
-LOG = logging.getLogger(__name__)
 
 
 class AviHealthMonitor(AviResource):
     """A resource for Avi HealthMonitor
     """
+
+    resource_name = "healthmonitor"
 
     PROPERTIES = (
         NAME,
@@ -66,7 +63,11 @@ class AviHealthMonitor(AviResource):
             _('One of predefined health monitor types.'),
             required=True,
             constraints=[
-                constraints.AllowedValues(['Ping', 'TCP', 'HTTP', 'HTTPS']),
+                constraints.AllowedValues([
+                    'HEALTH_MONITOR_PING',
+                    'HEALTH_MONITOR_TCP',
+                    'HEALTH_MONITOR_HTTP',
+                    'HEALTH_MONITOR_HTTPS']),
             ]
         ),
         FAILED_CHECKS: properties.Schema(
@@ -121,43 +122,3 @@ class AviHealthMonitor(AviResource):
             type=attributes.Schema.STRING
         ),
     }
-
-    resource_name = "healthmonitor"
-
-    def handle_create(self):
-        res_def = dict()
-        for k, v in self.properties.items():
-            if v is None:
-                continue
-            if k == "type":
-                res_def[k] = "HEALTH_MONITOR_" + v.upper()
-            else:
-                res_def[k] = v
-        client = self.get_avi_client()
-        hm = client.post(self.resource_name,
-                         data=res_def,
-                         tenant_uuid=self.get_avi_tenant_uuid()
-                         ).json()
-        self.resource_id_set(hm['uuid'])
-
-    def _show_resource(self):
-        client = self.get_avi_client()
-        hm = client.get("%s/%s" % (self.resource_name,
-                                   self.resource_id),
-                        tenant_uuid=self.get_avi_tenant_uuid()
-                        ).json()
-        return hm
-
-    def handle_update(self, json_snippet, tmpl_diff, prop_diff):
-        pass
-
-    def handle_delete(self):
-        client = self.get_avi_client()
-        try:
-            client.delete("%s/%s" % (self.resource_name,
-                                     self.resource_id),
-                          tenant_uuid=self.get_avi_tenant_uuid()
-                          ).json()
-        except ObjectNotFound as e:
-            LOG.exception("Object not found: %s", e)
-        return True
