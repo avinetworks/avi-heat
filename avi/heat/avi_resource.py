@@ -34,26 +34,30 @@ class AviResource(resource.Resource):
         # pdb = Pdb()
         # pdb.set_trace()
         username = self.context.auth_token_info['token']['user']['name']
-        api_session = ApiSession.get_session(
+        api_session = ApiSession(
             controller_ip=address,
             username=username,
             token=self.context.auth_token,
         )
         return api_session
 
-    def create_clean_dict(self, input_dict):
-        newdict = dict()
-        for k, v in input_dict.items():
-            if v is None:
-                continue
-            if isinstance(v, dict):
-                newdict[k] = self.create_clean_dict(v)
-            else:
-                newdict[k] = v
-        return newdict
+    def create_clean_properties(self, inp):
+        if isinstance(inp, dict):
+            newdict = dict()
+            for k, v in inp.items():
+                if v is None:
+                    continue
+                newdict[k] = self.create_clean_properties(v)
+            return newdict
+        elif isinstance(inp, list):
+            newlist = []
+            for entry in inp:
+                newlist.append(self.create_clean_properties(entry))
+            return newlist
+        return inp
 
     def handle_create(self):
-        res_def = self.create_clean_dict(self.properties)
+        res_def = self.create_clean_properties(dict(self.properties))
         client = self.get_avi_client()
         try:
             obj = client.post(self.resource_name,
