@@ -18,36 +18,43 @@ class CC_AgentProperties(object):
         properties.Schema.NUMBER,
         _("Discovery poll target duration; a scale factor of 1+ is computed with the actual discovery (actual/target) and used to tweak slow and fast poll intervals"),
         required=False,
+        update_allowed=True,
     )
     poll_slow_target_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Slow poll interval"),
         required=False,
+        update_allowed=True,
     )
     poll_fast_target_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Fast poll interval"),
         required=False,
+        update_allowed=True,
     )
     async_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum polls to check for async jobs to finish"),
         required=False,
+        update_allowed=True,
     )
     async_retries_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Delay between each async job status poll check"),
         required=False,
+        update_allowed=True,
     )
     vnic_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum polls to check for vnics to be attached to VM"),
         required=False,
+        update_allowed=True,
     )
     vnic_retries_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Delay between each vnic status poll check"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -79,16 +86,19 @@ class Hypervisor_Properties(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     max_nics_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_ips_per_nic_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -112,11 +122,13 @@ class CC_Properties(object):
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     rpc_queue_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -138,11 +150,13 @@ class CloudMeta(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -164,63 +178,75 @@ class CloudFlavor(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     ram_mb_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     disk_gb_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vcpus_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     public_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_nics_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_ips_per_nic_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     enhanced_nw_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     meta_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudMeta.properties_schema,
         required=True,
+        update_allowed=False,
     )
     meta_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=meta_item_schema,
         required=False,
+        update_allowed=True,
     )
     cost_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -260,46 +286,54 @@ class CloudInfo(object):
         properties.Schema.STRING,
         _("Cloud type"),
         required=True,
+        update_allowed=True,
     )
     htypes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     htypes_schema = properties.Schema(
         properties.Schema.LIST,
         _("Supported hypervisors"),
         schema=htypes_item_schema,
         required=False,
+        update_allowed=True,
     )
     flavor_regex_filter_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     flavor_props_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudFlavor.properties_schema,
         required=True,
+        update_allowed=False,
     )
     flavor_props_schema = properties.Schema(
         properties.Schema.LIST,
         _("Flavor properties specific to this cloud type"),
         schema=flavor_props_item_schema,
         required=False,
+        update_allowed=True,
     )
     cca_props_schema = properties.Schema(
         properties.Schema.MAP,
         _("CloudConnectorAgent properties specific to this cloud type"),
         schema=CC_AgentProperties.properties_schema,
         required=False,
+        update_allowed=True,
     )
     controller_props_schema = properties.Schema(
         properties.Schema.MAP,
         _("Controller properties specific to this cloud type"),
         schema=ControllerProperties.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -330,42 +364,49 @@ class CloudProperties(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     cc_vtypes_schema = properties.Schema(
         properties.Schema.LIST,
         _("Cloud types supported by CloudConnector"),
         schema=cc_vtypes_item_schema,
         required=False,
+        update_allowed=True,
     )
     hyp_props_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Hypervisor_Properties.properties_schema,
         required=True,
+        update_allowed=False,
     )
     hyp_props_schema = properties.Schema(
         properties.Schema.LIST,
         _("Hypervisor properties"),
         schema=hyp_props_item_schema,
         required=False,
+        update_allowed=True,
     )
     cc_props_schema = properties.Schema(
         properties.Schema.MAP,
         _("CloudConnector properties"),
         schema=CC_Properties.properties_schema,
         required=False,
+        update_allowed=True,
     )
     info_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudInfo.properties_schema,
         required=True,
+        update_allowed=False,
     )
     info_schema = properties.Schema(
         properties.Schema.LIST,
         _("Properties specific to a cloud type"),
         schema=info_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

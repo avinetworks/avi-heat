@@ -16,17 +16,20 @@ class NetworkSubnetClash(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -48,11 +51,13 @@ class SummarizedSubnetInfo(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     network_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -75,12 +80,14 @@ class SummarizedInfo(object):
         _(""),
         schema=SummarizedSubnetInfo.properties_schema,
         required=True,
+        update_allowed=False,
     )
     subnet_info_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=subnet_info_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

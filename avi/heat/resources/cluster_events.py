@@ -17,11 +17,13 @@ class ClusterServiceFailedEvent(object):
         properties.Schema.STRING,
         _("Name of the controller service."),
         required=False,
+        update_allowed=True,
     )
     node_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of controller node."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -44,12 +46,14 @@ class ClusterLeaderFailoverEvent(object):
         _("Details of the new controller cluster leader node."),
         schema=ClusterNode.properties_schema,
         required=False,
+        update_allowed=True,
     )
     previous_leader_node_schema = properties.Schema(
         properties.Schema.MAP,
         _("Details of the previous controller cluster leader."),
         schema=ClusterNode.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -71,17 +75,20 @@ class ClusterNodeRemoveEvent(object):
         properties.Schema.STRING,
         _("Name of controller node."),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP address of the controller VM."),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     role_schema = properties.Schema(
         properties.Schema.STRING,
         _("Role of the node when it left the controller cluster."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -105,17 +112,20 @@ class ClusterNodeAddEvent(object):
         properties.Schema.STRING,
         _("Name of controller node."),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP address of the controller VM."),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     role_schema = properties.Schema(
         properties.Schema.STRING,
         _("Role of the controller within the cluster."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

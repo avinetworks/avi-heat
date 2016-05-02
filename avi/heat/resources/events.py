@@ -37,636 +37,742 @@ class EventDetails(object):
         _(""),
         schema=VinfraDiscSummaryDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vcenter_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraVcenterBadCredentials.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cntlr_host_list_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraCntlrHostUnreachableList.properties_schema,
         required=False,
+        update_allowed=True,
     )
     pool_server_delete_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraPoolServerDeleteDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vm_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraVmDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     mgmt_nw_change_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraMgmtNwChangeDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vcenter_obj_delete_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraVcenterObjDeleteDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vcenter_disc_failure_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VinfraVcenterDiscoveryFailure.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeMgrEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     spawn_se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmSpawnSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     modify_networks_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmModifyNetworksEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     bind_vs_se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmBindVsSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     unbind_vs_se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmUnbindVsSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     reboot_se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmRebootSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     add_networks_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmAddNetworksEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     bootup_fail_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmSeBootupFailEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ip_fail_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmSeIpFailEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     delete_se_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmDeleteSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     host_unavail_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HostUnavailEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_fsm_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsFsmEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_pool_nw_fltr_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsPoolNwFilterEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_scaleout_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleOutEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_scalein_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleInEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_migrate_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsMigrateEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_error_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsErrorEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_awaitingse_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsAwaitingSeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_initialplacement_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsInitialPlacementEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     all_seupgrade_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AllSeUpgradeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     seupgrade_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     seupgrade_scaleout_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeScaleoutEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     seupgrade_scalein_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeScaleinEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     seupgrade_migrate_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeMigrateEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     seupgrade_disrupted_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeVsDisruptedEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     rebalance_scaleout_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RebalanceScaleoutEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     rebalance_scalein_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RebalanceScaleinEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     rebalance_migrate_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RebalanceMigrateEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_thresh_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeThreshEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_hb_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeHBEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_version_check_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeVersionCheckFailedEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_ipfailure_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeIpfailureEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_dupip_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeDupipEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_ip_added_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeIpAddedEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_ip_removed_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeIpRemovedEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_hm_pool_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeHmEventPoolDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_hm_vs_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeHmEventVsDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_persistence_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SePersistenceEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_pool_lb_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SePoolLbEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_create_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigCreateDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_update_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigUpdateDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_delete_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigDeleteDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_user_login_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigUserLogin.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_user_logout_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigUserLogout.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_action_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigActionDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     config_password_change_request_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConfigUserPasswordChangeRequest.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_expire_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLExpireDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_export_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLExportDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_renew_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLRenewDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_renew_failed_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLRenewFailedDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cluster_node_add_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterNodeAddEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cluster_node_remove_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterNodeRemoveEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cluster_service_failed_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterServiceFailedEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cluster_leader_failover_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterLeaderFailoverEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cluster_warm_reboot_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterWarmRebootEvent.properties_schema,
         required=False,
+        update_allowed=True,
     )
     system_upgrade_started_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SystemUpgradeStarted.properties_schema,
         required=False,
+        update_allowed=True,
     )
     system_upgrade_complete_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SystemUpgradeComplete.properties_schema,
         required=False,
+        update_allowed=True,
     )
     system_upgrade_aborted_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SystemUpgradeAborted.properties_schema,
         required=False,
+        update_allowed=True,
     )
     metric_threshold_up_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MetricThresoldUpDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     license_expiry_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=LicenseExpiryDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     anomaly_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AnomalyEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     license_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=LicenseDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     metrics_db_disk_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MetricsDbDiskEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackClusterSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_se_vm_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackSeVmChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_vnic_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackVnicChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_ip_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackIpChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_lbaudit_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackLbProvAuditCheck.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_lbplugin_op_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackLbPluginOp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     os_sync_services_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OpenStackSyncServices.properties_schema,
         required=False,
+        update_allowed=True,
     )
     aws_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AWSSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_se_vm_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudSeVmChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_vnic_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudVnicChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_ip_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudIpChange.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_sync_services_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudSyncServices.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_vip_update_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudVipUpdate.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudGeneric.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_tenant_del_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudTenantsDeleted.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_cluster_vip_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudClusterVip.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_dns_update_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudDnsUpdate.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cc_health_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudHealth.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cs_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudStackSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     bm_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=BMSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vca_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VCASetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     marathon_service_port_conflict_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MarathonServicePortConflict.properties_schema,
         required=False,
+        update_allowed=True,
     )
     mesos_infra_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MesosSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     docker_ucp_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DockerUCPSetup.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hs_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthScoreDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     nw_subnet_clash_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkSubnetClash.properties_schema,
         required=False,
+        update_allowed=True,
     )
     nw_summarized_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SummarizedInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
     avg_uptime_change_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AvgUptimeChangeDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     apic_agent_generic_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ApicAgentGenericEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     dos_attack_event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DosAttackEventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_autoscaleout_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerAutoScaleOutInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_autoscalein_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerAutoScaleInInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_autoscaleout_complete_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerAutoScaleOutCompleteInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_autoscalein_complete_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerAutoScaleInCompleteInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_autoscale_failed_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerAutoScaleFailedInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -896,99 +1002,118 @@ class EventLog(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     obj_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     event_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     module_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     internal_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     context_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     obj_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     obj_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason code for generating the event. This would be added to the alert where it would say alert generated  on event with reason <reason code>"),
         required=False,
+        update_allowed=True,
     )
     event_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=EventDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     details_summary_schema = properties.Schema(
         properties.Schema.STRING,
         _("Summary of event details"),
         required=False,
+        update_allowed=True,
     )
     related_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     related_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("related objects corresponding to the events"),
         schema=related_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     event_description_schema = properties.Schema(
         properties.Schema.STRING,
         _("Event Description for each Event  in the table view"),
         required=False,
+        update_allowed=True,
     )
     event_pages_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     event_pages_schema = properties.Schema(
         properties.Schema.LIST,
         _("Pages in which event should come up"),
         schema=event_pages_item_schema,
         required=False,
+        update_allowed=True,
     )
     ignore_event_details_display_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     is_security_event_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenant_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

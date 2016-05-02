@@ -17,78 +17,92 @@ class CompressionFilter(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     match_schema = properties.Schema(
         properties.Schema.STRING,
         _("Whether to apply Filter when group criteria is matched or not"),
         required=False,
+        update_allowed=True,
     )
     ip_addrs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ip_addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ip_addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ip_addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     ip_addr_ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ip_addr_ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ip_addr_ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
     ip_addr_prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ip_addr_prefixes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ip_addr_prefixes_item_schema,
         required=False,
+        update_allowed=True,
     )
     devices_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     user_agent_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     user_agent_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=user_agent_item_schema,
         required=False,
+        update_allowed=True,
     )
     level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -126,33 +140,39 @@ class CompressionProfile(object):
         properties.Schema.BOOLEAN,
         _("Compress HTTP response content if it wasn't already compressed."),
         required=True,
+        update_allowed=True,
     )
     remove_accept_encoding_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Offload compression from the servers to AVI. Saves compute cycles on the servers."),
         required=True,
+        update_allowed=True,
     )
     compressible_content_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Compress only content types listed in this string group. Content types not present in this list are not compressed."),
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Compress content automatically or add custom filters to define compressible content and compression levels."),
         required=True,
+        update_allowed=True,
     )
     filter_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CompressionFilter.properties_schema,
         required=True,
+        update_allowed=False,
     )
     filter_schema = properties.Schema(
         properties.Schema.LIST,
         _("Custom filters used when auto compression is not selected."),
         schema=filter_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -21,11 +21,13 @@ class SeThreshEventDetails(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     curr_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -47,16 +49,19 @@ class SePersistenceEventDetails(object):
         properties.Schema.STRING,
         _("Name of pool whose persistence table limits were reached"),
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Type of persistence"),
         required=False,
+        update_allowed=True,
     )
     entries_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Current number of entries in the client ip persistence table"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -80,16 +85,19 @@ class SeHmEventShmDetails(object):
         properties.Schema.STRING,
         _("Health Monitor name"),
         required=True,
+        update_allowed=True,
     )
     average_response_time_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Average health monitor response time from server in milli-seconds"),
         required=False,
+        update_allowed=True,
     )
     resp_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -113,21 +121,25 @@ class SeDupipEventDetails(object):
         properties.Schema.STRING,
         _("Vnic name"),
         required=False,
+        update_allowed=True,
     )
     vnic_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic IP"),
         required=False,
+        update_allowed=True,
     )
     remote_mac_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mac Address"),
         required=False,
+        update_allowed=True,
     )
     local_mac_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mac Address"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -153,26 +165,31 @@ class SePoolLbEventDetails(object):
         properties.Schema.STRING,
         _("Pool name"),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Load balancing failure"),
         required=False,
+        update_allowed=True,
     )
     failure_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason code for load balancing failure"),
         required=False,
+        update_allowed=True,
     )
     virtual_service_schema = properties.Schema(
         properties.Schema.STRING,
         _("Virtual Service name"),
         required=False,
+        update_allowed=True,
     )
     src_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of event generator"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -200,46 +217,55 @@ class SeIpRemovedEventDetails(object):
         properties.Schema.STRING,
         _("UUID of the SE responsible for this event"),
         required=False,
+        update_allowed=True,
     )
     if_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic name"),
         required=False,
+        update_allowed=True,
     )
     linux_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic linux name"),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("IP added"),
         required=False,
+        update_allowed=True,
     )
     mask_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Mask "),
         required=False,
+        update_allowed=True,
     )
     mode_schema = properties.Schema(
         properties.Schema.STRING,
         _("DCHP or Static"),
         required=False,
+        update_allowed=True,
     )
     ns_schema = properties.Schema(
         properties.Schema.STRING,
         _("Namespace"),
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network UUID"),
         required=False,
+        update_allowed=True,
     )
     mac_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mac Address"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -275,46 +301,55 @@ class SeIpAddedEventDetails(object):
         properties.Schema.STRING,
         _("UUID of the SE responsible for this event"),
         required=False,
+        update_allowed=True,
     )
     if_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic name"),
         required=False,
+        update_allowed=True,
     )
     linux_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic linux name"),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("IP added"),
         required=False,
+        update_allowed=True,
     )
     mask_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Mask "),
         required=False,
+        update_allowed=True,
     )
     mode_schema = properties.Schema(
         properties.Schema.STRING,
         _("DCHP or Static"),
         required=False,
+        update_allowed=True,
     )
     ns_schema = properties.Schema(
         properties.Schema.STRING,
         _("Namespace"),
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network UUID"),
         required=False,
+        update_allowed=True,
     )
     mac_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mac Address"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -351,50 +386,59 @@ class SeHmEventServerDetails(object):
         _("IP address of server"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Port override form the pool port. If server port is not specified, the pool port is used."),
         required=False,
+        update_allowed=True,
     )
     hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("Host name or VM name or DNS name for the server"),
         required=False,
+        update_allowed=True,
     )
     failure_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("Healthmonitor Failure code"),
         required=False,
+        update_allowed=True,
     )
     app_info_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AppInfo.properties_schema,
         required=True,
+        update_allowed=False,
     )
     app_info_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=app_info_item_schema,
         required=False,
+        update_allowed=True,
     )
     shm_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeHmEventShmDetails.properties_schema,
         required=True,
+        update_allowed=False,
     )
     shm_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=shm_item_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_error_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -426,16 +470,19 @@ class SeHBEventDetails(object):
         properties.Schema.STRING,
         _("UUID of the SE responsible for this event"),
         required=False,
+        update_allowed=True,
     )
     se_uuid2_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of a SE in the SE-Group which failed to respond"),
         required=False,
+        update_allowed=True,
     )
     hb_type_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("HB Request/Response not received"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -459,26 +506,31 @@ class SeHmEventVsDetails(object):
         properties.Schema.STRING,
         _("Virtual Service name"),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Virtual Service Down"),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Service Engine name"),
         required=False,
+        update_allowed=True,
     )
     ha_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("HA Compromised reason"),
         required=False,
+        update_allowed=True,
     )
     src_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the event generator"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -506,21 +558,25 @@ class SeIpfailureEventDetails(object):
         properties.Schema.STRING,
         _("UUID of the SE responsible for this event"),
         required=False,
+        update_allowed=True,
     )
     vnic_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Vnic name"),
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network UUID"),
         required=False,
+        update_allowed=True,
     )
     mac_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mac Address"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -546,37 +602,44 @@ class SeHmEventPoolDetails(object):
         properties.Schema.STRING,
         _("Pool name"),
         required=False,
+        update_allowed=True,
     )
     server_schema = properties.Schema(
         properties.Schema.MAP,
         _("Server details"),
         schema=SeHmEventServerDetails.properties_schema,
         required=False,
+        update_allowed=True,
     )
     virtual_service_schema = properties.Schema(
         properties.Schema.STRING,
         _("Virtual service name"),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Service Engine"),
         required=False,
+        update_allowed=True,
     )
     ha_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("HA Compromised reason"),
         required=False,
+        update_allowed=True,
     )
     percent_servers_up_schema = properties.Schema(
         properties.Schema.STRING,
         _("Percentage of servers up"),
         required=False,
+        update_allowed=True,
     )
     src_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the event generator"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

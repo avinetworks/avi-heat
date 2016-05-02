@@ -18,12 +18,14 @@ class RebalanceScaleinEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scalein_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleinParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -45,12 +47,14 @@ class RebalanceScaleoutEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scaleout_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleoutParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -72,12 +76,14 @@ class SeUpgradeScaleoutEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scaleout_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleoutParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -99,12 +105,14 @@ class SeUpgradeScaleinEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scalein_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleinParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -126,27 +134,32 @@ class SeUpgradeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_grp_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_vs_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     notes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     notes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=notes_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -172,28 +185,33 @@ class AllSeUpgradeEventDetails(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     num_vs_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     notes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     notes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=notes_item_schema,
         required=False,
+        update_allowed=True,
     )
     request_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeUpgradeParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -219,12 +237,14 @@ class SeUpgradeMigrateEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     migrate_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsMigrateParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -246,12 +266,14 @@ class RebalanceMigrateEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     migrate_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsMigrateParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -273,17 +295,20 @@ class SeUpgradeVsDisruptedEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     notes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     notes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=notes_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

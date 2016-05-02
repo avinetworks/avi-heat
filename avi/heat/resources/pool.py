@@ -19,12 +19,14 @@ class FailActionHTTPLocalResponse(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPLocalFile.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -46,11 +48,13 @@ class AbPool(object):
         properties.Schema.STRING,
         _("Pool configured as B pool for A/B testing"),
         required=True,
+        update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Ratio of traffic diverted to the B pool, for A/B testing"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -72,6 +76,7 @@ class FailActionBackupPool(object):
         properties.Schema.STRING,
         _("Specifies the UUID of the Pool acting as backup pool."),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -91,26 +96,31 @@ class FailActionHTTPRedirect(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     query_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -138,12 +148,14 @@ class PlacementNetwork(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -165,24 +177,28 @@ class FailAction(object):
         properties.Schema.STRING,
         _("Enables a response to client when pool experiences a failure. By default TCP connection is closed."),
         required=True,
+        update_allowed=True,
     )
     redirect_schema = properties.Schema(
         properties.Schema.MAP,
         _("URL to redirect HTTP requests to when pool experiences a failure"),
         schema=FailActionHTTPRedirect.properties_schema,
         required=False,
+        update_allowed=True,
     )
     local_rsp_schema = properties.Schema(
         properties.Schema.MAP,
         _("Local response to HTTP requests when pool experiences a failure"),
         schema=FailActionHTTPLocalResponse.properties_schema,
         required=False,
+        update_allowed=True,
     )
     backup_pool_schema = properties.Schema(
         properties.Schema.MAP,
         _("Backup Pool when pool experiences a failure"),
         schema=FailActionBackupPool.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -208,11 +224,13 @@ class PoolX509Certificate(object):
         properties.Schema.STRING,
         _("PEM (Privacy-enhanced Mail) encoded certificate of the backend server."),
         required=True,
+        update_allowed=True,
     )
     is_ca_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Flag to indicate if the certificate is a Certificate Authority. This field is deprecated and CA certificates should now be configured through PKI Profile."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -234,11 +252,13 @@ class NetworkFilter(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     server_filter_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -260,35 +280,41 @@ class HTTPReselectRespCode(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=False,
     )
     codes_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP response code to be matched."),
         schema=codes_item_schema,
         required=False,
+        update_allowed=True,
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPStatusRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP response code ranges to match."),
         schema=ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
     resp_code_block_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     resp_code_block_schema = properties.Schema(
         properties.Schema.LIST,
         _("Block of HTTP response codes to match for server reselect."),
         schema=resp_code_block_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -312,18 +338,21 @@ class DiscoveredNetwork(object):
         properties.Schema.STRING,
         _("Discovered network for this IP."),
         required=True,
+        update_allowed=True,
     )
     subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     subnet_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered subnet for this IP."),
         schema=subnet_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -345,22 +374,26 @@ class HTTPServerReselect(object):
         properties.Schema.BOOLEAN,
         _("Enable HTTP request reselect when server responds with specific response codes."),
         required=True,
+        update_allowed=True,
     )
     svr_resp_code_schema = properties.Schema(
         properties.Schema.MAP,
         _("Server response codes which will trigger an HTTP request retry."),
         schema=HTTPReselectRespCode.properties_schema,
         required=False,
+        update_allowed=True,
     )
     num_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of times to retry an HTTP request when server responds with configured status codes."),
         required=False,
+        update_allowed=True,
     )
     retry_nonidempotent_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Allow retry of non-idempotent HTTP requests."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -387,111 +420,132 @@ class Server(object):
         _("IP Address of the server.  Required if there is no resolvable host name."),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Optionally specify the servers port number.  This will override the pool's default server port attribute."),
         required=False,
+        update_allowed=True,
     )
     hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("DNS resolvable name of the server.  May be used in place of the IP address."),
         required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable, Disable or Graceful Disable determine if new or existing connections to the server are allowed."),
         required=False,
+        update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Overrides the default ratio of 1.  Reduces the percentage the LB algorithm would pick the server in relation to its peers.  Range is 1-20."),
         required=False,
+        update_allowed=True,
     )
     vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     nw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     discovered_network_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered network for this server."),
         schema=discovered_network_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     external_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID identifying VM in OpenStack and other external compute"),
         required=False,
+        update_allowed=True,
     )
     discovered_subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     discovered_subnet_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered subnet for this server."),
         schema=discovered_subnet_item_schema,
         required=False,
+        update_allowed=True,
     )
     verify_network_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Verify server belongs to a discovered network or reachable via a discovered network. Verify reachable network isn't the OpenStack management network"),
         required=False,
+        update_allowed=True,
     )
     discovered_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DiscoveredNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     discovered_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered networks providing reachability for server IP."),
         schema=discovered_networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     resolve_server_by_dns_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Auto resolve server's IP using DNS name"),
         required=False,
+        update_allowed=True,
     )
     prst_hdr_val_schema = properties.Schema(
         properties.Schema.STRING,
         _("Header value for custom header persistence."),
         required=False,
+        update_allowed=True,
     )
     mac_address_schema = properties.Schema(
         properties.Schema.STRING,
         _("MAC address of server."),
         required=False,
+        update_allowed=True,
     )
     static_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("If statically learned."),
         required=False,
+        update_allowed=True,
     )
     server_node_schema = properties.Schema(
         properties.Schema.STRING,
         _("Hostname of the node where the server VM or container resides"),
         required=False,
+        update_allowed=True,
     )
     availability_zone_schema = properties.Schema(
         properties.Schema.STRING,
         _("Availability-zone of the server VM."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -546,260 +600,297 @@ class Pool(AviResource):
         properties.Schema.STRING,
         _("The name of the pool."),
         required=True,
+        update_allowed=True,
     )
     default_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Traffic sent to servers will use this destination server port unless overridden by the server's specific port attribute. The SSL checkbox enables Avi to server encryption."),
         required=False,
+        update_allowed=True,
     )
     graceful_disable_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Used to gracefully disable a server. Virtual service waits for the specified time before terminating the existing connections  to the servers that are disabled."),
         required=False,
+        update_allowed=True,
     )
     connection_ramp_duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Duration for which new connections will be gradually ramped up to a server recently brought online.  Useful for LB algorithms that are least connection based."),
         required=False,
+        update_allowed=True,
     )
     max_concurrent_connections_per_server_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The maximum number of concurrent connections allowed to each server within the pool."),
         required=False,
+        update_allowed=True,
     )
     health_monitor_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     health_monitor_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens to client to server communication and raises or lowers the ratio of traffic destined to a server based on successful responses."),
         schema=health_monitor_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Server.properties_schema,
         required=True,
+        update_allowed=False,
     )
     servers_schema = properties.Schema(
         properties.Schema.LIST,
         _("The pool directs load balanced traffic to this list of destination servers. The servers can be configured by IP address, name, network or via IP Address Group"),
         schema=servers_item_schema,
         required=False,
+        update_allowed=True,
     )
     server_count_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     lb_algorithm_schema = properties.Schema(
         properties.Schema.STRING,
         _("The load balancing algorithm will pick a server within the pool's list of available servers."),
         required=False,
+        update_allowed=True,
     )
     lb_algorithm_hash_schema = properties.Schema(
         properties.Schema.STRING,
         _("Criteria used as a key for determining the hash between the client and  server."),
         required=False,
+        update_allowed=True,
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP header name to be used for the hash key."),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkFilter.properties_schema,
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _("Networks designated as containing servers for this pool.  The servers may be further narrowed down by a filter."),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     placement_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=PlacementNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     placement_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10.1.1.0/24"),
         schema=placement_networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     application_persistence_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Persistence will ensure the same user sticks to the same server for a desired duration of time."),
         required=False,
+        update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported."),
         required=False,
+        update_allowed=True,
     )
     x509_cert_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=PoolX509Certificate.properties_schema,
         required=True,
+        update_allowed=False,
     )
     x509_cert_schema = properties.Schema(
         properties.Schema.LIST,
         _("PEM (Privacy-enhanced Mail) encoded public certificate of the backend server.  This optional feature will verify the  certificate presented by the server."),
         schema=x509_cert_item_schema,
         required=False,
+        update_allowed=True,
     )
     inline_health_monitor_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("The Passive monitor will monitor client to server connections and requests and adjust traffic load to servers based on successful responses.  This may alter the expected behavior of the LB method, such as Round Robin."),
         required=False,
+        update_allowed=True,
     )
     use_service_port_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Do not translate the client's destination port when sending the connection to the server.  The pool or servers specified service port will still be used for health monitoring.  This feature is only applicable for a Virtual Service configured with the application type set to L4."),
         required=False,
+        update_allowed=True,
     )
     fail_action_schema = properties.Schema(
         properties.Schema.MAP,
         _("Enable an action - Close Connection, HTTP Redirect, Local HTTP Response, or Backup Pool - when a pool failure happens. By default, a connection will be closed, in case the pool experiences a failure."),
         schema=FailAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     capacity_estimation_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Inline estimation of capacity of servers."),
         required=False,
+        update_allowed=True,
     )
     capacity_estimation_ttfb_thresh_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The maximum time-to-first-byte of a server."),
         required=False,
+        update_allowed=True,
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi will validate the SSL certificate present by a server against the selected PKI Profile."),
         required=False,
+        update_allowed=True,
     )
     ssl_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Service Engines will present a client SSL certificate to the server."),
         required=False,
+        update_allowed=True,
     )
     server_auto_scale_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Server AutoScale. Not used anymore."),
         required=False,
+        update_allowed=True,
     )
     prst_hdr_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Header name for custom header persistence"),
         required=False,
+        update_allowed=True,
     )
     apic_epg_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Synchronize Cisco APIC EPG members with pool servers"),
         required=False,
+        update_allowed=True,
     )
     autoscale_networks_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     autoscale_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _("Network Ids for the launch configuration"),
         schema=autoscale_networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     autoscale_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reference to Server Autoscale Policy"),
         required=False,
+        update_allowed=True,
     )
     autoscale_launch_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reference to the Launch Configuration Profile"),
         required=False,
-    )
-    vrf_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Virtual Routing Context that the pool is bound to. This is used to provide the isolation of the set of networks the pool is attached to. The pool inherits the Virtual Routing Conext of the Virtual Service, and this field is used only internally, and is set by pb-transform."),
-        required=False,
+        update_allowed=True,
     )
     ipaddrgroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Use list of servers from Ip Address Group"),
         required=False,
+        update_allowed=True,
     )
     fewest_tasks_feedback_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Periodicity of feedback for fewest tasks server selection algorithm."),
         required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable the pool.  Disabling will terminate all open connections and pause health monitors."),
         required=False,
+        update_allowed=True,
     )
     max_conn_rate_per_server_schema = properties.Schema(
         properties.Schema.MAP,
         _("Rate Limit connections to each server."),
         schema=RateProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     east_west_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Inherited config from VirtualService."),
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     cloud_config_cksum_schema = properties.Schema(
         properties.Schema.STRING,
         _("Checksum of cloud configuration for Pool. Internally set by cloud connector"),
         required=False,
+        update_allowed=True,
     )
     request_queue_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable request queue when pool is full"),
         required=False,
+        update_allowed=True,
     )
     request_queue_depth_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Minimum number of requests to be queued when pool is full."),
         required=False,
+        update_allowed=True,
     )
     ab_pool_schema = properties.Schema(
         properties.Schema.MAP,
         _("A/B pool configuration."),
         schema=AbPool.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_reselect_schema = properties.Schema(
         properties.Schema.MAP,
         _("Server reselect configuration for HTTP requests."),
         schema=HTTPServerReselect.properties_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
         required=False,
-    )
-    cloud_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -833,7 +924,6 @@ class Pool(AviResource):
         'autoscale_networks',
         'autoscale_policy_uuid',
         'autoscale_launch_config_uuid',
-        'vrf_uuid',
         'ipaddrgroup_uuid',
         'fewest_tasks_feedback_delay',
         'enabled',
@@ -846,7 +936,6 @@ class Pool(AviResource):
         'ab_pool',
         'server_reselect',
         'description',
-        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -880,7 +969,6 @@ class Pool(AviResource):
         'autoscale_networks': autoscale_networks_schema,
         'autoscale_policy_uuid': autoscale_policy_uuid_schema,
         'autoscale_launch_config_uuid': autoscale_launch_config_uuid_schema,
-        'vrf_uuid': vrf_uuid_schema,
         'ipaddrgroup_uuid': ipaddrgroup_uuid_schema,
         'fewest_tasks_feedback_delay': fewest_tasks_feedback_delay_schema,
         'enabled': enabled_schema,
@@ -893,7 +981,6 @@ class Pool(AviResource):
         'ab_pool': ab_pool_schema,
         'server_reselect': server_reselect_schema,
         'description': description_schema,
-        'cloud_uuid': cloud_uuid_schema,
     }
 
 

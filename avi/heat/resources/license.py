@@ -16,103 +16,123 @@ class SingleLicense(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     start_on_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     valid_until_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     customer_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     throughput_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of service engine cores in non-container clouds"),
         required=False,
+        update_allowed=True,
     )
     backend_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of service engines hosts in container clouds"),
         required=False,
+        update_allowed=True,
     )
     license_tier_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     license_tier_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=license_tier_item_schema,
         required=False,
+        update_allowed=True,
     )
     max_apps_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     created_on_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_update_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     enforced_params_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     enforced_params_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=enforced_params_item_schema,
         required=False,
+        update_allowed=True,
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -167,79 +187,94 @@ class ControllerLicense(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     start_on_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     valid_until_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     customer_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     throughput_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of service engine cores in non-container clouds"),
         required=False,
+        update_allowed=True,
     )
     backend_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_tier_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     license_tier_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=license_tier_item_schema,
         required=False,
+        update_allowed=True,
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of service engines hosts in container clouds"),
         required=False,
+        update_allowed=True,
     )
     max_apps_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_vses_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
         required=False,
+        update_allowed=True,
     )
     licenses_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SingleLicense.properties_schema,
         required=True,
+        update_allowed=False,
     )
     licenses_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=licenses_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

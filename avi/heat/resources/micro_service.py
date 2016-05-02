@@ -17,26 +17,31 @@ class MicroServiceContainer(object):
         _("IP Address of the container."),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Port nunber of the instance"),
         required=False,
+        update_allowed=True,
     )
     container_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("ID of the container."),
         required=False,
+        update_allowed=True,
     )
     host_schema = properties.Schema(
         properties.Schema.STRING,
         _("ID or name of the host where the container is."),
         required=False,
+        update_allowed=True,
     )
     task_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("Marathon Task ID of the instance"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -65,43 +70,51 @@ class MicroService(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     orchestrator_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     application_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     ip_list_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Flag to indicate if container IP list is provided by cloud connectorThis is applicable for overlay cases."),
         required=False,
+        update_allowed=True,
     )
     containers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MicroServiceContainer.properties_schema,
         required=True,
+        update_allowed=False,
     )
     containers_schema = properties.Schema(
         properties.Schema.LIST,
         _("The list of containers for this microservice"),
         schema=containers_item_schema,
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

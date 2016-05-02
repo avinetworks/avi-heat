@@ -18,30 +18,35 @@ class Subnet(object):
         _("Specify an IP subnet prefix for this Network"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=True,
     )
     static_ips_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     static_ips_schema = properties.Schema(
         properties.Schema.LIST,
         _("Specify a pool of IP addresses for use in Service Engines"),
         schema=static_ips_item_schema,
         required=False,
+        update_allowed=True,
     )
     static_ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     static_ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=static_ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -66,53 +71,63 @@ class Network(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vcenter_dvs_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vimgrnw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Select the IP address management scheme for this Network"),
         required=False,
+        update_allowed=True,
     )
     exclude_discovered_subnets_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When selected, excludes all discovered subnets in this network from consideration for virtual service placement."),
         required=False,
+        update_allowed=True,
     )
     configured_subnets_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Subnet.properties_schema,
         required=True,
+        update_allowed=False,
     )
     configured_subnets_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=configured_subnets_item_schema,
         required=False,
+        update_allowed=True,
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     synced_from_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

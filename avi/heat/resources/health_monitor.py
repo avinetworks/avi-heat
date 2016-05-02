@@ -16,16 +16,19 @@ class HealthMonitorTcp(object):
         properties.Schema.STRING,
         _("Request data to send after completing the TCP handshake."),
         required=False,
+        update_allowed=True,
     )
     tcp_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match for the desired keyword in the first 2Kb of the server's TCP response. If this field is left blank, no server response is required."),
         required=False,
+        update_allowed=True,
     )
     maintenance_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match or look for this keyword in the first 2KB of server's response indicating server maintenance.  A successful match results in the server being marked down."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -49,21 +52,25 @@ class HealthMonitorExternal(object):
         properties.Schema.STRING,
         _("Path of external health monitor script."),
         required=False,
+        update_allowed=True,
     )
     command_parameters_schema = properties.Schema(
         properties.Schema.STRING,
         _("Optional arguments to feed into the script."),
         required=False,
+        update_allowed=True,
     )
     command_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("Command script provided inline."),
         required=True,
+        update_allowed=True,
     )
     command_variables_schema = properties.Schema(
         properties.Schema.STRING,
         _("Environment variables to be fed into the script."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -89,38 +96,45 @@ class HealthMonitorHttp(object):
         properties.Schema.STRING,
         _("Send an HTTP request to the server.  The default GET / HTTP/1.0 may be extended with additional headers or information.  For instance, GET /index.htm HTTP/1.1 Host: www.site.com Connection: Close"),
         required=False,
+        update_allowed=True,
     )
     http_response_code_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     http_response_code_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of HTTP response codes to match as successful.  Default is 2xx."),
         schema=http_response_code_item_schema,
         required=False,
+        update_allowed=True,
     )
     http_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match for a keyword in the first 2Kb of the server header and body response."),
         required=False,
+        update_allowed=True,
     )
     maintenance_code_item_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=False,
     )
     maintenance_code_schema = properties.Schema(
         properties.Schema.LIST,
         _("Match or look for this HTTP response code indicating server maintenance.  A successful match results in the server being marked down."),
         schema=maintenance_code_item_schema,
         required=False,
+        update_allowed=True,
     )
     maintenance_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match or look for this keyword in the first 2KB of server header and body response indicating server maintenance.  A successful match results in the server being marked down."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -148,16 +162,19 @@ class HealthMonitorUdp(object):
         properties.Schema.STRING,
         _("Send UDP request."),
         required=False,
+        update_allowed=True,
     )
     udp_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match for keyword in the UDP response."),
         required=False,
+        update_allowed=True,
     )
     maintenance_response_schema = properties.Schema(
         properties.Schema.STRING,
         _("Match or look for this keyword in the first 2KB of server's response indicating server maintenance.  A successful match results in the server being marked down."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -181,21 +198,25 @@ class HealthMonitorDNS(object):
         properties.Schema.STRING,
         _("The DNS monitor will query the DNS server for the fully qualified name in this field."),
         required=True,
+        update_allowed=True,
     )
     qtype_schema = properties.Schema(
         properties.Schema.STRING,
         _("  Query_Type: Response has atleast one answer of which      the resource record type matches the query type   Any_Type: Response should contain atleast one answer  AnyThing: An empty answer is enough"),
         required=False,
+        update_allowed=True,
     )
     rcode_schema = properties.Schema(
         properties.Schema.STRING,
         _("When No Error is selected, a DNS query will be marked failed is any error code is returned by the server.  With Any selected, the monitor ignores error code in the responses."),
         required=False,
+        update_allowed=True,
     )
     response_string_schema = properties.Schema(
         properties.Schema.STRING,
         _("The resource record of the queried DNS server's response for the Request Name must include the IP address defined in this field. "),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -222,77 +243,91 @@ class HealthMonitor(AviResource):
         properties.Schema.STRING,
         _("A user friendly name for this health monitor."),
         required=True,
+        update_allowed=True,
     )
     send_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Frequency, in seconds, that monitors are sent to a server."),
         required=False,
+        update_allowed=True,
     )
     receive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value."),
         required=False,
+        update_allowed=True,
     )
     successful_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of continuous successful health checks before server is marked up."),
         required=False,
+        update_allowed=True,
     )
     failed_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of continuous failed health checks before the server is marked down."),
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Type of the health monitor."),
         required=True,
+        update_allowed=True,
     )
     tcp_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorTcp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     http_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorHttp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     https_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorHttp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     external_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorExternal.properties_schema,
         required=False,
+        update_allowed=True,
     )
     udp_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorUdp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     dns_monitor_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HealthMonitorDNS.properties_schema,
         required=False,
+        update_allowed=True,
     )
     monitor_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Use this port instead of the port defined for the server in the Pool. If the monitor succeeds to this port, the load balanced traffic will still be sent to the port of the server defined within the Pool."),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

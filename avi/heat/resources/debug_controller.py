@@ -16,11 +16,13 @@ class VsDebugFilter(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,11 +44,13 @@ class AutoScaleMgrDebugFilter(object):
         properties.Schema.STRING,
         _("uuid of the Pool"),
         required=False,
+        update_allowed=True,
     )
     intelligent_autoscale_period_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("period of running intelligent autoscale check"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -68,16 +72,19 @@ class CloudConnectorDebugFilter(object):
         properties.Schema.STRING,
         _("filter debugs for a SE"),
         required=False,
+        update_allowed=True,
     )
     app_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("filter debugs for an app"),
         required=False,
+        update_allowed=True,
     )
     disable_se_reboot_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Disable SE reboot via cloud connector on HB miss"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -101,31 +108,37 @@ class HSMgrDebugFilter(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     entity_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     pool_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     server_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     period_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     skip_hs_db_writes_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -155,6 +168,7 @@ class SeMgrDebugFilter(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -174,16 +188,19 @@ class AlertMgrDebugFilter(object):
         properties.Schema.STRING,
         _("filter debugs for an alert id"),
         required=False,
+        update_allowed=True,
     )
     alert_objid_schema = properties.Schema(
         properties.Schema.STRING,
         _("filter debugs for entity uuid"),
         required=False,
+        update_allowed=True,
     )
     cfg_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("filter debugs for an alert config"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -207,21 +224,25 @@ class MesosMetricsDebugFilter(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mesos_master_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mesos_slave_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     metrics_collection_frq_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -247,46 +268,55 @@ class MetricsMgrDebugFilter(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     entity_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     skip_metrics_db_writes_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     logging_freq_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     log_first_n_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     metric_instance_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     skip_cluster_map_check_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     disable_hw_training_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_grace_period_schema = properties.Schema(
         properties.Schema.STRING,
         _("setting to reduce the grace period for license expiry in hours"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -322,54 +352,63 @@ class DebugFilterUnion(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_mgr_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeMgrDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     metrics_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MetricsMgrDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hs_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HSMgrDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     alert_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AlertMgrDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     autoscale_mgr_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleMgrDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cloud_connector_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudConnectorDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     mesos_metrics_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MesosMetricsDebugFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -406,27 +445,32 @@ class DebugController(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     sub_module_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     trace_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     log_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     filters_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugFilterUnion.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

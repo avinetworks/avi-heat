@@ -18,6 +18,7 @@ class AutoScaleMesosSettings(object):
         properties.Schema.BOOLEAN,
         _("Apply scaleout even when there are deployments in progress"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -37,36 +38,43 @@ class ServerAutoScaleOutInfo(object):
         properties.Schema.STRING,
         _("UUID of the Pool"),
         required=True,
+        update_allowed=True,
     )
     num_scaleout_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     num_servers_up_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     load_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     available_capacity_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -98,26 +106,31 @@ class ServerAutoScaleFailedInfo(object):
         properties.Schema.STRING,
         _("UUID of the Pool"),
         required=True,
+        update_allowed=True,
     )
     num_scalein_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     num_servers_up_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -146,16 +159,19 @@ class ServerId(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     external_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("This is the Pool servers external uuid"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -180,83 +196,99 @@ class ServerAutoScalePolicy(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     intelligent_autoscale_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use Avi intelligent autoscale algorithm where autoscale is performed by comparing load on the pool against estimated capacity of all the servers."),
         required=False,
+        update_allowed=True,
     )
     intelligent_scaleout_margin_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Minimum extra capacity as percentage of load used by intelligent scheme. Scaleout is triggered when available capacity is less than this margin."),
         required=False,
+        update_allowed=True,
     )
     intelligent_scalein_margin_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum extra capacity as percentage of load used by intelligent scheme. Scalein is triggered when available capacity is more than this margin"),
         required=False,
+        update_allowed=True,
     )
     min_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("No scale-in happens once number of operationally up servers reach min_servers"),
         required=False,
+        update_allowed=True,
     )
     max_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum number of servers after scaleout"),
         required=False,
+        update_allowed=True,
     )
     max_scaleout_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The number of servers to scale up. When  target servers are more than the max_servers then it would be  less than the min_scaleout_adjustment_step"),
         required=False,
+        update_allowed=True,
     )
     max_scalein_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The number of servers to scale in. When  target servers are more than the max_servers then it would be  less than the scaleout_adjustment_step"),
         required=False,
+        update_allowed=True,
     )
     scaleout_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("No two scaleout happens within this period"),
         required=False,
+        update_allowed=True,
     )
     scalein_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("No two scale-in happens within this period"),
         required=False,
+        update_allowed=True,
     )
     scaleout_alertconfig_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     scaleout_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of alert related to these alert configs used as triggers for server scale out"),
         schema=scaleout_alertconfig_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     scalein_alertconfig_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     scalein_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of alert related to these alert configs used as triggers for server scale in"),
         schema=scalein_alertconfig_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     use_predicted_load_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use predicted load rather than current load"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -302,33 +334,39 @@ class ServerAutoScaleInCompleteInfo(object):
         properties.Schema.STRING,
         _("UUID of the Pool"),
         required=True,
+        update_allowed=True,
     )
     scaled_in_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerId.properties_schema,
         required=True,
+        update_allowed=False,
     )
     scaled_in_servers_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=scaled_in_servers_item_schema,
         required=False,
+        update_allowed=True,
     )
     nscalein_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -356,11 +394,13 @@ class AutoScaleKVData(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -382,59 +422,70 @@ class AutoScaleAWSSettings(object):
         properties.Schema.STRING,
         _("AWS Instance Type. http://docs.openstack.org/openstack-ops/content/flavors.html"),
         required=True,
+        update_allowed=True,
     )
     key_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the EC2 key pair in AWS or name of previously created key pair in OpenStack to inject into the instance"),
         required=False,
+        update_allowed=True,
     )
     security_group_ids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     security_group_ids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Names or security group ids of the security groups with which to associate."),
         schema=security_group_ids_item_schema,
         required=False,
+        update_allowed=True,
     )
     block_device_mappings_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleKVData.properties_schema,
         required=True,
+        update_allowed=False,
     )
     block_device_mappings_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of block device mappings for this server"),
         schema=block_device_mappings_item_schema,
         required=False,
+        update_allowed=True,
     )
     placement_group_schema = properties.Schema(
         properties.Schema.STRING,
         _("Physical location of your cluster placement group created in Amazon EC2."),
         required=False,
+        update_allowed=True,
     )
     instance_monitoring_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable detailed monitoring for VM"),
         required=False,
+        update_allowed=True,
     )
     ebs_optimized_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Specifies whether the instance is optimized for EBS I/O (true) or not (false)."),
         required=False,
+        update_allowed=True,
     )
     kernel_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("kernel for this instance"),
         required=False,
+        update_allowed=True,
     )
     ramdisk_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("ramdisk id"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -470,48 +521,57 @@ class ServerAutoScaleInInfo(object):
         properties.Schema.STRING,
         _("UUID of the Pool"),
         required=True,
+        update_allowed=True,
     )
     num_scalein_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     num_servers_up_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     load_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     available_capacity_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_server_candidates_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerId.properties_schema,
         required=True,
+        update_allowed=False,
     )
     scalein_server_candidates_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=scalein_server_candidates_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -545,38 +605,45 @@ class ServerAutoScaleOutCompleteInfo(object):
         properties.Schema.STRING,
         _("UUID of the Pool"),
         required=True,
+        update_allowed=True,
     )
     nscaleout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scaled_out_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServerId.properties_schema,
         required=True,
+        update_allowed=False,
     )
     scaled_out_servers_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=scaled_out_servers_item_schema,
         required=False,
+        update_allowed=True,
     )
     launch_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -606,67 +673,79 @@ class AutoScaleOpenStackSettings(object):
         properties.Schema.STRING,
         _("OpenStack Flavor IDhttp://docs.openstack.org/openstack-ops/content/flavors.html"),
         required=True,
+        update_allowed=True,
     )
     key_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the EC2 key pair in AWS or name of previously created key pair in OpenStack to inject into the instance"),
         required=False,
+        update_allowed=True,
     )
     security_group_ids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     security_group_ids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Names or security group ids of the security groups with which to associate."),
         schema=security_group_ids_item_schema,
         required=False,
+        update_allowed=True,
     )
     userdata_schema = properties.Schema(
         properties.Schema.STRING,
         _("User data provided to the VM"),
         required=False,
+        update_allowed=True,
     )
     block_device_mappings_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleKVData.properties_schema,
         required=True,
+        update_allowed=False,
     )
     block_device_mappings_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of block device mappings for this server"),
         schema=block_device_mappings_item_schema,
         required=False,
+        update_allowed=True,
     )
     admin_password_schema = properties.Schema(
         properties.Schema.STRING,
         _("admin password for the VM"),
         required=False,
+        update_allowed=True,
     )
     metadata_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleKVData.properties_schema,
         required=True,
+        update_allowed=False,
     )
     metadata_schema = properties.Schema(
         properties.Schema.LIST,
         _(" Arbitrary key value metadata to store for this server. Both keys and values must be <=255 character"),
         schema=metadata_item_schema,
         required=False,
+        update_allowed=True,
     )
     disk_config_schema = properties.Schema(
         properties.Schema.STRING,
         _("control how the disk is partitioned when the server is created. possible values are AUTO or MANUAL"),
         required=False,
+        update_allowed=True,
     )
     scheduler_hints_schema = properties.Schema(
         properties.Schema.MAP,
         _("arbitrary key-value pairs specified by the client to help boot an instance"),
         schema=AutoScaleKVData.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -703,34 +782,40 @@ class AutoScaleLaunchConfig(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     image_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("Unique ID of the Amazon Machine Image (AMI)  or OpenStack VM ID"),
         required=True,
+        update_allowed=True,
     )
     openstack_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleOpenStackSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     aws_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleAWSSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     mesos_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AutoScaleMesosSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -17,32 +17,38 @@ class ClusterNode(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP address of controller VM."),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID on the controller VM"),
         required=False,
+        update_allowed=True,
     )
     vm_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the controller VM"),
         required=False,
+        update_allowed=True,
     )
     vm_mor_schema = properties.Schema(
         properties.Schema.STRING,
         _("Managed object reference of this controller VM"),
         required=False,
+        update_allowed=True,
     )
     vm_hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("hostname assigned to this controller VM"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -73,24 +79,28 @@ class Cluster(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     virtual_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("A virtual IP address. This IP address will be dynamically reconfigured so that it always is the IP of the cluster leader."),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     nodes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClusterNode.properties_schema,
         required=True,
+        update_allowed=False,
     )
     nodes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=nodes_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

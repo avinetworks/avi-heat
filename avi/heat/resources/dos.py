@@ -16,16 +16,19 @@ class AttackMetaData(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_resp_time_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -49,16 +52,19 @@ class DosThreshold(object):
         properties.Schema.STRING,
         _("Attack type."),
         required=True,
+        update_allowed=True,
     )
     min_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Minimum number of packets or connections or requests in a given interval of time to be deemed as attack."),
         required=True,
+        update_allowed=True,
     )
     max_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum number of packets or connections or requests in a given interval of time to be deemed as attack."),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -82,56 +88,66 @@ class DosAttackEventDetails(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     attack_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     src_ips_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     src_ips_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=src_ips_item_schema,
         required=False,
+        update_allowed=True,
     )
     urls_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     urls_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=urls_item_schema,
         required=False,
+        update_allowed=True,
     )
     ipgroup_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     ipgroup_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ipgroup_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     meta_data_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AttackMetaData.properties_schema,
         required=True,
+        update_allowed=False,
     )
     meta_data_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=meta_data_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -161,18 +177,21 @@ class DosThresholdProfile(object):
         properties.Schema.NUMBER,
         _("Timer value in seconds to collect DoS attack metrics based on threshold on the Service Engine for this Virtual Service."),
         required=True,
+        update_allowed=True,
     )
     thresh_info_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DosThreshold.properties_schema,
         required=True,
+        update_allowed=False,
     )
     thresh_info_schema = properties.Schema(
         properties.Schema.LIST,
         _("Attack type, min and max values for DoS attack detection."),
         schema=thresh_info_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

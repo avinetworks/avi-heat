@@ -22,38 +22,45 @@ class VsSeAssigned(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     primary_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     connected_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     scalein_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     oper_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OperationalStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
     snat_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -86,23 +93,27 @@ class VsPlacementResolutionInfo(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DiscoveredNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -126,60 +137,71 @@ class ScaleStatus(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     reason_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=reason_item_schema,
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     start_time_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TimeStamp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     end_time_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TimeStamp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     scale_se_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_se_requested_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_se_assigned_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_code_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_placement_resolution_info_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsPlacementResolutionInfo.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -218,296 +240,351 @@ class VirtualServiceRuntime(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     fsm_state_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_req_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_req_rc_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     datapath_debug_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugVirtualService.properties_schema,
         required=False,
+        update_allowed=True,
     )
     scaleout_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     servers_configured_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     rules_configured_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     one_plus_one_ha_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     apic_extension_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsApicExtension.properties_schema,
         required=False,
+        update_allowed=True,
     )
     last_changed_time_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TimeStamp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     controller_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     prev_controller_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     migrate_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     marked_for_delete_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     migrate_request_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsMigrateParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     user_scaleout_pending_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scale_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ScaleStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
     progress_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scale_history_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ScaleStatus.properties_schema,
         required=True,
+        update_allowed=False,
     )
     scale_history_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=scale_history_item_schema,
         required=False,
+        update_allowed=True,
     )
     metrics_mgr_port_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     prev_metrics_mgr_port_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     manual_placement_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_create_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     initial_placement_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_request_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsScaleinParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     upgrade_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     first_time_placement_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     migrate_scaleout_pending_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     migrate_scalein_pending_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     initial_placement_request_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsInitialPlacementParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     initial_placement_se_params_index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     assigned_static_se_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     assigned_static_se_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=assigned_static_se_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     requested_static_se_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     requested_static_se_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=requested_static_se_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     vh_child_vs_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vh_child_vs_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vh_child_vs_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     se_list_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeList.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_list_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_list_item_schema,
         required=False,
+        update_allowed=True,
     )
     requested_resource_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     redis_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     redis_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     redis_db_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tls_ticket_key_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TLSTicket.properties_schema,
         required=True,
+        update_allowed=False,
     )
     tls_ticket_key_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=tls_ticket_key_item_schema,
         required=False,
+        update_allowed=True,
     )
     lif_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     lif_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=lif_item_schema,
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     supp_runtime_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=OperationalStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
     first_se_assigned_time_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TimeStamp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     east_west_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_additional_se_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

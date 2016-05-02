@@ -16,71 +16,85 @@ class HealthScoreDetails(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     previous_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     timestamp_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for the Health Score Change"),
         required=False,
+        update_allowed=True,
     )
     anomaly_penalty_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     anomaly_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Anomaly Penalty"),
         required=False,
+        update_allowed=True,
     )
     resources_penalty_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     resources_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Resources Penalty"),
         required=False,
+        update_allowed=True,
     )
     performance_score_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     performance_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Performance Score"),
         required=False,
+        update_allowed=True,
     )
     security_penalty_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     security_reason_schema = properties.Schema(
         properties.Schema.STRING,
         _("Reason for Security Threat Level"),
         required=False,
+        update_allowed=True,
     )
     sub_resource_prefix_schema = properties.Schema(
         properties.Schema.STRING,
         _("Resource prefix containing entity information."),
         required=False,
+        update_allowed=True,
     )
     step_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The step interval in seconds"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

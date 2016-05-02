@@ -16,21 +16,25 @@ class ConfigUserPasswordChangeRequest(object):
         properties.Schema.STRING,
         _("Email address of user"),
         required=False,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _("Matched username of email address"),
         required=False,
+        update_allowed=True,
     )
     client_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("client ip"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Password link is sent or rejected"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -56,21 +60,25 @@ class ConfigUserLogin(object):
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     client_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("client ip"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("error message if authentication failed"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -96,41 +104,49 @@ class ConfigActionDetails(object):
         properties.Schema.STRING,
         _("API path"),
         required=False,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     resource_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Config type of the resource"),
         required=False,
+        update_allowed=True,
     )
     resource_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the resource"),
         required=False,
+        update_allowed=True,
     )
     action_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the action"),
         required=False,
+        update_allowed=True,
     )
     parameter_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Parameter data"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("Error message if request failed"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -164,46 +180,55 @@ class ConfigUpdateDetails(object):
         properties.Schema.STRING,
         _("API path"),
         required=False,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     resource_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Config type of the updated resource"),
         required=False,
+        update_allowed=True,
     )
     resource_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the created resource"),
         required=False,
+        update_allowed=True,
     )
     request_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request data if request failed"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("Error message if request failed"),
         required=False,
+        update_allowed=True,
     )
     new_resource_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("New updated data of the resource"),
         required=False,
+        update_allowed=True,
     )
     old_resource_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Old & overwritten data of the resource"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -239,36 +264,43 @@ class ConfigDeleteDetails(object):
         properties.Schema.STRING,
         _("API path"),
         required=False,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     resource_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Config type of the deleted resource"),
         required=False,
+        update_allowed=True,
     )
     resource_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the deleted resource"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("Error message if request failed"),
         required=False,
+        update_allowed=True,
     )
     resource_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Deleted data of the resource"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -300,41 +332,49 @@ class ConfigCreateDetails(object):
         properties.Schema.STRING,
         _("API path"),
         required=False,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     resource_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Config type of the created resource"),
         required=False,
+        update_allowed=True,
     )
     resource_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the created resource"),
         required=False,
+        update_allowed=True,
     )
     request_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Request data if request failed"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("Error message if request failed"),
         required=False,
+        update_allowed=True,
     )
     resource_data_schema = properties.Schema(
         properties.Schema.STRING,
         _("Data of the created resource"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -368,21 +408,25 @@ class ConfigUserLogout(object):
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _("Status"),
         required=False,
+        update_allowed=True,
     )
     client_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _("client ip"),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _("error message if logging out failed"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

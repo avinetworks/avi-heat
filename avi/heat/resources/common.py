@@ -17,12 +17,14 @@ class IpAddrRange(object):
         _("Starting IP address of the range"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     end_schema = properties.Schema(
         properties.Schema.MAP,
         _("Ending IP address of the range"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -44,21 +46,25 @@ class CustomParams(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     is_sensitive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     is_dynamic_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -84,16 +90,19 @@ class TenantConfiguration(object):
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_in_provider_context_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenant_access_to_provider_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -117,11 +126,13 @@ class Tag(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -143,11 +154,13 @@ class TimeStamp(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     usecs_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -169,11 +182,13 @@ class HTTPLocalFile(object):
         properties.Schema.STRING,
         _("Mime-type of the content in the file."),
         required=True,
+        update_allowed=True,
     )
     file_content_schema = properties.Schema(
         properties.Schema.STRING,
         _("File content to used in the local HTTP response body."),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -195,33 +210,39 @@ class OperationalStatus(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     reason_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=reason_item_schema,
         required=False,
+        update_allowed=True,
     )
     reason_code_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_changed_time_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TimeStamp.properties_schema,
         required=False,
+        update_allowed=True,
     )
     reason_code_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -249,11 +270,13 @@ class AppInfo(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     app_hdr_value_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -275,6 +298,7 @@ class Port(object):
         properties.Schema.NUMBER,
         _("TCP/UDP port number."),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -295,22 +319,26 @@ class Tenant(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     local_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     config_settings_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TenantConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -337,12 +365,14 @@ class PortRange(object):
         _("TCP/UDP port range start (inclusive)."),
         schema=Port.properties_schema,
         required=True,
+        update_allowed=True,
     )
     end_schema = properties.Schema(
         properties.Schema.MAP,
         _("TCP/UDP port range end (inclusive)."),
         schema=Port.properties_schema,
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -365,22 +395,26 @@ class IpAddrPort(object):
         _("IP Address of host. One of IP address or hostname should be set"),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port number of server"),
         schema=Port.properties_schema,
         required=True,
+        update_allowed=True,
     )
     hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("Hostname of server. One of IP address or hostname should be set"),
         required=False,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -18,11 +18,13 @@ class SSLKeyRSAParams(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     exponent_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -44,6 +46,7 @@ class SSLVersion(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -63,11 +66,13 @@ class CertificateAuthority(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ca_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -89,6 +94,7 @@ class SSLKeyECParams(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -108,41 +114,49 @@ class SSLCertificateDescription(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     email_address_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     organization_unit_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     organization_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     locality_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     state_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     country_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     distinguished_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -177,23 +191,27 @@ class CertificateManagementProfile(AviResource):
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
         required=True,
+        update_allowed=True,
     )
     script_params_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CustomParams.properties_schema,
         required=True,
+        update_allowed=False,
     )
     script_params_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=script_params_item_schema,
         required=False,
+        update_allowed=True,
     )
     script_path_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -217,16 +235,19 @@ class SSLRating(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     performance_rating_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     compatibility_rating_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -250,51 +271,61 @@ class CRL(object):
         properties.Schema.STRING,
         _("URL of a server that issues the Certificate Revocation list. If this is configured, CRL will be periodically downloaded either based on the configured update interval or the next update interval in the CRL. CRL itself is stored in the body."),
         required=False,
+        update_allowed=True,
     )
     body_schema = properties.Schema(
         properties.Schema.STRING,
         _("Certificate Revocation list from a given issuer in PEM format. This can either be configured directly or via the server_url. "),
         required=False,
+        update_allowed=True,
     )
     last_update_schema = properties.Schema(
         properties.Schema.STRING,
         _("The date when this CRL was last issued"),
         required=False,
+        update_allowed=True,
     )
     next_update_schema = properties.Schema(
         properties.Schema.STRING,
         _("The date when a newer CRL will be available. Also conveys the date after which the CRL should be considered obsolete."),
         required=False,
+        update_allowed=True,
     )
     update_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("A CRL may include a Next Update field, which the CRL server uses to designates when a CRL is expired.  In addition to honoring this timer, Avi may more aggresively check for CRL updates via the Refresh Time, which forces an update check based on this timer."),
         required=False,
+        update_allowed=True,
     )
     etag_schema = properties.Schema(
         properties.Schema.STRING,
         _("Cached etag to optimize the download of the CRL"),
         required=False,
+        update_allowed=True,
     )
     text_schema = properties.Schema(
         properties.Schema.STRING,
         _("Certificate Revocation list in plain text for readability"),
         required=False,
+        update_allowed=True,
     )
     common_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Common name of the issuer in the Certificate Revocation list"),
         required=False,
+        update_allowed=True,
     )
     fingerprint_schema = properties.Schema(
         properties.Schema.STRING,
         _("Fingerprint of the CRL. Used to avoid configuring duplicates"),
         required=False,
+        update_allowed=True,
     )
     distinguished_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Distinguished name of the issuer in the Certificate Revocation list"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -332,18 +363,21 @@ class SSLKeyParams(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     rsa_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLKeyRSAParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ec_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLKeyECParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -368,62 +402,73 @@ class SSLProfile(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     accepted_versions_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLVersion.properties_schema,
         required=True,
+        update_allowed=False,
     )
     accepted_versions_schema = properties.Schema(
         properties.Schema.LIST,
         _("Set of versions accepted by the server"),
         schema=accepted_versions_item_schema,
         required=False,
+        update_allowed=True,
     )
     accepted_ciphers_schema = properties.Schema(
         properties.Schema.STRING,
         _("Ciphers suites represented as defined by http://www.openssl.org/docs/apps/ciphers.html"),
         required=False,
+        update_allowed=True,
     )
     cipher_enums_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     cipher_enums_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=cipher_enums_item_schema,
         required=False,
+        update_allowed=True,
     )
     tags_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Tag.properties_schema,
         required=True,
+        update_allowed=False,
     )
     tags_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=tags_item_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_rating_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLRating.properties_schema,
         required=False,
+        update_allowed=True,
     )
     send_close_notify_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Send 'close notify' alert message for a clean shutdown of the SSL connection."),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -457,89 +502,106 @@ class SSLCertificate(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     serial_number_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     self_signed_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     issuer_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLCertificateDescription.properties_schema,
         required=False,
+        update_allowed=True,
     )
     subject_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLCertificateDescription.properties_schema,
         required=False,
+        update_allowed=True,
     )
     key_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLKeyParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     public_key_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     signature_algorithm_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     signature_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     not_before_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     not_after_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     certificate_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     certificate_signing_request_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     text_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     fingerprint_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     expiry_status_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     chain_verified_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -592,50 +654,59 @@ class PKIProfile(AviResource):
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
         required=True,
+        update_allowed=True,
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLCertificate.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ca_certs_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of Certificate Authorities (Root and Intermediate) trusted that is used for certificate validation"),
         schema=ca_certs_item_schema,
         required=False,
+        update_allowed=True,
     )
     crls_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CRL.properties_schema,
         required=True,
+        update_allowed=False,
     )
     crls_schema = properties.Schema(
         properties.Schema.LIST,
         _("Certificate Revocation Lists"),
         schema=crls_item_schema,
         required=False,
+        update_allowed=True,
     )
     ignore_peer_chain_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, Avi will not trust Intermediate and Root certs presented by a client.  Instead, only the chain certs configured in the Certificate Authority section will be used to verify trust of the client's cert."),
         required=False,
+        update_allowed=True,
     )
     header_chk_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable host header name check for server cert"),
         required=True,
+        update_allowed=True,
     )
     crl_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked."),
         required=False,
+        update_allowed=True,
     )
     validate_only_leaf_crl_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, Avi will only validate the revocation status of the leaf certificate using CRL. To enable validation for the entire chain, disable this option and provide all the relevant CRLs"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -668,77 +739,91 @@ class SSLKeyAndCertificate(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     certificate_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLCertificate.properties_schema,
         required=True,
+        update_allowed=True,
     )
     key_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SSLKeyParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     key_schema = properties.Schema(
         properties.Schema.STRING,
         _("Private key"),
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CertificateAuthority.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ca_certs_schema = properties.Schema(
         properties.Schema.LIST,
         _("CA certificates in certificate chain"),
         schema=ca_certs_item_schema,
         required=False,
+        update_allowed=True,
     )
     enckey_base64_schema = properties.Schema(
         properties.Schema.STRING,
         _("Encrypted private key corresponding to the private key (e.g. those generated by an HSM such as Thales nShield)"),
         required=False,
+        update_allowed=True,
     )
     enckey_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the encrypted private key (e.g. those generated by an HSM such as Thales nShield)"),
         required=False,
+        update_allowed=True,
     )
     hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     certificate_management_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     dynamic_params_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CustomParams.properties_schema,
         required=True,
+        update_allowed=False,
     )
     dynamic_params_schema = properties.Schema(
         properties.Schema.LIST,
         _("Dynamic parameters needed for certificate management profile"),
         schema=dynamic_params_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

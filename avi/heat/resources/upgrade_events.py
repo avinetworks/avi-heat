@@ -16,11 +16,13 @@ class SystemUpgradeStarted(object):
         properties.Schema.STRING,
         _("Current Avi CADP version."),
         required=False,
+        update_allowed=True,
     )
     next_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Target version of Avi CADP."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,16 +44,19 @@ class SeVersionCheckFailedEvent(object):
         properties.Schema.STRING,
         _("UUID of the SE."),
         required=False,
+        update_allowed=True,
     )
     se_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Software version on the SE."),
         required=False,
+        update_allowed=True,
     )
     controller_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Software version on the controller."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -75,6 +80,7 @@ class SystemUpgradeComplete(object):
         properties.Schema.STRING,
         _("Current Avi CADP version."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -94,6 +100,7 @@ class SystemUpgradeAborted(object):
         properties.Schema.STRING,
         _("Current Avi CADP version."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

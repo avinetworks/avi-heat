@@ -17,100 +17,119 @@ class HttpCacheConfig(object):
         properties.Schema.BOOLEAN,
         _("Enable/disable HTTP object caching."),
         required=False,
+        update_allowed=True,
     )
     xcache_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Add an X-Cache header to content served from cache, which indicates to the client that the object was server from an intermediate cache."),
         required=False,
+        update_allowed=True,
     )
     age_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Add an Age header to content served from cache, which indicates to the client the number of seconds the object has been in the cache."),
         required=False,
+        update_allowed=True,
     )
     date_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("If a Date header was not added by the server, add a Date header to the object served from cache.  This indicates to the client when the object was originally sent by the server to the cache."),
         required=False,
+        update_allowed=True,
     )
     min_object_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Minimum size of an object to store in the cache."),
         required=False,
+        update_allowed=True,
     )
     max_object_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum size of an object to store in the cache."),
         required=False,
+        update_allowed=True,
     )
     default_expire_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Default expiration time of cache objects received from the server without a Cache-Control expiration header.  This value may be overwritten by the Heuristic Expire setting."),
         required=False,
+        update_allowed=True,
     )
     heuristic_expire_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("If a response object from the server does not include the Cache-Control header, but does include a Last-Modified header, the system will use this time to calculate the Cache-Control expiration.  If unable to solicit an Last-Modified header, then the system will fall back to the Cache Expire Time value."),
         required=False,
+        update_allowed=True,
     )
     max_cache_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Max size, in bytes, of the cache.  The default, zero, indicates auto configuration."),
         required=False,
+        update_allowed=True,
     )
     query_cacheable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Allow caching of objects whose URI included a query argument.  When disabled, these objects are not cached.  When enabled, the request must match the URI query to be considered a hit."),
         required=False,
+        update_allowed=True,
     )
     mime_types_list_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mime_types_list_schema = properties.Schema(
         properties.Schema.LIST,
         _("Whitelist of cacheable mime types. If both Cacheable Mime Types string list and string group are empty, this defaults to */*"),
         schema=mime_types_list_item_schema,
         required=False,
+        update_allowed=True,
     )
     mime_types_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mime_types_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Whitelist string group of cacheable mime types. If both Cacheable Mime Types string list and string group are empty, this defaults to */*"),
         schema=mime_types_group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     aggressive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable/disable caching objects without Cache-Control headers"),
         required=False,
+        update_allowed=True,
     )
     mime_types_black_list_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mime_types_black_list_schema = properties.Schema(
         properties.Schema.LIST,
         _("Blacklist of non-cacheable mime types"),
         schema=mime_types_black_list_item_schema,
         required=False,
+        update_allowed=True,
     )
     mime_types_black_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mime_types_black_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Blacklist string group of non-cacheable mime types"),
         schema=mime_types_black_group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

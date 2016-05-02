@@ -16,26 +16,31 @@ class AvgUptimeChangeDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     metric_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     current_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     resource_str_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -63,36 +68,43 @@ class MetricThresoldUpDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     metric_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     current_value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     server_schema = properties.Schema(
         properties.Schema.STRING,
         _("Server IP:Port on which event was generated"),
         required=False,
+        update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Identity of the Pool"),
         required=False,
+        update_allowed=True,
     )
     entity_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("ID of the object whose metric has hit the threshold"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -124,22 +136,26 @@ class MetricsDbDiskEventDetails(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     metrics_free_sz_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     metrics_deleted_tables_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     metrics_deleted_tables_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=metrics_deleted_tables_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -163,62 +179,74 @@ class LicenseExpiryDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     expiry_at_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     throughput_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     backend_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     max_apps_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_tier_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     license_tier_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=license_tier_item_schema,
         required=False,
+        update_allowed=True,
     )
     license_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -258,26 +286,31 @@ class LicenseDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     expiry_at_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     backend_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     license_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

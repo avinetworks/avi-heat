@@ -18,34 +18,40 @@ class VsInitialPlacementEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     rpc_status_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -73,40 +79,47 @@ class VsScaleOutEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     rpc_status_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scale_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ScaleStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -136,40 +149,47 @@ class VsScaleInEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     rpc_status_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scale_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ScaleStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -199,34 +219,40 @@ class VsErrorEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     rpc_status_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -254,12 +280,14 @@ class VsFsmEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vs_rt_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceRuntime.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -281,40 +309,47 @@ class VsMigrateEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     rpc_status_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_message_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scale_status_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ScaleStatus.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -344,16 +379,19 @@ class VsPoolNwFilterEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     filter_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     network_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -377,29 +415,34 @@ class VsAwaitingSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_requested_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VirtualServiceResource.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_assigned_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeAssigned.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_assigned_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_assigned_item_schema,
         required=False,
+        update_allowed=True,
     )
     awaitingse_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list

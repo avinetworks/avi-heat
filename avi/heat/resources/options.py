@@ -15,11 +15,13 @@ class IpAddr(object):
         properties.Schema.STRING,
         _("IP address"),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,11 +44,13 @@ class IpAddrPrefix(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     mask_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list

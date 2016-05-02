@@ -18,18 +18,21 @@ class NetworkSecurityMatchTarget(object):
         _(""),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_port_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=PortMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     microservice_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MicroServiceMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -53,11 +56,13 @@ class NetworkSecurityPolicyActionRLParam(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     burst_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -79,43 +84,51 @@ class NetworkSecurityRule(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     match_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkSecurityMatchTarget.properties_schema,
         required=True,
+        update_allowed=True,
     )
     action_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     rl_param_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkSecurityPolicyActionRLParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     age_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Time in minutes after which rule will be deleted."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -150,28 +163,33 @@ class NetworkSecurityPolicy(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkSecurityRule.properties_schema,
         required=True,
+        update_allowed=False,
     )
     rules_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=rules_item_schema,
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

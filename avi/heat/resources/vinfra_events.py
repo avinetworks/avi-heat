@@ -16,11 +16,13 @@ class VinfraVcenterObjDeleteDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     obj_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,31 +44,37 @@ class VinfraDiscSummaryDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     num_dcs_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_hosts_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_clusters_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_vms_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_nws_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -96,16 +104,19 @@ class VinfraVmDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     datacenter_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -129,11 +140,13 @@ class VinfraVcenterDiscoveryFailure(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     state_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -155,16 +168,19 @@ class VinfraMgmtNwChangeDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     existing_nw_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     new_nw_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -188,16 +204,19 @@ class VinfraVcenterBadCredentials(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vcenter_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -221,17 +240,20 @@ class VinfraPoolServerDeleteDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     server_ip_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     server_ip_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=server_ip_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -253,17 +275,20 @@ class VinfraCntlrHostUnreachableList(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     host_name_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     host_name_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=host_name_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -16,33 +16,39 @@ class BgpPeer(object):
         properties.Schema.NUMBER,
         _("Peer Autonomous System ID"),
         required=False,
+        update_allowed=True,
     )
     peer_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP Address of the BGP Peer"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.MAP,
         _("Subnet providing reachability for Peer"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=True,
     )
     md5_secret_schema = properties.Schema(
         properties.Schema.STRING,
         _("Peer Autonomous System Md5 Digest Secret Key"),
         required=False,
+        update_allowed=True,
     )
     bfd_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable Bi-Directional Forward Detection. Only async mode supported."),
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network providing reachability for Peer"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -72,23 +78,27 @@ class BgpProfile(object):
         properties.Schema.NUMBER,
         _("Local Autonomous System ID"),
         required=True,
+        update_allowed=True,
     )
     ibgp_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("BGP peer type"),
         required=True,
+        update_allowed=True,
     )
     peers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=BgpPeer.properties_schema,
         required=True,
+        update_allowed=False,
     )
     peers_schema = properties.Schema(
         properties.Schema.LIST,
         _("BGP Peers"),
         schema=peers_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -113,22 +123,26 @@ class StaticRoute(object):
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=True,
     )
     next_hop_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     if_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     route_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -155,39 +169,40 @@ class VrfContext(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     static_routes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=StaticRoute.properties_schema,
         required=True,
+        update_allowed=False,
     )
     static_routes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=static_routes_item_schema,
         required=False,
+        update_allowed=True,
     )
     bgp_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _("Bgp Local and Peer Info"),
         schema=BgpProfile.properties_schema,
         required=False,
-    )
-    system_default_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -195,7 +210,6 @@ class VrfContext(AviResource):
         'name',
         'static_routes',
         'bgp_profile',
-        'system_default',
         'description',
         'cloud_uuid',
     )
@@ -205,7 +219,6 @@ class VrfContext(AviResource):
         'name': name_schema,
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,
-        'system_default': system_default_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
     }

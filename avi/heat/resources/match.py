@@ -17,53 +17,62 @@ class IpAddrMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for IP address matching the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("IP address(es)"),
         schema=addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _("IP address range(s)"),
         schema=ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
     prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     prefixes_schema = properties.Schema(
         properties.Schema.LIST,
         _("IP address prefix(es)"),
         schema=prefixes_item_schema,
         required=False,
+        update_allowed=True,
     )
     group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("UUID of IP address group(s)"),
         schema=group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -91,27 +100,32 @@ class HdrMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching headers in the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     hdr_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the HTTP header whose value is to be matched"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the match"),
         required=False,
+        update_allowed=True,
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     value_schema = properties.Schema(
         properties.Schema.LIST,
         _("String values to match in the HTTP header"),
         schema=value_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -137,11 +151,13 @@ class HTTPStatusRange(object):
         properties.Schema.NUMBER,
         _("Starting HTTP response status code"),
         required=True,
+        update_allowed=True,
     )
     end_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Ending HTTP response status code"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -163,22 +179,26 @@ class LocationHdrMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching location header value in the HTTP response"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the match"),
         required=False,
+        update_allowed=True,
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     value_schema = properties.Schema(
         properties.Schema.LIST,
         _("String value(s) in the location header"),
         schema=value_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -202,33 +222,39 @@ class PathMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching the path in the HTTP request URI"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the matching"),
         required=False,
+        update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     match_str_schema = properties.Schema(
         properties.Schema.LIST,
         _("String values"),
         schema=match_str_item_schema,
         required=False,
+        update_allowed=True,
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("UUID of the string group(s)"),
         schema=string_group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -254,6 +280,7 @@ class HTTPStatusCode(object):
         properties.Schema.NUMBER,
         _("HTTP response status code"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -274,27 +301,32 @@ class MicroServiceGroup(AviResource):
         properties.Schema.STRING,
         _("Name of the MicroService group"),
         required=True,
+        update_allowed=True,
     )
     service_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     service_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure MicroService(es)"),
         schema=service_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -320,18 +352,21 @@ class PortMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for port matching the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     ports_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Port.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ports_schema = properties.Schema(
         properties.Schema.LIST,
         _("TCP port(s) listening for HTTP/HTTPS"),
         schema=ports_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -353,30 +388,35 @@ class HTTPStatusMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching the HTTP response status code(s)"),
         required=True,
+        update_allowed=True,
     )
     status_codes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPStatusCode.properties_schema,
         required=True,
+        update_allowed=False,
     )
     status_codes_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP response status code(s)"),
         schema=status_codes_item_schema,
         required=False,
+        update_allowed=True,
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPStatusRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP response status code range(s)"),
         schema=ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -400,22 +440,26 @@ class HostHdrMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for the host header value match"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the match"),
         required=False,
+        update_allowed=True,
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     value_schema = properties.Schema(
         properties.Schema.LIST,
         _("String value(s) in the host header"),
         schema=value_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -439,11 +483,13 @@ class KeyValue(object):
         properties.Schema.STRING,
         _("Key"),
         required=True,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _("Value"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -465,33 +511,39 @@ class QueryMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching the query in HTTP request URI"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the match"),
         required=False,
+        update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     match_str_schema = properties.Schema(
         properties.Schema.LIST,
         _("String value(s)"),
         schema=match_str_item_schema,
         required=False,
+        update_allowed=True,
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("UUID of the string group(s)"),
         schema=string_group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -517,11 +569,13 @@ class MicroServiceMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for Micro Service matching the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of Micro Service group(s)"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -543,17 +597,20 @@ class MethodMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for HTTP method matching the method in the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     methods_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     methods_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure HTTP method(s)"),
         schema=methods_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -575,17 +632,20 @@ class HTTPVersionMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for HTTP version matching the version used in the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     versions_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     versions_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP protocol version"),
         schema=versions_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -607,21 +667,25 @@ class CookieMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for matching the cookie in the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the cookie"),
         required=True,
+        update_allowed=True,
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
         _("Case sensitivity to use for the match"),
         required=False,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _("String value in the cookie"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -648,28 +712,33 @@ class StringGroup(AviResource):
         properties.Schema.STRING,
         _("Name of the string group"),
         required=True,
+        update_allowed=True,
     )
     kv_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=KeyValue.properties_schema,
         required=True,
+        update_allowed=False,
     )
     kv_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure Key:Value in the string group"),
         schema=kv_item_schema,
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Type of StringGroup."),
         required=True,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -695,11 +764,13 @@ class ProtocolMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for protocol matching the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     protocols_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP or HTTPS protocol"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -721,28 +792,33 @@ class StringMatch(object):
         properties.Schema.STRING,
         _("Criterion to use for string matching the HTTP request"),
         required=True,
+        update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     match_str_schema = properties.Schema(
         properties.Schema.LIST,
         _("String value(s)"),
         schema=match_str_item_schema,
         required=False,
+        update_allowed=True,
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("UUID of the string group(s)"),
         schema=string_group_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -767,85 +843,100 @@ class IpAddrGroup(AviResource):
         properties.Schema.STRING,
         _("Name of the IP address group"),
         required=True,
+        update_allowed=True,
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure IP address(es)"),
         schema=addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure IP adress range(s)"),
         schema=ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
     prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     prefixes_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure IP adress prefix(es)"),
         schema=prefixes_item_schema,
         required=False,
+        update_allowed=True,
     )
     country_codes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     country_codes_schema = properties.Schema(
         properties.Schema.LIST,
         _("Populate the IP address ranges from the geo database for this country"),
         schema=country_codes_item_schema,
         required=False,
+        update_allowed=True,
     )
     apic_epg_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Populate IP addresses from members of this Cisco APIC EPG"),
         required=False,
+        update_allowed=True,
     )
     ip_ports_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPort.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ip_ports_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure (IP address, port) tuple(s)"),
         schema=ip_ports_item_schema,
         required=False,
+        update_allowed=True,
     )
     marathon_app_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Populate IP addresses from tasks of this Marathon app"),
         required=False,
+        update_allowed=True,
     )
     marathon_service_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Task port associated with marathon service port. If Marathon app has multiple service ports, this is required. Else, the first task port is used"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -884,66 +975,77 @@ class MatchTarget(object):
         _("Configure client ip addresses"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure virtual service ports"),
         schema=PortMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     protocol_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the type of HTTP protocol"),
         schema=ProtocolMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     method_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure HTTP methods"),
         schema=MethodMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure versions of the HTTP protocol"),
         schema=HTTPVersionMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure request paths"),
         schema=PathMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     query_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure request query"),
         schema=QueryMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HdrMatch.properties_schema,
         required=True,
+        update_allowed=False,
     )
     hdrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure HTTP header(s)"),
         schema=hdrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     cookie_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure HTTP cookie(s)"),
         schema=CookieMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     host_hdr_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the host header"),
         schema=HostHdrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -982,90 +1084,105 @@ class ResponseMatchTarget(object):
         _("Configure client ip addresses"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vs_port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure virtual service ports"),
         schema=PortMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     protocol_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the type of HTTP protocol"),
         schema=ProtocolMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     method_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure HTTP methods"),
         schema=MethodMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure versions of the HTTP protocol"),
         schema=HTTPVersionMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure request paths"),
         schema=PathMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     query_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure request query"),
         schema=QueryMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HdrMatch.properties_schema,
         required=True,
+        update_allowed=False,
     )
     hdrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure HTTP headers"),
         schema=hdrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     cookie_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure HTTP cookie(s)"),
         schema=CookieMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     host_hdr_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the host header"),
         schema=HostHdrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     loc_hdr_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the location header"),
         schema=LocationHdrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     status_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure the HTTP status code(s)"),
         schema=HTTPStatusMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     rsp_hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HdrMatch.properties_schema,
         required=True,
+        update_allowed=False,
     )
     rsp_hdrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("Configure the HTTP headers in response"),
         schema=rsp_hdrs_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

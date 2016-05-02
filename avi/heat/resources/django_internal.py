@@ -17,11 +17,13 @@ class Permission(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     resource_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -44,18 +46,21 @@ class Role(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     privileges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Permission.properties_schema,
         required=True,
+        update_allowed=False,
     )
     privileges_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=privileges_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

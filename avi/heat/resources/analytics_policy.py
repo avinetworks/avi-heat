@@ -17,11 +17,13 @@ class FullClientLogs(object):
         properties.Schema.BOOLEAN,
         _("Capture all client logs including connections and requests.  When disabled, only errors will be logged."),
         required=True,
+        update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("How long should the system capture all logs, measured in minutes. Set to 0 for infinite."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -43,11 +45,13 @@ class MetricsRealTimeUpdate(object):
         properties.Schema.BOOLEAN,
         _("Enables real time metrics collection.  When disabled, 6 hour view is the most granular the system will track."),
         required=True,
+        update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Real time metrics collection duration in minutes. 0 for infinite."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -69,38 +73,45 @@ class ClientLogFilter(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     client_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     uri_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=StringMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -133,18 +144,21 @@ class ClientInsightsSampling(object):
         _("URL patterns to avoid when inserting RUM script."),
         schema=StringMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     sample_uris_schema = properties.Schema(
         properties.Schema.MAP,
         _("URL patterns to check when inserting RUM script."),
         schema=StringMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     client_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("Client IP addresses to check when inserting RUM script."),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -169,40 +183,47 @@ class AnalyticsPolicy(object):
         _(""),
         schema=FullClientLogs.properties_schema,
         required=False,
+        update_allowed=True,
     )
     client_log_filters_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClientLogFilter.properties_schema,
         required=True,
+        update_allowed=False,
     )
     client_log_filters_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=client_log_filters_item_schema,
         required=False,
+        update_allowed=True,
     )
     client_insights_schema = properties.Schema(
         properties.Schema.STRING,
         _("Gain insights from sampled client to server HTTP requests and responses."),
         required=False,
+        update_allowed=True,
     )
     metrics_realtime_update_schema = properties.Schema(
         properties.Schema.MAP,
         _("Settings to turn on realtime metrics and set duration for realtime updates"),
         schema=MetricsRealTimeUpdate.properties_schema,
         required=False,
+        update_allowed=True,
     )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Analytics preferences and settings."),
         required=False,
+        update_allowed=True,
     )
     client_insights_sampling_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ClientInsightsSampling.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

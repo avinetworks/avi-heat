@@ -16,12 +16,14 @@ class DNSInternalNSRecord(object):
         properties.Schema.STRING,
         _("Nameserver for NS record"),
         required=True,
+        update_allowed=True,
     )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP address of the Nameserver"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -43,16 +45,19 @@ class InfobloxProfile(object):
         properties.Schema.STRING,
         _("WAPI version"),
         required=False,
+        update_allowed=True,
     )
     dns_view_schema = properties.Schema(
         properties.Schema.STRING,
         _("DNS view"),
         required=False,
+        update_allowed=True,
     )
     network_view_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network view"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -76,31 +81,37 @@ class IpamAwsProfile(object):
         properties.Schema.STRING,
         _("AWS region"),
         required=False,
+        update_allowed=True,
     )
     vpc_schema = properties.Schema(
         properties.Schema.STRING,
         _("VPC name"),
         required=False,
+        update_allowed=True,
     )
     vpc_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("VPC ID"),
         required=True,
+        update_allowed=True,
     )
     use_iam_roles_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     access_key_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("AWS access key ID"),
         required=False,
+        update_allowed=True,
     )
     secret_access_key_schema = properties.Schema(
         properties.Schema.STRING,
         _("AWS secret access key"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -130,23 +141,27 @@ class IpamInternalProfile(object):
         properties.Schema.STRING,
         _("Authority Domain Name for Service Discovery.Services will be registered as service_name.service_domain"),
         required=False,
+        update_allowed=True,
     )
     service_record_ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("TTL value for service records."),
         required=False,
+        update_allowed=True,
     )
     ns_records_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DNSInternalNSRecord.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ns_records_schema = properties.Schema(
         properties.Schema.LIST,
         _("NameServer records for non Avi authoritative domains."),
         schema=ns_records_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -171,45 +186,53 @@ class IpamProfile(AviResource):
         properties.Schema.STRING,
         _("The name of the IPAM profile"),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Type of IPAM profile"),
         required=True,
+        update_allowed=True,
     )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
         _("IPAM_TYPE_INFOBLOX address of IPAM appliance"),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     username_schema = properties.Schema(
         properties.Schema.STRING,
         _("Username for API access for IPAM appliance"),
         required=False,
+        update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
         _("Username for API access for IPAM appliance"),
         required=False,
+        update_allowed=True,
     )
     infoblox_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=InfobloxProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     internal_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpamInternalProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     aws_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpamAwsProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

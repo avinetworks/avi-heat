@@ -20,16 +20,19 @@ class CC_VnicInfo(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

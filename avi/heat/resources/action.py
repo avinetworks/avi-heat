@@ -17,21 +17,25 @@ class URIParamToken(object):
         properties.Schema.STRING,
         _("Token type for constructing the URI"),
         required=True,
+        update_allowed=True,
     )
     start_index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Index of the starting token in the incoming URI"),
         required=False,
+        update_allowed=True,
     )
     end_index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Index of the ending token in the incoming URI"),
         required=False,
+        update_allowed=True,
     )
     str_value_schema = properties.Schema(
         properties.Schema.STRING,
         _("Constant string to use as a token"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -58,17 +62,20 @@ class PoolServer(object):
         _("IP address of the server in the poool"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("DNS resolvable name of the server.  May be used in place of the IP address."),
         required=False,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port of the pool server listening for HTTP/HTTPS. Default value is the default port in the pool."),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -92,11 +99,13 @@ class HTTPCookieData(object):
         properties.Schema.STRING,
         _("Cookie name"),
         required=False,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _("Cookie value"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -118,11 +127,13 @@ class URIParamQuery(object):
         properties.Schema.BOOLEAN,
         _("Use or drop the query of the incoming request URI in the request URI to the backend server"),
         required=False,
+        update_allowed=True,
     )
     add_string_schema = properties.Schema(
         properties.Schema.STRING,
         _("Concatenate a string to the query of the incoming request URI and then use it in the request URI going to the backend server"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -144,11 +155,13 @@ class HTTPHdrValue(object):
         properties.Schema.STRING,
         _("Variable"),
         required=False,
+        update_allowed=True,
     )
     val_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP header value or variable representing an HTTP header"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -170,28 +183,33 @@ class HTTPSwitchingAction(object):
         properties.Schema.STRING,
         _("Content switching action type"),
         required=True,
+        update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the pool of servers to serve the request"),
         required=False,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP status code to use when serving local response"),
         required=False,
+        update_allowed=True,
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
         _("File from which to serve local response to the request"),
         schema=HTTPLocalFile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     server_schema = properties.Schema(
         properties.Schema.MAP,
         _("Specific pool server to select"),
         schema=PoolServer.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -219,18 +237,21 @@ class URIParam(object):
         properties.Schema.STRING,
         _("URI param type"),
         required=True,
+        update_allowed=True,
     )
     tokens_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=URIParamToken.properties_schema,
         required=True,
+        update_allowed=False,
     )
     tokens_schema = properties.Schema(
         properties.Schema.LIST,
         _("Token config either for the URI components or a constant string"),
         schema=tokens_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -252,12 +273,14 @@ class HTTPHdrData(object):
         properties.Schema.STRING,
         _("HTTP header name"),
         required=False,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP header value"),
         schema=HTTPHdrValue.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -279,34 +302,40 @@ class HTTPRedirectAction(object):
         properties.Schema.STRING,
         _("Protocol type"),
         required=True,
+        update_allowed=True,
     )
     host_schema = properties.Schema(
         properties.Schema.MAP,
         _("Host config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port to which redirect the request"),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Path config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Keep or drop the query of the incoming request URI in the redirected URI"),
         required=False,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP redirect status code"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -337,18 +366,21 @@ class HTTPRewriteURLAction(object):
         _("Host config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Path config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     query_schema = properties.Schema(
         properties.Schema.MAP,
         _("Query config"),
         schema=URIParamQuery.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -372,29 +404,34 @@ class HTTPRewriteLocHdrAction(object):
         properties.Schema.STRING,
         _("HTTP protocol type"),
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port to use in the redirected URI"),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
     host_schema = properties.Schema(
         properties.Schema.MAP,
         _("Host config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Path config"),
         schema=URIParam.properties_schema,
         required=False,
+        update_allowed=True,
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Keep or drop the query from the server side redirect URI"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -422,18 +459,21 @@ class HTTPHdrAction(object):
         properties.Schema.STRING,
         _("ADD: A new header with the new value is added irrespective of the existence of an HTTP header of the given name. REPLACE: A new header with the new value is added if no header of the given name exists, else existing headers with the given name are removed and a new header with the new value is added. REMOVE: All the headers of the given name are removed."),
         required=True,
+        update_allowed=True,
     )
     hdr_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP header information"),
         schema=HTTPHdrData.properties_schema,
         required=False,
+        update_allowed=True,
     )
     cookie_schema = properties.Schema(
         properties.Schema.MAP,
         _("Cookie information"),
         schema=HTTPCookieData.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

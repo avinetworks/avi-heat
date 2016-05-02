@@ -20,29 +20,34 @@ class HTTPSecurityAction(object):
         properties.Schema.STRING,
         _("Type of the security action to perform"),
         required=True,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP status code to use for local response"),
         required=False,
+        update_allowed=True,
     )
     https_port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Secure SSL/TLS port to redirect the HTTP request to"),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
         _("File to be used for generating HTTP local response"),
         schema=HTTPLocalFile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     rate_limit_schema = properties.Schema(
         properties.Schema.MAP,
         _("Rate Limit profile to be used to rate-limit the flow"),
         schema=RateProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -70,11 +75,13 @@ class HTTPPolicies(object):
         properties.Schema.NUMBER,
         _("Index of the virtual service HTTP policy collection"),
         required=True,
+        update_allowed=True,
     )
     http_policy_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the virtual service HTTP policy collection"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -96,62 +103,73 @@ class HTTPRequestRule(object):
         properties.Schema.STRING,
         _("Name of the rule"),
         required=True,
+        update_allowed=True,
     )
     index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Index of the rule"),
         required=True,
+        update_allowed=True,
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable the rule"),
         required=True,
+        update_allowed=True,
     )
     match_schema = properties.Schema(
         properties.Schema.MAP,
         _("Add match criteria to the rule"),
         schema=MatchTarget.properties_schema,
         required=False,
+        update_allowed=True,
     )
     redirect_action_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP redirect action"),
         schema=HTTPRedirectAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPHdrAction.properties_schema,
         required=True,
+        update_allowed=False,
     )
     hdr_action_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP header rewrite action"),
         schema=hdr_action_item_schema,
         required=False,
+        update_allowed=True,
     )
     rewrite_url_action_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP request URL rewrite action"),
         schema=HTTPRewriteURLAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     switching_action_schema = properties.Schema(
         properties.Schema.MAP,
         _("Content switching action"),
         schema=HTTPSwitchingAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Log HTTP request upon rule match"),
         required=False,
+        update_allowed=True,
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Log all HTTP headers upon rule match"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -189,50 +207,59 @@ class HTTPResponseRule(object):
         properties.Schema.STRING,
         _("Name of the rule"),
         required=True,
+        update_allowed=True,
     )
     index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Index of the rule"),
         required=True,
+        update_allowed=True,
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable the rule"),
         required=True,
+        update_allowed=True,
     )
     match_schema = properties.Schema(
         properties.Schema.MAP,
         _("Add match criteria to the rule"),
         schema=ResponseMatchTarget.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPHdrAction.properties_schema,
         required=True,
+        update_allowed=False,
     )
     hdr_action_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP header rewrite action"),
         schema=hdr_action_item_schema,
         required=False,
+        update_allowed=True,
     )
     loc_hdr_action_schema = properties.Schema(
         properties.Schema.MAP,
         _("Location header rewrite action"),
         schema=HTTPRewriteLocHdrAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Log HTTP request upon rule match"),
         required=False,
+        update_allowed=True,
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Log all HTTP headers upon rule match"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -266,33 +293,39 @@ class HTTPSecurityRule(object):
         properties.Schema.STRING,
         _("Name of the rule"),
         required=True,
+        update_allowed=True,
     )
     index_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Index of the rule"),
         required=True,
+        update_allowed=True,
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable the rule"),
         required=True,
+        update_allowed=True,
     )
     match_schema = properties.Schema(
         properties.Schema.MAP,
         _("Add match criteria to the rule"),
         schema=MatchTarget.properties_schema,
         required=False,
+        update_allowed=True,
     )
     action_schema = properties.Schema(
         properties.Schema.MAP,
         _("Action to be performed upon successful matching"),
         schema=HTTPSecurityAction.properties_schema,
         required=False,
+        update_allowed=True,
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Log HTTP request upon rule match"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -323,12 +356,14 @@ class HTTPRequestPolicy(object):
         _(""),
         schema=HTTPRequestRule.properties_schema,
         required=True,
+        update_allowed=False,
     )
     rules_schema = properties.Schema(
         properties.Schema.LIST,
         _("Add rules to the HTTP request policy"),
         schema=rules_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -349,12 +384,14 @@ class HTTPSecurityPolicy(object):
         _(""),
         schema=HTTPSecurityRule.properties_schema,
         required=True,
+        update_allowed=False,
     )
     rules_schema = properties.Schema(
         properties.Schema.LIST,
         _("Add rules to the HTTP security policy"),
         schema=rules_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -375,12 +412,14 @@ class HTTPResponsePolicy(object):
         _(""),
         schema=HTTPResponseRule.properties_schema,
         required=True,
+        update_allowed=False,
     )
     rules_schema = properties.Schema(
         properties.Schema.LIST,
         _("Add rules to the HTTP response policy"),
         schema=rules_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -401,44 +440,52 @@ class HTTPPolicySet(AviResource):
         properties.Schema.STRING,
         _("Name of the HTTP Policy Set"),
         required=True,
+        update_allowed=True,
     )
     http_security_policy_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP security policy for the virtual service."),
         schema=HTTPSecurityPolicy.properties_schema,
         required=False,
+        update_allowed=True,
     )
     http_request_policy_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP request policy for the virtual service."),
         schema=HTTPRequestPolicy.properties_schema,
         required=False,
+        update_allowed=True,
     )
     http_response_policy_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP response policy for the virtual service."),
         schema=HTTPResponsePolicy.properties_schema,
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     cloud_config_cksum_schema = properties.Schema(
         properties.Schema.STRING,
         _("Checksum of cloud configuration for Pool. Internally set by cloud connector"),
         required=False,
+        update_allowed=True,
     )
     is_internal_policy_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -17,31 +17,37 @@ class SeResources(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     memory_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     disk_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     hyper_threading_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cores_per_socket_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -72,34 +78,40 @@ class ConServer(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     virtual_network_id_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     virtual_network_id_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=virtual_network_id_item_schema,
         required=False,
+        update_allowed=True,
     )
     subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     subnet_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=subnet_item_schema,
         required=False,
+        update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -126,11 +138,13 @@ class DefaultGateway(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     discovered_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -146,6 +160,35 @@ class DefaultGateway(object):
     }
 
 
+class ServiceEngine(AviResource):
+    resource_name = "serviceengine"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    se_group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'se_group_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'se_group_uuid': se_group_uuid_schema,
+    }
+
+
 class ConVip(object):
     # all schemas
     vip_schema = properties.Schema(
@@ -153,29 +196,34 @@ class ConVip(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     virtual_network_id_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     virtual_network_id_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=virtual_network_id_item_schema,
         required=False,
+        update_allowed=True,
     )
     subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     subnet_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=subnet_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -200,16 +248,19 @@ class vNICNetwork(object):
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=True,
     )
     ctlr_alloc_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mode_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -233,24 +284,28 @@ class ConInfo(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConVip.properties_schema,
         required=True,
+        update_allowed=True,
     )
     servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConServer.properties_schema,
         required=True,
+        update_allowed=False,
     )
     servers_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=servers_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -274,28 +329,33 @@ class VlanInterface(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vlan_id_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vnic_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=vNICNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vnic_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnic_networks_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -317,301 +377,69 @@ class VlanInterface(object):
 
 class vNIC(object):
     # all schemas
-    if_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    mac_address_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-    )
-    connected_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-    )
-    is_mgmt_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-    )
-    network_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    network_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
-    )
-    is_avi_internal_network_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
-    )
-    adapter_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    vlan_id_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-    )
-    pci_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    linux_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    port_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    del_pending_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-    )
-    mtu_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     vnic_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=vNICNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vnic_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnic_networks_item_schema,
         required=False,
-    )
-    can_se_dp_takeover_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-    )
-    vrf_id_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     vlan_interfaces_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VlanInterface.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vlan_interfaces_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vlan_interfaces_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'if_name',
-        'mac_address',
-        'connected',
-        'is_mgmt',
-        'network_uuid',
-        'network_name',
         'dhcp_enabled',
-        'is_avi_internal_network',
         'enabled',
-        'adapter',
-        'vlan_id',
-        'pci_id',
-        'linux_name',
-        'port_uuid',
-        'del_pending',
-        'mtu',
         'vnic_networks',
-        'can_se_dp_takeover',
         'vrf_uuid',
-        'vrf_id',
         'vlan_interfaces',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'if_name': if_name_schema,
-        'mac_address': mac_address_schema,
-        'connected': connected_schema,
-        'is_mgmt': is_mgmt_schema,
-        'network_uuid': network_uuid_schema,
-        'network_name': network_name_schema,
         'dhcp_enabled': dhcp_enabled_schema,
-        'is_avi_internal_network': is_avi_internal_network_schema,
         'enabled': enabled_schema,
-        'adapter': adapter_schema,
-        'vlan_id': vlan_id_schema,
-        'pci_id': pci_id_schema,
-        'linux_name': linux_name_schema,
-        'port_uuid': port_uuid_schema,
-        'del_pending': del_pending_schema,
-        'mtu': mtu_schema,
         'vnic_networks': vnic_networks_schema,
-        'can_se_dp_takeover': can_se_dp_takeover_schema,
         'vrf_uuid': vrf_uuid_schema,
-        'vrf_id': vrf_id_schema,
         'vlan_interfaces': vlan_interfaces_schema,
-    }
-
-
-class ServiceEngine(AviResource):
-    resource_name = "serviceengine"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    cloud_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    mgmt_vnic_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=vNIC.properties_schema,
-        required=False,
-    )
-    resources_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SeResources.properties_schema,
-        required=False,
-    )
-    data_vnics_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=vNIC.properties_schema,
-        required=True,
-    )
-    data_vnics_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=data_vnics_item_schema,
-        required=False,
-    )
-    controller_ip_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    default_gws_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=DefaultGateway.properties_schema,
-        required=True,
-    )
-    default_gws_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=default_gws_item_schema,
-        required=False,
-    )
-    controller_created_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-    )
-    se_group_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    container_mode_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-    )
-    flavor_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    hypervisor_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-    availability_zone_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'cloud_uuid',
-        'mgmt_vnic',
-        'resources',
-        'data_vnics',
-        'controller_ip',
-        'host_uuid',
-        'default_gws',
-        'controller_created',
-        'se_group_uuid',
-        'container_mode',
-        'flavor',
-        'hypervisor',
-        'availability_zone',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'cloud_uuid': cloud_uuid_schema,
-        'mgmt_vnic': mgmt_vnic_schema,
-        'resources': resources_schema,
-        'data_vnics': data_vnics_schema,
-        'controller_ip': controller_ip_schema,
-        'host_uuid': host_uuid_schema,
-        'default_gws': default_gws_schema,
-        'controller_created': controller_created_schema,
-        'se_group_uuid': se_group_uuid_schema,
-        'container_mode': container_mode_schema,
-        'flavor': flavor_schema,
-        'hypervisor': hypervisor_schema,
-        'availability_zone': availability_zone_schema,
     }
 
 

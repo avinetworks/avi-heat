@@ -16,11 +16,13 @@ class VSDataScript(object):
         properties.Schema.STRING,
         _("Event triggering execution of datascript"),
         required=True,
+        update_allowed=True,
     )
     script_schema = properties.Schema(
         properties.Schema.STRING,
         _("Datascript to execute when the event triggers"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,11 +44,13 @@ class VSDataScripts(object):
         properties.Schema.NUMBER,
         _("Index of the virtual service datascript collection"),
         required=True,
+        update_allowed=True,
     )
     vs_datascript_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the virtual service datascript collection"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -69,34 +73,40 @@ class VSDataScriptSet(AviResource):
         properties.Schema.STRING,
         _("Name for the virtual service datascript collection"),
         required=True,
+        update_allowed=True,
     )
     datascript_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VSDataScript.properties_schema,
         required=True,
+        update_allowed=False,
     )
     datascript_schema = properties.Schema(
         properties.Schema.LIST,
         _("DataScripts to execute"),
         schema=datascript_item_schema,
         required=False,
+        update_allowed=True,
     )
     pool_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     pool_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("UUID of pools that could be referred by VSDataScriptSet objects."),
         schema=pool_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

@@ -18,6 +18,7 @@ class VcenterDatastore(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list

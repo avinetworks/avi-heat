@@ -17,21 +17,25 @@ class Backup(AviResource):
         properties.Schema.STRING,
         _("The file name of backup."),
         required=True,
+        update_allowed=True,
     )
     timestamp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Unix Timestamp of when the backup file is created"),
         required=False,
+        update_allowed=True,
     )
     file_url_schema = properties.Schema(
         properties.Schema.STRING,
         _("URL to download the backup file"),
         required=False,
+        update_allowed=True,
     )
     username_schema = properties.Schema(
         properties.Schema.STRING,
         _("User that run the backup command"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

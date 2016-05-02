@@ -17,11 +17,13 @@ class SnmpTrapServer(object):
         _("IP Address of the SNMP trap destination"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     community_schema = properties.Schema(
         properties.Schema.STRING,
         _("The community string to communicate with the trap server."),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -43,6 +45,7 @@ class SnmpConfiguration(object):
         properties.Schema.STRING,
         _("Community string for SNMP v2c"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -63,18 +66,21 @@ class SnmpTrapProfile(AviResource):
         properties.Schema.STRING,
         _("A user-friendly name of the SNMP trap configuration."),
         required=True,
+        update_allowed=True,
     )
     trap_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SnmpTrapServer.properties_schema,
         required=True,
+        update_allowed=False,
     )
     trap_servers_schema = properties.Schema(
         properties.Schema.LIST,
         _("The IP address or hostname of the SNMP trap destination server."),
         schema=trap_servers_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

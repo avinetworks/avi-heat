@@ -16,6 +16,7 @@ class HdrPersistenceProfile(object):
         properties.Schema.STRING,
         _("Header name for custom header persistence"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -35,6 +36,7 @@ class IPPersistenceProfile(object):
         properties.Schema.NUMBER,
         _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -54,16 +56,19 @@ class HttpCookiePersistenceKey(object):
         properties.Schema.STRING,
         _("name to use for cookie encryption"),
         required=False,
+        update_allowed=True,
     )
     aes_key_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     hmac_key_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -87,28 +92,33 @@ class HttpCookiePersistenceProfile(object):
         properties.Schema.STRING,
         _("Key name to use for cookie encryption"),
         required=False,
+        update_allowed=True,
     )
     cookie_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP cookie name for cookie persistence"),
         required=False,
+        update_allowed=True,
     )
     key_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HttpCookiePersistenceKey.properties_schema,
         required=True,
+        update_allowed=False,
     )
     key_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=key_item_schema,
         required=False,
+        update_allowed=True,
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -134,16 +144,19 @@ class AppCookiePersistenceProfile(object):
         properties.Schema.STRING,
         _("Header or cookie name for application cookie persistence"),
         required=True,
+        update_allowed=True,
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
         required=False,
+        update_allowed=True,
     )
     encryption_key_schema = properties.Schema(
         properties.Schema.STRING,
         _("Key to use for cookie encryption"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -168,45 +181,53 @@ class ApplicationPersistenceProfile(AviResource):
         properties.Schema.STRING,
         _("A user-friendly name for the persistence profile."),
         required=True,
+        update_allowed=True,
     )
     server_hm_down_recovery_schema = properties.Schema(
         properties.Schema.STRING,
         _("Specifies behavior when a persistent server has been marked down by a health monitor."),
         required=False,
+        update_allowed=True,
     )
     persistence_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Method used to persist clients to the same server for a duration of time or a session."),
         required=True,
+        update_allowed=True,
     )
     ip_persistence_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _("Specifies the Client IP Persistence profile parameters."),
         schema=IPPersistenceProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     hdr_persistence_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _("Specifies the custom HTTP Header Persistence profile parameters."),
         schema=HdrPersistenceProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     app_cookie_persistence_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _("Specifies the Application Cookie Persistence profile parameters."),
         schema=AppCookiePersistenceProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     http_cookie_persistence_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _("Specifies the HTTP Cookie Persistence profile parameters."),
         schema=HttpCookiePersistenceProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

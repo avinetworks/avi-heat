@@ -24,16 +24,19 @@ class VsSeInitialPlacementParams(object):
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -58,11 +61,13 @@ class ServicePoolSelector(object):
         _(""),
         schema=Port.properties_schema,
         required=True,
+        update_allowed=True,
     )
     service_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -84,36 +89,43 @@ class VirtualServiceResource(object):
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     memory_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     is_exclusive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_primary_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_se_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_standby_se_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -145,16 +157,19 @@ class VsScaleinParams(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     scalein_primary_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     admin_down_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -178,21 +193,25 @@ class Service(object):
         properties.Schema.NUMBER,
         _("The Virtual Service's port number."),
         required=True,
+        update_allowed=True,
     )
     enable_ssl_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable SSL termination and offload for traffic from clients."),
         required=False,
+        update_allowed=True,
     )
     override_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Override the network profile for this specific service port."),
         required=False,
+        update_allowed=True,
     )
     port_range_end_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The end of the Virtual Service's port number range."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -218,11 +237,13 @@ class PerformanceLimits(object):
         properties.Schema.NUMBER,
         _("The maximum number of concurrent client conections allowed to the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     max_throughput_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The maximum throughput per second for all clients allowed through the client side of the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -245,376 +266,440 @@ class VirtualService(AviResource):
         properties.Schema.STRING,
         _("Name for the Virtual Service."),
         required=True,
+        update_allowed=True,
     )
     address_schema = properties.Schema(
         properties.Schema.STRING,
         _("IP Address or a DNS resolvable, fully qualified domain name of the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
         _("IP Address of the Virtual Service."),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     services_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=Service.properties_schema,
         required=True,
+        update_allowed=False,
     )
     services_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=services_item_schema,
         required=False,
+        update_allowed=True,
     )
     application_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Enable application layer specific features for the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Determines network settings such as protocol, TCP or UDP, and related options for the protocol."),
         required=False,
+        update_allowed=True,
     )
     server_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Determines the network settings profile for the server side of TCP proxied connections.  Leave blank to use the same settings as the client to VS side of the connection."),
         required=False,
+        update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The pool is an object that contains destination servers and related attributes such as load-balancing and persistence."),
         required=False,
+        update_allowed=True,
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connection for this VS."),
         required=False,
+        update_allowed=True,
     )
     network_security_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network security policies for the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     http_policies_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HTTPPolicies.properties_schema,
         required=True,
+        update_allowed=False,
     )
     http_policies_schema = properties.Schema(
         properties.Schema.LIST,
         _("HTTP Policies applied on the data traffic of the Virtual Service"),
         schema=http_policies_item_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_key_and_certificate_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     ssl_key_and_certificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Select or create one or two certificates, EC and/or RSA, that will be presented to SSL/TLS terminated connections."),
         schema=ssl_key_and_certificate_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Determines the set of SSL versions and ciphers to accept for SSL/TLS terminated connections."),
         required=False,
+        update_allowed=True,
     )
     performance_limits_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=PerformanceLimits.properties_schema,
         required=False,
+        update_allowed=True,
     )
     analytics_policy_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AnalyticsPolicy.properties_schema,
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Manually override the network on which the Virtual Service is placed."),
         required=False,
+        update_allowed=True,
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to."),
         required=False,
+        update_allowed=True,
     )
     enable_autogw_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Response traffic to clients will be sent back to the source MAC address of the connection, rather than statically sent to a default gateway."),
         required=False,
+        update_allowed=True,
     )
     port_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("(internal-use) Network port assigned to the Virtual Service IP address."),
         required=False,
+        update_allowed=True,
     )
     subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("If auto_allocate_ip is True, then the subnet for the Virtual Service IP address allocation."),
         required=False,
+        update_allowed=True,
     )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Specifies settings related to analytics."),
         required=False,
+        update_allowed=True,
     )
     discovered_network_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered networks providing reachability for client facing Virtual Service IP."),
         schema=discovered_network_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     discovered_subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     discovered_subnet_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered subnets providing reachability for client facing Virtual Service IP."),
         schema=discovered_subnet_item_schema,
         required=False,
+        update_allowed=True,
     )
     host_name_xlate_schema = properties.Schema(
         properties.Schema.STRING,
         _("Translate the host name sent to the servers to this value.  Translate the host name sent from servers back to the value used by the client."),
         required=False,
+        update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.MAP,
         _("Subnet providing reachability for client facing Virtual Service IP."),
         schema=IpAddrPrefix.properties_schema,
         required=False,
+        update_allowed=True,
     )
     discovered_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DiscoveredNetwork.properties_schema,
         required=True,
+        update_allowed=False,
     )
     discovered_networks_schema = properties.Schema(
         properties.Schema.LIST,
         _("Discovered networks providing reachability for client facing Virtual Service IP."),
         schema=discovered_networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_datascripts_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VSDataScripts.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vs_datascripts_schema = properties.Schema(
         properties.Schema.LIST,
         _("Datascripts applied on the data traffic of the Virtual Service"),
         schema=vs_datascripts_item_schema,
         required=False,
+        update_allowed=True,
     )
     client_auth_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP authentication configuration for protected resources."),
         schema=HTTPClientAuthenticationParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     weight_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The Quality of Service weight to assign to traffic transmitted from this Virtual Service.  A higher weight will prioritize traffic versus other Virtual Services sharing the same Service Engines. (1-2-4-8)"),
         required=False,
+        update_allowed=True,
     )
     delay_fairness_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Select the algorithm for QoS fairness.  This determines how multiple Virtual Services sharing the same Service Engines will prioritize traffic over a congested network."),
         required=False,
+        update_allowed=True,
     )
     max_cps_per_client_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum connections per second per client IP."),
         required=False,
+        update_allowed=True,
     )
     limit_doser_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Limit potential DoS attackers who exceed max_cps_per_client significantly to a fraction of max_cps_per_client for a while."),
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Specify if this is a normal Virtual Service, or if it is the parent or child of an SNI-enabled virtual hosted Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     vh_parent_vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Specifies the Virtual Service acting as Virtual Hosting (SNI) parent."),
         required=False,
+        update_allowed=True,
     )
     vh_domain_name_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vh_domain_name_schema = properties.Schema(
         properties.Schema.LIST,
         _("The exact name requested from the client's SNI-enabled TLS hello domain name field. If this is a match, the parent VS will forward the connection to this child VS."),
         schema=vh_domain_name_item_schema,
         required=False,
+        update_allowed=True,
     )
     availability_zone_schema = properties.Schema(
         properties.Schema.STRING,
         _("Availability-zone to place the Virtual Service."),
         required=False,
+        update_allowed=True,
     )
     auto_allocate_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Auto-allocate VIP from the provided subnet."),
         required=False,
+        update_allowed=True,
     )
     floating_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _("Floating IP to associate with this Virtual Service."),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     auto_allocate_floating_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Auto-allocate floating/elastic IP from the Cloud infrastructure."),
         required=False,
+        update_allowed=True,
     )
     floating_subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation."),
         required=False,
+        update_allowed=True,
     )
     cloud_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     avi_allocated_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(internal-use) VIP allocated by Avi in the Cloud infrastructure."),
         required=False,
+        update_allowed=True,
     )
     avi_allocated_fip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(internal-use) FIP allocated by Avi in the Cloud infrastructure."),
         required=False,
+        update_allowed=True,
     )
     connections_rate_limit_schema = properties.Schema(
         properties.Schema.MAP,
         _("Rate limit the incoming connections to this virtual service"),
         schema=RateProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     requests_rate_limit_schema = properties.Schema(
         properties.Schema.MAP,
         _("Rate limit the incoming requests to this virtual service"),
         schema=RateProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     use_bridge_ip_as_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use Bridge IP as VIP on each Host in Mesos deployments"),
         required=False,
+        update_allowed=True,
     )
     flow_dist_schema = properties.Schema(
         properties.Schema.STRING,
         _("Criteria for flow distribution among SEs."),
         required=False,
+        update_allowed=True,
     )
     ign_pool_net_reach_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Ignore Pool servers network reachability constraints for Virtual Service placement."),
         required=False,
+        update_allowed=True,
     )
     ssl_sess_cache_avg_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Expected number of SSL session cache entries (may be exceeded)."),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-    )
-    cloud_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     east_west_placement_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Force placement on all SE's in service group (Mesos mode only)"),
         required=False,
+        update_allowed=True,
     )
     scaleout_ecmp_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     microservice_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Microservice representing the virtual service"),
         required=False,
+        update_allowed=True,
     )
     service_pool_select_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ServicePoolSelector.properties_schema,
         required=True,
+        update_allowed=False,
     )
     service_pool_select_schema = properties.Schema(
         properties.Schema.LIST,
         _("Select pool based on destination port"),
         schema=service_pool_select_item_schema,
         required=False,
+        update_allowed=True,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Creator name"),
         required=False,
+        update_allowed=True,
     )
     cloud_config_cksum_schema = properties.Schema(
         properties.Schema.STRING,
         _("Checksum of cloud configuration for VS. Internally set by cloud connector"),
         required=False,
+        update_allowed=True,
     )
     enable_rhi_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable Route Health Injection using the BGP Config in the vrf context"),
         required=False,
+        update_allowed=True,
     )
     snat_ip_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     snat_ip_schema = properties.Schema(
         properties.Schema.LIST,
         _("NAT'ted floating source IP Address(es) for upstream connection to servers"),
         schema=snat_ip_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -670,7 +755,6 @@ class VirtualService(AviResource):
         'ign_pool_net_reach',
         'ssl_sess_cache_avg_size',
         'description',
-        'cloud_uuid',
         'east_west_placement',
         'scaleout_ecmp',
         'microservice_uuid',
@@ -734,7 +818,6 @@ class VirtualService(AviResource):
         'ign_pool_net_reach': ign_pool_net_reach_schema,
         'ssl_sess_cache_avg_size': ssl_sess_cache_avg_size_schema,
         'description': description_schema,
-        'cloud_uuid': cloud_uuid_schema,
         'east_west_placement': east_west_placement_schema,
         'scaleout_ecmp': scaleout_ecmp_schema,
         'microservice_uuid': microservice_uuid_schema,
@@ -752,26 +835,31 @@ class VsScaleoutParams(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_new_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     admin_up_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     new_vcpus_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -799,16 +887,19 @@ class TLSTicket(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     aes_key_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     hmac_key_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -833,12 +924,14 @@ class VsInitialPlacementParams(object):
         _(""),
         schema=VsSeInitialPlacementParams.properties_schema,
         required=True,
+        update_allowed=False,
     )
     se_placement_params_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_placement_params_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -858,26 +951,31 @@ class VsMigrateParams(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_new_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     to_host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     new_vcpus_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -905,16 +1003,19 @@ class VsSeVnic(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     lif_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -938,23 +1039,27 @@ class VsApicExtension(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vnic_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeVnic.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vnic_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnic_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -978,17 +1083,20 @@ class SeVipInterfaceList(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vlan_id_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vip_intf_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1012,114 +1120,135 @@ class SeList(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     is_primary_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     is_standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     is_connected_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     delete_in_progress_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vcpus_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     memory_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vip_intf_mac_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vip_subnet_mask_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vnic_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=VsSeVnic.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vnic_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnic_item_schema,
         required=False,
+        update_allowed=True,
     )
     pending_download_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     sec_idx_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     download_selist_only_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vlan_id_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     snat_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vip_intf_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     vip_intf_list_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeVipInterfaceList.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vip_intf_list_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vip_intf_list_item_schema,
         required=False,
+        update_allowed=True,
     )
     floating_intf_ip_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     floating_intf_ip_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=floating_intf_ip_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

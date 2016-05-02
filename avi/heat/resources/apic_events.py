@@ -16,87 +16,103 @@ class ApicAgentGenericEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     lifs_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     lifs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=lifs_item_schema,
         required=False,
+        update_allowed=True,
     )
     service_engine_vnics_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     service_engine_vnics_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=service_engine_vnics_item_schema,
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     contract_graphs_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     contract_graphs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=contract_graphs_item_schema,
         required=False,
+        update_allowed=True,
     )
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenant_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     lif_cif_attachment_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     lif_cif_attachment_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=lif_cif_attachment_item_schema,
         required=False,
+        update_allowed=True,
     )
     vnic_network_attachment_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vnic_network_attachment_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnic_network_attachment_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

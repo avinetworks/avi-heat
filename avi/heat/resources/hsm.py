@@ -18,12 +18,14 @@ class HSMThalesRFS(object):
         _("IP address of the RFS server from where to sync the Thales encrypted private key"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port at which the RFS server accepts the sync request from clients for Thales encrypted private key"),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -46,32 +48,38 @@ class HSMThalesNetHsm(object):
         _("IP address of the netHSM device"),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     remote_port_schema = properties.Schema(
         properties.Schema.MAP,
         _("Port at which the netHSM device accepts the connection"),
         schema=Port.properties_schema,
         required=False,
+        update_allowed=True,
     )
     esn_schema = properties.Schema(
         properties.Schema.STRING,
         _("Electronic serial number of the netHSM device. Use Thales anonkneti utility to find the netHSM ESN"),
         required=True,
+        update_allowed=True,
     )
     module_id_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Local module id of the netHSM device"),
         required=False,
+        update_allowed=True,
     )
     keyhash_schema = properties.Schema(
         properties.Schema.STRING,
         _("Hash of the key that netHSM device uses to authenticate itself. Use Thales anonkneti utility to find the netHSM keyhash"),
         required=True,
+        update_allowed=True,
     )
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Priority class of the nethsm in an high availability setup. 1 is the highest priority and 100 is the lowest priority"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -101,24 +109,28 @@ class HardwareSecurityModule(object):
         properties.Schema.STRING,
         _("HSM type to use"),
         required=True,
+        update_allowed=True,
     )
     rfs_schema = properties.Schema(
         properties.Schema.MAP,
         _("Thales Remote File Server (RFS), used for the netHSMs, configuration"),
         schema=HSMThalesRFS.properties_schema,
         required=False,
+        update_allowed=True,
     )
     nethsm_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=HSMThalesNetHsm.properties_schema,
         required=True,
+        update_allowed=False,
     )
     nethsm_schema = properties.Schema(
         properties.Schema.LIST,
         _("Thales netHSM specific configuration"),
         schema=nethsm_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -143,12 +155,14 @@ class HardwareSecurityModuleGroup(AviResource):
         properties.Schema.STRING,
         _("Name of the HSM Group configuration object"),
         required=True,
+        update_allowed=True,
     )
     hsm_schema = properties.Schema(
         properties.Schema.MAP,
         _("Hardware Security Module configuration"),
         schema=HardwareSecurityModule.properties_schema,
         required=True,
+        update_allowed=True,
     )
 
     # properties list

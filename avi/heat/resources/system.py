@@ -21,17 +21,20 @@ class DNSConfiguration(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     server_list_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of DNS Server IP addresses"),
         schema=server_list_item_schema,
         required=False,
+        update_allowed=True,
     )
     search_domain_schema = properties.Schema(
         properties.Schema.STRING,
         _("Search domain to use in DNS lookup"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -53,18 +56,21 @@ class AdminAuthConfiguration(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mapping_rules_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AuthMappingRule.properties_schema,
         required=True,
+        update_allowed=False,
     )
     mapping_rules_schema = properties.Schema(
         properties.Schema.LIST,
         _("Rules list for tenant or role mapping"),
         schema=mapping_rules_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -86,6 +92,7 @@ class TechSupportUploaderConfiguration(object):
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -105,31 +112,37 @@ class EmailConfiguration(object):
         properties.Schema.STRING,
         _("Type of SMTP Mail Service"),
         required=True,
+        update_allowed=True,
     )
     from_email_schema = properties.Schema(
         properties.Schema.STRING,
         _("Email address in From field"),
         required=False,
+        update_allowed=True,
     )
     mail_server_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Mail server host"),
         required=False,
+        update_allowed=True,
     )
     mail_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Mail server port"),
         required=False,
+        update_allowed=True,
     )
     auth_username_schema = properties.Schema(
         properties.Schema.STRING,
         _("Username for mail server"),
         required=False,
+        update_allowed=True,
     )
     auth_password_schema = properties.Schema(
         properties.Schema.STRING,
         _("Password for mail server"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -159,21 +172,25 @@ class ProxyConfiguration(object):
         properties.Schema.STRING,
         _("Proxy hostname or IP address"),
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Proxy port"),
         required=True,
+        update_allowed=True,
     )
     username_schema = properties.Schema(
         properties.Schema.STRING,
         _("Username for proxy"),
         required=False,
+        update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
         _("Password for proxy"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -199,11 +216,13 @@ class LinuxConfiguration(object):
         properties.Schema.STRING,
         _("Message of the day, shown to users on login via the command line interface, web interface, or ssh."),
         required=False,
+        update_allowed=True,
     )
     banner_schema = properties.Schema(
         properties.Schema.STRING,
         _("Banner displayed before login to ssh, and UI"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -225,62 +244,74 @@ class PortalConfiguration(object):
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     redirect_to_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     enable_http_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     sslkeyandcertificate_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     sslkeyandcertificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs"),
         schema=sslkeyandcertificate_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     use_uuid_from_input_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use UUID in POST object data as UUID of the new object, instead of a generated UUID."),
         required=False,
+        update_allowed=True,
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     enable_clickjacking_protection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable/Disable Clickjacking protection"),
         required=False,
+        update_allowed=True,
     )
     allow_basic_authentication_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable/Disable HTTP basic authentication"),
         required=False,
+        update_allowed=True,
     )
     http_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("HTTP port"),
         required=False,
+        update_allowed=True,
     )
     https_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("HTTPS port"),
         required=False,
+        update_allowed=True,
     )
     password_strength_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Strict checking of password strength for user accounts"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -321,12 +352,14 @@ class NTPConfiguration(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ntp_server_list_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of NTP server hostnames or IP addresses"),
         schema=ntp_server_list_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -347,24 +380,28 @@ class MgmtIpAccessControl(object):
         _("Configure ip addresses to access controller using SSH"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     api_access_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure ip addresses to access controller using api"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     shell_server_access_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure ip addresses to access controller using shell cli"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     snmp_access_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure ip addresses to access controller using snmp"),
         schema=IpAddrMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -392,71 +429,77 @@ class SystemConfiguration(AviResource):
         _(""),
         schema=DNSConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     ntp_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NTPConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     tech_support_uploader_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TechSupportUploaderConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     portal_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=PortalConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     global_tenant_config_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TenantConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     email_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=EmailConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     admin_auth_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AdminAuthConfiguration.properties_schema,
         required=False,
-    )
-    docker_mode_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
+        update_allowed=True,
     )
     snmp_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SnmpConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     linux_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=LinuxConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     proxy_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ProxyConfiguration.properties_schema,
         required=False,
+        update_allowed=True,
     )
     mgmt_ip_access_control_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure Ip Access control for controller to restrict open access."),
         schema=MgmtIpAccessControl.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -468,7 +511,6 @@ class SystemConfiguration(AviResource):
         'global_tenant_config',
         'email_configuration',
         'admin_auth_configuration',
-        'docker_mode',
         'snmp_configuration',
         'linux_configuration',
         'proxy_configuration',
@@ -484,7 +526,6 @@ class SystemConfiguration(AviResource):
         'global_tenant_config': global_tenant_config_schema,
         'email_configuration': email_configuration_schema,
         'admin_auth_configuration': admin_auth_configuration_schema,
-        'docker_mode': docker_mode_schema,
         'snmp_configuration': snmp_configuration_schema,
         'linux_configuration': linux_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,

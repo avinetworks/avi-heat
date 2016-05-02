@@ -19,11 +19,13 @@ class AlertFilter(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     filter_action_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -45,26 +47,31 @@ class MetricLog(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     report_timestamp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     end_timestamp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     step_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -93,11 +100,13 @@ class AlertScriptConfig(AviResource):
         properties.Schema.STRING,
         _("A user-friendly name of the Script"),
         required=True,
+        update_allowed=True,
     )
     action_script_schema = properties.Schema(
         properties.Schema.STRING,
         _("User Defined Alert Action Script"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -120,46 +129,55 @@ class ActionGroupConfig(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     email_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Select the Email Notification configuration to use when sending alerts via email."),
         required=False,
+        update_allowed=True,
     )
     syslog_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Select the Syslog Notification configuration to use when sending alerts via Syslog."),
         required=False,
+        update_allowed=True,
     )
     action_script_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("reference of the action script configuration to be used"),
         required=False,
+        update_allowed=True,
     )
     external_only_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Generate Alert only to external destinations"),
         required=True,
+        update_allowed=True,
     )
     snmp_trap_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Select the SNMP Trap Notification to use when sending alerts via SNMP Trap."),
         required=False,
+        update_allowed=True,
     )
     autoscale_trigger_notification_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Trigger Notification to AutoScale Manager"),
         required=False,
+        update_allowed=True,
     )
     level_schema = properties.Schema(
         properties.Schema.STRING,
         _("When an alert is generated, mark its priority via the Alert Level."),
         required=True,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -196,21 +214,25 @@ class AlertEmailConfig(AviResource):
         properties.Schema.STRING,
         _("A user-friendly name of the email notification service"),
         required=True,
+        update_allowed=True,
     )
     to_emails_schema = properties.Schema(
         properties.Schema.STRING,
         _("Alerts are sent to the comma separated list of  email recipients"),
         required=True,
+        update_allowed=True,
     )
     cc_emails_schema = properties.Schema(
         properties.Schema.STRING,
         _("Alerts are copied to the comma separated list of  email recipients"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -237,146 +259,173 @@ class Alert(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     alert_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     level_schema = properties.Schema(
         properties.Schema.STRING,
         _("Resolved Alert Type"),
         required=True,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     state_schema = properties.Schema(
         properties.Schema.STRING,
         _("State of the alert. It would be active when createdIt would be changed to state read when read by the admin"),
         required=True,
+        update_allowed=True,
     )
     timestamp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Unix Timestamp of the last throttling in seconds"),
         required=True,
+        update_allowed=True,
     )
     obj_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the resource"),
         required=True,
+        update_allowed=True,
     )
     obj_key_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the resource"),
         required=True,
+        update_allowed=True,
     )
     obj_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the resource"),
         required=False,
+        update_allowed=True,
     )
     threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     events_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=EventLog.properties_schema,
         required=True,
+        update_allowed=False,
     )
     events_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=events_item_schema,
         required=False,
+        update_allowed=True,
     )
     app_events_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ApplicationLog.properties_schema,
         required=True,
+        update_allowed=False,
     )
     app_events_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=app_events_item_schema,
         required=False,
+        update_allowed=True,
     )
     conn_events_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=ConnectionLog.properties_schema,
         required=True,
+        update_allowed=False,
     )
     conn_events_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=conn_events_item_schema,
         required=False,
+        update_allowed=True,
     )
     metric_info_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=MetricLog.properties_schema,
         required=True,
+        update_allowed=False,
     )
     metric_info_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=metric_info_item_schema,
         required=False,
+        update_allowed=True,
     )
     throttle_count_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of times it was throttled"),
         required=False,
+        update_allowed=True,
     )
     last_throttle_timestamp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Unix Timestamp of the last throttling in seconds"),
         required=False,
+        update_allowed=True,
     )
     related_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     related_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _("related uuids for the connection log. Only Log agent needs to fill this. Server uuid should be in formatpool_uuid-ip-port. In case of no port is set for server it shouldstill be operational port for the server"),
         schema=related_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     event_pages_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     event_pages_schema = properties.Schema(
         properties.Schema.LIST,
         _("List of event pages this alert is associated with"),
         schema=event_pages_item_schema,
         required=False,
+        update_allowed=True,
     )
     summary_schema = properties.Schema(
         properties.Schema.STRING,
         _("summary of alert based on alert config"),
         required=True,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("alert generation criteria"),
         required=False,
+        update_allowed=True,
     )
     action_script_output_schema = properties.Schema(
         properties.Schema.STRING,
         _("Output of the alert action script"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -436,11 +485,13 @@ class AlertMetricThreshold(object):
         properties.Schema.NUMBER,
         _("Metric threshold for comparison"),
         required=False,
+        update_allowed=True,
     )
     comparator_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -462,16 +513,19 @@ class AlertSyslogServer(object):
         properties.Schema.STRING,
         _("The destination Syslog server IP address or hostname."),
         required=True,
+        update_allowed=True,
     )
     syslog_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The destination Syslog server's service port."),
         required=False,
+        update_allowed=True,
     )
     udp_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Network protocol to establish syslog session"),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -496,22 +550,26 @@ class AlertObjectList(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     objects_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     objects_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=objects_item_schema,
         required=False,
+        update_allowed=True,
     )
     source_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -535,11 +593,13 @@ class AlertRuleEvent(object):
         properties.Schema.STRING,
         _("When the selected event occurs, trigger this alert."),
         required=False,
+        update_allowed=True,
     )
     not_cond_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -562,23 +622,27 @@ class AlertSyslogConfig(AviResource):
         properties.Schema.STRING,
         _("A user-friendly name of the syslog notification"),
         required=True,
+        update_allowed=True,
     )
     syslog_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AlertSyslogServer.properties_schema,
         required=True,
+        update_allowed=False,
     )
     syslog_servers_schema = properties.Schema(
         properties.Schema.LIST,
         _("The list of syslog servers"),
         schema=syslog_servers_item_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("User defined description for alert syslog config"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -602,17 +666,20 @@ class AlertRuleMetric(object):
         properties.Schema.STRING,
         _("Metric Id for the Alert. Eg. l4_client.avg_complete_conns"),
         required=False,
+        update_allowed=True,
     )
     metric_threshold_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AlertMetricThreshold.properties_schema,
         required=True,
+        update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Evaluation window for the Metrics"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -637,40 +704,47 @@ class AlertRule(object):
         _(""),
         schema=AlertRuleEvent.properties_schema,
         required=True,
+        update_allowed=False,
     )
     sys_event_rule_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=sys_event_rule_item_schema,
         required=False,
+        update_allowed=True,
     )
     conn_app_log_rule_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AlertFilter.properties_schema,
         required=False,
+        update_allowed=True,
     )
     event_match_filter_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     metrics_rule_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AlertRuleMetric.properties_schema,
         required=True,
+        update_allowed=False,
     )
     metrics_rule_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=metrics_rule_item_schema,
         required=False,
+        update_allowed=True,
     )
     operator_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -699,72 +773,86 @@ class AlertConfig(AviResource):
         properties.Schema.STRING,
         _("Name of the alert configuration"),
         required=True,
+        update_allowed=True,
     )
     summary_schema = properties.Schema(
         properties.Schema.STRING,
         _("Summary of reason why alert is generated"),
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A custom description field."),
         required=False,
+        update_allowed=True,
     )
     alert_rule_schema = properties.Schema(
         properties.Schema.MAP,
         _("list of filters matching on events or client logs used for triggering alerts."),
         schema=AlertRule.properties_schema,
         required=True,
+        update_allowed=True,
     )
     threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("An alert is created only when the number of events meets or exceeds this number within the chosen time frame."),
         required=False,
+        update_allowed=True,
     )
     throttle_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Alerts are suppressed (throttled) for this duration of time since the last alert was raised for this alert config."),
         required=False,
+        update_allowed=True,
     )
     rolling_window_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Only if the Number of Events is reached or exceeded within the Time Window will an alert be generated."),
         required=False,
+        update_allowed=True,
     )
     expiry_time_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("An alert is expired and deleted after the expiry time has elapsed.  The original event triggering the alert remains in the event's log."),
         required=False,
+        update_allowed=True,
     )
     source_schema = properties.Schema(
         properties.Schema.STRING,
         _("Signifies system events or the type of client logsused in this alert configuration"),
         required=True,
+        update_allowed=True,
     )
     obj_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the resource for which alert was raised"),
         required=False,
+        update_allowed=True,
     )
     category_schema = properties.Schema(
         properties.Schema.STRING,
         _("Determines whether an alert is raised as soon as the event occurs (Realtime) or the Controller should wait until the specified number of events has occured in the rolling window's time interval."),
         required=True,
+        update_allowed=True,
     )
     recommendation_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable or disable this alert config from generating new alerts."),
         required=False,
+        update_allowed=True,
     )
     action_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The alert config will trigger the selected alert action, which send send notifications or execute custom scripts."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

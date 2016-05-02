@@ -17,67 +17,80 @@ class LdapDirectorySettings(object):
         properties.Schema.STRING,
         _("LDAP Admin User DN. Administrator credentials are required to search for users under user search DN or groups under group search DN."),
         required=False,
+        update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP Admin User Password"),
         required=False,
+        update_allowed=True,
     )
     user_search_dn_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP user search DN is the root of search for a given user in the LDAP directory. Only user records present in this LDAP directory sub-tree will be validated."),
         required=False,
+        update_allowed=True,
     )
     user_search_scope_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP user search scope defines how deep to search for the user starting from user search DN."),
         required=False,
+        update_allowed=True,
     )
     user_id_attribute_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP user id attribute is the login attribute that uniquely identifies a single user record."),
         required=False,
+        update_allowed=True,
     )
     user_attributes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     user_attributes_schema = properties.Schema(
         properties.Schema.LIST,
         _("LDAP user attributes to fetch on a successful user bind."),
         schema=user_attributes_item_schema,
         required=False,
+        update_allowed=True,
     )
     group_search_dn_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP group search DN is the root of search for a given group in the LDAP directory. Only matching groups present in this LDAP directory sub-tree will be checked for user membership."),
         required=False,
+        update_allowed=True,
     )
     group_member_attribute_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP group attribute that identifies each of the group members."),
         required=False,
+        update_allowed=True,
     )
     group_search_scope_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP group search scope defines how deep to search for the group starting from the group search DN."),
         required=False,
+        update_allowed=True,
     )
     group_member_is_full_dn_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Group member entries contain full DNs instead of just user id attribute values"),
         required=False,
+        update_allowed=True,
     )
     group_filter_schema = properties.Schema(
         properties.Schema.STRING,
         _("Group filter is used to identify groups during search"),
         required=False,
+        update_allowed=True,
     )
     ignore_referrals_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("During user or group search, ignore searching referrals."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -119,27 +132,32 @@ class LdapUserBindSettings(object):
         properties.Schema.STRING,
         _("LDAP user DN pattern is used to bind LDAP user after replacing the user token with real username."),
         required=False,
+        update_allowed=True,
     )
     token_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP token is replaced with real user name in the user DN pattern."),
         required=False,
+        update_allowed=True,
     )
     user_id_attribute_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP user id attribute is the login attribute that uniquely identifies a single user record."),
         required=False,
+        update_allowed=True,
     )
     user_attributes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     user_attributes_schema = properties.Schema(
         properties.Schema.LIST,
         _("LDAP user attributes to fetch on a successful user bind."),
         schema=user_attributes_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -165,22 +183,26 @@ class HTTPClientAuthenticationParams(object):
         properties.Schema.STRING,
         _("type of client authentication"),
         required=False,
+        update_allowed=True,
     )
     request_uri_path_schema = properties.Schema(
         properties.Schema.MAP,
         _("Rrequest URI path when the authentication applies"),
         schema=StringMatch.properties_schema,
         required=False,
+        update_allowed=True,
     )
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Auth Profile to use for validating users"),
         required=False,
+        update_allowed=True,
     )
     realm_schema = properties.Schema(
         properties.Schema.STRING,
         _("Basic authentication realm to present to a user along with the prompt for credentials."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -206,22 +228,26 @@ class AuthMatchAttribute(object):
         properties.Schema.STRING,
         _("rule match criteria"),
         required=False,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     values_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     values_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=values_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -245,16 +271,19 @@ class AuthTacacsPlusAttributeValuePair(object):
         properties.Schema.STRING,
         _("attribute name"),
         required=False,
+        update_allowed=True,
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
         _("attribute value"),
         required=False,
+        update_allowed=True,
     )
     mandatory_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("mandatory"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -278,27 +307,32 @@ class AuthProfileHTTPClientParams(object):
         properties.Schema.STRING,
         _("Insert an HTTP header.  This field is used to define the header name.  The value of the header is set to the client's HTTP Auth user ID."),
         required=False,
+        update_allowed=True,
     )
     cache_expiration_time_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The max allowed length of time a clients authentication is cached"),
         required=False,
+        update_allowed=True,
     )
     require_user_groups_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     require_user_groups_schema = properties.Schema(
         properties.Schema.LIST,
         _("A user should be a member of these groups.  Each group is defined by the DN.  For example, CN=testgroup,OU=groups,dc=example,dc=avinetworks,DC=com"),
         schema=require_user_groups_item_schema,
         required=False,
+        update_allowed=True,
     )
     group_member_is_full_dn_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Group member entries contain full DNs instead of just user id attribute values"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -324,17 +358,20 @@ class AuthMatchGroupMembership(object):
         properties.Schema.STRING,
         _("rule match criteria"),
         required=False,
+        update_allowed=True,
     )
     groups_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     groups_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=groups_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -356,65 +393,77 @@ class AuthMappingRule(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     group_match_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AuthMatchGroupMembership.properties_schema,
         required=False,
+        update_allowed=True,
     )
     attribute_match_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AuthMatchAttribute.properties_schema,
         required=False,
+        update_allowed=True,
     )
     assign_tenant_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenant_attribute_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenant_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     tenant_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=tenant_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     assign_role_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     role_attribute_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     role_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     role_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=role_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
     is_superuser_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -452,39 +501,46 @@ class TacacsPlusAuthSettings(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     server_schema = properties.Schema(
         properties.Schema.LIST,
         _("TACACS+ server IP address"),
         schema=server_item_schema,
         required=False,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("TACACS+ server listening port"),
         required=False,
+        update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
         _("TACACS+ server shared secret"),
         required=False,
+        update_allowed=True,
     )
     service_schema = properties.Schema(
         properties.Schema.STRING,
         _("TACACS+ service"),
         required=False,
+        update_allowed=True,
     )
     authorization_attrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=AuthTacacsPlusAttributeValuePair.properties_schema,
         required=True,
+        update_allowed=False,
     )
     authorization_attrs_schema = properties.Schema(
         properties.Schema.LIST,
         _("TACACS+ authorization attribute value pairs"),
         schema=authorization_attrs_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -512,44 +568,52 @@ class LdapAuthSettings(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     server_schema = properties.Schema(
         properties.Schema.LIST,
         _("LDAP server IP address"),
         schema=server_item_schema,
         required=False,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Query the LDAP servers on this port."),
         required=False,
+        update_allowed=True,
     )
     security_mode_schema = properties.Schema(
         properties.Schema.STRING,
         _("LDAP connection security mode."),
         required=False,
+        update_allowed=True,
     )
     base_dn_schema = properties.Schema(
         properties.Schema.STRING,
         _("The LDAP base DN.  For example, avinetworks,com would be DC=avinetworks,DC=com"),
         required=False,
+        update_allowed=True,
     )
     bind_as_administrator_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("LDAP administrator credentials are used to search for users and group memberships."),
         required=False,
+        update_allowed=True,
     )
     settings_schema = properties.Schema(
         properties.Schema.MAP,
         _("LDAP full directory configuration with administrator credentials"),
         schema=LdapDirectorySettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     user_bind_schema = properties.Schema(
         properties.Schema.MAP,
         _("LDAP anonymous bind configuration"),
         schema=LdapUserBindSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -582,34 +646,40 @@ class AuthProfile(AviResource):
         properties.Schema.STRING,
         _("Name of the Auth Profile."),
         required=True,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Type of the Auth Profile."),
         required=True,
+        update_allowed=True,
     )
     ldap_schema = properties.Schema(
         properties.Schema.MAP,
         _("LDAP server and directory settings."),
         schema=LdapAuthSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     http_schema = properties.Schema(
         properties.Schema.MAP,
         _("HTTP user authentication params."),
         schema=AuthProfileHTTPClientParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     tacacs_plus_schema = properties.Schema(
         properties.Schema.MAP,
         _("TACACS+ settings"),
         schema=TacacsPlusAuthSettings.properties_schema,
         required=False,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

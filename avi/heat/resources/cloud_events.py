@@ -18,11 +18,13 @@ class OpenStackSyncServices(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -44,36 +46,43 @@ class CloudHealth(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_fails_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     first_fail_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_fail_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     last_ok_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -105,22 +114,26 @@ class CloudClusterVip(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -146,11 +159,13 @@ class BMSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -172,85 +187,101 @@ class MesosSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mesos_url_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mesos_access_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     fleet_endpoint_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_deploy_method_access_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     new_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     new_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=new_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     missing_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     missing_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=missing_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     failed_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     failed_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=failed_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -292,36 +323,43 @@ class OpenStackLbPluginOp(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     prov_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     command_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     result_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     detail_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     elapsed_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -353,16 +391,19 @@ class CloudGeneric(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -386,21 +427,25 @@ class CloudSeVmChange(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -426,26 +471,31 @@ class VCASetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     username_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     instance_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     privilege_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -473,91 +523,108 @@ class DockerUCPSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ucp_nodes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     ucp_nodes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ucp_nodes_item_schema,
         required=False,
+        update_allowed=True,
     )
     docker_ucp_access_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     fleet_endpoint_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_deploy_method_access_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     new_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     new_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=new_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     missing_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     missing_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=missing_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
     failed_hosts_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     failed_hosts_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=failed_hosts_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -599,44 +666,52 @@ class CloudVnicChange(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     vnics_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CC_VnicInfo.properties_schema,
         required=True,
+        update_allowed=False,
     )
     vnics_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vnics_item_schema,
         required=False,
+        update_allowed=True,
     )
     mac_addrs_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mac_addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=mac_addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -666,21 +741,25 @@ class CloudVipUpdate(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -706,26 +785,31 @@ class CloudDnsUpdate(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     dns_fqdn_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -753,33 +837,39 @@ class OpenStackVnicChange(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     mac_addrs_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     mac_addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=mac_addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -805,31 +895,37 @@ class CloudTenantCleanup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_se_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_svrgrp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_secgrp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     num_ports_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -860,26 +956,31 @@ class OpenStackIpChange(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     se_vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     port_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mac_addr_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -907,37 +1008,44 @@ class CloudIpChange(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=True,
     )
     se_vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     port_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     mac_addr_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -969,23 +1077,27 @@ class CloudTenantsDeleted(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     tenants_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=CloudTenantCleanup.properties_schema,
         required=True,
+        update_allowed=False,
     )
     tenants_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=tenants_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1009,36 +1121,43 @@ class OpenStackLbProvAuditCheck(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     tenant_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     user_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     result_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     detail_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     elapsed_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1070,21 +1189,25 @@ class MarathonServicePortConflict(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     marathon_url_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     app_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1110,26 +1233,31 @@ class OpenStackClusterSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     keystone_host_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     admin_tenant_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     privilege_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1157,26 +1285,31 @@ class AWSSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     region_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     access_key_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     privilege_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1204,21 +1337,25 @@ class CloudSyncServices(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vtype_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1244,11 +1381,13 @@ class OpenStackSeVmChange(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -1270,26 +1409,31 @@ class CloudStackSetup(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     access_key_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     privilege_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     error_string_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cc_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

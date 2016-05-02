@@ -17,71 +17,85 @@ class TCPProxyProfile(object):
         properties.Schema.BOOLEAN,
         _("Dynamically pick the relevant parameters for connections."),
         required=False,
+        update_allowed=True,
     )
     idle_connection_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Controls the behavior of idle connections."),
         required=False,
+        update_allowed=True,
     )
     idle_connection_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The duration for keepalive probes or session idle timeout. Max value is 1800 seconds, min is 60.  Set to 0 to allow infinite idle time."),
         required=False,
+        update_allowed=True,
     )
     ignore_time_wait_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("A new SYN is accepted from the same 4-tuple even if there is already a connection in TIME_WAIT state.  This is equivalent of setting Time Wait Delay to 0"),
         required=False,
+        update_allowed=True,
     )
     time_wait_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The time (in millisec) to wait before closing a connection in the TIME_WAIT state."),
         required=False,
+        update_allowed=True,
     )
     max_retransmissions_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The number of attempts at retransmit before closing the connection."),
         required=False,
+        update_allowed=True,
     )
     max_syn_retransmissions_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The maximum number of attempts at retransmitting a SYN packet before giving up."),
         required=False,
+        update_allowed=True,
     )
     receive_window_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Size of the receive window."),
         required=False,
+        update_allowed=True,
     )
     use_interface_mtu_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use the interface MTU to calculate the TCP max segment size."),
         required=False,
+        update_allowed=True,
     )
     max_segment_size_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum TCP segment size."),
         required=False,
+        update_allowed=True,
     )
     nagles_algorithm_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Consolidates small data packets to send clients fewer but larger packets.  Adversely affects real time protocols such as telnet or SSH."),
         required=False,
+        update_allowed=True,
     )
     ip_dscp_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Controls the value of the Differentiated Services Code Point field inserted in the IP header.  This has two options:  Set to a specific value, or Pass Through, which uses the incoming DSCP value."),
         required=False,
+        update_allowed=True,
     )
     cc_algo_schema = properties.Schema(
         properties.Schema.STRING,
         _("Controls the congestion control algorithm we use."),
         required=False,
+        update_allowed=True,
     )
     aggressive_congestion_avoidance_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Controls the our congestion window to send, normally it's 1 mss, If this option is turned on, we use 10 msses"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -127,16 +141,19 @@ class UDPFastPathProfile(object):
         properties.Schema.NUMBER,
         _("The amount of time (in sec) for which a flow needs to be idle before it is deleted."),
         required=False,
+        update_allowed=True,
     )
     per_pkt_loadbalance_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, every UDP packet is considered a new transaction and may be load balanced to a different server.  When disabled, packets from the same client source IP and port are sent to the same server."),
         required=False,
+        update_allowed=True,
     )
     snat_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When disabled, Source NAT will not be performed for all client UDP packets"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -160,11 +177,13 @@ class TCPFastPathProfile(object):
         properties.Schema.NUMBER,
         _("The amount of time (in sec) for which a connection needs to be idle before it is eligible to be deleted."),
         required=False,
+        update_allowed=True,
     )
     enable_syn_protection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, Avi will complete the 3-way handshake with the client before forwarding any packets to the server.  This will protect the server from SYN flood and half open SYN connections."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -186,24 +205,28 @@ class NetworkProfileUnion(object):
         properties.Schema.STRING,
         _("Configure one of either proxy or fast path profiles."),
         required=True,
+        update_allowed=True,
     )
     tcp_proxy_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TCPProxyProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     tcp_fast_path_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=TCPFastPathProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
     udp_fast_path_profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=UDPFastPathProfile.properties_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -230,17 +253,20 @@ class NetworkProfile(AviResource):
         properties.Schema.STRING,
         _("The name of the network profile."),
         required=True,
+        update_allowed=True,
     )
     profile_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=NetworkProfileUnion.properties_schema,
         required=True,
+        update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

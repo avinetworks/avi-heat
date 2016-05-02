@@ -16,98 +16,117 @@ class RmSpawnSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_cookie_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     network_names_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     network_names_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=network_names_item_schema,
         required=False,
+        update_allowed=True,
     )
     vcpus_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     memory_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_grp_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_grp_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -159,16 +178,19 @@ class RmSeBootupFailEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -192,17 +214,20 @@ class HostUnavailEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     reasons_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=reasons_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -224,16 +249,19 @@ class RmModifyVnic(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     network_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -257,16 +285,19 @@ class RmAddVnic(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     network_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -290,56 +321,67 @@ class RmDeleteSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_cookie_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_grp_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_grp_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     cloud_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -379,21 +421,25 @@ class RmUnbindVsSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -419,31 +465,37 @@ class RmBindVsSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     primary_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -473,11 +525,13 @@ class RmRebootSeEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -499,50 +553,59 @@ class RmAddNetworksEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmAddVnic.properties_schema,
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_name_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vs_name_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vs_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vs_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -572,50 +635,59 @@ class RmModifyNetworksEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmModifyVnic.properties_schema,
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_name_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vs_name_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vs_name_item_schema,
         required=False,
+        update_allowed=True,
     )
     vs_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     vs_uuid_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=vs_uuid_item_schema,
         required=False,
+        update_allowed=True,
     )
     reason_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -645,28 +717,33 @@ class RmSeIpFailEventDetails(object):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     se_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     host_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=RmAddVnic.properties_schema,
         required=True,
+        update_allowed=False,
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=networks_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list

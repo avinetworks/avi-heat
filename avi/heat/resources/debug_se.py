@@ -18,16 +18,19 @@ class DebugSeAgent(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     trace_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     log_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -51,6 +54,7 @@ class DebugSeDataplane(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -70,11 +74,13 @@ class DebugSeCpuShares(object):
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
     shares_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -97,42 +103,49 @@ class DebugServiceEngine(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
+        update_allowed=True,
     )
     seagent_debug_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugSeAgent.properties_schema,
         required=True,
+        update_allowed=False,
     )
     seagent_debug_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=seagent_debug_item_schema,
         required=False,
+        update_allowed=True,
     )
     flags_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugSeDataplane.properties_schema,
         required=True,
+        update_allowed=False,
     )
     flags_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=flags_item_schema,
         required=False,
+        update_allowed=True,
     )
     cpu_shares_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugSeCpuShares.properties_schema,
         required=True,
+        update_allowed=False,
     )
     cpu_shares_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=cpu_shares_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -159,36 +172,42 @@ class DebugIpAddr(object):
         _(""),
         schema=IpAddr.properties_schema,
         required=True,
+        update_allowed=False,
     )
     addrs_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=addrs_item_schema,
         required=False,
+        update_allowed=True,
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrRange.properties_schema,
         required=True,
+        update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=ranges_item_schema,
         required=False,
+        update_allowed=True,
     )
     prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=IpAddrPrefix.properties_schema,
         required=True,
+        update_allowed=False,
     )
     prefixes_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=prefixes_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -212,12 +231,14 @@ class DebugVirtualServiceSeParams(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=False,
     )
     se_uuids_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=se_uuids_item_schema,
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -237,16 +258,19 @@ class DebugVirtualServiceCapture(object):
         properties.Schema.NUMBER,
         _("Number of bytes of each packet to capture. Use 0 to capture the entire packet."),
         required=False,
+        update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of minutes to capture packets. Use 0 to capture until manually stopped."),
         required=False,
+        update_allowed=True,
     )
     num_pkts_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Total number of packets to capture."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -270,6 +294,7 @@ class DebugVsDataplane(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -290,46 +315,54 @@ class DebugVirtualService(AviResource):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     flags_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugVsDataplane.properties_schema,
         required=True,
+        update_allowed=False,
     )
     flags_schema = properties.Schema(
         properties.Schema.LIST,
         _(""),
         schema=flags_item_schema,
         required=False,
+        update_allowed=True,
     )
     debug_ip_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugIpAddr.properties_schema,
         required=False,
+        update_allowed=True,
     )
     capture_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
+        update_allowed=True,
     )
     capture_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugVirtualServiceCapture.properties_schema,
         required=False,
+        update_allowed=True,
     )
     se_params_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=DebugVirtualServiceSeParams.properties_schema,
         required=False,
+        update_allowed=True,
     )
     debug_hm_schema = properties.Schema(
         properties.Schema.STRING,
         _("Health Monitor debug options."),
         required=False,
+        update_allowed=True,
     )
 
     # properties list

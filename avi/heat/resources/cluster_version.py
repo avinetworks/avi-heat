@@ -15,11 +15,13 @@ class SeVersion(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list
@@ -41,11 +43,13 @@ class ControllerVersion(object):
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
     version_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
+        update_allowed=True,
     )
 
     # properties list

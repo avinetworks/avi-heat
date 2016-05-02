@@ -16,11 +16,13 @@ class SSLRenewFailedDetails(object):
         properties.Schema.STRING,
         _("Name of SSL Certificate"),
         required=False,
+        update_allowed=True,
     )
     error_schema = properties.Schema(
         properties.Schema.STRING,
         _("Error when renewing certificate"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -42,11 +44,13 @@ class SSLExpireDetails(object):
         properties.Schema.STRING,
         _("Name of SSL Certificate"),
         required=False,
+        update_allowed=True,
     )
     days_left_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of days until certificate is expired"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -68,6 +72,7 @@ class SSLRenewDetails(object):
         properties.Schema.STRING,
         _("Name of SSL Certificate"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
@@ -87,6 +92,7 @@ class SSLExportDetails(object):
         properties.Schema.STRING,
         _("Request user"),
         required=False,
+        update_allowed=True,
     )
 
     # properties list
