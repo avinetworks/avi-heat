@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -69,3 +70,5 @@ class SeUpgradeParams(object):
         'test': test_schema,
         'rollback': rollback_schema,
     }
+
+

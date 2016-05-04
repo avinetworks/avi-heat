@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -126,6 +127,8 @@ class LdapDirectorySettings(object):
     }
 
 
+
+
 class LdapUserBindSettings(object):
     # all schemas
     dn_template_schema = properties.Schema(
@@ -177,6 +180,8 @@ class LdapUserBindSettings(object):
     }
 
 
+
+
 class HTTPClientAuthenticationParams(object):
     # all schemas
     type_schema = properties.Schema(
@@ -222,6 +227,8 @@ class HTTPClientAuthenticationParams(object):
     }
 
 
+
+
 class AuthMatchAttribute(object):
     # all schemas
     criteria_schema = properties.Schema(
@@ -265,6 +272,8 @@ class AuthMatchAttribute(object):
     }
 
 
+
+
 class AuthTacacsPlusAttributeValuePair(object):
     # all schemas
     name_schema = properties.Schema(
@@ -299,6 +308,8 @@ class AuthTacacsPlusAttributeValuePair(object):
         'value': value_schema,
         'mandatory': mandatory_schema,
     }
+
+
 
 
 class AuthProfileHTTPClientParams(object):
@@ -352,6 +363,8 @@ class AuthProfileHTTPClientParams(object):
     }
 
 
+
+
 class AuthMatchGroupMembership(object):
     # all schemas
     criteria_schema = properties.Schema(
@@ -385,6 +398,8 @@ class AuthMatchGroupMembership(object):
         'criteria': criteria_schema,
         'groups': groups_schema,
     }
+
+
 
 
 class AuthMappingRule(object):
@@ -495,6 +510,8 @@ class AuthMappingRule(object):
     }
 
 
+
+
 class TacacsPlusAuthSettings(object):
     # all schemas
     server_item_schema = properties.Schema(
@@ -560,6 +577,8 @@ class TacacsPlusAuthSettings(object):
         'service': service_schema,
         'authorization_attrs': authorization_attrs_schema,
     }
+
+
 
 
 class LdapAuthSettings(object):
@@ -639,6 +658,8 @@ class LdapAuthSettings(object):
     }
 
 
+
+
 class AuthProfile(AviResource):
     resource_name = "authprofile"
     # all schemas
@@ -701,6 +722,8 @@ class AuthProfile(AviResource):
         'tacacs_plus': tacacs_plus_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

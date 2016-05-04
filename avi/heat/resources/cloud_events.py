@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -38,6 +39,8 @@ class OpenStackSyncServices(object):
         'se_vm_uuid': se_vm_uuid_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudHealth(object):
@@ -108,6 +111,8 @@ class CloudHealth(object):
     }
 
 
+
+
 class CloudClusterVip(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -153,6 +158,8 @@ class CloudClusterVip(object):
     }
 
 
+
+
 class BMSetup(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -179,6 +186,8 @@ class BMSetup(object):
         'cc_id': cc_id_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class MesosSetup(object):
@@ -317,6 +326,8 @@ class MesosSetup(object):
     }
 
 
+
+
 class OpenStackLbPluginOp(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -385,6 +396,8 @@ class OpenStackLbPluginOp(object):
     }
 
 
+
+
 class CloudGeneric(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -419,6 +432,8 @@ class CloudGeneric(object):
         'vtype': vtype_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudSeVmChange(object):
@@ -463,6 +478,8 @@ class CloudSeVmChange(object):
         'se_vm_uuid': se_vm_uuid_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class VCASetup(object):
@@ -515,6 +532,8 @@ class VCASetup(object):
         'privilege': privilege_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class DockerUCPSetup(object):
@@ -660,6 +679,8 @@ class DockerUCPSetup(object):
     }
 
 
+
+
 class CloudVnicChange(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -735,6 +756,8 @@ class CloudVnicChange(object):
     }
 
 
+
+
 class CloudVipUpdate(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -777,6 +800,8 @@ class CloudVipUpdate(object):
         'vs_uuid': vs_uuid_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudDnsUpdate(object):
@@ -829,6 +854,8 @@ class CloudDnsUpdate(object):
         'error_string': error_string_schema,
         'dns_fqdn': dns_fqdn_schema,
     }
+
+
 
 
 class OpenStackVnicChange(object):
@@ -887,6 +914,8 @@ class OpenStackVnicChange(object):
         'mac_addrs': mac_addrs_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudTenantCleanup(object):
@@ -949,6 +978,8 @@ class CloudTenantCleanup(object):
     }
 
 
+
+
 class OpenStackIpChange(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -1000,6 +1031,8 @@ class OpenStackIpChange(object):
         'mac_addr': mac_addr_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudIpChange(object):
@@ -1071,6 +1104,8 @@ class CloudIpChange(object):
     }
 
 
+
+
 class CloudTenantsDeleted(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -1113,6 +1148,8 @@ class CloudTenantsDeleted(object):
         'vtype': vtype_schema,
         'tenants': tenants_schema,
     }
+
+
 
 
 class OpenStackLbProvAuditCheck(object):
@@ -1183,6 +1220,8 @@ class OpenStackLbProvAuditCheck(object):
     }
 
 
+
+
 class MarathonServicePortConflict(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -1225,6 +1264,8 @@ class MarathonServicePortConflict(object):
         'port': port_schema,
         'app_name': app_name_schema,
     }
+
+
 
 
 class OpenStackClusterSetup(object):
@@ -1279,6 +1320,8 @@ class OpenStackClusterSetup(object):
     }
 
 
+
+
 class AWSSetup(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -1331,6 +1374,8 @@ class AWSSetup(object):
     }
 
 
+
+
 class CloudSyncServices(object):
     # all schemas
     cc_id_schema = properties.Schema(
@@ -1375,6 +1420,8 @@ class CloudSyncServices(object):
     }
 
 
+
+
 class OpenStackSeVmChange(object):
     # all schemas
     se_vm_uuid_schema = properties.Schema(
@@ -1401,6 +1448,8 @@ class OpenStackSeVmChange(object):
         'se_vm_uuid': se_vm_uuid_schema,
         'error_string': error_string_schema,
     }
+
+
 
 
 class CloudStackSetup(object):
@@ -1453,3 +1502,5 @@ class CloudStackSetup(object):
         'error_string': error_string_schema,
         'cc_id': cc_id_schema,
     }
+
+

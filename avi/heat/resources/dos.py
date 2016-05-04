@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -46,6 +47,8 @@ class AttackMetaData(object):
     }
 
 
+
+
 class DosThreshold(object):
     # all schemas
     attack_schema = properties.Schema(
@@ -80,6 +83,8 @@ class DosThreshold(object):
         'min_value': min_value_schema,
         'max_value': max_value_schema,
     }
+
+
 
 
 class DosAttackEventDetails(object):
@@ -171,6 +176,8 @@ class DosAttackEventDetails(object):
     }
 
 
+
+
 class DosThresholdProfile(object):
     # all schemas
     thresh_period_schema = properties.Schema(
@@ -205,3 +212,5 @@ class DosThresholdProfile(object):
         'thresh_period': thresh_period_schema,
         'thresh_info': thresh_info_schema,
     }
+
+

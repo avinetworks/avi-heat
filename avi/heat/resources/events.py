@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -330,6 +331,13 @@ class EventDetails(object):
         properties.Schema.MAP,
         _(""),
         schema=SeIpRemovedEventDetails.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    se_default_gw_hb_fail_details_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SeDefaultGwHbFailDetails.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -820,6 +828,7 @@ class EventDetails(object):
         'se_dupip_event_details',
         'se_ip_added_event_details',
         'se_ip_removed_event_details',
+        'se_default_gw_hb_fail_details',
         'se_hm_pool_details',
         'se_hm_vs_details',
         'se_persistence_details',
@@ -930,6 +939,7 @@ class EventDetails(object):
         'se_dupip_event_details': se_dupip_event_details_schema,
         'se_ip_added_event_details': se_ip_added_event_details_schema,
         'se_ip_removed_event_details': se_ip_removed_event_details_schema,
+        'se_default_gw_hb_fail_details': se_default_gw_hb_fail_details_schema,
         'se_hm_pool_details': se_hm_pool_details_schema,
         'se_hm_vs_details': se_hm_vs_details_schema,
         'se_persistence_details': se_persistence_details_schema,
@@ -994,6 +1004,8 @@ class EventDetails(object):
         'server_autoscalein_complete_info': server_autoscalein_complete_info_schema,
         'server_autoscale_failed_info': server_autoscale_failed_info_schema,
     }
+
+
 
 
 class EventLog(object):
@@ -1157,3 +1169,5 @@ class EventLog(object):
         'is_security_event': is_security_event_schema,
         'tenant': tenant_schema,
     }
+
+

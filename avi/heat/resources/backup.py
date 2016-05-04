@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -53,6 +54,8 @@ class Backup(AviResource):
         'file_url': file_url_schema,
         'username': username_schema,
     }
+
+
 
 
 def resource_mapping():

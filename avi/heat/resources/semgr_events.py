@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -130,3 +131,5 @@ class SeMgrEventDetails(object):
         'cloud_uuid': cloud_uuid_schema,
         'cloud_name': cloud_name_schema,
     }
+
+

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -55,6 +56,8 @@ class URIParamToken(object):
     }
 
 
+
+
 class PoolServer(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -93,6 +96,8 @@ class PoolServer(object):
     }
 
 
+
+
 class HTTPCookieData(object):
     # all schemas
     name_schema = properties.Schema(
@@ -119,6 +124,8 @@ class HTTPCookieData(object):
         'name': name_schema,
         'value': value_schema,
     }
+
+
 
 
 class URIParamQuery(object):
@@ -149,6 +156,8 @@ class URIParamQuery(object):
     }
 
 
+
+
 class HTTPHdrValue(object):
     # all schemas
     var_schema = properties.Schema(
@@ -175,6 +184,8 @@ class HTTPHdrValue(object):
         'var': var_schema,
         'val': val_schema,
     }
+
+
 
 
 class HTTPSwitchingAction(object):
@@ -231,6 +242,8 @@ class HTTPSwitchingAction(object):
     }
 
 
+
+
 class URIParam(object):
     # all schemas
     type_schema = properties.Schema(
@@ -267,6 +280,8 @@ class URIParam(object):
     }
 
 
+
+
 class HTTPHdrData(object):
     # all schemas
     name_schema = properties.Schema(
@@ -294,6 +309,8 @@ class HTTPHdrData(object):
         'name': name_schema,
         'value': value_schema,
     }
+
+
 
 
 class HTTPRedirectAction(object):
@@ -359,6 +376,8 @@ class HTTPRedirectAction(object):
     }
 
 
+
+
 class HTTPRewriteURLAction(object):
     # all schemas
     host_hdr_schema = properties.Schema(
@@ -396,6 +415,8 @@ class HTTPRewriteURLAction(object):
         'path': path_schema,
         'query': query_schema,
     }
+
+
 
 
 class HTTPRewriteLocHdrAction(object):
@@ -453,6 +474,8 @@ class HTTPRewriteLocHdrAction(object):
     }
 
 
+
+
 class HTTPHdrAction(object):
     # all schemas
     action_schema = properties.Schema(
@@ -489,3 +512,5 @@ class HTTPHdrAction(object):
         'hdr': hdr_schema,
         'cookie': cookie_schema,
     }
+
+

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -42,6 +43,8 @@ class FailActionHTTPLocalResponse(object):
     }
 
 
+
+
 class AbPool(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -70,6 +73,8 @@ class AbPool(object):
     }
 
 
+
+
 class FailActionBackupPool(object):
     # all schemas
     backup_pool_uuid_schema = properties.Schema(
@@ -88,6 +93,8 @@ class FailActionBackupPool(object):
     properties_schema = {
         'backup_pool_uuid': backup_pool_uuid_schema,
     }
+
+
 
 
 class FailActionHTTPRedirect(object):
@@ -142,6 +149,8 @@ class FailActionHTTPRedirect(object):
     }
 
 
+
+
 class PlacementNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -169,6 +178,8 @@ class PlacementNetwork(object):
         'network_uuid': network_uuid_schema,
         'subnet': subnet_schema,
     }
+
+
 
 
 class FailAction(object):
@@ -218,6 +229,8 @@ class FailAction(object):
     }
 
 
+
+
 class PoolX509Certificate(object):
     # all schemas
     pem_cert_schema = properties.Schema(
@@ -246,6 +259,8 @@ class PoolX509Certificate(object):
     }
 
 
+
+
 class NetworkFilter(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -272,6 +287,8 @@ class NetworkFilter(object):
         'network_uuid': network_uuid_schema,
         'server_filter': server_filter_schema,
     }
+
+
 
 
 class HTTPReselectRespCode(object):
@@ -332,6 +349,8 @@ class HTTPReselectRespCode(object):
     }
 
 
+
+
 class DiscoveredNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -366,6 +385,8 @@ class DiscoveredNetwork(object):
         'network_uuid': network_uuid_schema,
         'subnet': subnet_schema,
     }
+
+
 
 
 class HTTPServerReselect(object):
@@ -411,6 +432,8 @@ class HTTPServerReselect(object):
         'num_retries': num_retries_schema,
         'retry_nonidempotent': retry_nonidempotent_schema,
     }
+
+
 
 
 class Server(object):
@@ -591,6 +614,8 @@ class Server(object):
         'server_node': server_node_schema,
         'availability_zone': availability_zone_schema,
     }
+
+
 
 
 class Pool(AviResource):
@@ -886,6 +911,18 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    a_pool_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of container cloud application that constitutes A pool in a A-B pool configuration, if different from VS app"),
+        required=False,
+        update_allowed=True,
+    )
+    ab_priority_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Priority of this pool in a A-B pool pair. Internally used"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
@@ -935,6 +972,8 @@ class Pool(AviResource):
         'request_queue_depth',
         'ab_pool',
         'server_reselect',
+        'a_pool',
+        'ab_priority',
         'description',
     )
 
@@ -980,12 +1019,164 @@ class Pool(AviResource):
         'request_queue_depth': request_queue_depth_schema,
         'ab_pool': ab_pool_schema,
         'server_reselect': server_reselect_schema,
+        'a_pool': a_pool_schema,
+        'ab_priority': ab_priority_schema,
         'description': description_schema,
+    }
+
+
+
+
+class PoolHealthMonitorUuids(AviNestedResource):
+    resource_name = "pool"
+    nested_property_name = "health_monitor_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+    health_monitor_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('pool_uuid',
+                  'health_monitor_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+        'health_monitor_uuids': health_monitor_uuids_item_schema,
+    }
+
+
+class PoolServers(AviNestedResource, Server):
+    resource_name = "pool"
+    nested_property_name = "servers"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = Server.PROPERTIES + ('pool_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(Server.properties_schema)
+
+
+class PoolNetworks(AviNestedResource, NetworkFilter):
+    resource_name = "pool"
+    nested_property_name = "networks"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = NetworkFilter.PROPERTIES + ('pool_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(NetworkFilter.properties_schema)
+
+
+class PoolPlacementNetworks(AviNestedResource, PlacementNetwork):
+    resource_name = "pool"
+    nested_property_name = "placement_networks"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = PlacementNetwork.PROPERTIES + ('pool_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(PlacementNetwork.properties_schema)
+
+
+class PoolX509Cert(AviNestedResource, PoolX509Certificate):
+    resource_name = "pool"
+    nested_property_name = "x509_cert"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = PoolX509Certificate.PROPERTIES + ('pool_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(PoolX509Certificate.properties_schema)
+
+
+class PoolAutoscaleNetworks(AviNestedResource):
+    resource_name = "pool"
+    nested_property_name = "autoscale_networks"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+    autoscale_networks_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('pool_uuid',
+                  'autoscale_networks',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+        'autoscale_networks': autoscale_networks_item_schema,
     }
 
 
 def resource_mapping():
     return {
+        'Avi::Pool::PlacementNetwork': PoolPlacementNetworks,
+        'Avi::Pool::AutoscaleNetwork': PoolAutoscaleNetworks,
+        'Avi::Pool::Server': PoolServers,
+        'Avi::Pool::X509Cert': PoolX509Cert,
+        'Avi::Pool::HealthMonitorUuid': PoolHealthMonitorUuids,
+        'Avi::Pool::Network': PoolNetworks,
         'Avi::Pool': Pool,
     }
 

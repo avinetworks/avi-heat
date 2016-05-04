@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -36,6 +37,8 @@ class VinfraVcenterObjDeleteDetails(object):
         'vcenter': vcenter_schema,
         'obj_name': obj_name_schema,
     }
+
+
 
 
 class VinfraDiscSummaryDetails(object):
@@ -98,6 +101,8 @@ class VinfraDiscSummaryDetails(object):
     }
 
 
+
+
 class VinfraVmDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -134,6 +139,8 @@ class VinfraVmDetails(object):
     }
 
 
+
+
 class VinfraVcenterDiscoveryFailure(object):
     # all schemas
     vcenter_schema = properties.Schema(
@@ -160,6 +167,8 @@ class VinfraVcenterDiscoveryFailure(object):
         'vcenter': vcenter_schema,
         'state': state_schema,
     }
+
+
 
 
 class VinfraMgmtNwChangeDetails(object):
@@ -198,6 +207,8 @@ class VinfraMgmtNwChangeDetails(object):
     }
 
 
+
+
 class VinfraVcenterBadCredentials(object):
     # all schemas
     vcenter_schema = properties.Schema(
@@ -232,6 +243,8 @@ class VinfraVcenterBadCredentials(object):
         'name': name_schema,
         'vcenter_name': vcenter_name_schema,
     }
+
+
 
 
 class VinfraPoolServerDeleteDetails(object):
@@ -269,6 +282,8 @@ class VinfraPoolServerDeleteDetails(object):
     }
 
 
+
+
 class VinfraCntlrHostUnreachableList(object):
     # all schemas
     vcenter_schema = properties.Schema(
@@ -302,3 +317,5 @@ class VinfraCntlrHostUnreachableList(object):
         'vcenter': vcenter_schema,
         'host_name': host_name_schema,
     }
+
+

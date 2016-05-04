@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -49,6 +50,8 @@ class VcenterClusters(object):
     }
 
 
+
+
 class VcenterHosts(object):
     # all schemas
     host_uuids_item_schema = properties.Schema(
@@ -82,6 +85,8 @@ class VcenterHosts(object):
         'host_uuids': host_uuids_schema,
         'include': include_schema,
     }
+
+
 
 
 class ServiceEngineGroup(AviResource):
@@ -420,6 +425,12 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    default_gw_health_check_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable ICMP based gateway health check on the Service Engines within this Service Group"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -475,6 +486,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip',
         'hm_on_standby',
         'per_app',
+        'default_gw_health_check',
     )
 
     # mapping of properties to their schemas
@@ -531,11 +543,74 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': floating_intf_ip_schema,
         'hm_on_standby': hm_on_standby_schema,
         'per_app': per_app_schema,
+        'default_gw_health_check': default_gw_health_check_schema,
+    }
+
+
+
+
+class ServiceEngineGroupVcenterDatastores(AviNestedResource):
+    resource_name = "serviceenginegroup"
+    nested_property_name = "vcenter_datastores"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of serviceenginegroup"),
+        required=True,
+        update_allowed=False,
+    )
+    vcenter_datastores_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('serviceenginegroup_uuid',
+                  'vcenter_datastores',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'serviceenginegroup_uuid': parent_uuid_schema,
+        'vcenter_datastores': vcenter_datastores_item_schema,
+    }
+
+
+class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
+    resource_name = "serviceenginegroup"
+    nested_property_name = "floating_intf_ip"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of serviceenginegroup"),
+        required=True,
+        update_allowed=False,
+    )
+    floating_intf_ip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('serviceenginegroup_uuid',
+                  'floating_intf_ip',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'serviceenginegroup_uuid': parent_uuid_schema,
+        'floating_intf_ip': floating_intf_ip_item_schema,
     }
 
 
 def resource_mapping():
     return {
+        'Avi::ServiceEngineGroup::FloatingIntfIp': ServiceEngineGroupFloatingIntfIp,
+        'Avi::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
         'Avi::ServiceEngineGroup': ServiceEngineGroup,
     }
 

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -140,6 +141,8 @@ class ConnErrorInfo(object):
         'server_num_window_shrink': server_num_window_shrink_schema,
         'num_syn_retransmit': num_syn_retransmit_schema,
     }
+
+
 
 
 class ConnectionLog(object):
@@ -601,6 +604,8 @@ class ConnectionLog(object):
     }
 
 
+
+
 class DataScriptErrorTrace(object):
     # all schemas
     error_schema = properties.Schema(
@@ -635,6 +640,8 @@ class DataScriptErrorTrace(object):
         'stack_trace': stack_trace_schema,
         'event': event_schema,
     }
+
+
 
 
 class ApplicationLog(object):
@@ -1304,3 +1311,5 @@ class ApplicationLog(object):
         'headers_sent_to_server': headers_sent_to_server_schema,
         'headers_received_from_server': headers_received_from_server_schema,
     }
+
+

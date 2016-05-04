@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -72,6 +73,8 @@ class ClusterNode(object):
     }
 
 
+
+
 class Cluster(AviResource):
     resource_name = "cluster"
     # all schemas
@@ -118,8 +121,32 @@ class Cluster(AviResource):
     }
 
 
+
+
+class ClusterNodes(AviNestedResource, ClusterNode):
+    resource_name = "cluster"
+    nested_property_name = "nodes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of cluster"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ClusterNode.PROPERTIES + ('cluster_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cluster_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(ClusterNode.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::Cluster': Cluster,
+        'Avi::Cluster::Node': ClusterNodes,
     }
 

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -80,6 +81,8 @@ class CC_AgentProperties(object):
     }
 
 
+
+
 class Hypervisor_Properties(object):
     # all schemas
     htype_schema = properties.Schema(
@@ -116,6 +119,8 @@ class Hypervisor_Properties(object):
     }
 
 
+
+
 class CC_Properties(object):
     # all schemas
     rpc_poll_interval_schema = properties.Schema(
@@ -144,6 +149,8 @@ class CC_Properties(object):
     }
 
 
+
+
 class CloudMeta(object):
     # all schemas
     key_schema = properties.Schema(
@@ -170,6 +177,8 @@ class CloudMeta(object):
         'key': key_schema,
         'value': value_schema,
     }
+
+
 
 
 class CloudFlavor(object):
@@ -280,6 +289,8 @@ class CloudFlavor(object):
     }
 
 
+
+
 class CloudInfo(object):
     # all schemas
     vtype_schema = properties.Schema(
@@ -357,6 +368,8 @@ class CloudInfo(object):
     }
 
 
+
+
 class CloudProperties(AviResource):
     resource_name = "cloudproperties"
     # all schemas
@@ -426,8 +439,84 @@ class CloudProperties(AviResource):
     }
 
 
+
+
+class CloudPropertiesCcVtypes(AviNestedResource):
+    resource_name = "cloudproperties"
+    nested_property_name = "cc_vtypes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of cloudproperties"),
+        required=True,
+        update_allowed=False,
+    )
+    cc_vtypes_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('cloudproperties_uuid',
+                  'cc_vtypes',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cloudproperties_uuid': parent_uuid_schema,
+        'cc_vtypes': cc_vtypes_item_schema,
+    }
+
+
+class CloudPropertiesHypProps(AviNestedResource, Hypervisor_Properties):
+    resource_name = "cloudproperties"
+    nested_property_name = "hyp_props"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of cloudproperties"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = Hypervisor_Properties.PROPERTIES + ('cloudproperties_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cloudproperties_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(Hypervisor_Properties.properties_schema)
+
+
+class CloudPropertiesInfo(AviNestedResource, CloudInfo):
+    resource_name = "cloudproperties"
+    nested_property_name = "info"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of cloudproperties"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = CloudInfo.PROPERTIES + ('cloudproperties_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cloudproperties_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(CloudInfo.properties_schema)
+
+
 def resource_mapping():
     return {
+        'Avi::CloudProperties::HypProp': CloudPropertiesHypProps,
+        'Avi::CloudProperties::CcVtype': CloudPropertiesCcVtypes,
+        'Avi::CloudProperties::Info': CloudPropertiesInfo,
         'Avi::CloudProperties': CloudProperties,
     }
 

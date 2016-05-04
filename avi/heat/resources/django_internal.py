@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -37,6 +38,8 @@ class Permission(object):
         'type': type_schema,
         'resource': resource_schema,
     }
+
+
 
 
 class Role(AviResource):
@@ -76,8 +79,32 @@ class Role(AviResource):
     }
 
 
+
+
+class RolePrivileges(AviNestedResource, Permission):
+    resource_name = "role"
+    nested_property_name = "privileges"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of role"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = Permission.PROPERTIES + ('role_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'role_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(Permission.properties_schema)
+
+
 def resource_mapping():
     return {
+        'Avi::Role::Privilege': RolePrivileges,
         'Avi::Role': Role,
     }
 

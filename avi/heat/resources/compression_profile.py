@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -134,6 +135,8 @@ class CompressionFilter(object):
     }
 
 
+
+
 class CompressionProfile(object):
     # all schemas
     compression_schema = properties.Schema(
@@ -192,3 +195,5 @@ class CompressionProfile(object):
         'type': type_schema,
         'filter': filter_schema,
     }
+
+

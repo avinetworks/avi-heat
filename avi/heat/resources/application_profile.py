@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -46,6 +47,8 @@ class DosRateLimitProfile(object):
     }
 
 
+
+
 class SSLClientRequestHeader(object):
     # all schemas
     request_header_schema = properties.Schema(
@@ -72,6 +75,8 @@ class SSLClientRequestHeader(object):
         'request_header': request_header_schema,
         'request_header_value': request_header_value_schema,
     }
+
+
 
 
 class SSLClientCertificateAction(object):
@@ -108,6 +113,8 @@ class SSLClientCertificateAction(object):
         'headers': headers_schema,
         'close_connection': close_connection_schema,
     }
+
+
 
 
 class HTTPApplicationProfile(object):
@@ -397,6 +404,8 @@ class HTTPApplicationProfile(object):
     }
 
 
+
+
 class ApplicationProfile(AviResource):
     resource_name = "applicationprofile"
     # all schemas
@@ -450,6 +459,8 @@ class ApplicationProfile(AviResource):
         'dos_rl_profile': dos_rl_profile_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -60,6 +61,8 @@ class AvgUptimeChangeDetails(object):
         'threshold': threshold_schema,
         'resource_str': resource_str_schema,
     }
+
+
 
 
 class MetricThresoldUpDetails(object):
@@ -130,6 +133,8 @@ class MetricThresoldUpDetails(object):
     }
 
 
+
+
 class MetricsDbDiskEventDetails(object):
     # all schemas
     metrics_quota_schema = properties.Schema(
@@ -171,6 +176,8 @@ class MetricsDbDiskEventDetails(object):
         'metrics_free_sz': metrics_free_sz_schema,
         'metrics_deleted_tables': metrics_deleted_tables_schema,
     }
+
+
 
 
 class LicenseExpiryDetails(object):
@@ -280,6 +287,8 @@ class LicenseExpiryDetails(object):
     }
 
 
+
+
 class LicenseDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -330,3 +339,5 @@ class LicenseDetails(object):
         'license_id': license_id_schema,
         'license_type': license_type_schema,
     }
+
+

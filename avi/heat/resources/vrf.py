@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -72,6 +73,8 @@ class BgpPeer(object):
     }
 
 
+
+
 class BgpProfile(object):
     # all schemas
     local_as_schema = properties.Schema(
@@ -114,6 +117,8 @@ class BgpProfile(object):
         'ibgp': ibgp_schema,
         'peers': peers_schema,
     }
+
+
 
 
 class StaticRoute(object):
@@ -160,6 +165,8 @@ class StaticRoute(object):
         'if_name': if_name_schema,
         'route_id': route_id_schema,
     }
+
+
 
 
 class VrfContext(AviResource):
@@ -224,8 +231,32 @@ class VrfContext(AviResource):
     }
 
 
+
+
+class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
+    resource_name = "vrfcontext"
+    nested_property_name = "static_routes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of vrfcontext"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = StaticRoute.PROPERTIES + ('vrfcontext_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vrfcontext_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(StaticRoute.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::VrfContext': VrfContext,
+        'Avi::VrfContext::StaticRoute': VrfContextStaticRoutes,
     }
 

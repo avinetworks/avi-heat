@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 
@@ -37,6 +38,8 @@ class SeVersion(object):
     }
 
 
+
+
 class ControllerVersion(object):
     # all schemas
     name_schema = properties.Schema(
@@ -63,3 +66,5 @@ class ControllerVersion(object):
         'name': name_schema,
         'version': version_schema,
     }
+
+

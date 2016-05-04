@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -180,6 +181,8 @@ class SingleLicense(object):
     }
 
 
+
+
 class ControllerLicense(AviResource):
     resource_name = "controllerlicense"
     # all schemas
@@ -252,7 +255,7 @@ class ControllerLicense(AviResource):
     )
     max_vses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Deprecated"),
         required=False,
         update_allowed=True,
     )
@@ -312,8 +315,62 @@ class ControllerLicense(AviResource):
     }
 
 
+
+
+class ControllerLicenseLicenseTier(AviNestedResource):
+    resource_name = "controllerlicense"
+    nested_property_name = "license_tier"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of controllerlicense"),
+        required=True,
+        update_allowed=False,
+    )
+    license_tier_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('controllerlicense_uuid',
+                  'license_tier',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'controllerlicense_uuid': parent_uuid_schema,
+        'license_tier': license_tier_item_schema,
+    }
+
+
+class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
+    resource_name = "controllerlicense"
+    nested_property_name = "licenses"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of controllerlicense"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = SingleLicense.PROPERTIES + ('controllerlicense_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'controllerlicense_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(SingleLicense.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::ControllerLicense': ControllerLicense,
+        'Avi::ControllerLicense::LicenseTier': ControllerLicenseLicenseTier,
+        'Avi::ControllerLicense::License': ControllerLicenseLicenses,
     }
 

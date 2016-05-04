@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -54,6 +55,8 @@ class ConfigUserPasswordChangeRequest(object):
     }
 
 
+
+
 class ConfigUserLogin(object):
     # all schemas
     user_schema = properties.Schema(
@@ -96,6 +99,8 @@ class ConfigUserLogin(object):
         'client_ip': client_ip_schema,
         'error_message': error_message_schema,
     }
+
+
 
 
 class ConfigActionDetails(object):
@@ -172,6 +177,8 @@ class ConfigActionDetails(object):
         'parameter_data': parameter_data_schema,
         'error_message': error_message_schema,
     }
+
+
 
 
 class ConfigUpdateDetails(object):
@@ -258,6 +265,8 @@ class ConfigUpdateDetails(object):
     }
 
 
+
+
 class ConfigDeleteDetails(object):
     # all schemas
     path_schema = properties.Schema(
@@ -324,6 +333,8 @@ class ConfigDeleteDetails(object):
         'error_message': error_message_schema,
         'resource_data': resource_data_schema,
     }
+
+
 
 
 class ConfigCreateDetails(object):
@@ -402,6 +413,8 @@ class ConfigCreateDetails(object):
     }
 
 
+
+
 class ConfigUserLogout(object):
     # all schemas
     user_schema = properties.Schema(
@@ -444,3 +457,5 @@ class ConfigUserLogout(object):
         'client_ip': client_ip_schema,
         'error_message': error_message_schema,
     }
+
+

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -45,6 +46,8 @@ class NetworkSubnetClash(object):
     }
 
 
+
+
 class SummarizedSubnetInfo(object):
     # all schemas
     cidr_prefix_schema = properties.Schema(
@@ -73,6 +76,8 @@ class SummarizedSubnetInfo(object):
     }
 
 
+
+
 class SummarizedInfo(object):
     # all schemas
     subnet_info_item_schema = properties.Schema(
@@ -99,3 +104,5 @@ class SummarizedInfo(object):
     properties_schema = {
         'subnet_info': subnet_info_schema,
     }
+
+

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -41,6 +42,8 @@ class RebalanceScaleinEventDetails(object):
     }
 
 
+
+
 class RebalanceScaleoutEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -68,6 +71,8 @@ class RebalanceScaleoutEventDetails(object):
         'vs_uuid': vs_uuid_schema,
         'scaleout_params': scaleout_params_schema,
     }
+
+
 
 
 class SeUpgradeScaleoutEventDetails(object):
@@ -99,6 +104,8 @@ class SeUpgradeScaleoutEventDetails(object):
     }
 
 
+
+
 class SeUpgradeScaleinEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -126,6 +133,8 @@ class SeUpgradeScaleinEventDetails(object):
         'vs_uuid': vs_uuid_schema,
         'scalein_params': scalein_params_schema,
     }
+
+
 
 
 class SeUpgradeEventDetails(object):
@@ -177,6 +186,8 @@ class SeUpgradeEventDetails(object):
         'num_vs': num_vs_schema,
         'notes': notes_schema,
     }
+
+
 
 
 class AllSeUpgradeEventDetails(object):
@@ -231,6 +242,8 @@ class AllSeUpgradeEventDetails(object):
     }
 
 
+
+
 class SeUpgradeMigrateEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -260,6 +273,8 @@ class SeUpgradeMigrateEventDetails(object):
     }
 
 
+
+
 class RebalanceMigrateEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -287,6 +302,8 @@ class RebalanceMigrateEventDetails(object):
         'vs_uuid': vs_uuid_schema,
         'migrate_params': migrate_params_schema,
     }
+
+
 
 
 class SeUpgradeVsDisruptedEventDetails(object):
@@ -322,3 +339,5 @@ class SeUpgradeVsDisruptedEventDetails(object):
         'vs_uuid': vs_uuid_schema,
         'notes': notes_schema,
     }
+
+

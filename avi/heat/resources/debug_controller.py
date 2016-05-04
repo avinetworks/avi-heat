@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -38,6 +39,8 @@ class VsDebugFilter(object):
     }
 
 
+
+
 class AutoScaleMgrDebugFilter(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -64,6 +67,8 @@ class AutoScaleMgrDebugFilter(object):
         'pool_uuid': pool_uuid_schema,
         'intelligent_autoscale_period': intelligent_autoscale_period_schema,
     }
+
+
 
 
 class CloudConnectorDebugFilter(object):
@@ -100,6 +105,8 @@ class CloudConnectorDebugFilter(object):
         'app_id': app_id_schema,
         'disable_se_reboot': disable_se_reboot_schema,
     }
+
+
 
 
 class HSMgrDebugFilter(object):
@@ -162,6 +169,8 @@ class HSMgrDebugFilter(object):
     }
 
 
+
+
 class SeMgrDebugFilter(object):
     # all schemas
     name_schema = properties.Schema(
@@ -180,6 +189,8 @@ class SeMgrDebugFilter(object):
     properties_schema = {
         'name': name_schema,
     }
+
+
 
 
 class AlertMgrDebugFilter(object):
@@ -216,6 +227,8 @@ class AlertMgrDebugFilter(object):
         'alert_objid': alert_objid_schema,
         'cfg_uuid': cfg_uuid_schema,
     }
+
+
 
 
 class MesosMetricsDebugFilter(object):
@@ -260,6 +273,8 @@ class MesosMetricsDebugFilter(object):
         'mesos_slave': mesos_slave_schema,
         'metrics_collection_frq': metrics_collection_frq_schema,
     }
+
+
 
 
 class MetricsMgrDebugFilter(object):
@@ -344,6 +359,8 @@ class MetricsMgrDebugFilter(object):
         'disable_hw_training': disable_hw_training_schema,
         'license_grace_period': license_grace_period_schema,
     }
+
+
 
 
 class DebugFilterUnion(object):
@@ -438,6 +455,8 @@ class DebugFilterUnion(object):
     }
 
 
+
+
 class DebugController(AviResource):
     resource_name = "debugcontroller"
     # all schemas
@@ -490,6 +509,8 @@ class DebugController(AviResource):
         'log_level': log_level_schema,
         'filters': filters_schema,
     }
+
+
 
 
 def resource_mapping():

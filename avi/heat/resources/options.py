@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 
@@ -37,6 +38,8 @@ class IpAddr(object):
     }
 
 
+
+
 class IpAddrPrefix(object):
     # all schemas
     ip_addr_schema = properties.Schema(
@@ -64,3 +67,5 @@ class IpAddrPrefix(object):
         'ip_addr': ip_addr_schema,
         'mask': mask_schema,
     }
+
+

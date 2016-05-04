@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -37,6 +38,8 @@ class DNSInternalNSRecord(object):
         'name': name_schema,
         'ip_address': ip_address_schema,
     }
+
+
 
 
 class InfobloxProfile(object):
@@ -73,6 +76,8 @@ class InfobloxProfile(object):
         'dns_view': dns_view_schema,
         'network_view': network_view_schema,
     }
+
+
 
 
 class IpamAwsProfile(object):
@@ -135,6 +140,8 @@ class IpamAwsProfile(object):
     }
 
 
+
+
 class IpamInternalProfile(object):
     # all schemas
     service_domain_schema = properties.Schema(
@@ -177,6 +184,8 @@ class IpamInternalProfile(object):
         'service_record_ttl': service_record_ttl_schema,
         'ns_records': ns_records_schema,
     }
+
+
 
 
 class IpamProfile(AviResource):
@@ -258,6 +267,8 @@ class IpamProfile(AviResource):
         'internal_profile': internal_profile_schema,
         'aws_profile': aws_profile_schema,
     }
+
+
 
 
 def resource_mapping():

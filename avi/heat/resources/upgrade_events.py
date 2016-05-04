@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -36,6 +37,8 @@ class SystemUpgradeStarted(object):
         'current_version': current_version_schema,
         'next_version': next_version_schema,
     }
+
+
 
 
 class SeVersionCheckFailedEvent(object):
@@ -74,6 +77,8 @@ class SeVersionCheckFailedEvent(object):
     }
 
 
+
+
 class SystemUpgradeComplete(object):
     # all schemas
     current_version_schema = properties.Schema(
@@ -94,6 +99,8 @@ class SystemUpgradeComplete(object):
     }
 
 
+
+
 class SystemUpgradeAborted(object):
     # all schemas
     current_version_schema = properties.Schema(
@@ -112,3 +119,5 @@ class SystemUpgradeAborted(object):
     properties_schema = {
         'current_version': current_version_schema,
     }
+
+

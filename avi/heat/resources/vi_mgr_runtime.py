@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -247,8 +248,70 @@ class VIMgrVcenterRuntime(AviResource):
     }
 
 
+
+
+class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
+    resource_name = "vimgrvcenterruntime"
+    nested_property_name = "datacenter_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of vimgrvcenterruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    datacenter_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('vimgrvcenterruntime_uuid',
+                  'datacenter_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vimgrvcenterruntime_uuid': parent_uuid_schema,
+        'datacenter_uuids': datacenter_uuids_item_schema,
+    }
+
+
+class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
+    resource_name = "vimgrvcenterruntime"
+    nested_property_name = "discovered_datacenter"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of vimgrvcenterruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    discovered_datacenter_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('vimgrvcenterruntime_uuid',
+                  'discovered_datacenter',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vimgrvcenterruntime_uuid': parent_uuid_schema,
+        'discovered_datacenter': discovered_datacenter_item_schema,
+    }
+
+
 def resource_mapping():
     return {
         'Avi::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
+        'Avi::VIMgrVcenterRuntime::DiscoveredDatacenter': VIMgrVcenterRuntimeDiscoveredDatacenter,
+        'Avi::VIMgrVcenterRuntime::DatacenterUuid': VIMgrVcenterRuntimeDatacenterUuids,
     }
 

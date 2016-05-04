@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -30,3 +31,5 @@ class VcenterDatastore(object):
     properties_schema = {
         'datastore_name': datastore_name_schema,
     }
+
+

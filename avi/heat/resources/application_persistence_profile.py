@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -30,6 +31,8 @@ class HdrPersistenceProfile(object):
     }
 
 
+
+
 class IPPersistenceProfile(object):
     # all schemas
     ip_persistent_timeout_schema = properties.Schema(
@@ -48,6 +51,8 @@ class IPPersistenceProfile(object):
     properties_schema = {
         'ip_persistent_timeout': ip_persistent_timeout_schema,
     }
+
+
 
 
 class HttpCookiePersistenceKey(object):
@@ -84,6 +89,8 @@ class HttpCookiePersistenceKey(object):
         'aes_key': aes_key_schema,
         'hmac_key': hmac_key_schema,
     }
+
+
 
 
 class HttpCookiePersistenceProfile(object):
@@ -138,6 +145,8 @@ class HttpCookiePersistenceProfile(object):
     }
 
 
+
+
 class AppCookiePersistenceProfile(object):
     # all schemas
     prst_hdr_name_schema = properties.Schema(
@@ -172,6 +181,8 @@ class AppCookiePersistenceProfile(object):
         'timeout': timeout_schema,
         'encryption_key': encryption_key_schema,
     }
+
+
 
 
 class ApplicationPersistenceProfile(AviResource):
@@ -253,6 +264,8 @@ class ApplicationPersistenceProfile(AviResource):
         'http_cookie_persistence_profile': http_cookie_persistence_profile_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

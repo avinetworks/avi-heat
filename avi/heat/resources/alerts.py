@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -39,6 +40,8 @@ class AlertFilter(object):
         'filter_string': filter_string_schema,
         'filter_action': filter_action_schema,
     }
+
+
 
 
 class MetricLog(object):
@@ -93,6 +96,8 @@ class MetricLog(object):
     }
 
 
+
+
 class AlertScriptConfig(AviResource):
     resource_name = "alertscriptconfig"
     # all schemas
@@ -120,6 +125,8 @@ class AlertScriptConfig(AviResource):
         'name': name_schema,
         'action_script': action_script_schema,
     }
+
+
 
 
 class ActionGroupConfig(AviResource):
@@ -207,6 +214,8 @@ class ActionGroupConfig(AviResource):
     }
 
 
+
+
 class AlertEmailConfig(AviResource):
     resource_name = "alertemailconfig"
     # all schemas
@@ -250,6 +259,8 @@ class AlertEmailConfig(AviResource):
         'cc_emails': cc_emails_schema,
         'description': description_schema,
     }
+
+
 
 
 class Alert(AviResource):
@@ -479,6 +490,174 @@ class Alert(AviResource):
     }
 
 
+
+
+class AlertEvents(AviNestedResource):
+    resource_name = "alert"
+    nested_property_name = "events"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+    events_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alert_uuid',
+                  'events',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+        'events': events_item_schema,
+    }
+
+
+class AlertAppEvents(AviNestedResource):
+    resource_name = "alert"
+    nested_property_name = "app_events"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+    app_events_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alert_uuid',
+                  'app_events',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+        'app_events': app_events_item_schema,
+    }
+
+
+class AlertConnEvents(AviNestedResource):
+    resource_name = "alert"
+    nested_property_name = "conn_events"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+    conn_events_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alert_uuid',
+                  'conn_events',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+        'conn_events': conn_events_item_schema,
+    }
+
+
+class AlertMetricInfo(AviNestedResource, MetricLog):
+    resource_name = "alert"
+    nested_property_name = "metric_info"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = MetricLog.PROPERTIES + ('alert_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(MetricLog.properties_schema)
+
+
+class AlertRelatedUuids(AviNestedResource):
+    resource_name = "alert"
+    nested_property_name = "related_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+    related_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alert_uuid',
+                  'related_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+        'related_uuids': related_uuids_item_schema,
+    }
+
+
+class AlertEventPages(AviNestedResource):
+    resource_name = "alert"
+    nested_property_name = "event_pages"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alert"),
+        required=True,
+        update_allowed=False,
+    )
+    event_pages_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alert_uuid',
+                  'event_pages',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alert_uuid': parent_uuid_schema,
+        'event_pages': event_pages_item_schema,
+    }
+
+
 class AlertMetricThreshold(object):
     # all schemas
     threshold_schema = properties.Schema(
@@ -505,6 +684,8 @@ class AlertMetricThreshold(object):
         'threshold': threshold_schema,
         'comparator': comparator_schema,
     }
+
+
 
 
 class AlertSyslogServer(object):
@@ -541,6 +722,8 @@ class AlertSyslogServer(object):
         'syslog_server_port': syslog_server_port_schema,
         'udp': udp_schema,
     }
+
+
 
 
 class AlertObjectList(AviResource):
@@ -587,6 +770,37 @@ class AlertObjectList(AviResource):
     }
 
 
+
+
+class AlertObjectListObjects(AviNestedResource):
+    resource_name = "alertobjectlist"
+    nested_property_name = "objects"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alertobjectlist"),
+        required=True,
+        update_allowed=False,
+    )
+    objects_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('alertobjectlist_uuid',
+                  'objects',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alertobjectlist_uuid': parent_uuid_schema,
+        'objects': objects_item_schema,
+    }
+
+
 class AlertRuleEvent(object):
     # all schemas
     event_id_schema = properties.Schema(
@@ -613,6 +827,8 @@ class AlertRuleEvent(object):
         'event_id': event_id_schema,
         'not_cond': not_cond_schema,
     }
+
+
 
 
 class AlertSyslogConfig(AviResource):
@@ -660,6 +876,29 @@ class AlertSyslogConfig(AviResource):
     }
 
 
+
+
+class AlertSyslogConfigSyslogServers(AviNestedResource, AlertSyslogServer):
+    resource_name = "alertsyslogconfig"
+    nested_property_name = "syslog_servers"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of alertsyslogconfig"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = AlertSyslogServer.PROPERTIES + ('alertsyslogconfig_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'alertsyslogconfig_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(AlertSyslogServer.properties_schema)
+
+
 class AlertRuleMetric(object):
     # all schemas
     metric_id_schema = properties.Schema(
@@ -695,6 +934,8 @@ class AlertRuleMetric(object):
         'metric_threshold': metric_threshold_schema,
         'duration': duration_schema,
     }
+
+
 
 
 class AlertRule(object):
@@ -764,6 +1005,8 @@ class AlertRule(object):
         'metrics_rule': metrics_rule_schema,
         'operator': operator_schema,
     }
+
+
 
 
 class AlertConfig(AviResource):
@@ -892,14 +1135,24 @@ class AlertConfig(AviResource):
     }
 
 
+
+
 def resource_mapping():
     return {
-        'Avi::AlertObjectList': AlertObjectList,
         'Avi::AlertSyslogConfig': AlertSyslogConfig,
-        'Avi::AlertEmailConfig': AlertEmailConfig,
         'Avi::AlertScriptConfig': AlertScriptConfig,
-        'Avi::ActionGroupConfig': ActionGroupConfig,
-        'Avi::AlertConfig': AlertConfig,
+        'Avi::Alert::AppEvent': AlertAppEvents,
+        'Avi::Alert::Event': AlertEvents,
+        'Avi::Alert::EventPage': AlertEventPages,
+        'Avi::AlertObjectList': AlertObjectList,
         'Avi::Alert': Alert,
+        'Avi::Alert::MetricInfo': AlertMetricInfo,
+        'Avi::AlertConfig': AlertConfig,
+        'Avi::AlertObjectList::Object': AlertObjectListObjects,
+        'Avi::Alert::RelatedUuid': AlertRelatedUuids,
+        'Avi::Alert::ConnEvent': AlertConnEvents,
+        'Avi::ActionGroupConfig': ActionGroupConfig,
+        'Avi::AlertEmailConfig': AlertEmailConfig,
+        'Avi::AlertSyslogConfig::SyslogServer': AlertSyslogConfigSyslogServers,
     }
 

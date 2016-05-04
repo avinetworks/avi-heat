@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -142,3 +143,5 @@ class ApicAgentGenericEventDetails(object):
         'lif_cif_attachment': lif_cif_attachment_schema,
         'vnic_network_attachment': vnic_network_attachment_schema,
     }
+
+

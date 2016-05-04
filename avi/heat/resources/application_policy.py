@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -69,6 +70,8 @@ class HTTPSecurityAction(object):
     }
 
 
+
+
 class HTTPPolicies(object):
     # all schemas
     index_schema = properties.Schema(
@@ -95,6 +98,8 @@ class HTTPPolicies(object):
         'index': index_schema,
         'http_policy_set_uuid': http_policy_set_uuid_schema,
     }
+
+
 
 
 class HTTPRequestRule(object):
@@ -201,6 +206,8 @@ class HTTPRequestRule(object):
     }
 
 
+
+
 class HTTPResponseRule(object):
     # all schemas
     name_schema = properties.Schema(
@@ -287,6 +294,8 @@ class HTTPResponseRule(object):
     }
 
 
+
+
 class HTTPSecurityRule(object):
     # all schemas
     name_schema = properties.Schema(
@@ -349,6 +358,8 @@ class HTTPSecurityRule(object):
     }
 
 
+
+
 class HTTPRequestPolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
@@ -375,6 +386,8 @@ class HTTPRequestPolicy(object):
     properties_schema = {
         'rules': rules_schema,
     }
+
+
 
 
 class HTTPSecurityPolicy(object):
@@ -405,6 +418,8 @@ class HTTPSecurityPolicy(object):
     }
 
 
+
+
 class HTTPResponsePolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
@@ -431,6 +446,8 @@ class HTTPResponsePolicy(object):
     properties_schema = {
         'rules': rules_schema,
     }
+
+
 
 
 class HTTPPolicySet(AviResource):
@@ -511,6 +528,8 @@ class HTTPPolicySet(AviResource):
         'is_internal_policy': is_internal_policy_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -39,6 +40,8 @@ class FullClientLogs(object):
     }
 
 
+
+
 class MetricsRealTimeUpdate(object):
     # all schemas
     enabled_schema = properties.Schema(
@@ -65,6 +68,8 @@ class MetricsRealTimeUpdate(object):
         'enabled': enabled_schema,
         'duration': duration_schema,
     }
+
+
 
 
 class ClientLogFilter(object):
@@ -137,6 +142,8 @@ class ClientLogFilter(object):
     }
 
 
+
+
 class ClientInsightsSampling(object):
     # all schemas
     skip_uris_schema = properties.Schema(
@@ -174,6 +181,8 @@ class ClientInsightsSampling(object):
         'sample_uris': sample_uris_schema,
         'client_ip': client_ip_schema,
     }
+
+
 
 
 class AnalyticsPolicy(object):
@@ -245,3 +254,5 @@ class AnalyticsPolicy(object):
         'analytics_profile_uuid': analytics_profile_uuid_schema,
         'client_insights_sampling': client_insights_sampling_schema,
     }
+
+

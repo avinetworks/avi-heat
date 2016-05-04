@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -169,3 +170,5 @@ class HttpCacheConfig(object):
         'mime_types_black_list': mime_types_black_list_schema,
         'mime_types_black_group_uuids': mime_types_black_group_uuids_schema,
     }
+
+

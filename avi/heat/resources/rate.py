@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -56,6 +57,8 @@ class RateLimiterAction(object):
         'status_code': status_code_schema,
         'file': file_schema,
     }
+
+
 
 
 class RateProfile(object):
@@ -117,6 +120,8 @@ class RateProfile(object):
         'fine_grain': fine_grain_schema,
         'action': action_schema,
     }
+
+
 
 
 class RateLimiterProfile(object):
@@ -210,3 +215,5 @@ class RateLimiterProfile(object):
         'client_ip_scanners_requests_rate_limit': client_ip_scanners_requests_rate_limit_schema,
         'uri_scanners_requests_rate_limit': uri_scanners_requests_rate_limit_schema,
     }
+
+

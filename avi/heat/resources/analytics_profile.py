@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -464,8 +465,40 @@ class AnalyticsProfile(AviResource):
     }
 
 
+
+
+class AnalyticsProfileExcludeHttpErrorCodes(AviNestedResource):
+    resource_name = "analyticsprofile"
+    nested_property_name = "exclude_http_error_codes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of analyticsprofile"),
+        required=True,
+        update_allowed=False,
+    )
+    exclude_http_error_codes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('analyticsprofile_uuid',
+                  'exclude_http_error_codes',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'analyticsprofile_uuid': parent_uuid_schema,
+        'exclude_http_error_codes': exclude_http_error_codes_item_schema,
+    }
+
+
 def resource_mapping():
     return {
+        'Avi::AnalyticsProfile::ExcludeHttpErrorCode': AnalyticsProfileExcludeHttpErrorCodes,
         'Avi::AnalyticsProfile': AnalyticsProfile,
     }
 

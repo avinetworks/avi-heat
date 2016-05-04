@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -50,6 +51,8 @@ class DNSConfiguration(object):
     }
 
 
+
+
 class AdminAuthConfiguration(object):
     # all schemas
     auth_profile_uuid_schema = properties.Schema(
@@ -86,6 +89,8 @@ class AdminAuthConfiguration(object):
     }
 
 
+
+
 class TechSupportUploaderConfiguration(object):
     # all schemas
     auto_upload_schema = properties.Schema(
@@ -104,6 +109,8 @@ class TechSupportUploaderConfiguration(object):
     properties_schema = {
         'auto_upload': auto_upload_schema,
     }
+
+
 
 
 class EmailConfiguration(object):
@@ -166,6 +173,8 @@ class EmailConfiguration(object):
     }
 
 
+
+
 class ProxyConfiguration(object):
     # all schemas
     host_schema = properties.Schema(
@@ -210,6 +219,8 @@ class ProxyConfiguration(object):
     }
 
 
+
+
 class LinuxConfiguration(object):
     # all schemas
     motd_schema = properties.Schema(
@@ -236,6 +247,8 @@ class LinuxConfiguration(object):
         'motd': motd_schema,
         'banner': banner_schema,
     }
+
+
 
 
 class PortalConfiguration(object):
@@ -345,6 +358,8 @@ class PortalConfiguration(object):
     }
 
 
+
+
 class NTPConfiguration(object):
     # all schemas
     ntp_server_list_item_schema = properties.Schema(
@@ -371,6 +386,8 @@ class NTPConfiguration(object):
     properties_schema = {
         'ntp_server_list': ntp_server_list_schema,
     }
+
+
 
 
 class MgmtIpAccessControl(object):
@@ -419,6 +436,8 @@ class MgmtIpAccessControl(object):
         'shell_server_access': shell_server_access_schema,
         'snmp_access': snmp_access_schema,
     }
+
+
 
 
 class SystemConfiguration(AviResource):
@@ -531,6 +550,8 @@ class SystemConfiguration(AviResource):
         'proxy_configuration': proxy_configuration_schema,
         'mgmt_ip_access_control': mgmt_ip_access_control_schema,
     }
+
+
 
 
 def resource_mapping():

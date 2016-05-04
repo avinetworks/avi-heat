@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -38,6 +39,8 @@ class SSLRenewFailedDetails(object):
     }
 
 
+
+
 class SSLExpireDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -66,6 +69,8 @@ class SSLExpireDetails(object):
     }
 
 
+
+
 class SSLRenewDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -86,6 +91,8 @@ class SSLRenewDetails(object):
     }
 
 
+
+
 class SSLExportDetails(object):
     # all schemas
     user_schema = properties.Schema(
@@ -104,3 +111,5 @@ class SSLExportDetails(object):
     properties_schema = {
         'user': user_schema,
     }
+
+

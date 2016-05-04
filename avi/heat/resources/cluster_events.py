@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -39,6 +40,8 @@ class ClusterServiceFailedEvent(object):
     }
 
 
+
+
 class ClusterLeaderFailoverEvent(object):
     # all schemas
     leader_node_schema = properties.Schema(
@@ -67,6 +70,8 @@ class ClusterLeaderFailoverEvent(object):
         'leader_node': leader_node_schema,
         'previous_leader_node': previous_leader_node_schema,
     }
+
+
 
 
 class ClusterNodeRemoveEvent(object):
@@ -106,6 +111,8 @@ class ClusterNodeRemoveEvent(object):
     }
 
 
+
+
 class ClusterNodeAddEvent(object):
     # all schemas
     node_name_schema = properties.Schema(
@@ -143,6 +150,8 @@ class ClusterNodeAddEvent(object):
     }
 
 
+
+
 class ClusterWarmRebootEvent(object):
     # all schemas
 
@@ -153,3 +162,5 @@ class ClusterWarmRebootEvent(object):
     # mapping of properties to their schemas
     properties_schema = {
     }
+
+

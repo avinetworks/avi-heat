@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -61,6 +62,8 @@ class MicroServiceContainer(object):
         'host': host_schema,
         'task_id': task_id_schema,
     }
+
+
 
 
 class MicroService(AviResource):
@@ -140,8 +143,32 @@ class MicroService(AviResource):
     }
 
 
+
+
+class MicroServiceContainers(AviNestedResource, MicroServiceContainer):
+    resource_name = "microservice"
+    nested_property_name = "containers"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of microservice"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = MicroServiceContainer.PROPERTIES + ('microservice_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'microservice_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(MicroServiceContainer.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::MicroService': MicroService,
+        'Avi::MicroService::Container': MicroServiceContainers,
     }
 

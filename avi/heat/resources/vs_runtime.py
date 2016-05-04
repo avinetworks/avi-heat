@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -86,6 +87,8 @@ class VsSeAssigned(AviResource):
     }
 
 
+
+
 class VsPlacementResolutionInfo(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -129,6 +132,8 @@ class VsPlacementResolutionInfo(object):
         'pool_uuid': pool_uuid_schema,
         'networks': networks_schema,
     }
+
+
 
 
 class ScaleStatus(object):
@@ -231,6 +236,8 @@ class ScaleStatus(object):
         'reason_code_string': reason_code_string_schema,
         'vs_placement_resolution_info': vs_placement_resolution_info_schema,
     }
+
+
 
 
 class VirtualServiceRuntime(AviResource):
@@ -692,9 +699,213 @@ class VirtualServiceRuntime(AviResource):
     }
 
 
+
+
+class VirtualServiceRuntimeScaleHistory(AviNestedResource, ScaleStatus):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "scale_history"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ScaleStatus.PROPERTIES + ('virtualserviceruntime_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(ScaleStatus.properties_schema)
+
+
+class VirtualServiceRuntimeAssignedStaticSeUuid(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "assigned_static_se_uuid"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    assigned_static_se_uuid_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'assigned_static_se_uuid',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'assigned_static_se_uuid': assigned_static_se_uuid_item_schema,
+    }
+
+
+class VirtualServiceRuntimeRequestedStaticSeUuid(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "requested_static_se_uuid"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    requested_static_se_uuid_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'requested_static_se_uuid',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'requested_static_se_uuid': requested_static_se_uuid_item_schema,
+    }
+
+
+class VirtualServiceRuntimeVhChildVsUuid(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "vh_child_vs_uuid"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    vh_child_vs_uuid_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'vh_child_vs_uuid',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'vh_child_vs_uuid': vh_child_vs_uuid_item_schema,
+    }
+
+
+class VirtualServiceRuntimeSeList(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "se_list"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    se_list_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'se_list',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'se_list': se_list_item_schema,
+    }
+
+
+class VirtualServiceRuntimeTlsTicketKey(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "tls_ticket_key"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    tls_ticket_key_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'tls_ticket_key',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'tls_ticket_key': tls_ticket_key_item_schema,
+    }
+
+
+class VirtualServiceRuntimeLif(AviNestedResource):
+    resource_name = "virtualserviceruntime"
+    nested_property_name = "lif"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualserviceruntime"),
+        required=True,
+        update_allowed=False,
+    )
+    lif_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualserviceruntime_uuid',
+                  'lif',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualserviceruntime_uuid': parent_uuid_schema,
+        'lif': lif_item_schema,
+    }
+
+
 def resource_mapping():
     return {
-        'Avi::VirtualServiceRuntime': VirtualServiceRuntime,
         'Avi::VsSeAssigned': VsSeAssigned,
+        'Avi::VirtualServiceRuntime::ScaleHistory': VirtualServiceRuntimeScaleHistory,
+        'Avi::VirtualServiceRuntime::Lif': VirtualServiceRuntimeLif,
+        'Avi::VirtualServiceRuntime::AssignedStaticSeUuid': VirtualServiceRuntimeAssignedStaticSeUuid,
+        'Avi::VirtualServiceRuntime::SeList': VirtualServiceRuntimeSeList,
+        'Avi::VirtualServiceRuntime::TlsTicketKey': VirtualServiceRuntimeTlsTicketKey,
+        'Avi::VirtualServiceRuntime': VirtualServiceRuntime,
+        'Avi::VirtualServiceRuntime::VhChildVsUuid': VirtualServiceRuntimeVhChildVsUuid,
+        'Avi::VirtualServiceRuntime::RequestedStaticSeUuid': VirtualServiceRuntimeRequestedStaticSeUuid,
     }
 

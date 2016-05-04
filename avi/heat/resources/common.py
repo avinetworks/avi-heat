@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -38,6 +39,8 @@ class IpAddrRange(object):
         'begin': begin_schema,
         'end': end_schema,
     }
+
+
 
 
 class CustomParams(object):
@@ -84,6 +87,8 @@ class CustomParams(object):
     }
 
 
+
+
 class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
@@ -120,6 +125,8 @@ class TenantConfiguration(object):
     }
 
 
+
+
 class Tag(object):
     # all schemas
     value_schema = properties.Schema(
@@ -146,6 +153,8 @@ class Tag(object):
         'value': value_schema,
         'type': type_schema,
     }
+
+
 
 
 class TimeStamp(object):
@@ -176,6 +185,8 @@ class TimeStamp(object):
     }
 
 
+
+
 class HTTPLocalFile(object):
     # all schemas
     content_type_schema = properties.Schema(
@@ -202,6 +213,8 @@ class HTTPLocalFile(object):
         'content_type': content_type_schema,
         'file_content': file_content_schema,
     }
+
+
 
 
 class OperationalStatus(object):
@@ -264,6 +277,8 @@ class OperationalStatus(object):
     }
 
 
+
+
 class AppInfo(object):
     # all schemas
     app_hdr_name_schema = properties.Schema(
@@ -292,6 +307,8 @@ class AppInfo(object):
     }
 
 
+
+
 class Port(object):
     # all schemas
     port_schema = properties.Schema(
@@ -310,6 +327,8 @@ class Port(object):
     properties_schema = {
         'port': port_schema,
     }
+
+
 
 
 class Tenant(AviResource):
@@ -358,6 +377,8 @@ class Tenant(AviResource):
     }
 
 
+
+
 class PortRange(object):
     # all schemas
     start_schema = properties.Schema(
@@ -386,6 +407,8 @@ class PortRange(object):
         'start': start_schema,
         'end': end_schema,
     }
+
+
 
 
 class IpAddrPort(object):
@@ -432,6 +455,8 @@ class IpAddrPort(object):
         'hostname': hostname_schema,
         'name': name_schema,
     }
+
+
 
 
 def resource_mapping():

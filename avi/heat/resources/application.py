@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -54,8 +55,40 @@ class Application(AviResource):
     }
 
 
+
+
+class ApplicationVirtualserviceUuids(AviNestedResource):
+    resource_name = "application"
+    nested_property_name = "virtualservice_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of application"),
+        required=True,
+        update_allowed=False,
+    )
+    virtualservice_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('application_uuid',
+                  'virtualservice_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'application_uuid': parent_uuid_schema,
+        'virtualservice_uuids': virtualservice_uuids_item_schema,
+    }
+
+
 def resource_mapping():
     return {
         'Avi::Application': Application,
+        'Avi::Application::VirtualserviceUuid': ApplicationVirtualserviceUuids,
     }
 

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -135,6 +136,8 @@ class TCPProxyProfile(object):
     }
 
 
+
+
 class UDPFastPathProfile(object):
     # all schemas
     session_idle_timeout_schema = properties.Schema(
@@ -171,6 +174,8 @@ class UDPFastPathProfile(object):
     }
 
 
+
+
 class TCPFastPathProfile(object):
     # all schemas
     session_idle_timeout_schema = properties.Schema(
@@ -197,6 +202,8 @@ class TCPFastPathProfile(object):
         'session_idle_timeout': session_idle_timeout_schema,
         'enable_syn_protection': enable_syn_protection_schema,
     }
+
+
 
 
 class NetworkProfileUnion(object):
@@ -246,6 +253,8 @@ class NetworkProfileUnion(object):
     }
 
 
+
+
 class NetworkProfile(AviResource):
     resource_name = "networkprofile"
     # all schemas
@@ -282,6 +291,8 @@ class NetworkProfile(AviResource):
         'profile': profile_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

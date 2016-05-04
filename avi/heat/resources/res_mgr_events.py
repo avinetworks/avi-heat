@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -172,6 +173,8 @@ class RmSpawnSeEventDetails(object):
     }
 
 
+
+
 class RmSeBootupFailEventDetails(object):
     # all schemas
     reason_schema = properties.Schema(
@@ -208,6 +211,8 @@ class RmSeBootupFailEventDetails(object):
     }
 
 
+
+
 class HostUnavailEventDetails(object):
     # all schemas
     reasons_item_schema = properties.Schema(
@@ -241,6 +246,8 @@ class HostUnavailEventDetails(object):
         'reasons': reasons_schema,
         'vs_name': vs_name_schema,
     }
+
+
 
 
 class RmModifyVnic(object):
@@ -279,6 +286,8 @@ class RmModifyVnic(object):
     }
 
 
+
+
 class RmAddVnic(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -313,6 +322,8 @@ class RmAddVnic(object):
         'network_name': network_name_schema,
         'subnet': subnet_schema,
     }
+
+
 
 
 class RmDeleteSeEventDetails(object):
@@ -415,6 +426,8 @@ class RmDeleteSeEventDetails(object):
     }
 
 
+
+
 class RmUnbindVsSeEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -457,6 +470,8 @@ class RmUnbindVsSeEventDetails(object):
         'se_name': se_name_schema,
         'reason': reason_schema,
     }
+
+
 
 
 class RmBindVsSeEventDetails(object):
@@ -519,6 +534,8 @@ class RmBindVsSeEventDetails(object):
     }
 
 
+
+
 class RmRebootSeEventDetails(object):
     # all schemas
     reason_schema = properties.Schema(
@@ -545,6 +562,8 @@ class RmRebootSeEventDetails(object):
         'reason': reason_schema,
         'se_name': se_name_schema,
     }
+
+
 
 
 class RmAddNetworksEventDetails(object):
@@ -629,6 +648,8 @@ class RmAddNetworksEventDetails(object):
     }
 
 
+
+
 class RmModifyNetworksEventDetails(object):
     # all schemas
     se_uuid_schema = properties.Schema(
@@ -711,6 +732,8 @@ class RmModifyNetworksEventDetails(object):
     }
 
 
+
+
 class RmSeIpFailEventDetails(object):
     # all schemas
     reason_schema = properties.Schema(
@@ -761,3 +784,5 @@ class RmSeIpFailEventDetails(object):
         'host_name': host_name_schema,
         'networks': networks_schema,
     }
+
+

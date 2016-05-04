@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -30,6 +31,8 @@ class AutoScaleMesosSettings(object):
     properties_schema = {
         'force': force_schema,
     }
+
+
 
 
 class ServerAutoScaleOutInfo(object):
@@ -100,6 +103,8 @@ class ServerAutoScaleOutInfo(object):
     }
 
 
+
+
 class ServerAutoScaleFailedInfo(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -152,6 +157,8 @@ class ServerAutoScaleFailedInfo(object):
     }
 
 
+
+
 class ServerId(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -187,6 +194,8 @@ class ServerId(object):
         'port': port_schema,
         'external_uuid': external_uuid_schema,
     }
+
+
 
 
 class ServerAutoScalePolicy(AviResource):
@@ -328,6 +337,66 @@ class ServerAutoScalePolicy(AviResource):
     }
 
 
+
+
+class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
+    resource_name = "serverautoscalepolicy"
+    nested_property_name = "scaleout_alertconfig_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of serverautoscalepolicy"),
+        required=True,
+        update_allowed=False,
+    )
+    scaleout_alertconfig_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('serverautoscalepolicy_uuid',
+                  'scaleout_alertconfig_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'serverautoscalepolicy_uuid': parent_uuid_schema,
+        'scaleout_alertconfig_uuids': scaleout_alertconfig_uuids_item_schema,
+    }
+
+
+class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
+    resource_name = "serverautoscalepolicy"
+    nested_property_name = "scalein_alertconfig_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of serverautoscalepolicy"),
+        required=True,
+        update_allowed=False,
+    )
+    scalein_alertconfig_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('serverautoscalepolicy_uuid',
+                  'scalein_alertconfig_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'serverautoscalepolicy_uuid': parent_uuid_schema,
+        'scalein_alertconfig_uuids': scalein_alertconfig_uuids_item_schema,
+    }
+
+
 class ServerAutoScaleInCompleteInfo(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -388,6 +457,8 @@ class ServerAutoScaleInCompleteInfo(object):
     }
 
 
+
+
 class AutoScaleKVData(object):
     # all schemas
     key_schema = properties.Schema(
@@ -414,6 +485,8 @@ class AutoScaleKVData(object):
         'key': key_schema,
         'value': value_schema,
     }
+
+
 
 
 class AutoScaleAWSSettings(object):
@@ -515,6 +588,8 @@ class AutoScaleAWSSettings(object):
     }
 
 
+
+
 class ServerAutoScaleInInfo(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -599,6 +674,8 @@ class ServerAutoScaleInInfo(object):
     }
 
 
+
+
 class ServerAutoScaleOutCompleteInfo(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -665,6 +742,8 @@ class ServerAutoScaleOutCompleteInfo(object):
         'reason': reason_schema,
         'reason_code': reason_code_schema,
     }
+
+
 
 
 class AutoScaleOpenStackSettings(object):
@@ -775,6 +854,8 @@ class AutoScaleOpenStackSettings(object):
     }
 
 
+
+
 class AutoScaleLaunchConfig(AviResource):
     resource_name = "autoscalelaunchconfig"
     # all schemas
@@ -839,9 +920,13 @@ class AutoScaleLaunchConfig(AviResource):
     }
 
 
+
+
 def resource_mapping():
     return {
-        'Avi::AutoScaleLaunchConfig': AutoScaleLaunchConfig,
         'Avi::ServerAutoScalePolicy': ServerAutoScalePolicy,
+        'Avi::ServerAutoScalePolicy::ScaleinAlertconfigUuid': ServerAutoScalePolicyScaleinAlertconfigUuids,
+        'Avi::ServerAutoScalePolicy::ScaleoutAlertconfigUuid': ServerAutoScalePolicyScaleoutAlertconfigUuids,
+        'Avi::AutoScaleLaunchConfig': AutoScaleLaunchConfig,
     }
 

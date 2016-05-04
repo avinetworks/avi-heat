@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -39,6 +40,8 @@ class HSMThalesRFS(object):
         'ip': ip_schema,
         'port': port_schema,
     }
+
+
 
 
 class HSMThalesNetHsm(object):
@@ -103,6 +106,8 @@ class HSMThalesNetHsm(object):
     }
 
 
+
+
 class HardwareSecurityModule(object):
     # all schemas
     type_schema = properties.Schema(
@@ -148,6 +153,8 @@ class HardwareSecurityModule(object):
     }
 
 
+
+
 class HardwareSecurityModuleGroup(AviResource):
     resource_name = "hardwaresecuritymodulegroup"
     # all schemas
@@ -176,6 +183,8 @@ class HardwareSecurityModuleGroup(AviResource):
         'name': name_schema,
         'hsm': hsm_schema,
     }
+
+
 
 
 def resource_mapping():

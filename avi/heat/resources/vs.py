@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -54,6 +55,8 @@ class VsSeInitialPlacementParams(object):
     }
 
 
+
+
 class ServicePoolSelector(object):
     # all schemas
     service_port_schema = properties.Schema(
@@ -81,6 +84,8 @@ class ServicePoolSelector(object):
         'service_port': service_port_schema,
         'service_pool_uuid': service_pool_uuid_schema,
     }
+
+
 
 
 class VirtualServiceResource(object):
@@ -151,6 +156,8 @@ class VirtualServiceResource(object):
     }
 
 
+
+
 class VsScaleinParams(object):
     # all schemas
     from_se_uuid_schema = properties.Schema(
@@ -185,6 +192,8 @@ class VsScaleinParams(object):
         'scalein_primary': scalein_primary_schema,
         'admin_down': admin_down_schema,
     }
+
+
 
 
 class Service(object):
@@ -231,6 +240,8 @@ class Service(object):
     }
 
 
+
+
 class PerformanceLimits(object):
     # all schemas
     max_concurrent_connections_schema = properties.Schema(
@@ -257,6 +268,8 @@ class PerformanceLimits(object):
         'max_concurrent_connections': max_concurrent_connections_schema,
         'max_throughput': max_throughput_schema,
     }
+
+
 
 
 class VirtualService(AviResource):
@@ -829,6 +842,282 @@ class VirtualService(AviResource):
     }
 
 
+
+
+class VirtualServiceServices(AviNestedResource, Service):
+    resource_name = "virtualservice"
+    nested_property_name = "services"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = Service.PROPERTIES + ('virtualservice_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(Service.properties_schema)
+
+
+class VirtualServiceHttpPolicies(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "http_policies"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    http_policies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'http_policies',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'http_policies': http_policies_item_schema,
+    }
+
+
+class VirtualServiceSslKeyAndCertificateUuids(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "ssl_key_and_certificate_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    ssl_key_and_certificate_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'ssl_key_and_certificate_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'ssl_key_and_certificate_uuids': ssl_key_and_certificate_uuids_item_schema,
+    }
+
+
+class VirtualServiceDiscoveredNetworkUuid(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "discovered_network_uuid"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    discovered_network_uuid_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'discovered_network_uuid',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'discovered_network_uuid': discovered_network_uuid_item_schema,
+    }
+
+
+class VirtualServiceDiscoveredSubnet(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "discovered_subnet"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    discovered_subnet_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'discovered_subnet',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'discovered_subnet': discovered_subnet_item_schema,
+    }
+
+
+class VirtualServiceDiscoveredNetworks(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "discovered_networks"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    discovered_networks_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'discovered_networks',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'discovered_networks': discovered_networks_item_schema,
+    }
+
+
+class VirtualServiceVsDatascripts(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "vs_datascripts"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    vs_datascripts_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'vs_datascripts',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'vs_datascripts': vs_datascripts_item_schema,
+    }
+
+
+class VirtualServiceVhDomainName(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "vh_domain_name"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    vh_domain_name_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'vh_domain_name',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'vh_domain_name': vh_domain_name_item_schema,
+    }
+
+
+class VirtualServiceServicePoolSelect(AviNestedResource, ServicePoolSelector):
+    resource_name = "virtualservice"
+    nested_property_name = "service_pool_select"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ServicePoolSelector.PROPERTIES + ('virtualservice_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(ServicePoolSelector.properties_schema)
+
+
+class VirtualServiceSnatIp(AviNestedResource):
+    resource_name = "virtualservice"
+    nested_property_name = "snat_ip"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of virtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+    snat_ip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('virtualservice_uuid',
+                  'snat_ip',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtualservice_uuid': parent_uuid_schema,
+        'snat_ip': snat_ip_item_schema,
+    }
+
+
 class VsScaleoutParams(object):
     # all schemas
     to_se_uuid_schema = properties.Schema(
@@ -881,6 +1170,8 @@ class VsScaleoutParams(object):
     }
 
 
+
+
 class TLSTicket(object):
     # all schemas
     name_schema = properties.Schema(
@@ -917,6 +1208,8 @@ class TLSTicket(object):
     }
 
 
+
+
 class VsInitialPlacementParams(object):
     # all schemas
     se_placement_params_item_schema = properties.Schema(
@@ -943,6 +1236,8 @@ class VsInitialPlacementParams(object):
     properties_schema = {
         'se_placement_params': se_placement_params_schema,
     }
+
+
 
 
 class VsMigrateParams(object):
@@ -997,6 +1292,8 @@ class VsMigrateParams(object):
     }
 
 
+
+
 class VsSeVnic(object):
     # all schemas
     mac_schema = properties.Schema(
@@ -1031,6 +1328,8 @@ class VsSeVnic(object):
         'type': type_schema,
         'lif': lif_schema,
     }
+
+
 
 
 class VsApicExtension(object):
@@ -1077,6 +1376,8 @@ class VsApicExtension(object):
     }
 
 
+
+
 class SeVipInterfaceList(object):
     # all schemas
     vip_intf_mac_schema = properties.Schema(
@@ -1112,6 +1413,8 @@ class SeVipInterfaceList(object):
         'vlan_id': vlan_id_schema,
         'vip_intf_ip': vip_intf_ip_schema,
     }
+
+
 
 
 class SeList(object):
@@ -1296,8 +1599,20 @@ class SeList(object):
     }
 
 
+
+
 def resource_mapping():
     return {
+        'Avi::VirtualService::ServicePoolSelect': VirtualServiceServicePoolSelect,
+        'Avi::VirtualService::Service': VirtualServiceServices,
+        'Avi::VirtualService::VhDomainName': VirtualServiceVhDomainName,
+        'Avi::VirtualService::DiscoveredNetwork': VirtualServiceDiscoveredNetworks,
+        'Avi::VirtualService::VsDatascript': VirtualServiceVsDatascripts,
+        'Avi::VirtualService::DiscoveredSubnet': VirtualServiceDiscoveredSubnet,
+        'Avi::VirtualService::SnatIp': VirtualServiceSnatIp,
+        'Avi::VirtualService::SslKeyAndCertificateUuid': VirtualServiceSslKeyAndCertificateUuids,
+        'Avi::VirtualService::HttpPolicie': VirtualServiceHttpPolicies,
         'Avi::VirtualService': VirtualService,
+        'Avi::VirtualService::DiscoveredNetworkUuid': VirtualServiceDiscoveredNetworkUuid,
     }
 

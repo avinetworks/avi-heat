@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -44,6 +45,8 @@ class HealthMonitorTcp(object):
         'tcp_response': tcp_response_schema,
         'maintenance_response': maintenance_response_schema,
     }
+
+
 
 
 class HealthMonitorExternal(object):
@@ -88,6 +91,8 @@ class HealthMonitorExternal(object):
         'command_code': command_code_schema,
         'command_variables': command_variables_schema,
     }
+
+
 
 
 class HealthMonitorHttp(object):
@@ -156,6 +161,8 @@ class HealthMonitorHttp(object):
     }
 
 
+
+
 class HealthMonitorUdp(object):
     # all schemas
     udp_request_schema = properties.Schema(
@@ -190,6 +197,8 @@ class HealthMonitorUdp(object):
         'udp_response': udp_response_schema,
         'maintenance_response': maintenance_response_schema,
     }
+
+
 
 
 class HealthMonitorDNS(object):
@@ -234,6 +243,8 @@ class HealthMonitorDNS(object):
         'rcode': rcode_schema,
         'response_string': response_string_schema,
     }
+
+
 
 
 class HealthMonitor(AviResource):
@@ -365,6 +376,8 @@ class HealthMonitor(AviResource):
         'monitor_port': monitor_port_schema,
         'description': description_schema,
     }
+
+
 
 
 def resource_mapping():

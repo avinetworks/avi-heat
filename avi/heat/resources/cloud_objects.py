@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -89,6 +90,8 @@ class vCloudAirConfiguration(object):
     }
 
 
+
+
 class AwsZoneConfig(object):
     # all schemas
     availability_zone_schema = properties.Schema(
@@ -123,6 +126,8 @@ class AwsZoneConfig(object):
         'mgmt_network_name': mgmt_network_name_schema,
         'mgmt_network_uuid': mgmt_network_uuid_schema,
     }
+
+
 
 
 class CloudStackConfiguration(object):
@@ -193,6 +198,8 @@ class CloudStackConfiguration(object):
     }
 
 
+
+
 class MesosSeResources(object):
     # all schemas
     attribute_key_schema = properties.Schema(
@@ -237,6 +244,8 @@ class MesosSeResources(object):
     }
 
 
+
+
 class HostAttributes(object):
     # all schemas
     attr_key_schema = properties.Schema(
@@ -263,6 +272,8 @@ class HostAttributes(object):
         'attr_key': attr_key_schema,
         'attr_val': attr_val_schema,
     }
+
+
 
 
 class LinuxServerHost(object):
@@ -300,6 +311,8 @@ class LinuxServerHost(object):
         'host_ip': host_ip_schema,
         'host_attr': host_attr_schema,
     }
+
+
 
 
 class vCenterConfiguration(object):
@@ -379,6 +392,8 @@ class vCenterConfiguration(object):
     }
 
 
+
+
 class MesosOpenStackConfiguration(object):
     # all schemas
     username_schema = properties.Schema(
@@ -439,6 +454,8 @@ class MesosOpenStackConfiguration(object):
     }
 
 
+
+
 class CloudConnectorUser(AviResource):
     resource_name = "cloudconnectoruser"
     # all schemas
@@ -474,6 +491,8 @@ class CloudConnectorUser(AviResource):
         'private_key': private_key_schema,
         'public_key': public_key_schema,
     }
+
+
 
 
 class NuageSDNController(object):
@@ -576,6 +595,8 @@ class NuageSDNController(object):
     }
 
 
+
+
 class SSHSeDeployment(object):
     # all schemas
     ssh_user_schema = properties.Schema(
@@ -620,6 +641,8 @@ class SSHSeDeployment(object):
     }
 
 
+
+
 class MarathonSeDeployment(object):
     # all schemas
     host_os_schema = properties.Schema(
@@ -661,6 +684,8 @@ class MarathonSeDeployment(object):
         'docker_image': docker_image_schema,
         'uris': uris_schema,
     }
+
+
 
 
 class MarathonConfiguration(object):
@@ -739,6 +764,8 @@ class MarathonConfiguration(object):
         'vs_name_tag_framework': vs_name_tag_framework_schema,
         'use_token_auth': use_token_auth_schema,
     }
+
+
 
 
 class APICConfiguration(object):
@@ -864,6 +891,8 @@ class APICConfiguration(object):
     }
 
 
+
+
 class AwsConfiguration(object):
     # all schemas
     access_key_id_schema = properties.Schema(
@@ -956,6 +985,8 @@ class AwsConfiguration(object):
     }
 
 
+
+
 class FeProxyRoutePublishConfig(object):
     # all schemas
     mode_schema = properties.Schema(
@@ -1000,6 +1031,8 @@ class FeProxyRoutePublishConfig(object):
     }
 
 
+
+
 class MesosAttribute(object):
     # all schemas
     attribute_schema = properties.Schema(
@@ -1028,6 +1061,8 @@ class MesosAttribute(object):
     }
 
 
+
+
 class OpenStackRoleMapping(object):
     # all schemas
     os_role_schema = properties.Schema(
@@ -1054,6 +1089,8 @@ class OpenStackRoleMapping(object):
         'os_role': os_role_schema,
         'avi_role': avi_role_schema,
     }
+
+
 
 
 class DockerRegistry(object):
@@ -1108,6 +1145,8 @@ class DockerRegistry(object):
     }
 
 
+
+
 class LinuxServerConfiguration(object):
     # all schemas
     ssh_attr_schema = properties.Schema(
@@ -1152,6 +1191,8 @@ class LinuxServerConfiguration(object):
         'docker_registry_se': docker_registry_se_schema,
         'hosts': hosts_schema,
     }
+
+
 
 
 class MesosConfiguration(object):
@@ -1469,6 +1510,8 @@ class MesosConfiguration(object):
     }
 
 
+
+
 class RancherConfiguration(object):
     # all schemas
     rancher_servers_item_schema = properties.Schema(
@@ -1706,6 +1749,8 @@ class RancherConfiguration(object):
     }
 
 
+
+
 class DockerConfiguration(object):
     # all schemas
     ucp_nodes_item_schema = properties.Schema(
@@ -1941,6 +1986,8 @@ class DockerConfiguration(object):
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
     }
+
+
 
 
 class OpenStackConfiguration(object):
@@ -2210,6 +2257,8 @@ class OpenStackConfiguration(object):
     }
 
 
+
+
 class Cloud(AviResource):
     resource_name = "cloud"
     # all schemas
@@ -2400,6 +2449,8 @@ class Cloud(AviResource):
         'ipamprofile_uuid': ipamprofile_uuid_schema,
         'license_type': license_type_schema,
     }
+
+
 
 
 def resource_mapping():

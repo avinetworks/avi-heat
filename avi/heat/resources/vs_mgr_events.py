@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -71,6 +72,8 @@ class VsInitialPlacementEventDetails(object):
         'rpc_status': rpc_status_schema,
         'error_message': error_message_schema,
     }
+
+
 
 
 class VsScaleOutEventDetails(object):
@@ -143,6 +146,8 @@ class VsScaleOutEventDetails(object):
     }
 
 
+
+
 class VsScaleInEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -213,6 +218,8 @@ class VsScaleInEventDetails(object):
     }
 
 
+
+
 class VsErrorEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -274,6 +281,8 @@ class VsErrorEventDetails(object):
     }
 
 
+
+
 class VsFsmEventDetails(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -301,6 +310,8 @@ class VsFsmEventDetails(object):
         'vs_uuid': vs_uuid_schema,
         'vs_rt': vs_rt_schema,
     }
+
+
 
 
 class VsMigrateEventDetails(object):
@@ -373,6 +384,8 @@ class VsMigrateEventDetails(object):
     }
 
 
+
+
 class VsPoolNwFilterEventDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -407,6 +420,8 @@ class VsPoolNwFilterEventDetails(object):
         'filter': filter_schema,
         'network': network_schema,
     }
+
+
 
 
 class VsAwaitingSeEventDetails(object):
@@ -460,3 +475,5 @@ class VsAwaitingSeEventDetails(object):
         'se_assigned': se_assigned_schema,
         'awaitingse_timeout': awaitingse_timeout_schema,
     }
+
+

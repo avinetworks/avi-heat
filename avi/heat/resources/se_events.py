@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -43,6 +44,8 @@ class SeThreshEventDetails(object):
     }
 
 
+
+
 class SePersistenceEventDetails(object):
     # all schemas
     pool_schema = properties.Schema(
@@ -79,6 +82,8 @@ class SePersistenceEventDetails(object):
     }
 
 
+
+
 class SeHmEventShmDetails(object):
     # all schemas
     health_monitor_schema = properties.Schema(
@@ -113,6 +118,8 @@ class SeHmEventShmDetails(object):
         'average_response_time': average_response_time_schema,
         'resp_string': resp_string_schema,
     }
+
+
 
 
 class SeDupipEventDetails(object):
@@ -157,6 +164,8 @@ class SeDupipEventDetails(object):
         'remote_mac': remote_mac_schema,
         'local_mac': local_mac_schema,
     }
+
+
 
 
 class SePoolLbEventDetails(object):
@@ -209,6 +218,8 @@ class SePoolLbEventDetails(object):
         'virtual_service': virtual_service_schema,
         'src_uuid': src_uuid_schema,
     }
+
+
 
 
 class SeIpRemovedEventDetails(object):
@@ -295,6 +306,8 @@ class SeIpRemovedEventDetails(object):
     }
 
 
+
+
 class SeIpAddedEventDetails(object):
     # all schemas
     se_uuid_schema = properties.Schema(
@@ -377,6 +390,8 @@ class SeIpAddedEventDetails(object):
         'network_uuid': network_uuid_schema,
         'mac': mac_schema,
     }
+
+
 
 
 class SeHmEventServerDetails(object):
@@ -464,6 +479,8 @@ class SeHmEventServerDetails(object):
     }
 
 
+
+
 class SeHBEventDetails(object):
     # all schemas
     se_uuid1_schema = properties.Schema(
@@ -498,6 +515,8 @@ class SeHBEventDetails(object):
         'se_uuid2': se_uuid2_schema,
         'hb_type': hb_type_schema,
     }
+
+
 
 
 class SeHmEventVsDetails(object):
@@ -552,6 +571,8 @@ class SeHmEventVsDetails(object):
     }
 
 
+
+
 class SeIpfailureEventDetails(object):
     # all schemas
     se_uuid_schema = properties.Schema(
@@ -594,6 +615,38 @@ class SeIpfailureEventDetails(object):
         'network_uuid': network_uuid_schema,
         'mac': mac_schema,
     }
+
+
+
+
+class SeDefaultGwHbFailDetails(object):
+    # all schemas
+    defgw_ip_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Monitored gateway"),
+        required=True,
+        update_allowed=True,
+    )
+    vrf_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Virtual Routing Context corresponding to this address"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'defgw_ip',
+        'vrf_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'defgw_ip': defgw_ip_schema,
+        'vrf_name': vrf_name_schema,
+    }
+
+
 
 
 class SeHmEventPoolDetails(object):
@@ -663,3 +716,5 @@ class SeHmEventPoolDetails(object):
         'percent_servers_up': percent_servers_up_schema,
         'src_uuid': src_uuid_schema,
     }
+
+

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -46,6 +47,8 @@ class AppHdr(object):
         'hdr_match_case': hdr_match_case_schema,
         'hdr_string_op': hdr_string_op_schema,
     }
+
+
 
 
 class SeRuntimeCompressionProperties(object):
@@ -97,6 +100,8 @@ class SeRuntimeCompressionProperties(object):
         'min_high_rtt': min_high_rtt_schema,
         'mobile_str': mobile_str_schema,
     }
+
+
 
 
 class SeBootupCompressionProperties(object):
@@ -159,6 +164,8 @@ class SeBootupCompressionProperties(object):
     }
 
 
+
+
 class SeRateLimiters(object):
     # all schemas
     icmp_rl_schema = properties.Schema(
@@ -217,6 +224,8 @@ class SeRateLimiters(object):
         'flow_probe_rl': flow_probe_rl_schema,
         'default_rl': default_rl_schema,
     }
+
+
 
 
 class SeRuntimeProperties(object):
@@ -986,6 +995,8 @@ class SeRuntimeProperties(object):
     }
 
 
+
+
 class SeAgentProperties(object):
     # all schemas
     debug_mode_schema = properties.Schema(
@@ -1144,6 +1155,12 @@ class SeAgentProperties(object):
         required=False,
         update_allowed=True,
     )
+    ignore_docker_mac_change_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1173,6 +1190,7 @@ class SeAgentProperties(object):
         'sdb_flush_interval',
         'controller_echo_rpc_aggressive_timeout',
         'controller_echo_miss_aggressive_limit',
+        'ignore_docker_mac_change',
     )
 
     # mapping of properties to their schemas
@@ -1203,7 +1221,10 @@ class SeAgentProperties(object):
         'sdb_flush_interval': sdb_flush_interval_schema,
         'controller_echo_rpc_aggressive_timeout': controller_echo_rpc_aggressive_timeout_schema,
         'controller_echo_miss_aggressive_limit': controller_echo_miss_aggressive_limit_schema,
+        'ignore_docker_mac_change': ignore_docker_mac_change_schema,
     }
+
+
 
 
 class SeBootupProperties(object):
@@ -1475,6 +1496,8 @@ class SeBootupProperties(object):
     }
 
 
+
+
 class SeProperties(AviResource):
     resource_name = "seproperties"
     # all schemas
@@ -1513,6 +1536,8 @@ class SeProperties(AviResource):
         'se_runtime_properties': se_runtime_properties_schema,
         'se_agent_properties': se_agent_properties_schema,
     }
+
+
 
 
 def resource_mapping():

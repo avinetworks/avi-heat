@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -48,6 +49,8 @@ class DebugSeAgent(object):
     }
 
 
+
+
 class DebugSeDataplane(object):
     # all schemas
     flag_schema = properties.Schema(
@@ -66,6 +69,8 @@ class DebugSeDataplane(object):
     properties_schema = {
         'flag': flag_schema,
     }
+
+
 
 
 class DebugSeCpuShares(object):
@@ -94,6 +99,8 @@ class DebugSeCpuShares(object):
         'cpu': cpu_schema,
         'shares': shares_schema,
     }
+
+
 
 
 class DebugServiceEngine(AviResource):
@@ -165,6 +172,71 @@ class DebugServiceEngine(AviResource):
     }
 
 
+
+
+class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
+    resource_name = "debugserviceengine"
+    nested_property_name = "seagent_debug"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of debugserviceengine"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = DebugSeAgent.PROPERTIES + ('debugserviceengine_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'debugserviceengine_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(DebugSeAgent.properties_schema)
+
+
+class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
+    resource_name = "debugserviceengine"
+    nested_property_name = "flags"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of debugserviceengine"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = DebugSeDataplane.PROPERTIES + ('debugserviceengine_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'debugserviceengine_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(DebugSeDataplane.properties_schema)
+
+
+class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
+    resource_name = "debugserviceengine"
+    nested_property_name = "cpu_shares"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of debugserviceengine"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = DebugSeCpuShares.PROPERTIES + ('debugserviceengine_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'debugserviceengine_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(DebugSeCpuShares.properties_schema)
+
+
 class DebugIpAddr(object):
     # all schemas
     addrs_item_schema = properties.Schema(
@@ -225,6 +297,8 @@ class DebugIpAddr(object):
     }
 
 
+
+
 class DebugVirtualServiceSeParams(object):
     # all schemas
     se_uuids_item_schema = properties.Schema(
@@ -250,6 +324,8 @@ class DebugVirtualServiceSeParams(object):
     properties_schema = {
         'se_uuids': se_uuids_schema,
     }
+
+
 
 
 class DebugVirtualServiceCapture(object):
@@ -288,6 +364,8 @@ class DebugVirtualServiceCapture(object):
     }
 
 
+
+
 class DebugVsDataplane(object):
     # all schemas
     flag_schema = properties.Schema(
@@ -306,6 +384,8 @@ class DebugVsDataplane(object):
     properties_schema = {
         'flag': flag_schema,
     }
+
+
 
 
 class DebugVirtualService(AviResource):
@@ -388,9 +468,36 @@ class DebugVirtualService(AviResource):
     }
 
 
+
+
+class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
+    resource_name = "debugvirtualservice"
+    nested_property_name = "flags"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of debugvirtualservice"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = DebugVsDataplane.PROPERTIES + ('debugvirtualservice_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'debugvirtualservice_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(DebugVsDataplane.properties_schema)
+
+
 def resource_mapping():
     return {
+        'Avi::DebugServiceEngine::Flag': DebugServiceEngineFlags,
         'Avi::DebugVirtualService': DebugVirtualService,
         'Avi::DebugServiceEngine': DebugServiceEngine,
+        'Avi::DebugServiceEngine::CpuShare': DebugServiceEngineCpuShares,
+        'Avi::DebugVirtualService::Flag': DebugVirtualServiceFlags,
+        'Avi::DebugServiceEngine::SeagentDebug': DebugServiceEngineSeagentDebug,
     }
 

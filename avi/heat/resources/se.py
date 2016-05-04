@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -71,6 +72,8 @@ class SeResources(object):
     }
 
 
+
+
 class ConServer(object):
     # all schemas
     server_ip_schema = properties.Schema(
@@ -131,6 +134,8 @@ class ConServer(object):
     }
 
 
+
+
 class DefaultGateway(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -160,6 +165,8 @@ class DefaultGateway(object):
     }
 
 
+
+
 class ServiceEngine(AviResource):
     resource_name = "serviceengine"
     # all schemas
@@ -187,6 +194,8 @@ class ServiceEngine(AviResource):
         'name': name_schema,
         'se_group_uuid': se_group_uuid_schema,
     }
+
+
 
 
 class ConVip(object):
@@ -241,6 +250,8 @@ class ConVip(object):
     }
 
 
+
+
 class vNICNetwork(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -276,6 +287,8 @@ class vNICNetwork(object):
         'ctlr_alloc': ctlr_alloc_schema,
         'mode': mode_schema,
     }
+
+
 
 
 class ConInfo(object):
@@ -321,6 +334,8 @@ class ConInfo(object):
         'vip': vip_schema,
         'servers': servers_schema,
     }
+
+
 
 
 class VlanInterface(object):
@@ -373,6 +388,8 @@ class VlanInterface(object):
         'dhcp_enabled': dhcp_enabled_schema,
         'vnic_networks': vnic_networks_schema,
     }
+
+
 
 
 class vNIC(object):
@@ -441,6 +458,8 @@ class vNIC(object):
         'vrf_uuid': vrf_uuid_schema,
         'vlan_interfaces': vlan_interfaces_schema,
     }
+
+
 
 
 def resource_mapping():

@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
@@ -39,6 +40,8 @@ class SnmpTrapServer(object):
     }
 
 
+
+
 class SnmpConfiguration(object):
     # all schemas
     community_schema = properties.Schema(
@@ -57,6 +60,8 @@ class SnmpConfiguration(object):
     properties_schema = {
         'community': community_schema,
     }
+
+
 
 
 class SnmpTrapProfile(AviResource):
@@ -96,8 +101,32 @@ class SnmpTrapProfile(AviResource):
     }
 
 
+
+
+class SnmpTrapProfileTrapServers(AviNestedResource, SnmpTrapServer):
+    resource_name = "snmptrapprofile"
+    nested_property_name = "trap_servers"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of snmptrapprofile"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = SnmpTrapServer.PROPERTIES + ('snmptrapprofile_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'snmptrapprofile_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(SnmpTrapServer.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::SnmpTrapProfile': SnmpTrapProfile,
+        'Avi::SnmpTrapProfile::TrapServer': SnmpTrapProfileTrapServers,
     }
 

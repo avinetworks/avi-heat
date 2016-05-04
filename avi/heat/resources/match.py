@@ -5,6 +5,7 @@ from heat.engine import constraints
 from heat.engine import attributes
 from heat.common.i18n import _
 from avi.heat.avi_resource import AviResource
+from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from common import *
@@ -94,6 +95,8 @@ class IpAddrMatch(object):
     }
 
 
+
+
 class HdrMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -145,6 +148,8 @@ class HdrMatch(object):
     }
 
 
+
+
 class HTTPStatusRange(object):
     # all schemas
     begin_schema = properties.Schema(
@@ -171,6 +176,8 @@ class HTTPStatusRange(object):
         'begin': begin_schema,
         'end': end_schema,
     }
+
+
 
 
 class LocationHdrMatch(object):
@@ -214,6 +221,8 @@ class LocationHdrMatch(object):
         'match_case': match_case_schema,
         'value': value_schema,
     }
+
+
 
 
 class PathMatch(object):
@@ -274,6 +283,8 @@ class PathMatch(object):
     }
 
 
+
+
 class HTTPStatusCode(object):
     # all schemas
     status_schema = properties.Schema(
@@ -292,6 +303,8 @@ class HTTPStatusCode(object):
     properties_schema = {
         'status': status_schema,
     }
+
+
 
 
 class MicroServiceGroup(AviResource):
@@ -346,6 +359,37 @@ class MicroServiceGroup(AviResource):
     }
 
 
+
+
+class MicroServiceGroupServiceUuids(AviNestedResource):
+    resource_name = "microservicegroup"
+    nested_property_name = "service_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of microservicegroup"),
+        required=True,
+        update_allowed=False,
+    )
+    service_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('microservicegroup_uuid',
+                  'service_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'microservicegroup_uuid': parent_uuid_schema,
+        'service_uuids': service_uuids_item_schema,
+    }
+
+
 class PortMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -380,6 +424,8 @@ class PortMatch(object):
         'match_criteria': match_criteria_schema,
         'ports': ports_schema,
     }
+
+
 
 
 class HTTPStatusMatch(object):
@@ -434,6 +480,8 @@ class HTTPStatusMatch(object):
     }
 
 
+
+
 class HostHdrMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -477,6 +525,8 @@ class HostHdrMatch(object):
     }
 
 
+
+
 class KeyValue(object):
     # all schemas
     key_schema = properties.Schema(
@@ -503,6 +553,8 @@ class KeyValue(object):
         'key': key_schema,
         'value': value_schema,
     }
+
+
 
 
 class QueryMatch(object):
@@ -563,6 +615,8 @@ class QueryMatch(object):
     }
 
 
+
+
 class MicroServiceMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -589,6 +643,8 @@ class MicroServiceMatch(object):
         'match_criteria': match_criteria_schema,
         'group_uuid': group_uuid_schema,
     }
+
+
 
 
 class MethodMatch(object):
@@ -626,6 +682,8 @@ class MethodMatch(object):
     }
 
 
+
+
 class HTTPVersionMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -659,6 +717,8 @@ class HTTPVersionMatch(object):
         'match_criteria': match_criteria_schema,
         'versions': versions_schema,
     }
+
+
 
 
 class CookieMatch(object):
@@ -703,6 +763,8 @@ class CookieMatch(object):
         'match_case': match_case_schema,
         'value': value_schema,
     }
+
+
 
 
 class StringGroup(AviResource):
@@ -758,6 +820,29 @@ class StringGroup(AviResource):
     }
 
 
+
+
+class StringGroupKv(AviNestedResource, KeyValue):
+    resource_name = "stringgroup"
+    nested_property_name = "kv"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of stringgroup"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = KeyValue.PROPERTIES + ('stringgroup_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'stringgroup_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(KeyValue.properties_schema)
+
+
 class ProtocolMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -784,6 +869,8 @@ class ProtocolMatch(object):
         'match_criteria': match_criteria_schema,
         'protocols': protocols_schema,
     }
+
+
 
 
 class StringMatch(object):
@@ -834,6 +921,8 @@ class StringMatch(object):
         'match_str': match_str_schema,
         'string_group_uuids': string_group_uuids_schema,
     }
+
+
 
 
 class IpAddrGroup(AviResource):
@@ -968,6 +1057,153 @@ class IpAddrGroup(AviResource):
     }
 
 
+
+
+class IpAddrGroupAddrs(AviNestedResource):
+    resource_name = "ipaddrgroup"
+    nested_property_name = "addrs"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of ipaddrgroup"),
+        required=True,
+        update_allowed=False,
+    )
+    addrs_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('ipaddrgroup_uuid',
+                  'addrs',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ipaddrgroup_uuid': parent_uuid_schema,
+        'addrs': addrs_item_schema,
+    }
+
+
+class IpAddrGroupRanges(AviNestedResource):
+    resource_name = "ipaddrgroup"
+    nested_property_name = "ranges"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of ipaddrgroup"),
+        required=True,
+        update_allowed=False,
+    )
+    ranges_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('ipaddrgroup_uuid',
+                  'ranges',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ipaddrgroup_uuid': parent_uuid_schema,
+        'ranges': ranges_item_schema,
+    }
+
+
+class IpAddrGroupPrefixes(AviNestedResource):
+    resource_name = "ipaddrgroup"
+    nested_property_name = "prefixes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of ipaddrgroup"),
+        required=True,
+        update_allowed=False,
+    )
+    prefixes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('ipaddrgroup_uuid',
+                  'prefixes',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ipaddrgroup_uuid': parent_uuid_schema,
+        'prefixes': prefixes_item_schema,
+    }
+
+
+class IpAddrGroupCountryCodes(AviNestedResource):
+    resource_name = "ipaddrgroup"
+    nested_property_name = "country_codes"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of ipaddrgroup"),
+        required=True,
+        update_allowed=False,
+    )
+    country_codes_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('ipaddrgroup_uuid',
+                  'country_codes',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ipaddrgroup_uuid': parent_uuid_schema,
+        'country_codes': country_codes_item_schema,
+    }
+
+
+class IpAddrGroupIpPorts(AviNestedResource):
+    resource_name = "ipaddrgroup"
+    nested_property_name = "ip_ports"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of ipaddrgroup"),
+        required=True,
+        update_allowed=False,
+    )
+    ip_ports_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('ipaddrgroup_uuid',
+                  'ip_ports',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ipaddrgroup_uuid': parent_uuid_schema,
+        'ip_ports': ip_ports_item_schema,
+    }
+
+
 class MatchTarget(object):
     # all schemas
     client_ip_schema = properties.Schema(
@@ -1075,6 +1311,8 @@ class MatchTarget(object):
         'cookie': cookie_schema,
         'host_hdr': host_hdr_schema,
     }
+
+
 
 
 class ResponseMatchTarget(object):
@@ -1220,10 +1458,19 @@ class ResponseMatchTarget(object):
     }
 
 
+
+
 def resource_mapping():
     return {
-        'Avi::IpAddrGroup': IpAddrGroup,
-        'Avi::StringGroup': StringGroup,
         'Avi::MicroServiceGroup': MicroServiceGroup,
+        'Avi::IpAddrGroup::Addr': IpAddrGroupAddrs,
+        'Avi::StringGroup::Kv': StringGroupKv,
+        'Avi::IpAddrGroup': IpAddrGroup,
+        'Avi::IpAddrGroup::IpPort': IpAddrGroupIpPorts,
+        'Avi::IpAddrGroup::Prefixe': IpAddrGroupPrefixes,
+        'Avi::IpAddrGroup::Range': IpAddrGroupRanges,
+        'Avi::IpAddrGroup::CountryCode': IpAddrGroupCountryCodes,
+        'Avi::StringGroup': StringGroup,
+        'Avi::MicroServiceGroup::ServiceUuid': MicroServiceGroupServiceUuids,
     }
 
