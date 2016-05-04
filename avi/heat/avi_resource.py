@@ -1,9 +1,9 @@
 import uuid
 import logging
 from heat.engine import resource
+from heat.common import exception as HeatException
 from avi.sdk.avi_api import ApiSession
 from avi.sdk.avi_api import ObjectNotFound
-from heat.engine import properties
 
 LOG = logging.getLogger(__name__)
 
@@ -71,9 +71,9 @@ class AviResource(resource.Resource):
         if not client:
             client = self.get_avi_client()
         obj = client.get("%s/%s" % (self.resource_name,
-                                   self.resource_id),
-                        tenant_uuid=self.get_avi_tenant_uuid()
-                        ).json()
+                                    self.resource_id),
+                         tenant_uuid=self.get_avi_tenant_uuid()
+                         ).json()
         return obj
 
     def _update_obj(self, obj, old_diffs, new_diffs):
@@ -146,4 +146,71 @@ class AviResource(resource.Resource):
         except ObjectNotFound as e:
             LOG.exception("Object %s not found: %s", (self.resource_name,
                                                       self.resource_id), e)
+        return True
+
+
+class AviNestedResource(AviResource):
+    # resoure_name would refer to the top resource that needs to be patched
+    # a property with the name resource_name + "_uuid" will be the parent
+    #   resource uuid
+    # nested_property_name would refer to the name of the property in the
+    #   parent resource that needs to be patched
+
+    def get_parent_uuid(self):
+        parent_uuid_prop = self.resource_name + "_uuid"
+        return self.properties[parent_uuid_prop]
+
+    def handle_create(self):
+        res_def = self.create_clean_properties(dict(self.properties))
+        parent_uuid_prop = self.resource_name + "_uuid"
+        parent_uuid = res_def[parent_uuid_prop]
+        res_def.pop(parent_uuid_prop)
+        client = self.get_avi_client()
+        data = {"update": {self.nested_property_name: [res_def]}}
+        try:
+            client.patch("%s/%s" % (self.resource_name,
+                                    parent_uuid),
+                         data=data,
+                         tenant_uuid=self.get_avi_tenant_uuid()
+                         ).json()
+        except Exception as e:
+            LOG.exception("Error during creation: %s, resname %s/%s, data %s",
+                          e, self.resource_name, parent_uuid, data)
+            raise
+        return True
+
+    def _show_resource(self, client=None):
+        if not client:
+            client = self.get_avi_client()
+        obj = client.get("%s/%s" % (self.resource_name,
+                                    self.get_parent_uuid()),
+                         tenant_uuid=self.get_avi_tenant_uuid()
+                         ).json()
+        return obj
+
+    def handle_update(self, json_snippet, tmpl_diff, prop_diff):
+        # force delete and replace
+        if prop_diff:
+            raise HeatException.UpdateReplace()
+
+    def handle_delete(self):
+        res_def = self.create_clean_properties(dict(self.properties))
+        parent_uuid_prop = self.resource_name + "_uuid"
+        parent_uuid = res_def[parent_uuid_prop]
+        res_def.pop(parent_uuid_prop)
+        client = self.get_avi_client()
+        data = {"delete": {self.nested_property_name: [res_def]}}
+        try:
+            client.patch("%s/%s" % (self.resource_name,
+                                    parent_uuid),
+                         data=data,
+                         tenant_uuid=self.get_avi_tenant_uuid()
+                         ).json()
+        except ObjectNotFound as e:
+            LOG.exception("Object %s not found: %s", (self.resource_name,
+                                                      parent_uuid), e)
+        except Exception as e:
+            LOG.exception("Error during deletion: %s, resname %s/%s, data %s",
+                          e, self.resource_name, parent_uuid, data)
+            raise
         return True
