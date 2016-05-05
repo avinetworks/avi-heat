@@ -178,7 +178,7 @@ class AviNestedResource(AviResource):
                        ).json()
         except Exception as e:
             LOG.exception("Error during creation: %s, resname %s/%s, data %s",
-                          e, self.resource_name, parent_uuid, data)
+                          e, self.resource_name, parent_uuid, pobj)
             raise
         return True
 
@@ -209,7 +209,9 @@ class AviNestedResource(AviResource):
             prev_items = pobj[self.nested_property_name]
             pobj[self.nested_property_name] = []
             for pitem in prev_items:
-                if pitem.copy().update(res_def) != pitem:
+                pcopy = pitem.copy()
+                pcopy.update(res_def)
+                if pcopy != pitem:
                     pobj[self.nested_property_name].append(pitem)
             client.put("%s/%s" % (self.resource_name,
                                   parent_uuid),
@@ -221,6 +223,6 @@ class AviNestedResource(AviResource):
                                                       parent_uuid), e)
         except Exception as e:
             LOG.exception("Error during deletion: %s, resname %s/%s, data %s",
-                          e, self.resource_name, parent_uuid, data)
+                          e, self.resource_name, parent_uuid, pobj)
             raise
         return True
