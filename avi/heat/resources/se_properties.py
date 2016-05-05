@@ -72,14 +72,15 @@ class SeRuntimeCompressionProperties(object):
         update_allowed=True,
     )
     mobile_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
     mobile_str_schema = properties.Schema(
         properties.Schema.LIST,
-        _("String value(s) mobile"),
+        _(""),
         schema=mobile_str_item_schema,
         required=False,
         update_allowed=True,
@@ -789,20 +790,6 @@ class SeRuntimeProperties(object):
         required=False,
         update_allowed=True,
     )
-    service_ip_subnets_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddrPrefix.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    service_ip_subnets_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("IP ranges on which there may be virtual services (for configuring iptables/routes)"),
-        schema=service_ip_subnets_item_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -896,7 +883,6 @@ class SeRuntimeProperties(object):
         'log_agent_log_storage_min_sz',
         'lbaction_num_requests_to_dispatch',
         'lbaction_rq_per_request_max_retries',
-        'service_ip_subnets',
     )
 
     # mapping of properties to their schemas
@@ -991,7 +977,6 @@ class SeRuntimeProperties(object):
         'log_agent_log_storage_min_sz': log_agent_log_storage_min_sz_schema,
         'lbaction_num_requests_to_dispatch': lbaction_num_requests_to_dispatch_schema,
         'lbaction_rq_per_request_max_retries': lbaction_rq_per_request_max_retries_schema,
-        'service_ip_subnets': service_ip_subnets_schema,
     }
 
 
@@ -1155,12 +1140,6 @@ class SeAgentProperties(object):
         required=False,
         update_allowed=True,
     )
-    ignore_docker_mac_change_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -1190,7 +1169,6 @@ class SeAgentProperties(object):
         'sdb_flush_interval',
         'controller_echo_rpc_aggressive_timeout',
         'controller_echo_miss_aggressive_limit',
-        'ignore_docker_mac_change',
     )
 
     # mapping of properties to their schemas
@@ -1221,7 +1199,6 @@ class SeAgentProperties(object):
         'sdb_flush_interval': sdb_flush_interval_schema,
         'controller_echo_rpc_aggressive_timeout': controller_echo_rpc_aggressive_timeout_schema,
         'controller_echo_miss_aggressive_limit': controller_echo_miss_aggressive_limit_schema,
-        'ignore_docker_mac_change': ignore_docker_mac_change_schema,
     }
 
 
@@ -1542,6 +1519,6 @@ class SeProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SeProperties': SeProperties,
+        'AviBeta16.1::SeProperties': SeProperties,
     }
 

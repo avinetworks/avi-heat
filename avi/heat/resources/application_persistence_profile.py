@@ -33,120 +33,6 @@ class HdrPersistenceProfile(object):
 
 
 
-class IPPersistenceProfile(object):
-    # all schemas
-    ip_persistent_timeout_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ip_persistent_timeout',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ip_persistent_timeout': ip_persistent_timeout_schema,
-    }
-
-
-
-
-class HttpCookiePersistenceKey(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("name to use for cookie encryption"),
-        required=False,
-        update_allowed=True,
-    )
-    aes_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    hmac_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'aes_key',
-        'hmac_key',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'aes_key': aes_key_schema,
-        'hmac_key': hmac_key_schema,
-    }
-
-
-
-
-class HttpCookiePersistenceProfile(object):
-    # all schemas
-    encryption_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Key name to use for cookie encryption"),
-        required=False,
-        update_allowed=True,
-    )
-    cookie_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("HTTP cookie name for cookie persistence"),
-        required=False,
-        update_allowed=True,
-    )
-    key_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HttpCookiePersistenceKey.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    key_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=key_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    timeout_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'encryption_key',
-        'cookie_name',
-        'key',
-        'timeout',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'encryption_key': encryption_key_schema,
-        'cookie_name': cookie_name_schema,
-        'key': key_schema,
-        'timeout': timeout_schema,
-    }
-
-
-
-
 class AppCookiePersistenceProfile(object):
     # all schemas
     prst_hdr_name_schema = properties.Schema(
@@ -180,6 +66,58 @@ class AppCookiePersistenceProfile(object):
         'prst_hdr_name': prst_hdr_name_schema,
         'timeout': timeout_schema,
         'encryption_key': encryption_key_schema,
+    }
+
+
+
+
+class HttpCookiePersistenceProfile(object):
+    # all schemas
+    encryption_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Key to use for cookie encryption"),
+        required=False,
+        update_allowed=True,
+    )
+    cookie_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP cookie name for cookie persistence"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'encryption_key',
+        'cookie_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'encryption_key': encryption_key_schema,
+        'cookie_name': cookie_name_schema,
+    }
+
+
+
+
+class IPPersistenceProfile(object):
+    # all schemas
+    ip_persistent_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip_persistent_timeout',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip_persistent_timeout': ip_persistent_timeout_schema,
     }
 
 
@@ -270,6 +208,6 @@ class ApplicationPersistenceProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ApplicationPersistenceProfile': ApplicationPersistenceProfile,
+        'AviBeta16.1::ApplicationPersistenceProfile': ApplicationPersistenceProfile,
     }
 

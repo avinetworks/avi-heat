@@ -241,7 +241,7 @@ class NetworkSecurityPolicyRules(AviNestedResource, NetworkSecurityRule):
 
 def resource_mapping():
     return {
-        'Avi::NetworkSecurityPolicy': NetworkSecurityPolicy,
-        'Avi::NetworkSecurityPolicy::Rule': NetworkSecurityPolicyRules,
+        'AviBeta16.1::NetworkSecurityPolicy': NetworkSecurityPolicy,
+        'AviBeta16.1::NetworkSecurityPolicy::Rule': NetworkSecurityPolicyRules,
     }
 

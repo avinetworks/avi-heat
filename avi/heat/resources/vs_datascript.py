@@ -185,8 +185,8 @@ class VSDataScriptSetPoolUuids(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::VSDataScriptSet::Datascript': VSDataScriptSetDatascript,
-        'Avi::VSDataScriptSet': VSDataScriptSet,
-        'Avi::VSDataScriptSet::PoolUuid': VSDataScriptSetPoolUuids,
+        'AviBeta16.1::VSDataScriptSet::Datascript': VSDataScriptSetDatascript,
+        'AviBeta16.1::VSDataScriptSet': VSDataScriptSet,
+        'AviBeta16.1::VSDataScriptSet::PoolUuid': VSDataScriptSetPoolUuids,
     }
 

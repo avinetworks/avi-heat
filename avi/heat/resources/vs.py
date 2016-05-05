@@ -700,20 +700,6 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
-    snat_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    snat_ip_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("NAT'ted floating source IP Address(es) for upstream connection to servers"),
-        schema=snat_ip_item_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -775,7 +761,6 @@ class VirtualService(AviResource):
         'created_by',
         'cloud_config_cksum',
         'enable_rhi',
-        'snat_ip',
     )
 
     # mapping of properties to their schemas
@@ -838,7 +823,6 @@ class VirtualService(AviResource):
         'created_by': created_by_schema,
         'cloud_config_cksum': cloud_config_cksum_schema,
         'enable_rhi': enable_rhi_schema,
-        'snat_ip': snat_ip_schema,
     }
 
 
@@ -1089,35 +1073,6 @@ class VirtualServiceServicePoolSelect(AviNestedResource, ServicePoolSelector):
     properties_schema.update(ServicePoolSelector.properties_schema)
 
 
-class VirtualServiceSnatIp(AviNestedResource):
-    resource_name = "virtualservice"
-    nested_property_name = "snat_ip"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of virtualservice"),
-        required=True,
-        update_allowed=False,
-    )
-    snat_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('virtualservice_uuid',
-                  'snat_ip',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'virtualservice_uuid': parent_uuid_schema,
-        'snat_ip': snat_ip_item_schema,
-    }
-
-
 class VsScaleoutParams(object):
     # all schemas
     to_se_uuid_schema = properties.Schema(
@@ -1205,36 +1160,6 @@ class TLSTicket(object):
         'name': name_schema,
         'aes_key': aes_key_schema,
         'hmac_key': hmac_key_schema,
-    }
-
-
-
-
-class VsInitialPlacementParams(object):
-    # all schemas
-    se_placement_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=VsSeInitialPlacementParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_placement_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=se_placement_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'se_placement_params',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'se_placement_params': se_placement_params_schema,
     }
 
 
@@ -1378,40 +1303,31 @@ class VsApicExtension(object):
 
 
 
-class SeVipInterfaceList(object):
+class VsInitialPlacementParams(object):
     # all schemas
-    vip_intf_mac_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vlan_id_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_ip_schema = properties.Schema(
+    se_placement_params_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
-        schema=IpAddr.properties_schema,
+        schema=VsSeInitialPlacementParams.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    se_placement_params_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=se_placement_params_item_schema,
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'vip_intf_mac',
-        'vlan_id',
-        'vip_intf_ip',
+        'se_placement_params',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'vip_intf_mac': vip_intf_mac_schema,
-        'vlan_id': vlan_id_schema,
-        'vip_intf_ip': vip_intf_ip_schema,
+        'se_placement_params': se_placement_params_schema,
     }
 
 
@@ -1511,48 +1427,6 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
-    snat_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_list_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SeVipInterfaceList.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    vip_intf_list_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=vip_intf_list_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    floating_intf_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    floating_intf_ip_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=floating_intf_ip_item_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -1570,10 +1444,6 @@ class SeList(object):
         'sec_idx',
         'download_selist_only',
         'vlan_id',
-        'snat_ip',
-        'vip_intf_ip',
-        'vip_intf_list',
-        'floating_intf_ip',
     )
 
     # mapping of properties to their schemas
@@ -1592,10 +1462,6 @@ class SeList(object):
         'sec_idx': sec_idx_schema,
         'download_selist_only': download_selist_only_schema,
         'vlan_id': vlan_id_schema,
-        'snat_ip': snat_ip_schema,
-        'vip_intf_ip': vip_intf_ip_schema,
-        'vip_intf_list': vip_intf_list_schema,
-        'floating_intf_ip': floating_intf_ip_schema,
     }
 
 
@@ -1603,16 +1469,15 @@ class SeList(object):
 
 def resource_mapping():
     return {
-        'Avi::VirtualService::ServicePoolSelect': VirtualServiceServicePoolSelect,
-        'Avi::VirtualService::Service': VirtualServiceServices,
-        'Avi::VirtualService::VhDomainName': VirtualServiceVhDomainName,
-        'Avi::VirtualService::DiscoveredNetwork': VirtualServiceDiscoveredNetworks,
-        'Avi::VirtualService::VsDatascript': VirtualServiceVsDatascripts,
-        'Avi::VirtualService::DiscoveredSubnet': VirtualServiceDiscoveredSubnet,
-        'Avi::VirtualService::SnatIp': VirtualServiceSnatIp,
-        'Avi::VirtualService::SslKeyAndCertificateUuid': VirtualServiceSslKeyAndCertificateUuids,
-        'Avi::VirtualService::HttpPolicie': VirtualServiceHttpPolicies,
-        'Avi::VirtualService': VirtualService,
-        'Avi::VirtualService::DiscoveredNetworkUuid': VirtualServiceDiscoveredNetworkUuid,
+        'AviBeta16.1::VirtualService::ServicePoolSelect': VirtualServiceServicePoolSelect,
+        'AviBeta16.1::VirtualService::Service': VirtualServiceServices,
+        'AviBeta16.1::VirtualService::VhDomainName': VirtualServiceVhDomainName,
+        'AviBeta16.1::VirtualService::DiscoveredNetwork': VirtualServiceDiscoveredNetworks,
+        'AviBeta16.1::VirtualService::VsDatascript': VirtualServiceVsDatascripts,
+        'AviBeta16.1::VirtualService::DiscoveredSubnet': VirtualServiceDiscoveredSubnet,
+        'AviBeta16.1::VirtualService::SslKeyAndCertificateUuid': VirtualServiceSslKeyAndCertificateUuids,
+        'AviBeta16.1::VirtualService::HttpPolicie': VirtualServiceHttpPolicies,
+        'AviBeta16.1::VirtualService': VirtualService,
+        'AviBeta16.1::VirtualService::DiscoveredNetworkUuid': VirtualServiceDiscoveredNetworkUuid,
     }
 

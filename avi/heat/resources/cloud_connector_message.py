@@ -51,3 +51,49 @@ class CC_VnicInfo(object):
     }
 
 
+
+
+class CloudConnectorUser(AviResource):
+    resource_name = "cloudconnectoruser"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    private_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    public_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'private_key',
+        'public_key',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'private_key': private_key_schema,
+        'public_key': public_key_schema,
+    }
+
+
+
+
+def resource_mapping():
+    return {
+        'AviBeta16.1::CloudConnectorUser': CloudConnectorUser,
+    }
+

@@ -8,6 +8,7 @@ from avi.heat.avi_resource import AviResource
 from avi.heat.avi_resource import AviNestedResource
 from options import *
 
+from common import *
 from options import *
 from match import *
 
@@ -229,89 +230,6 @@ class HTTPClientAuthenticationParams(object):
 
 
 
-class AuthMatchAttribute(object):
-    # all schemas
-    criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("rule match criteria"),
-        required=False,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    values_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    values_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=values_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'criteria',
-        'name',
-        'values',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'criteria': criteria_schema,
-        'name': name_schema,
-        'values': values_schema,
-    }
-
-
-
-
-class AuthTacacsPlusAttributeValuePair(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("attribute name"),
-        required=False,
-        update_allowed=True,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("attribute value"),
-        required=False,
-        update_allowed=True,
-    )
-    mandatory_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("mandatory"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'value',
-        'mandatory',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'value': value_schema,
-        'mandatory': mandatory_schema,
-    }
-
-
-
-
 class AuthProfileHTTPClientParams(object):
     # all schemas
     request_header_schema = properties.Schema(
@@ -327,8 +245,9 @@ class AuthProfileHTTPClientParams(object):
         update_allowed=True,
     )
     require_user_groups_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -360,222 +279,6 @@ class AuthProfileHTTPClientParams(object):
         'cache_expiration_time': cache_expiration_time_schema,
         'require_user_groups': require_user_groups_schema,
         'group_member_is_full_dn': group_member_is_full_dn_schema,
-    }
-
-
-
-
-class AuthMatchGroupMembership(object):
-    # all schemas
-    criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("rule match criteria"),
-        required=False,
-        update_allowed=True,
-    )
-    groups_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    groups_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=groups_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'criteria',
-        'groups',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'criteria': criteria_schema,
-        'groups': groups_schema,
-    }
-
-
-
-
-class AuthMappingRule(object):
-    # all schemas
-    index_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    group_match_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AuthMatchGroupMembership.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    attribute_match_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AuthMatchAttribute.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    assign_tenant_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    tenant_attribute_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    tenant_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    tenant_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=tenant_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    assign_role_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    role_attribute_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    role_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    role_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=role_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    is_superuser_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'index',
-        'group_match',
-        'attribute_match',
-        'assign_tenant',
-        'tenant_attribute_name',
-        'tenant_uuids',
-        'assign_role',
-        'role_attribute_name',
-        'role_uuids',
-        'is_superuser',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'index': index_schema,
-        'group_match': group_match_schema,
-        'attribute_match': attribute_match_schema,
-        'assign_tenant': assign_tenant_schema,
-        'tenant_attribute_name': tenant_attribute_name_schema,
-        'tenant_uuids': tenant_uuids_schema,
-        'assign_role': assign_role_schema,
-        'role_attribute_name': role_attribute_name_schema,
-        'role_uuids': role_uuids_schema,
-        'is_superuser': is_superuser_schema,
-    }
-
-
-
-
-class TacacsPlusAuthSettings(object):
-    # all schemas
-    server_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    server_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("TACACS+ server IP address"),
-        schema=server_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("TACACS+ server listening port"),
-        required=False,
-        update_allowed=True,
-    )
-    password_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("TACACS+ server shared secret"),
-        required=False,
-        update_allowed=True,
-    )
-    service_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("TACACS+ service"),
-        required=False,
-        update_allowed=True,
-    )
-    authorization_attrs_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AuthTacacsPlusAttributeValuePair.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    authorization_attrs_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("TACACS+ authorization attribute value pairs"),
-        schema=authorization_attrs_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'server',
-        'port',
-        'password',
-        'service',
-        'authorization_attrs',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'server': server_schema,
-        'port': port_schema,
-        'password': password_schema,
-        'service': service_schema,
-        'authorization_attrs': authorization_attrs_schema,
     }
 
 
@@ -689,13 +392,6 @@ class AuthProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    tacacs_plus_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("TACACS+ settings"),
-        schema=TacacsPlusAuthSettings.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -709,7 +405,6 @@ class AuthProfile(AviResource):
         'type',
         'ldap',
         'http',
-        'tacacs_plus',
         'description',
     )
 
@@ -719,7 +414,6 @@ class AuthProfile(AviResource):
         'type': type_schema,
         'ldap': ldap_schema,
         'http': http_schema,
-        'tacacs_plus': tacacs_plus_schema,
         'description': description_schema,
     }
 
@@ -728,6 +422,6 @@ class AuthProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AuthProfile': AuthProfile,
+        'AviBeta16.1::AuthProfile': AuthProfile,
     }
 

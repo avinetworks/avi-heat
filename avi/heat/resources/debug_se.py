@@ -493,11 +493,11 @@ class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
 
 def resource_mapping():
     return {
-        'Avi::DebugServiceEngine::Flag': DebugServiceEngineFlags,
-        'Avi::DebugVirtualService': DebugVirtualService,
-        'Avi::DebugServiceEngine': DebugServiceEngine,
-        'Avi::DebugServiceEngine::CpuShare': DebugServiceEngineCpuShares,
-        'Avi::DebugVirtualService::Flag': DebugVirtualServiceFlags,
-        'Avi::DebugServiceEngine::SeagentDebug': DebugServiceEngineSeagentDebug,
+        'AviBeta16.1::DebugServiceEngine::Flag': DebugServiceEngineFlags,
+        'AviBeta16.1::DebugVirtualService': DebugVirtualService,
+        'AviBeta16.1::DebugServiceEngine': DebugServiceEngine,
+        'AviBeta16.1::DebugServiceEngine::CpuShare': DebugServiceEngineCpuShares,
+        'AviBeta16.1::DebugVirtualService::Flag': DebugVirtualServiceFlags,
+        'AviBeta16.1::DebugServiceEngine::SeagentDebug': DebugServiceEngineSeagentDebug,
     }
 

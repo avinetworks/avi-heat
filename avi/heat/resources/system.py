@@ -11,8 +11,6 @@ from options import *
 from common import *
 from options import *
 from snmp import *
-from auth import *
-from match import *
 
 
 class DNSConfiguration(object):
@@ -61,17 +59,39 @@ class AdminAuthConfiguration(object):
         required=False,
         update_allowed=True,
     )
-    mapping_rules_item_schema = properties.Schema(
-        properties.Schema.MAP,
+    default_tenant_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
         _(""),
-        schema=AuthMappingRule.properties_schema,
-        required=True,
-        update_allowed=False,
+        required=False,
+        update_allowed=True,
     )
-    mapping_rules_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Rules list for tenant or role mapping"),
-        schema=mapping_rules_item_schema,
+    default_role_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Roles name to lookup if no roles match using groups or attributes"),
+        required=False,
+        update_allowed=True,
+    )
+    use_group_membership_for_roles_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use group membership identify the roles for this session"),
+        required=False,
+        update_allowed=True,
+    )
+    attribute_for_roles_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Attribute whole value matches the roles for this session"),
+        required=False,
+        update_allowed=True,
+    )
+    use_group_membership_for_tenant_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use group membership identify the tenant"),
+        required=False,
+        update_allowed=True,
+    )
+    attribute_for_tenant_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Attribute whole value matches the tenant"),
         required=False,
         update_allowed=True,
     )
@@ -79,13 +99,23 @@ class AdminAuthConfiguration(object):
     # properties list
     PROPERTIES = (
         'auth_profile_uuid',
-        'mapping_rules',
+        'default_tenant_uuid',
+        'default_role_name',
+        'use_group_membership_for_roles',
+        'attribute_for_roles',
+        'use_group_membership_for_tenant',
+        'attribute_for_tenant',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'auth_profile_uuid': auth_profile_uuid_schema,
-        'mapping_rules': mapping_rules_schema,
+        'default_tenant_uuid': default_tenant_uuid_schema,
+        'default_role_name': default_role_name_schema,
+        'use_group_membership_for_roles': use_group_membership_for_roles_schema,
+        'attribute_for_roles': attribute_for_roles_schema,
+        'use_group_membership_for_tenant': use_group_membership_for_tenant_schema,
+        'attribute_for_tenant': attribute_for_tenant_schema,
     }
 
 
@@ -229,23 +259,15 @@ class LinuxConfiguration(object):
         required=False,
         update_allowed=True,
     )
-    banner_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Banner displayed before login to ssh, and UI"),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
         'motd',
-        'banner',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'motd': motd_schema,
-        'banner': banner_schema,
     }
 
 
@@ -390,56 +412,6 @@ class NTPConfiguration(object):
 
 
 
-class MgmtIpAccessControl(object):
-    # all schemas
-    ssh_access_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure ip addresses to access controller using SSH"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    api_access_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure ip addresses to access controller using api"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    shell_server_access_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure ip addresses to access controller using shell cli"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    snmp_access_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure ip addresses to access controller using snmp"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ssh_access',
-        'api_access',
-        'shell_server_access',
-        'snmp_access',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ssh_access': ssh_access_schema,
-        'api_access': api_access_schema,
-        'shell_server_access': shell_server_access_schema,
-        'snmp_access': snmp_access_schema,
-    }
-
-
-
-
 class SystemConfiguration(AviResource):
     resource_name = "systemconfiguration"
     # all schemas
@@ -513,13 +485,6 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
-    mgmt_ip_access_control_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure Ip Access control for controller to restrict open access."),
-        schema=MgmtIpAccessControl.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -533,7 +498,6 @@ class SystemConfiguration(AviResource):
         'snmp_configuration',
         'linux_configuration',
         'proxy_configuration',
-        'mgmt_ip_access_control',
     )
 
     # mapping of properties to their schemas
@@ -548,7 +512,6 @@ class SystemConfiguration(AviResource):
         'snmp_configuration': snmp_configuration_schema,
         'linux_configuration': linux_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,
-        'mgmt_ip_access_control': mgmt_ip_access_control_schema,
     }
 
 
@@ -556,6 +519,6 @@ class SystemConfiguration(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SystemConfiguration': SystemConfiguration,
+        'AviBeta16.1::SystemConfiguration': SystemConfiguration,
     }
 

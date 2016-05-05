@@ -104,7 +104,7 @@ class RolePrivileges(AviNestedResource, Permission):
 
 def resource_mapping():
     return {
-        'Avi::Role::Privilege': RolePrivileges,
-        'Avi::Role': Role,
+        'AviBeta16.1::Role::Privilege': RolePrivileges,
+        'AviBeta16.1::Role': Role,
     }
 

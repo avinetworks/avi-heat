@@ -185,7 +185,7 @@ class NetworkConfiguredSubnets(AviNestedResource, Subnet):
 
 def resource_mapping():
     return {
-        'Avi::Network::ConfiguredSubnet': NetworkConfiguredSubnets,
-        'Avi::Network': Network,
+        'AviBeta16.1::Network::ConfiguredSubnet': NetworkConfiguredSubnets,
+        'AviBeta16.1::Network': Network,
     }
 

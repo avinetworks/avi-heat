@@ -38,18 +38,6 @@ class SeResources(object):
         required=False,
         update_allowed=True,
     )
-    sockets_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    cores_per_socket_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -57,8 +45,6 @@ class SeResources(object):
         'memory',
         'disk',
         'hyper_threading',
-        'sockets',
-        'cores_per_socket',
     )
 
     # mapping of properties to their schemas
@@ -67,8 +53,6 @@ class SeResources(object):
         'memory': memory_schema,
         'disk': disk_schema,
         'hyper_threading': hyper_threading_schema,
-        'sockets': sockets_schema,
-        'cores_per_socket': cores_per_socket_schema,
     }
 
 
@@ -464,6 +448,6 @@ class vNIC(object):
 
 def resource_mapping():
     return {
-        'Avi::ServiceEngine': ServiceEngine,
+        'AviBeta16.1::ServiceEngine': ServiceEngine,
     }
 

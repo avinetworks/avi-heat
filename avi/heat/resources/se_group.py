@@ -140,12 +140,6 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
-    disk_per_se_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Amount of disk space for each of the Service Engine virtual machines."),
-        required=False,
-        update_allowed=True,
-    )
     max_cpu_usage_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("When CPU utilization exceeds this maximum threshold, Virtual Services hosted on this Service Engine may be rebalanced to other Service Engines to lighten the load. A new Service Engine may be created as part of this process."),
@@ -399,38 +393,6 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
-    floating_intf_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    floating_intf_ip_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect"),
-        schema=floating_intf_ip_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    hm_on_standby_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable health monitoring on standby SE."),
-        required=False,
-        update_allowed=True,
-    )
-    per_app_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("indicates if per_app licensing is enabled"),
-        required=False,
-        update_allowed=True,
-    )
-    default_gw_health_check_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable ICMP based gateway health check on the Service Engines within this Service Group"),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -442,7 +404,6 @@ class ServiceEngineGroup(AviResource):
         'max_se',
         'vcpus_per_se',
         'memory_per_se',
-        'disk_per_se',
         'max_cpu_usage',
         'min_cpu_usage',
         'se_deprovision_delay',
@@ -483,10 +444,6 @@ class ServiceEngineGroup(AviResource):
         'host_attribute_value',
         'log_disksz',
         'os_reserved_memory',
-        'floating_intf_ip',
-        'hm_on_standby',
-        'per_app',
-        'default_gw_health_check',
     )
 
     # mapping of properties to their schemas
@@ -499,7 +456,6 @@ class ServiceEngineGroup(AviResource):
         'max_se': max_se_schema,
         'vcpus_per_se': vcpus_per_se_schema,
         'memory_per_se': memory_per_se_schema,
-        'disk_per_se': disk_per_se_schema,
         'max_cpu_usage': max_cpu_usage_schema,
         'min_cpu_usage': min_cpu_usage_schema,
         'se_deprovision_delay': se_deprovision_delay_schema,
@@ -540,10 +496,6 @@ class ServiceEngineGroup(AviResource):
         'host_attribute_value': host_attribute_value_schema,
         'log_disksz': log_disksz_schema,
         'os_reserved_memory': os_reserved_memory_schema,
-        'floating_intf_ip': floating_intf_ip_schema,
-        'hm_on_standby': hm_on_standby_schema,
-        'per_app': per_app_schema,
-        'default_gw_health_check': default_gw_health_check_schema,
     }
 
 
@@ -578,39 +530,9 @@ class ServiceEngineGroupVcenterDatastores(AviNestedResource):
     }
 
 
-class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
-    resource_name = "serviceenginegroup"
-    nested_property_name = "floating_intf_ip"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
-        required=True,
-        update_allowed=False,
-    )
-    floating_intf_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('serviceenginegroup_uuid',
-                  'floating_intf_ip',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serviceenginegroup_uuid': parent_uuid_schema,
-        'floating_intf_ip': floating_intf_ip_item_schema,
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::ServiceEngineGroup::FloatingIntfIp': ServiceEngineGroupFloatingIntfIp,
-        'Avi::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
-        'Avi::ServiceEngineGroup': ServiceEngineGroup,
+        'AviBeta16.1::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
+        'AviBeta16.1::ServiceEngineGroup': ServiceEngineGroup,
     }
 

@@ -11,7 +11,6 @@ from options import *
 from common import *
 from options import *
 from system import *
-from license import *
 
 
 class vCloudAirConfiguration(object):
@@ -456,45 +455,6 @@ class MesosOpenStackConfiguration(object):
 
 
 
-class CloudConnectorUser(AviResource):
-    resource_name = "cloudconnectoruser"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    private_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    public_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'private_key',
-        'public_key',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'private_key': private_key_schema,
-        'public_key': public_key_schema,
-    }
-
-
-
-
 class NuageSDNController(object):
     # all schemas
     nuage_vsd_host_schema = properties.Schema(
@@ -688,6 +648,36 @@ class MarathonSeDeployment(object):
 
 
 
+class MesosAttribute(object):
+    # all schemas
+    attribute_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Fleet or Mesos attribute to match"),
+        required=True,
+        update_allowed=True,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Fleet or Mesos attribute value. If not set, match any value"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'attribute',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'attribute': attribute_schema,
+        'value': value_schema,
+    }
+
+
+
+
 class MarathonConfiguration(object):
     # all schemas
     marathon_url_schema = properties.Schema(
@@ -736,7 +726,7 @@ class MarathonConfiguration(object):
     )
     use_token_auth_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use Token based authentication instead of basic authentication. Token is refreshed every 5 minutes."),
+        _("Use token based authentication instead of basic authentication."),
         required=False,
         update_allowed=True,
     )
@@ -1033,36 +1023,6 @@ class FeProxyRoutePublishConfig(object):
 
 
 
-class MesosAttribute(object):
-    # all schemas
-    attribute_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Attribute to match"),
-        required=True,
-        update_allowed=True,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Attribute value. If not set, match any value"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'attribute',
-        'value',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'attribute': attribute_schema,
-        'value': value_schema,
-    }
-
-
-
-
 class OpenStackRoleMapping(object):
     # all schemas
     os_role_schema = properties.Schema(
@@ -1296,7 +1256,7 @@ class MesosConfiguration(object):
     )
     disable_auto_se_creation_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable SE creation"),
+        _("Disable East West SE creation"),
         required=False,
         update_allowed=True,
     )
@@ -1507,484 +1467,6 @@ class MesosConfiguration(object):
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
         'openstack_config': openstack_config_schema,
-    }
-
-
-
-
-class RancherConfiguration(object):
-    # all schemas
-    rancher_servers_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    rancher_servers_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of Rancher servers; In case of a load balanced Rancher multi cluster, use Virtual IP of the cluster"),
-        schema=rancher_servers_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    access_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Access key"),
-        required=False,
-        update_allowed=True,
-    )
-    secret_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Secret key"),
-        required=False,
-        update_allowed=True,
-    )
-    container_port_match_http_service_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Perform container port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService"),
-        required=False,
-        update_allowed=True,
-    )
-    http_container_ports_item_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    http_container_ports_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of container ports that create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Defaults to 80"),
-        schema=http_container_ports_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    east_west_placement_subnet_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Match against this prefix when placing east-west VSs on SEs "),
-        schema=IpAddrPrefix.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_deployment_method_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Use Fleet/SSH for SE deployment"),
-        required=False,
-        update_allowed=True,
-    )
-    fleet_endpoint_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Optional fleet remote endpoint if fleet is used for SE deployment"),
-        required=False,
-        update_allowed=True,
-    )
-    docker_registry_se_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Docker registry for ServiceEngine image"),
-        schema=DockerRegistry.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_spawn_rate_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("New SE spawn rate per minute"),
-        required=False,
-        update_allowed=True,
-    )
-    app_sync_frequency_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Sync frequency in seconds with frameworks"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_se_creation_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable SE creation"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_frontend_service_sync_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable auto service sync for front end services"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_backend_service_sync_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable auto service sync for back end services"),
-        required=False,
-        update_allowed=True,
-    )
-    use_container_ip_port_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Use container IP address:port for pool instead of host IP address:hostport. This mode is applicable if the container IP is reachable (not a private NATed IP) from other hosts in a routed environment for containers"),
-        required=False,
-        update_allowed=True,
-    )
-    se_volume_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Host volume to be used as a disk for Avi SE, This is a disruptive change"),
-        required=False,
-        update_allowed=True,
-    )
-    coredump_directory_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Directory to mount to check for core dumps on Service Engines. This will be mapped read only to /var/crash on any new Service Engines. This is a disruptive change"),
-        required=False,
-        update_allowed=True,
-    )
-    ssh_se_deployment_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
-        schema=SSHSeDeployment.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    enable_event_subscription_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable Docker event subscription"),
-        required=False,
-        update_allowed=True,
-    )
-    feproxy_container_port_as_service_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("For Front End proxies, use container port as service port"),
-        required=False,
-        update_allowed=True,
-    )
-    services_accessible_all_interfaces_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
-        required=False,
-        update_allowed=True,
-    )
-    feproxy_vips_enable_proxy_arp_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable proxy ARP from Host interface for Front End  proxies"),
-        required=False,
-        update_allowed=True,
-    )
-    se_exclude_attributes_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=MesosAttribute.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_exclude_attributes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Exclude hosts with attributes for SE creation"),
-        schema=se_exclude_attributes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_include_attributes_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=MesosAttribute.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_include_attributes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Create SEs just on hosts with include attributes"),
-        schema=se_include_attributes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'rancher_servers',
-        'access_key',
-        'secret_key',
-        'container_port_match_http_service',
-        'http_container_ports',
-        'east_west_placement_subnet',
-        'se_deployment_method',
-        'fleet_endpoint',
-        'docker_registry_se',
-        'se_spawn_rate',
-        'app_sync_frequency',
-        'disable_auto_se_creation',
-        'disable_auto_frontend_service_sync',
-        'disable_auto_backend_service_sync',
-        'use_container_ip_port',
-        'se_volume',
-        'coredump_directory',
-        'ssh_se_deployment',
-        'enable_event_subscription',
-        'feproxy_container_port_as_service',
-        'services_accessible_all_interfaces',
-        'feproxy_vips_enable_proxy_arp',
-        'se_exclude_attributes',
-        'se_include_attributes',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'rancher_servers': rancher_servers_schema,
-        'access_key': access_key_schema,
-        'secret_key': secret_key_schema,
-        'container_port_match_http_service': container_port_match_http_service_schema,
-        'http_container_ports': http_container_ports_schema,
-        'east_west_placement_subnet': east_west_placement_subnet_schema,
-        'se_deployment_method': se_deployment_method_schema,
-        'fleet_endpoint': fleet_endpoint_schema,
-        'docker_registry_se': docker_registry_se_schema,
-        'se_spawn_rate': se_spawn_rate_schema,
-        'app_sync_frequency': app_sync_frequency_schema,
-        'disable_auto_se_creation': disable_auto_se_creation_schema,
-        'disable_auto_frontend_service_sync': disable_auto_frontend_service_sync_schema,
-        'disable_auto_backend_service_sync': disable_auto_backend_service_sync_schema,
-        'use_container_ip_port': use_container_ip_port_schema,
-        'se_volume': se_volume_schema,
-        'coredump_directory': coredump_directory_schema,
-        'ssh_se_deployment': ssh_se_deployment_schema,
-        'enable_event_subscription': enable_event_subscription_schema,
-        'feproxy_container_port_as_service': feproxy_container_port_as_service_schema,
-        'services_accessible_all_interfaces': services_accessible_all_interfaces_schema,
-        'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
-        'se_exclude_attributes': se_exclude_attributes_schema,
-        'se_include_attributes': se_include_attributes_schema,
-    }
-
-
-
-
-class DockerConfiguration(object):
-    # all schemas
-    ucp_nodes_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    ucp_nodes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of Docker UCP nodes; In case of a load balanced UCP cluster, use Virtual IP of the cluster"),
-        schema=ucp_nodes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    client_tls_key_and_certificate_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the client TLS cert and key"),
-        required=False,
-        update_allowed=True,
-    )
-    ca_tls_key_and_certificate_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the UCP CA TLS cert and key"),
-        required=False,
-        update_allowed=True,
-    )
-    container_port_match_http_service_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Perform container port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService"),
-        required=False,
-        update_allowed=True,
-    )
-    http_container_ports_item_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    http_container_ports_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of container ports that create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Defaults to 80"),
-        schema=http_container_ports_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    east_west_placement_subnet_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Match against this prefix when placing east-west VSs on SEs "),
-        schema=IpAddrPrefix.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_deployment_method_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Use Fleet/SSH for SE deployment"),
-        required=False,
-        update_allowed=True,
-    )
-    fleet_endpoint_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Optional fleet remote endpoint if fleet is used for SE deployment"),
-        required=False,
-        update_allowed=True,
-    )
-    docker_registry_se_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Docker registry for ServiceEngine image"),
-        schema=DockerRegistry.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_spawn_rate_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("New SE spawn rate per minute"),
-        required=False,
-        update_allowed=True,
-    )
-    app_sync_frequency_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Sync frequency in seconds with frameworks"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_se_creation_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable SE creation"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_frontend_service_sync_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable auto service sync for front end services"),
-        required=False,
-        update_allowed=True,
-    )
-    disable_auto_backend_service_sync_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Disable auto service sync for back end services"),
-        required=False,
-        update_allowed=True,
-    )
-    use_container_ip_port_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Use container IP address:port for pool instead of host IP address:hostport. This mode is applicable if the container IP is reachable (not a private NATed IP) from other hosts in a routed environment for containers"),
-        required=False,
-        update_allowed=True,
-    )
-    se_volume_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Host volume to be used as a disk for Avi SE, This is a disruptive change"),
-        required=False,
-        update_allowed=True,
-    )
-    coredump_directory_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Directory to mount to check for core dumps on Service Engines. This will be mapped read only to /var/crash on any new Service Engines. This is a disruptive change"),
-        required=False,
-        update_allowed=True,
-    )
-    ssh_se_deployment_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
-        schema=SSHSeDeployment.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    enable_event_subscription_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable Docker event subscription"),
-        required=False,
-        update_allowed=True,
-    )
-    feproxy_container_port_as_service_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("For Front End proxies, use container port as service port"),
-        required=False,
-        update_allowed=True,
-    )
-    services_accessible_all_interfaces_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
-        required=False,
-        update_allowed=True,
-    )
-    feproxy_vips_enable_proxy_arp_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable proxy ARP from Host interface for Front End  proxies"),
-        required=False,
-        update_allowed=True,
-    )
-    se_exclude_attributes_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=MesosAttribute.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_exclude_attributes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Exclude hosts with attributes for SE creation"),
-        schema=se_exclude_attributes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    se_include_attributes_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=MesosAttribute.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_include_attributes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Create SEs just on hosts with include attributes"),
-        schema=se_include_attributes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ucp_nodes',
-        'client_tls_key_and_certificate_uuid',
-        'ca_tls_key_and_certificate_uuid',
-        'container_port_match_http_service',
-        'http_container_ports',
-        'east_west_placement_subnet',
-        'se_deployment_method',
-        'fleet_endpoint',
-        'docker_registry_se',
-        'se_spawn_rate',
-        'app_sync_frequency',
-        'disable_auto_se_creation',
-        'disable_auto_frontend_service_sync',
-        'disable_auto_backend_service_sync',
-        'use_container_ip_port',
-        'se_volume',
-        'coredump_directory',
-        'ssh_se_deployment',
-        'enable_event_subscription',
-        'feproxy_container_port_as_service',
-        'services_accessible_all_interfaces',
-        'feproxy_vips_enable_proxy_arp',
-        'se_exclude_attributes',
-        'se_include_attributes',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ucp_nodes': ucp_nodes_schema,
-        'client_tls_key_and_certificate_uuid': client_tls_key_and_certificate_uuid_schema,
-        'ca_tls_key_and_certificate_uuid': ca_tls_key_and_certificate_uuid_schema,
-        'container_port_match_http_service': container_port_match_http_service_schema,
-        'http_container_ports': http_container_ports_schema,
-        'east_west_placement_subnet': east_west_placement_subnet_schema,
-        'se_deployment_method': se_deployment_method_schema,
-        'fleet_endpoint': fleet_endpoint_schema,
-        'docker_registry_se': docker_registry_se_schema,
-        'se_spawn_rate': se_spawn_rate_schema,
-        'app_sync_frequency': app_sync_frequency_schema,
-        'disable_auto_se_creation': disable_auto_se_creation_schema,
-        'disable_auto_frontend_service_sync': disable_auto_frontend_service_sync_schema,
-        'disable_auto_backend_service_sync': disable_auto_backend_service_sync_schema,
-        'use_container_ip_port': use_container_ip_port_schema,
-        'se_volume': se_volume_schema,
-        'coredump_directory': coredump_directory_schema,
-        'ssh_se_deployment': ssh_se_deployment_schema,
-        'enable_event_subscription': enable_event_subscription_schema,
-        'feproxy_container_port_as_service': feproxy_container_port_as_service_schema,
-        'services_accessible_all_interfaces': services_accessible_all_interfaces_schema,
-        'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
-        'se_exclude_attributes': se_exclude_attributes_schema,
-        'se_include_attributes': se_include_attributes_schema,
     }
 
 
@@ -2343,20 +1825,6 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
-    docker_configuration_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=DockerConfiguration.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    rancher_configuration_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=RancherConfiguration.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Select the IP address management scheme"),
@@ -2393,12 +1861,6 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
-    license_type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("If no license type is specified then default license enforcement for the cloud type is chosen. The default mappings are Container Cloud is Max Ses, OpenStack and VMware is cores and linux it is Sockets."),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -2414,15 +1876,12 @@ class Cloud(AviResource):
         'mesos_configuration',
         'proxy_configuration',
         'linuxserver_configuration',
-        'docker_configuration',
-        'rancher_configuration',
         'dhcp_enabled',
         'mtu',
         'prefer_static_routes',
         'enable_vip_static_routes',
         'obj_name_prefix',
         'ipamprofile_uuid',
-        'license_type',
     )
 
     # mapping of properties to their schemas
@@ -2439,15 +1898,12 @@ class Cloud(AviResource):
         'mesos_configuration': mesos_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,
         'linuxserver_configuration': linuxserver_configuration_schema,
-        'docker_configuration': docker_configuration_schema,
-        'rancher_configuration': rancher_configuration_schema,
         'dhcp_enabled': dhcp_enabled_schema,
         'mtu': mtu_schema,
         'prefer_static_routes': prefer_static_routes_schema,
         'enable_vip_static_routes': enable_vip_static_routes_schema,
         'obj_name_prefix': obj_name_prefix_schema,
         'ipamprofile_uuid': ipamprofile_uuid_schema,
-        'license_type': license_type_schema,
     }
 
 
@@ -2455,7 +1911,6 @@ class Cloud(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Cloud': Cloud,
-        'Avi::CloudConnectorUser': CloudConnectorUser,
+        'AviBeta16.1::Cloud': Cloud,
     }
 

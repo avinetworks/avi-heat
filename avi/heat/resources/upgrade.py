@@ -44,12 +44,6 @@ class SeUpgradeParams(object):
         required=False,
         update_allowed=True,
     )
-    rollback_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -58,7 +52,6 @@ class SeUpgradeParams(object):
         'disruptive',
         'preview',
         'test',
-        'rollback',
     )
 
     # mapping of properties to their schemas
@@ -68,7 +61,6 @@ class SeUpgradeParams(object):
         'disruptive': disruptive_schema,
         'preview': preview_schema,
         'test': test_schema,
-        'rollback': rollback_schema,
     }
 
 

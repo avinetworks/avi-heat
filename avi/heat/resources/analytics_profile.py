@@ -335,18 +335,6 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    hs_pscore_traffic_threshold_l4_client_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Threshold number of connections in 5min, below which apdexr, apdexc, rum_apdex, and other network quality metrics are not computed."),
-        required=False,
-        update_allowed=True,
-    )
-    hs_pscore_traffic_threshold_l4_server_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Threshold number of connections in 5min, below which apdexr, apdexc, rum_apdex, and other network quality metrics are not computed."),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -402,8 +390,6 @@ class AnalyticsProfile(AviResource):
         'hs_security_hsts_penalty',
         'disable_server_analytics',
         'disable_se_analytics',
-        'hs_pscore_traffic_threshold_l4_client',
-        'hs_pscore_traffic_threshold_l4_server',
     )
 
     # mapping of properties to their schemas
@@ -460,8 +446,6 @@ class AnalyticsProfile(AviResource):
         'hs_security_hsts_penalty': hs_security_hsts_penalty_schema,
         'disable_server_analytics': disable_server_analytics_schema,
         'disable_se_analytics': disable_se_analytics_schema,
-        'hs_pscore_traffic_threshold_l4_client': hs_pscore_traffic_threshold_l4_client_schema,
-        'hs_pscore_traffic_threshold_l4_server': hs_pscore_traffic_threshold_l4_server_schema,
     }
 
 
@@ -498,7 +482,7 @@ class AnalyticsProfileExcludeHttpErrorCodes(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::AnalyticsProfile::ExcludeHttpErrorCode': AnalyticsProfileExcludeHttpErrorCodes,
-        'Avi::AnalyticsProfile': AnalyticsProfile,
+        'AviBeta16.1::AnalyticsProfile::ExcludeHttpErrorCode': AnalyticsProfileExcludeHttpErrorCodes,
+        'AviBeta16.1::AnalyticsProfile': AnalyticsProfile,
     }
 

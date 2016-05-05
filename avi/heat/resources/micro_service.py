@@ -168,7 +168,7 @@ class MicroServiceContainers(AviNestedResource, MicroServiceContainer):
 
 def resource_mapping():
     return {
-        'Avi::MicroService': MicroService,
-        'Avi::MicroService::Container': MicroServiceContainers,
+        'AviBeta16.1::MicroService': MicroService,
+        'AviBeta16.1::MicroService::Container': MicroServiceContainers,
     }
 

@@ -126,7 +126,7 @@ class SnmpTrapProfileTrapServers(AviNestedResource, SnmpTrapServer):
 
 def resource_mapping():
     return {
-        'Avi::SnmpTrapProfile': SnmpTrapProfile,
-        'Avi::SnmpTrapProfile::TrapServer': SnmpTrapProfileTrapServers,
+        'AviBeta16.1::SnmpTrapProfile': SnmpTrapProfile,
+        'AviBeta16.1::SnmpTrapProfile::TrapServer': SnmpTrapProfileTrapServers,
     }
 

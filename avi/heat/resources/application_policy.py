@@ -534,6 +534,6 @@ class HTTPPolicySet(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HTTPPolicySet': HTTPPolicySet,
+        'AviBeta16.1::HTTPPolicySet': HTTPPolicySet,
     }
 

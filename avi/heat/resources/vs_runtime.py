@@ -56,13 +56,6 @@ class VsSeAssigned(AviResource):
         required=False,
         update_allowed=True,
     )
-    snat_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -72,7 +65,6 @@ class VsSeAssigned(AviResource):
         'connected',
         'scalein_in_progress',
         'oper_status',
-        'snat_ip',
     )
 
     # mapping of properties to their schemas
@@ -83,7 +75,6 @@ class VsSeAssigned(AviResource):
         'connected': connected_schema,
         'scalein_in_progress': scalein_in_progress_schema,
         'oper_status': oper_status_schema,
-        'snat_ip': snat_ip_schema,
     }
 
 
@@ -898,14 +889,14 @@ class VirtualServiceRuntimeLif(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::VsSeAssigned': VsSeAssigned,
-        'Avi::VirtualServiceRuntime::ScaleHistory': VirtualServiceRuntimeScaleHistory,
-        'Avi::VirtualServiceRuntime::Lif': VirtualServiceRuntimeLif,
-        'Avi::VirtualServiceRuntime::AssignedStaticSeUuid': VirtualServiceRuntimeAssignedStaticSeUuid,
-        'Avi::VirtualServiceRuntime::SeList': VirtualServiceRuntimeSeList,
-        'Avi::VirtualServiceRuntime::TlsTicketKey': VirtualServiceRuntimeTlsTicketKey,
-        'Avi::VirtualServiceRuntime': VirtualServiceRuntime,
-        'Avi::VirtualServiceRuntime::VhChildVsUuid': VirtualServiceRuntimeVhChildVsUuid,
-        'Avi::VirtualServiceRuntime::RequestedStaticSeUuid': VirtualServiceRuntimeRequestedStaticSeUuid,
+        'AviBeta16.1::VsSeAssigned': VsSeAssigned,
+        'AviBeta16.1::VirtualServiceRuntime::ScaleHistory': VirtualServiceRuntimeScaleHistory,
+        'AviBeta16.1::VirtualServiceRuntime::Lif': VirtualServiceRuntimeLif,
+        'AviBeta16.1::VirtualServiceRuntime::AssignedStaticSeUuid': VirtualServiceRuntimeAssignedStaticSeUuid,
+        'AviBeta16.1::VirtualServiceRuntime::SeList': VirtualServiceRuntimeSeList,
+        'AviBeta16.1::VirtualServiceRuntime::TlsTicketKey': VirtualServiceRuntimeTlsTicketKey,
+        'AviBeta16.1::VirtualServiceRuntime': VirtualServiceRuntime,
+        'AviBeta16.1::VirtualServiceRuntime::VhChildVsUuid': VirtualServiceRuntimeVhChildVsUuid,
+        'AviBeta16.1::VirtualServiceRuntime::RequestedStaticSeUuid': VirtualServiceRuntimeRequestedStaticSeUuid,
     }
 

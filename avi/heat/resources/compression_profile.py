@@ -87,8 +87,9 @@ class CompressionFilter(object):
         update_allowed=True,
     )
     user_agent_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )

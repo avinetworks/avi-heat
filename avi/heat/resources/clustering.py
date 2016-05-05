@@ -146,7 +146,7 @@ class ClusterNodes(AviNestedResource, ClusterNode):
 
 def resource_mapping():
     return {
-        'Avi::Cluster': Cluster,
-        'Avi::Cluster::Node': ClusterNodes,
+        'AviBeta16.1::Cluster': Cluster,
+        'AviBeta16.1::Cluster::Node': ClusterNodes,
     }
 

@@ -43,47 +43,23 @@ class IpAddrRange(object):
 
 
 
-class CustomParams(object):
+class RepeatableString(object):
     # all schemas
-    name_schema = properties.Schema(
+    str_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
     )
-    value_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    is_sensitive_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    is_dynamic_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
-        'name',
-        'value',
-        'is_sensitive',
-        'is_dynamic',
+        'str',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'name': name_schema,
-        'value': value_schema,
-        'is_sensitive': is_sensitive_schema,
-        'is_dynamic': is_dynamic_schema,
+        'str': str_schema,
     }
 
 
@@ -461,6 +437,6 @@ class IpAddrPort(object):
 
 def resource_mapping():
     return {
-        'Avi::Tenant': Tenant,
+        'AviBeta16.1::Tenant': Tenant,
     }
 

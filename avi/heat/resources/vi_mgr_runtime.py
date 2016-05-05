@@ -72,8 +72,9 @@ class VIMgrVcenterRuntime(AviResource):
         update_allowed=True,
     )
     discovered_datacenter_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -290,7 +291,7 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
         update_allowed=False,
     )
     discovered_datacenter_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
         required=True,
         update_allowed=False,
@@ -310,8 +311,8 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
-        'Avi::VIMgrVcenterRuntime::DiscoveredDatacenter': VIMgrVcenterRuntimeDiscoveredDatacenter,
-        'Avi::VIMgrVcenterRuntime::DatacenterUuid': VIMgrVcenterRuntimeDatacenterUuids,
+        'AviBeta16.1::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
+        'AviBeta16.1::VIMgrVcenterRuntime::DiscoveredDatacenter': VIMgrVcenterRuntimeDiscoveredDatacenter,
+        'AviBeta16.1::VIMgrVcenterRuntime::DatacenterUuid': VIMgrVcenterRuntimeDatacenterUuids,
     }
 

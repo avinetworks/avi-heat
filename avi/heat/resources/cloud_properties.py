@@ -514,9 +514,9 @@ class CloudPropertiesInfo(AviNestedResource, CloudInfo):
 
 def resource_mapping():
     return {
-        'Avi::CloudProperties::HypProp': CloudPropertiesHypProps,
-        'Avi::CloudProperties::CcVtype': CloudPropertiesCcVtypes,
-        'Avi::CloudProperties::Info': CloudPropertiesInfo,
-        'Avi::CloudProperties': CloudProperties,
+        'AviBeta16.1::CloudProperties::HypProp': CloudPropertiesHypProps,
+        'AviBeta16.1::CloudProperties::CcVtype': CloudPropertiesCcVtypes,
+        'AviBeta16.1::CloudProperties::Info': CloudPropertiesInfo,
+        'AviBeta16.1::CloudProperties': CloudProperties,
     }
 

@@ -189,6 +189,6 @@ class HardwareSecurityModuleGroup(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HardwareSecurityModuleGroup': HardwareSecurityModuleGroup,
+        'AviBeta16.1::HardwareSecurityModuleGroup': HardwareSecurityModuleGroup,
     }
 

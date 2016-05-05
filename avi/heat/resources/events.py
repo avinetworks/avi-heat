@@ -334,13 +334,6 @@ class EventDetails(object):
         required=False,
         update_allowed=True,
     )
-    se_default_gw_hb_fail_details_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SeDefaultGwHbFailDetails.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
     se_hm_pool_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -429,20 +422,6 @@ class EventDetails(object):
         properties.Schema.MAP,
         _(""),
         schema=SSLExportDetails.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ssl_renew_details_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SSLRenewDetails.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ssl_renew_failed_details_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SSLRenewFailedDetails.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -698,13 +677,6 @@ class EventDetails(object):
         required=False,
         update_allowed=True,
     )
-    docker_ucp_details_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=DockerUCPSetup.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
     hs_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -828,7 +800,6 @@ class EventDetails(object):
         'se_dupip_event_details',
         'se_ip_added_event_details',
         'se_ip_removed_event_details',
-        'se_default_gw_hb_fail_details',
         'se_hm_pool_details',
         'se_hm_vs_details',
         'se_persistence_details',
@@ -842,8 +813,6 @@ class EventDetails(object):
         'config_password_change_request_details',
         'ssl_expire_details',
         'ssl_export_details',
-        'ssl_renew_details',
-        'ssl_renew_failed_details',
         'cluster_node_add_details',
         'cluster_node_remove_details',
         'cluster_service_failed_details',
@@ -880,7 +849,6 @@ class EventDetails(object):
         'vca_infra_details',
         'marathon_service_port_conflict_details',
         'mesos_infra_details',
-        'docker_ucp_details',
         'hs_details',
         'nw_subnet_clash_details',
         'nw_summarized_details',
@@ -939,7 +907,6 @@ class EventDetails(object):
         'se_dupip_event_details': se_dupip_event_details_schema,
         'se_ip_added_event_details': se_ip_added_event_details_schema,
         'se_ip_removed_event_details': se_ip_removed_event_details_schema,
-        'se_default_gw_hb_fail_details': se_default_gw_hb_fail_details_schema,
         'se_hm_pool_details': se_hm_pool_details_schema,
         'se_hm_vs_details': se_hm_vs_details_schema,
         'se_persistence_details': se_persistence_details_schema,
@@ -953,8 +920,6 @@ class EventDetails(object):
         'config_password_change_request_details': config_password_change_request_details_schema,
         'ssl_expire_details': ssl_expire_details_schema,
         'ssl_export_details': ssl_export_details_schema,
-        'ssl_renew_details': ssl_renew_details_schema,
-        'ssl_renew_failed_details': ssl_renew_failed_details_schema,
         'cluster_node_add_details': cluster_node_add_details_schema,
         'cluster_node_remove_details': cluster_node_remove_details_schema,
         'cluster_service_failed_details': cluster_service_failed_details_schema,
@@ -991,7 +956,6 @@ class EventDetails(object):
         'vca_infra_details': vca_infra_details_schema,
         'marathon_service_port_conflict_details': marathon_service_port_conflict_details_schema,
         'mesos_infra_details': mesos_infra_details_schema,
-        'docker_ucp_details': docker_ucp_details_schema,
         'hs_details': hs_details_schema,
         'nw_subnet_clash_details': nw_subnet_clash_details_schema,
         'nw_summarized_details': nw_summarized_details_schema,
@@ -1097,8 +1061,9 @@ class EventLog(object):
         update_allowed=True,
     )
     event_pages_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )

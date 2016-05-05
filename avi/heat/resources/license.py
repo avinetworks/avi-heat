@@ -45,7 +45,7 @@ class SingleLicense(object):
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engine cores in non-container clouds"),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -57,7 +57,7 @@ class SingleLicense(object):
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engines hosts in container clouds"),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -129,12 +129,6 @@ class SingleLicense(object):
         required=False,
         update_allowed=True,
     )
-    sockets_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -155,7 +149,6 @@ class SingleLicense(object):
         'last_update',
         'license_type',
         'enforced_params',
-        'sockets',
     )
 
     # mapping of properties to their schemas
@@ -177,7 +170,6 @@ class SingleLicense(object):
         'last_update': last_update_schema,
         'license_type': license_type_schema,
         'enforced_params': enforced_params_schema,
-        'sockets': sockets_schema,
     }
 
 
@@ -218,7 +210,7 @@ class ControllerLicense(AviResource):
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engine cores in non-container clouds"),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -243,7 +235,7 @@ class ControllerLicense(AviResource):
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engines hosts in container clouds"),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -255,13 +247,7 @@ class ControllerLicense(AviResource):
     )
     max_vses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Deprecated"),
-        required=False,
-        update_allowed=True,
-    )
-    sockets_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -293,7 +279,6 @@ class ControllerLicense(AviResource):
         'max_ses',
         'max_apps',
         'max_vses',
-        'sockets',
         'licenses',
     )
 
@@ -310,7 +295,6 @@ class ControllerLicense(AviResource):
         'max_ses': max_ses_schema,
         'max_apps': max_apps_schema,
         'max_vses': max_vses_schema,
-        'sockets': sockets_schema,
         'licenses': licenses_schema,
     }
 
@@ -369,8 +353,8 @@ class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
 
 def resource_mapping():
     return {
-        'Avi::ControllerLicense': ControllerLicense,
-        'Avi::ControllerLicense::LicenseTier': ControllerLicenseLicenseTier,
-        'Avi::ControllerLicense::License': ControllerLicenseLicenses,
+        'AviBeta16.1::ControllerLicense': ControllerLicense,
+        'AviBeta16.1::ControllerLicense::LicenseTier': ControllerLicenseLicenseTier,
+        'AviBeta16.1::ControllerLicense::License': ControllerLicenseLicenses,
     }
 

@@ -145,7 +145,7 @@ class HTTPApplicationProfile(object):
     )
     hsts_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Inserts HTTP Strict-Transport-Security header in the HTTPS response.  HSTS can help mitigate man-in-the-middle attacks by telling browsers that support HSTS that they should only access this site via HTTPS."),
+        _("Inserts HTTP Strict-Transport-Security header in the HTTPS response.  HSTS can help mitigate man-in-the-middle attacks by telling browsers that support HSTS that they should only access this site via HTTP."),
         required=False,
         update_allowed=True,
     )
@@ -465,6 +465,6 @@ class ApplicationProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ApplicationProfile': ApplicationProfile,
+        'AviBeta16.1::ApplicationProfile': ApplicationProfile,
     }
 

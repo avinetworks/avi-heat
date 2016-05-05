@@ -21,13 +21,7 @@ class HealthMonitorTcp(object):
     )
     tcp_response_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Match for the desired keyword in the first 2Kb of the server's TCP response. If this field is left blank, no server response is required."),
-        required=False,
-        update_allowed=True,
-    )
-    maintenance_response_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Match or look for this keyword in the first 2KB of server's response indicating server maintenance.  A successful match results in the server being marked down."),
+        _("Match for the desired keyword in the first 2Kb of the server's UDP response. If this field is left blank, no server response is required."),
         required=False,
         update_allowed=True,
     )
@@ -36,14 +30,12 @@ class HealthMonitorTcp(object):
     PROPERTIES = (
         'tcp_request',
         'tcp_response',
-        'maintenance_response',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'tcp_request': tcp_request_schema,
         'tcp_response': tcp_response_schema,
-        'maintenance_response': maintenance_response_schema,
     }
 
 
@@ -95,74 +87,6 @@ class HealthMonitorExternal(object):
 
 
 
-class HealthMonitorHttp(object):
-    # all schemas
-    http_request_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Send an HTTP request to the server.  The default GET / HTTP/1.0 may be extended with additional headers or information.  For instance, GET /index.htm HTTP/1.1 Host: www.site.com Connection: Close"),
-        required=False,
-        update_allowed=True,
-    )
-    http_response_code_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    http_response_code_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of HTTP response codes to match as successful.  Default is 2xx."),
-        schema=http_response_code_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    http_response_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Match for a keyword in the first 2Kb of the server header and body response."),
-        required=False,
-        update_allowed=True,
-    )
-    maintenance_code_item_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    maintenance_code_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Match or look for this HTTP response code indicating server maintenance.  A successful match results in the server being marked down."),
-        schema=maintenance_code_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    maintenance_response_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Match or look for this keyword in the first 2KB of server header and body response indicating server maintenance.  A successful match results in the server being marked down."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'http_request',
-        'http_response_code',
-        'http_response',
-        'maintenance_code',
-        'maintenance_response',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'http_request': http_request_schema,
-        'http_response_code': http_response_code_schema,
-        'http_response': http_response_schema,
-        'maintenance_code': maintenance_code_schema,
-        'maintenance_response': maintenance_response_schema,
-    }
-
-
-
-
 class HealthMonitorUdp(object):
     # all schemas
     udp_request_schema = properties.Schema(
@@ -177,25 +101,17 @@ class HealthMonitorUdp(object):
         required=False,
         update_allowed=True,
     )
-    maintenance_response_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Match or look for this keyword in the first 2KB of server's response indicating server maintenance.  A successful match results in the server being marked down."),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
         'udp_request',
         'udp_response',
-        'maintenance_response',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'udp_request': udp_request_schema,
         'udp_response': udp_response_schema,
-        'maintenance_response': maintenance_response_schema,
     }
 
 
@@ -242,6 +158,74 @@ class HealthMonitorDNS(object):
         'qtype': qtype_schema,
         'rcode': rcode_schema,
         'response_string': response_string_schema,
+    }
+
+
+
+
+class RepeatableHttpResponse(object):
+    # all schemas
+    code_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP response codes to match."),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'code',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'code': code_schema,
+    }
+
+
+
+
+class HealthMonitorHttp(object):
+    # all schemas
+    http_request_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Send an HTTP request to the server.  The default GET / HTTP/1.0 may be extended with additional headers or information.  For instance, GET /index.htm HTTP/1.1 Host: www.site.com Connection: Close"),
+        required=False,
+        update_allowed=True,
+    )
+    http_response_code_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=RepeatableHttpResponse.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    http_response_code_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of HTTP response codes to match as successful.  Default is 2xx."),
+        schema=http_response_code_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    http_response_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Match for a keyword in the first 2Kb of the server header and body response."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'http_request',
+        'http_response_code',
+        'http_response',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'http_request': http_request_schema,
+        'http_response_code': http_response_code_schema,
+        'http_response': http_response_schema,
     }
 
 
@@ -382,6 +366,6 @@ class HealthMonitor(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HealthMonitor': HealthMonitor,
+        'AviBeta16.1::HealthMonitor': HealthMonitor,
     }
 

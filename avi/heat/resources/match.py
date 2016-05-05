@@ -118,8 +118,9 @@ class HdrMatch(object):
         update_allowed=True,
     )
     value_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -180,6 +181,36 @@ class HTTPStatusRange(object):
 
 
 
+class MicroServiceMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for Micro Service matching the HTTP request"),
+        required=True,
+        update_allowed=True,
+    )
+    group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of Micro Service group(s)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'group_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'group_uuid': group_uuid_schema,
+    }
+
+
+
+
 class LocationHdrMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -195,8 +226,9 @@ class LocationHdrMatch(object):
         update_allowed=True,
     )
     value_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -240,8 +272,9 @@ class PathMatch(object):
         update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -497,8 +530,9 @@ class HostHdrMatch(object):
         update_allowed=True,
     )
     value_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -572,8 +606,9 @@ class QueryMatch(object):
         update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -617,105 +652,23 @@ class QueryMatch(object):
 
 
 
-class MicroServiceMatch(object):
+class RepeatableHTTPVersion(object):
     # all schemas
-    match_criteria_schema = properties.Schema(
+    version_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Criterion to use for Micro Service matching the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    group_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of Micro Service group(s)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'group_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'group_uuid': group_uuid_schema,
-    }
-
-
-
-
-class MethodMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for HTTP method matching the method in the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    methods_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    methods_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Configure HTTP method(s)"),
-        schema=methods_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'methods',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'methods': methods_schema,
-    }
-
-
-
-
-class HTTPVersionMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for HTTP version matching the version used in the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    versions_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    versions_schema = properties.Schema(
-        properties.Schema.LIST,
         _("HTTP protocol version"),
-        schema=versions_item_schema,
-        required=False,
+        required=True,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'match_criteria',
-        'versions',
+        'version',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'versions': versions_schema,
+        'version': version_schema,
     }
 
 
@@ -873,6 +826,28 @@ class ProtocolMatch(object):
 
 
 
+class RepeatableHTTPMethod(object):
+    # all schemas
+    method_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP methods"),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'method',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'method': method_schema,
+    }
+
+
+
+
 class StringMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -882,8 +857,9 @@ class StringMatch(object):
         update_allowed=True,
     )
     match_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -1204,112 +1180,77 @@ class IpAddrGroupIpPorts(AviNestedResource):
     }
 
 
-class MatchTarget(object):
+class HTTPVersionMatch(object):
     # all schemas
-    client_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure client ip addresses"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for HTTP version matching the version used in the HTTP request"),
+        required=True,
         update_allowed=True,
     )
-    vs_port_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure virtual service ports"),
-        schema=PortMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    protocol_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure the type of HTTP protocol"),
-        schema=ProtocolMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    method_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure HTTP methods"),
-        schema=MethodMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    version_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure versions of the HTTP protocol"),
-        schema=HTTPVersionMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    path_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure request paths"),
-        schema=PathMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    query_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure request query"),
-        schema=QueryMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    hdrs_item_schema = properties.Schema(
+    versions_item_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
-        schema=HdrMatch.properties_schema,
+        schema=RepeatableHTTPVersion.properties_schema,
         required=True,
         update_allowed=False,
     )
-    hdrs_schema = properties.Schema(
+    versions_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Configure HTTP header(s)"),
-        schema=hdrs_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    cookie_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure HTTP cookie(s)"),
-        schema=CookieMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    host_hdr_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Configure the host header"),
-        schema=HostHdrMatch.properties_schema,
+        _("HTTP protocol version"),
+        schema=versions_item_schema,
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'client_ip',
-        'vs_port',
-        'protocol',
-        'method',
-        'version',
-        'path',
-        'query',
-        'hdrs',
-        'cookie',
-        'host_hdr',
+        'match_criteria',
+        'versions',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'client_ip': client_ip_schema,
-        'vs_port': vs_port_schema,
-        'protocol': protocol_schema,
-        'method': method_schema,
-        'version': version_schema,
-        'path': path_schema,
-        'query': query_schema,
-        'hdrs': hdrs_schema,
-        'cookie': cookie_schema,
-        'host_hdr': host_hdr_schema,
+        'match_criteria': match_criteria_schema,
+        'versions': versions_schema,
+    }
+
+
+
+
+class MethodMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for HTTP method matching the method in the HTTP request"),
+        required=True,
+        update_allowed=True,
+    )
+    methods_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=RepeatableHTTPMethod.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    methods_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Configure HTTP method(s)"),
+        schema=methods_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'methods',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'methods': methods_schema,
     }
 
 
@@ -1460,17 +1401,128 @@ class ResponseMatchTarget(object):
 
 
 
+class MatchTarget(object):
+    # all schemas
+    client_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure client ip addresses"),
+        schema=IpAddrMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    vs_port_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure virtual service ports"),
+        schema=PortMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    protocol_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure the type of HTTP protocol"),
+        schema=ProtocolMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    method_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure HTTP methods"),
+        schema=MethodMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    version_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure versions of the HTTP protocol"),
+        schema=HTTPVersionMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    path_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure request paths"),
+        schema=PathMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    query_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure request query"),
+        schema=QueryMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    hdrs_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HdrMatch.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    hdrs_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Configure HTTP header(s)"),
+        schema=hdrs_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    cookie_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure HTTP cookie(s)"),
+        schema=CookieMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    host_hdr_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure the host header"),
+        schema=HostHdrMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'client_ip',
+        'vs_port',
+        'protocol',
+        'method',
+        'version',
+        'path',
+        'query',
+        'hdrs',
+        'cookie',
+        'host_hdr',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'client_ip': client_ip_schema,
+        'vs_port': vs_port_schema,
+        'protocol': protocol_schema,
+        'method': method_schema,
+        'version': version_schema,
+        'path': path_schema,
+        'query': query_schema,
+        'hdrs': hdrs_schema,
+        'cookie': cookie_schema,
+        'host_hdr': host_hdr_schema,
+    }
+
+
+
+
 def resource_mapping():
     return {
-        'Avi::MicroServiceGroup': MicroServiceGroup,
-        'Avi::IpAddrGroup::Addr': IpAddrGroupAddrs,
-        'Avi::StringGroup::Kv': StringGroupKv,
-        'Avi::IpAddrGroup': IpAddrGroup,
-        'Avi::IpAddrGroup::IpPort': IpAddrGroupIpPorts,
-        'Avi::IpAddrGroup::Prefixe': IpAddrGroupPrefixes,
-        'Avi::IpAddrGroup::Range': IpAddrGroupRanges,
-        'Avi::IpAddrGroup::CountryCode': IpAddrGroupCountryCodes,
-        'Avi::StringGroup': StringGroup,
-        'Avi::MicroServiceGroup::ServiceUuid': MicroServiceGroupServiceUuids,
+        'AviBeta16.1::MicroServiceGroup': MicroServiceGroup,
+        'AviBeta16.1::IpAddrGroup::Addr': IpAddrGroupAddrs,
+        'AviBeta16.1::StringGroup::Kv': StringGroupKv,
+        'AviBeta16.1::IpAddrGroup': IpAddrGroup,
+        'AviBeta16.1::IpAddrGroup::IpPort': IpAddrGroupIpPorts,
+        'AviBeta16.1::IpAddrGroup::Prefixe': IpAddrGroupPrefixes,
+        'AviBeta16.1::IpAddrGroup::Range': IpAddrGroupRanges,
+        'AviBeta16.1::IpAddrGroup::CountryCode': IpAddrGroupCountryCodes,
+        'AviBeta16.1::StringGroup': StringGroup,
+        'AviBeta16.1::MicroServiceGroup::ServiceUuid': MicroServiceGroupServiceUuids,
     }
 

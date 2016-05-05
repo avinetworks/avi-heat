@@ -256,7 +256,7 @@ class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
 
 def resource_mapping():
     return {
-        'Avi::VrfContext': VrfContext,
-        'Avi::VrfContext::StaticRoute': VrfContextStaticRoutes,
+        'AviBeta16.1::VrfContext': VrfContext,
+        'AviBeta16.1::VrfContext::StaticRoute': VrfContextStaticRoutes,
     }
 

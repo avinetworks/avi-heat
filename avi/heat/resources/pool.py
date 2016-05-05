@@ -11,7 +11,6 @@ from options import *
 from common import *
 from options import *
 from rate import *
-from match import *
 
 
 class FailActionHTTPLocalResponse(object):
@@ -291,66 +290,6 @@ class NetworkFilter(object):
 
 
 
-class HTTPReselectRespCode(object):
-    # all schemas
-    codes_item_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    codes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("HTTP response code to be matched."),
-        schema=codes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ranges_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HTTPStatusRange.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    ranges_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("HTTP response code ranges to match."),
-        schema=ranges_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    resp_code_block_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    resp_code_block_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Block of HTTP response codes to match for server reselect."),
-        schema=resp_code_block_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'codes',
-        'ranges',
-        'resp_code_block',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'codes': codes_schema,
-        'ranges': ranges_schema,
-        'resp_code_block': resp_code_block_schema,
-    }
-
-
-
-
 class DiscoveredNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -384,53 +323,6 @@ class DiscoveredNetwork(object):
     properties_schema = {
         'network_uuid': network_uuid_schema,
         'subnet': subnet_schema,
-    }
-
-
-
-
-class HTTPServerReselect(object):
-    # all schemas
-    enabled_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable HTTP request reselect when server responds with specific response codes."),
-        required=True,
-        update_allowed=True,
-    )
-    svr_resp_code_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Server response codes which will trigger an HTTP request retry."),
-        schema=HTTPReselectRespCode.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    num_retries_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of times to retry an HTTP request when server responds with configured status codes."),
-        required=False,
-        update_allowed=True,
-    )
-    retry_nonidempotent_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Allow retry of non-idempotent HTTP requests."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'enabled',
-        'svr_resp_code',
-        'num_retries',
-        'retry_nonidempotent',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'enabled': enabled_schema,
-        'svr_resp_code': svr_resp_code_schema,
-        'num_retries': num_retries_schema,
-        'retry_nonidempotent': retry_nonidempotent_schema,
     }
 
 
@@ -893,7 +785,7 @@ class Pool(AviResource):
     )
     request_queue_depth_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Minimum number of requests to be queued when pool is full."),
+        _("Number of requests to be queued when pool is full."),
         required=False,
         update_allowed=True,
     )
@@ -901,13 +793,6 @@ class Pool(AviResource):
         properties.Schema.MAP,
         _("A/B pool configuration."),
         schema=AbPool.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    server_reselect_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Server reselect configuration for HTTP requests."),
-        schema=HTTPServerReselect.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -971,7 +856,6 @@ class Pool(AviResource):
         'request_queue_enabled',
         'request_queue_depth',
         'ab_pool',
-        'server_reselect',
         'a_pool',
         'ab_priority',
         'description',
@@ -1018,7 +902,6 @@ class Pool(AviResource):
         'request_queue_enabled': request_queue_enabled_schema,
         'request_queue_depth': request_queue_depth_schema,
         'ab_pool': ab_pool_schema,
-        'server_reselect': server_reselect_schema,
         'a_pool': a_pool_schema,
         'ab_priority': ab_priority_schema,
         'description': description_schema,
@@ -1171,12 +1054,12 @@ class PoolAutoscaleNetworks(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::Pool::PlacementNetwork': PoolPlacementNetworks,
-        'Avi::Pool::AutoscaleNetwork': PoolAutoscaleNetworks,
-        'Avi::Pool::Server': PoolServers,
-        'Avi::Pool::X509Cert': PoolX509Cert,
-        'Avi::Pool::HealthMonitorUuid': PoolHealthMonitorUuids,
-        'Avi::Pool::Network': PoolNetworks,
-        'Avi::Pool': Pool,
+        'AviBeta16.1::Pool::PlacementNetwork': PoolPlacementNetworks,
+        'AviBeta16.1::Pool::AutoscaleNetwork': PoolAutoscaleNetworks,
+        'AviBeta16.1::Pool::Server': PoolServers,
+        'AviBeta16.1::Pool::X509Cert': PoolX509Cert,
+        'AviBeta16.1::Pool::HealthMonitorUuid': PoolHealthMonitorUuids,
+        'AviBeta16.1::Pool::Network': PoolNetworks,
+        'AviBeta16.1::Pool': Pool,
     }
 

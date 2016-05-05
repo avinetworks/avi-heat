@@ -20,9 +20,8 @@ class DNSInternalNSRecord(object):
         update_allowed=True,
     )
     ip_address_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.STRING,
         _("IP address of the Nameserver"),
-        schema=IpAddr.properties_schema,
         required=True,
         update_allowed=True,
     )
@@ -75,68 +74,6 @@ class InfobloxProfile(object):
         'wapi_version': wapi_version_schema,
         'dns_view': dns_view_schema,
         'network_view': network_view_schema,
-    }
-
-
-
-
-class IpamAwsProfile(object):
-    # all schemas
-    region_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS region"),
-        required=False,
-        update_allowed=True,
-    )
-    vpc_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("VPC name"),
-        required=False,
-        update_allowed=True,
-    )
-    vpc_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("VPC ID"),
-        required=True,
-        update_allowed=True,
-    )
-    use_iam_roles_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    access_key_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS access key ID"),
-        required=False,
-        update_allowed=True,
-    )
-    secret_access_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS secret access key"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'region',
-        'vpc',
-        'vpc_id',
-        'use_iam_roles',
-        'access_key_id',
-        'secret_access_key',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'region': region_schema,
-        'vpc': vpc_schema,
-        'vpc_id': vpc_id_schema,
-        'use_iam_roles': use_iam_roles_schema,
-        'access_key_id': access_key_id_schema,
-        'secret_access_key': secret_access_key_schema,
     }
 
 
@@ -236,13 +173,6 @@ class IpamProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    aws_profile_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpamAwsProfile.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -253,7 +183,6 @@ class IpamProfile(AviResource):
         'password',
         'infoblox_profile',
         'internal_profile',
-        'aws_profile',
     )
 
     # mapping of properties to their schemas
@@ -265,7 +194,6 @@ class IpamProfile(AviResource):
         'password': password_schema,
         'infoblox_profile': infoblox_profile_schema,
         'internal_profile': internal_profile_schema,
-        'aws_profile': aws_profile_schema,
     }
 
 
@@ -273,6 +201,6 @@ class IpamProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::IpamProfile': IpamProfile,
+        'AviBeta16.1::IpamProfile': IpamProfile,
     }
 

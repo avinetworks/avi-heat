@@ -195,82 +195,6 @@ class SSLCertificateDescription(object):
 
 
 
-class CertificateManagementProfile(AviResource):
-    resource_name = "certificatemanagementprofile"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of the PKI Profile"),
-        required=True,
-        update_allowed=True,
-    )
-    script_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=CustomParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    script_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=script_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    script_path_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'script_params',
-        'script_path',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'script_params': script_params_schema,
-        'script_path': script_path_schema,
-    }
-
-
-
-
-class CertificateManagementProfileScriptParams(AviNestedResource):
-    resource_name = "certificatemanagementprofile"
-    nested_property_name = "script_params"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of certificatemanagementprofile"),
-        required=True,
-        update_allowed=False,
-    )
-    script_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('certificatemanagementprofile_uuid',
-                  'script_params',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'certificatemanagementprofile_uuid': parent_uuid_schema,
-        'script_params': script_params_item_schema,
-    }
-
-
 class SSLRating(object):
     # all schemas
     security_score_schema = properties.Schema(
@@ -980,26 +904,6 @@ class SSLKeyAndCertificate(AviResource):
         required=False,
         update_allowed=True,
     )
-    certificate_management_profile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    dynamic_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=CustomParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    dynamic_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Dynamic parameters needed for certificate management profile"),
-        schema=dynamic_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -1013,8 +917,6 @@ class SSLKeyAndCertificate(AviResource):
         'enckey_base64',
         'enckey_name',
         'hardwaresecuritymodulegroup_uuid',
-        'certificate_management_profile_uuid',
-        'dynamic_params',
     )
 
     # mapping of properties to their schemas
@@ -1029,8 +931,6 @@ class SSLKeyAndCertificate(AviResource):
         'enckey_base64': enckey_base64_schema,
         'enckey_name': enckey_name_schema,
         'hardwaresecuritymodulegroup_uuid': hardwaresecuritymodulegroup_uuid_schema,
-        'certificate_management_profile_uuid': certificate_management_profile_uuid_schema,
-        'dynamic_params': dynamic_params_schema,
     }
 
 
@@ -1057,48 +957,16 @@ class SSLKeyAndCertificateCaCerts(AviNestedResource, CertificateAuthority):
     properties_schema.update(CertificateAuthority.properties_schema)
 
 
-class SSLKeyAndCertificateDynamicParams(AviNestedResource):
-    resource_name = "sslkeyandcertificate"
-    nested_property_name = "dynamic_params"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslkeyandcertificate"),
-        required=True,
-        update_allowed=False,
-    )
-    dynamic_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('sslkeyandcertificate_uuid',
-                  'dynamic_params',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslkeyandcertificate_uuid': parent_uuid_schema,
-        'dynamic_params': dynamic_params_item_schema,
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::SSLKeyAndCertificate::DynamicParam': SSLKeyAndCertificateDynamicParams,
-        'Avi::CertificateManagementProfile::ScriptParam': CertificateManagementProfileScriptParams,
-        'Avi::SSLKeyAndCertificate': SSLKeyAndCertificate,
-        'Avi::SSLProfile::CipherEnum': SSLProfileCipherEnums,
-        'Avi::PKIProfile::Crl': PKIProfileCrls,
-        'Avi::SSLProfile::Tag': SSLProfileTags,
-        'Avi::CertificateManagementProfile': CertificateManagementProfile,
-        'Avi::SSLProfile': SSLProfile,
-        'Avi::SSLKeyAndCertificate::CaCert': SSLKeyAndCertificateCaCerts,
-        'Avi::PKIProfile::CaCert': PKIProfileCaCerts,
-        'Avi::SSLProfile::AcceptedVersion': SSLProfileAcceptedVersions,
-        'Avi::PKIProfile': PKIProfile,
+        'AviBeta16.1::SSLKeyAndCertificate': SSLKeyAndCertificate,
+        'AviBeta16.1::SSLProfile::CipherEnum': SSLProfileCipherEnums,
+        'AviBeta16.1::PKIProfile::Crl': PKIProfileCrls,
+        'AviBeta16.1::SSLProfile::Tag': SSLProfileTags,
+        'AviBeta16.1::SSLProfile': SSLProfile,
+        'AviBeta16.1::SSLKeyAndCertificate::CaCert': SSLKeyAndCertificateCaCerts,
+        'AviBeta16.1::PKIProfile::CaCert': PKIProfileCaCerts,
+        'AviBeta16.1::SSLProfile::AcceptedVersion': SSLProfileAcceptedVersions,
+        'AviBeta16.1::PKIProfile': PKIProfile,
     }
 

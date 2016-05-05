@@ -88,7 +88,7 @@ class ApplicationVirtualserviceUuids(AviNestedResource):
 
 def resource_mapping():
     return {
-        'Avi::Application': Application,
-        'Avi::Application::VirtualserviceUuid': ApplicationVirtualserviceUuids,
+        'AviBeta16.1::Application': Application,
+        'AviBeta16.1::Application::VirtualserviceUuid': ApplicationVirtualserviceUuids,
     }
 

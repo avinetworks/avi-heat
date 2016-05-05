@@ -11,36 +11,6 @@ from options import *
 from options import *
 
 
-class SSLRenewFailedDetails(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of SSL Certificate"),
-        required=False,
-        update_allowed=True,
-    )
-    error_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Error when renewing certificate"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'error',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'error': error_schema,
-    }
-
-
-
-
 class SSLExpireDetails(object):
     # all schemas
     name_schema = properties.Schema(
@@ -66,28 +36,6 @@ class SSLExpireDetails(object):
     properties_schema = {
         'name': name_schema,
         'days_left': days_left_schema,
-    }
-
-
-
-
-class SSLRenewDetails(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of SSL Certificate"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
     }
 
 

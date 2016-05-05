@@ -619,36 +619,6 @@ class SeIpfailureEventDetails(object):
 
 
 
-class SeDefaultGwHbFailDetails(object):
-    # all schemas
-    defgw_ip_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Monitored gateway"),
-        required=True,
-        update_allowed=True,
-    )
-    vrf_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Virtual Routing Context corresponding to this address"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'defgw_ip',
-        'vrf_name',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'defgw_ip': defgw_ip_schema,
-        'vrf_name': vrf_name_schema,
-    }
-
-
-
-
 class SeHmEventPoolDetails(object):
     # all schemas
     pool_schema = properties.Schema(

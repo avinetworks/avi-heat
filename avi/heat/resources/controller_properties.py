@@ -176,24 +176,6 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
-    attach_ip_retry_interval_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    attach_ip_retry_limit_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    persistence_key_rotate_period_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -224,9 +206,6 @@ class ControllerProperties(AviResource):
         'vs_awaiting_se_timeout',
         'vs_apic_scaleout_timeout',
         'secure_channel_cleanup_timeout',
-        'attach_ip_retry_interval',
-        'attach_ip_retry_limit',
-        'persistence_key_rotate_period',
     )
 
     # mapping of properties to their schemas
@@ -258,9 +237,6 @@ class ControllerProperties(AviResource):
         'vs_awaiting_se_timeout': vs_awaiting_se_timeout_schema,
         'vs_apic_scaleout_timeout': vs_apic_scaleout_timeout_schema,
         'secure_channel_cleanup_timeout': secure_channel_cleanup_timeout_schema,
-        'attach_ip_retry_interval': attach_ip_retry_interval_schema,
-        'attach_ip_retry_limit': attach_ip_retry_limit_schema,
-        'persistence_key_rotate_period': persistence_key_rotate_period_schema,
     }
 
 
@@ -268,6 +244,6 @@ class ControllerProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ControllerProperties': ControllerProperties,
+        'AviBeta16.1::ControllerProperties': ControllerProperties,
     }
 

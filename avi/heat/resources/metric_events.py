@@ -249,12 +249,6 @@ class LicenseExpiryDetails(object):
         required=False,
         update_allowed=True,
     )
-    sockets_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -268,7 +262,6 @@ class LicenseExpiryDetails(object):
         'license_tier',
         'license_id',
         'license_type',
-        'sockets',
     )
 
     # mapping of properties to their schemas
@@ -283,7 +276,6 @@ class LicenseExpiryDetails(object):
         'license_tier': license_tier_schema,
         'license_id': license_id_schema,
         'license_type': license_type_schema,
-        'sockets': sockets_schema,
     }
 
 

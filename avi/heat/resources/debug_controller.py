@@ -251,19 +251,12 @@ class MesosMetricsDebugFilter(object):
         required=False,
         update_allowed=True,
     )
-    metrics_collection_frq_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
         'metric_entity',
         'mesos_master',
         'mesos_slave',
-        'metrics_collection_frq',
     )
 
     # mapping of properties to their schemas
@@ -271,7 +264,6 @@ class MesosMetricsDebugFilter(object):
         'metric_entity': metric_entity_schema,
         'mesos_master': mesos_master_schema,
         'mesos_slave': mesos_slave_schema,
-        'metrics_collection_frq': metrics_collection_frq_schema,
     }
 
 
@@ -327,12 +319,6 @@ class MetricsMgrDebugFilter(object):
         required=False,
         update_allowed=True,
     )
-    license_grace_period_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("setting to reduce the grace period for license expiry in hours"),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -344,7 +330,6 @@ class MetricsMgrDebugFilter(object):
         'metric_instance_id',
         'skip_cluster_map_check',
         'disable_hw_training',
-        'license_grace_period',
     )
 
     # mapping of properties to their schemas
@@ -357,7 +342,6 @@ class MetricsMgrDebugFilter(object):
         'metric_instance_id': metric_instance_id_schema,
         'skip_cluster_map_check': skip_cluster_map_check_schema,
         'disable_hw_training': disable_hw_training_schema,
-        'license_grace_period': license_grace_period_schema,
     }
 
 
@@ -515,6 +499,6 @@ class DebugController(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::DebugController': DebugController,
+        'AviBeta16.1::DebugController': DebugController,
     }
 

@@ -981,12 +981,6 @@ class AlertRule(object):
         required=False,
         update_allowed=True,
     )
-    operator_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -994,7 +988,6 @@ class AlertRule(object):
         'conn_app_log_rule',
         'event_match_filter',
         'metrics_rule',
-        'operator',
     )
 
     # mapping of properties to their schemas
@@ -1003,7 +996,6 @@ class AlertRule(object):
         'conn_app_log_rule': conn_app_log_rule_schema,
         'event_match_filter': event_match_filter_schema,
         'metrics_rule': metrics_rule_schema,
-        'operator': operator_schema,
     }
 
 
@@ -1139,20 +1131,20 @@ class AlertConfig(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AlertSyslogConfig': AlertSyslogConfig,
-        'Avi::AlertScriptConfig': AlertScriptConfig,
-        'Avi::Alert::AppEvent': AlertAppEvents,
-        'Avi::Alert::Event': AlertEvents,
-        'Avi::Alert::EventPage': AlertEventPages,
-        'Avi::AlertObjectList': AlertObjectList,
-        'Avi::Alert': Alert,
-        'Avi::Alert::MetricInfo': AlertMetricInfo,
-        'Avi::AlertConfig': AlertConfig,
-        'Avi::AlertObjectList::Object': AlertObjectListObjects,
-        'Avi::Alert::RelatedUuid': AlertRelatedUuids,
-        'Avi::Alert::ConnEvent': AlertConnEvents,
-        'Avi::ActionGroupConfig': ActionGroupConfig,
-        'Avi::AlertEmailConfig': AlertEmailConfig,
-        'Avi::AlertSyslogConfig::SyslogServer': AlertSyslogConfigSyslogServers,
+        'AviBeta16.1::AlertSyslogConfig': AlertSyslogConfig,
+        'AviBeta16.1::AlertScriptConfig': AlertScriptConfig,
+        'AviBeta16.1::Alert::AppEvent': AlertAppEvents,
+        'AviBeta16.1::Alert::Event': AlertEvents,
+        'AviBeta16.1::Alert::EventPage': AlertEventPages,
+        'AviBeta16.1::AlertObjectList': AlertObjectList,
+        'AviBeta16.1::Alert': Alert,
+        'AviBeta16.1::Alert::MetricInfo': AlertMetricInfo,
+        'AviBeta16.1::AlertConfig': AlertConfig,
+        'AviBeta16.1::AlertObjectList::Object': AlertObjectListObjects,
+        'AviBeta16.1::Alert::RelatedUuid': AlertRelatedUuids,
+        'AviBeta16.1::Alert::ConnEvent': AlertConnEvents,
+        'AviBeta16.1::ActionGroupConfig': ActionGroupConfig,
+        'AviBeta16.1::AlertEmailConfig': AlertEmailConfig,
+        'AviBeta16.1::AlertSyslogConfig::SyslogServer': AlertSyslogConfigSyslogServers,
     }
 

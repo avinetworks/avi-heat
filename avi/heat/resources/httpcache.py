@@ -75,8 +75,9 @@ class HttpCacheConfig(object):
         update_allowed=True,
     )
     mime_types_list_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -107,8 +108,9 @@ class HttpCacheConfig(object):
         update_allowed=True,
     )
     mime_types_black_list_item_schema = properties.Schema(
-        properties.Schema.STRING,
+        properties.Schema.MAP,
         _(""),
+        schema=RepeatableString.properties_schema,
         required=True,
         update_allowed=False,
     )
