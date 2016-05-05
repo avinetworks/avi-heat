@@ -1,0 +1,12 @@
+heat_template_version: 2015-04-30
+description: Template to Avi Heat resources
+resources:
+  member:
+    type: AviBeta16.1::Pool::Server
+    properties:
+      pool_uuid: pool-4b689db7-a43b-485a-af3a-7c8b41b1c397
+      ip:
+        addr: 10.10.10.50
+        type: V4
+      port: 8080
+

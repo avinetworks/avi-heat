@@ -1,0 +1,35 @@
+heat_template_version: 2015-04-30
+description: Template to Avi Heat resources
+resources:
+  hm:
+    type: AviBeta16.1::HealthMonitor
+    properties:
+      name: "mytesthm"
+      receive_timeout: 2
+      failed_checks: 2 
+      successful_checks: 6 
+      send_interval: 2
+      type: HEALTH_MONITOR_HTTP
+      http_monitor:
+        http_response_code:
+          - code: HTTP_2XX
+          - code: HTTP_3XX 
+          - code: HTTP_4XX 
+        http_request: "GET / HTTP/1.0"
+  pool:
+    type: AviBeta16.1::Pool
+    properties:
+      name: "testpool"
+      default_server_port: 8092
+      health_monitor_uuids:
+        - {get_resource: hm}
+      servers:
+        - ip:
+            addr: 10.10.10.10
+            type: V4
+          port: 8080
+        - ip:
+            addr: 10.10.10.20
+            type: V4
+          port: 8081
+
