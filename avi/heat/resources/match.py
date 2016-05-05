@@ -1463,13 +1463,13 @@ class ResponseMatchTarget(object):
 def resource_mapping():
     return {
         'Avi::MicroServiceGroup': MicroServiceGroup,
+        'Avi::IpAddrGroup::Prefix': IpAddrGroupPrefixes,
         'Avi::IpAddrGroup::Addr': IpAddrGroupAddrs,
         'Avi::StringGroup::Kv': StringGroupKv,
         'Avi::IpAddrGroup': IpAddrGroup,
         'Avi::IpAddrGroup::IpPort': IpAddrGroupIpPorts,
-        'Avi::IpAddrGroup::Prefixe': IpAddrGroupPrefixes,
-        'Avi::IpAddrGroup::Range': IpAddrGroupRanges,
         'Avi::IpAddrGroup::CountryCode': IpAddrGroupCountryCodes,
+        'Avi::IpAddrGroup::Range': IpAddrGroupRanges,
         'Avi::StringGroup': StringGroup,
         'Avi::MicroServiceGroup::ServiceUuid': MicroServiceGroupServiceUuids,
     }

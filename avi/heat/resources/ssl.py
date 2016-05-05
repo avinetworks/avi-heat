@@ -337,7 +337,7 @@ class CRL(object):
     )
     update_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("A CRL may include a Next Update field, which the CRL server uses to designates when a CRL is expired.  In addition to honoring this timer, Avi may more aggresively check for CRL updates via the Refresh Time, which forces an update check based on this timer."),
+        _("Interval in minutes to check for CRL update."),
         required=False,
         update_allowed=True,
     )

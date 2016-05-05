@@ -1610,8 +1610,8 @@ def resource_mapping():
         'Avi::VirtualService::VsDatascript': VirtualServiceVsDatascripts,
         'Avi::VirtualService::DiscoveredSubnet': VirtualServiceDiscoveredSubnet,
         'Avi::VirtualService::SnatIp': VirtualServiceSnatIp,
+        'Avi::VirtualService::HttpPolicy': VirtualServiceHttpPolicies,
         'Avi::VirtualService::SslKeyAndCertificateUuid': VirtualServiceSslKeyAndCertificateUuids,
-        'Avi::VirtualService::HttpPolicie': VirtualServiceHttpPolicies,
         'Avi::VirtualService': VirtualService,
         'Avi::VirtualService::DiscoveredNetworkUuid': VirtualServiceDiscoveredNetworkUuid,
     }

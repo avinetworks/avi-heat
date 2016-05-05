@@ -11,6 +11,52 @@ from options import *
 from options import *
 
 
+class SwitchoverFailEventDetails(object):
+    # all schemas
+    vs_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vs_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    from_se_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    reason_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vs_uuid',
+        'vs_name',
+        'from_se_name',
+        'reason',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vs_uuid': vs_uuid_schema,
+        'vs_name': vs_name_schema,
+        'from_se_name': from_se_name_schema,
+        'reason': reason_schema,
+    }
+
+
+
+
 class RmSpawnSeEventDetails(object):
     # all schemas
     se_name_schema = properties.Schema(
@@ -245,6 +291,52 @@ class HostUnavailEventDetails(object):
     properties_schema = {
         'reasons': reasons_schema,
         'vs_name': vs_name_schema,
+    }
+
+
+
+
+class SwitchoverEventDetails(object):
+    # all schemas
+    vs_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vs_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    from_se_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    to_se_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vs_uuid',
+        'vs_name',
+        'from_se_name',
+        'to_se_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vs_uuid': vs_uuid_schema,
+        'vs_name': vs_name_schema,
+        'from_se_name': from_se_name_schema,
+        'to_se_name': to_se_name_schema,
     }
 
 

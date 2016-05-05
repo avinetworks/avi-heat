@@ -166,6 +166,20 @@ class EventDetails(object):
         required=False,
         update_allowed=True,
     )
+    switchover_details_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SwitchoverEventDetails.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    switchover_fail_details_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SwitchoverFailEventDetails.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     vs_fsm_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -334,10 +348,17 @@ class EventDetails(object):
         required=False,
         update_allowed=True,
     )
-    se_default_gw_hb_fail_details_schema = properties.Schema(
+    se_gateway_heartbeat_failed_details_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
-        schema=SeDefaultGwHbFailDetails.properties_schema,
+        schema=SeGatewayHeartbeatFailedDetails.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    se_gateway_heartbeat_success_details_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SeGatewayHeartbeatSuccessDetails.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -804,6 +825,8 @@ class EventDetails(object):
         'ip_fail_details',
         'delete_se_details',
         'host_unavail_details',
+        'switchover_details',
+        'switchover_fail_details',
         'vs_fsm_details',
         'vs_pool_nw_fltr_details',
         'vs_scaleout_details',
@@ -828,7 +851,8 @@ class EventDetails(object):
         'se_dupip_event_details',
         'se_ip_added_event_details',
         'se_ip_removed_event_details',
-        'se_default_gw_hb_fail_details',
+        'se_gateway_heartbeat_failed_details',
+        'se_gateway_heartbeat_success_details',
         'se_hm_pool_details',
         'se_hm_vs_details',
         'se_persistence_details',
@@ -915,6 +939,8 @@ class EventDetails(object):
         'ip_fail_details': ip_fail_details_schema,
         'delete_se_details': delete_se_details_schema,
         'host_unavail_details': host_unavail_details_schema,
+        'switchover_details': switchover_details_schema,
+        'switchover_fail_details': switchover_fail_details_schema,
         'vs_fsm_details': vs_fsm_details_schema,
         'vs_pool_nw_fltr_details': vs_pool_nw_fltr_details_schema,
         'vs_scaleout_details': vs_scaleout_details_schema,
@@ -939,7 +965,8 @@ class EventDetails(object):
         'se_dupip_event_details': se_dupip_event_details_schema,
         'se_ip_added_event_details': se_ip_added_event_details_schema,
         'se_ip_removed_event_details': se_ip_removed_event_details_schema,
-        'se_default_gw_hb_fail_details': se_default_gw_hb_fail_details_schema,
+        'se_gateway_heartbeat_failed_details': se_gateway_heartbeat_failed_details_schema,
+        'se_gateway_heartbeat_success_details': se_gateway_heartbeat_success_details_schema,
         'se_hm_pool_details': se_hm_pool_details_schema,
         'se_hm_vs_details': se_hm_vs_details_schema,
         'se_persistence_details': se_persistence_details_schema,

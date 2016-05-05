@@ -31,12 +31,19 @@ class HealthMonitorTcp(object):
         required=False,
         update_allowed=True,
     )
+    tcp_half_open_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Configure TCP health monitor to use half-open TCP connections to monitor the health of backend servers thereby avoiding consumption of a full fledged server side connection and the overhead and logs associated with it.  This method is light-weight as it makes use of listener in server's kernel layer to measure the health and a child socket or user thread is not created on the server side."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'tcp_request',
         'tcp_response',
         'maintenance_response',
+        'tcp_half_open',
     )
 
     # mapping of properties to their schemas
@@ -44,6 +51,7 @@ class HealthMonitorTcp(object):
         'tcp_request': tcp_request_schema,
         'tcp_response': tcp_response_schema,
         'maintenance_response': maintenance_response_schema,
+        'tcp_half_open': tcp_half_open_schema,
     }
 
 

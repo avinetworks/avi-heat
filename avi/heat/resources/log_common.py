@@ -9,6 +9,7 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
+from application_profile import *
 
 
 class ConnErrorInfo(object):
@@ -484,6 +485,12 @@ class ConnectionLog(object):
         required=False,
         update_allowed=True,
     )
+    proxy_protocol_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Version of proxy protocol used to convey client connection information to the back-end servers.  A value of 0 indicates that proxy protocol is not used.  A value of 1 or 2 indicates the version of proxy protocol used."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -542,6 +549,7 @@ class ConnectionLog(object):
         'num_syn_retransmit',
         'microservice',
         'microservice_name',
+        'proxy_protocol',
     )
 
     # mapping of properties to their schemas
@@ -601,6 +609,7 @@ class ConnectionLog(object):
         'num_syn_retransmit': num_syn_retransmit_schema,
         'microservice': microservice_schema,
         'microservice_name': microservice_name_schema,
+        'proxy_protocol': proxy_protocol_schema,
     }
 
 

@@ -46,6 +46,82 @@ class SeThreshEventDetails(object):
 
 
 
+class SeGatewayHeartbeatSuccessDetails(object):
+    # all schemas
+    gateway_ip_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("IP address of gateway monitored"),
+        required=True,
+        update_allowed=True,
+    )
+    vrf_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of Virtual Routing Context in which this gateway is present"),
+        required=False,
+        update_allowed=True,
+    )
+    vrf_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the Virtual Routing Context in which this gateway is present"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'gateway_ip',
+        'vrf_name',
+        'vrf_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'gateway_ip': gateway_ip_schema,
+        'vrf_name': vrf_name_schema,
+        'vrf_uuid': vrf_uuid_schema,
+    }
+
+
+
+
+class SeGatewayHeartbeatFailedDetails(object):
+    # all schemas
+    gateway_ip_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("IP address of gateway monitored"),
+        required=True,
+        update_allowed=True,
+    )
+    vrf_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of Virtual Routing Context in which this gateway is present"),
+        required=False,
+        update_allowed=True,
+    )
+    vrf_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the Virtual Routing Context in which this gateway is present"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'gateway_ip',
+        'vrf_name',
+        'vrf_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'gateway_ip': gateway_ip_schema,
+        'vrf_name': vrf_name_schema,
+        'vrf_uuid': vrf_uuid_schema,
+    }
+
+
+
+
 class SePersistenceEventDetails(object):
     # all schemas
     pool_schema = properties.Schema(
@@ -614,36 +690,6 @@ class SeIpfailureEventDetails(object):
         'vnic_name': vnic_name_schema,
         'network_uuid': network_uuid_schema,
         'mac': mac_schema,
-    }
-
-
-
-
-class SeDefaultGwHbFailDetails(object):
-    # all schemas
-    defgw_ip_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Monitored gateway"),
-        required=True,
-        update_allowed=True,
-    )
-    vrf_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Virtual Routing Context corresponding to this address"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'defgw_ip',
-        'vrf_name',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'defgw_ip': defgw_ip_schema,
-        'vrf_name': vrf_name_schema,
     }
 
 

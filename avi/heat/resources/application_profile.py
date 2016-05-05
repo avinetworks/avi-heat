@@ -435,6 +435,12 @@ class ApplicationProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    proxy_protocol_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Version of proxy protocol to be used to convey client connection information to the back-end servers.  Valid only for L4 application profiles and TCP proxy. If no version is selected, proxy protocol will not be used."),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -448,6 +454,7 @@ class ApplicationProfile(AviResource):
         'type',
         'http_profile',
         'dos_rl_profile',
+        'proxy_protocol',
         'description',
     )
 
@@ -457,6 +464,7 @@ class ApplicationProfile(AviResource):
         'type': type_schema,
         'http_profile': http_profile_schema,
         'dos_rl_profile': dos_rl_profile_schema,
+        'proxy_protocol': proxy_protocol_schema,
         'description': description_schema,
     }
 

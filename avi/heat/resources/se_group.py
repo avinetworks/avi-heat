@@ -52,6 +52,37 @@ class VcenterClusters(object):
 
 
 
+class GatewayMonitor(object):
+    # all schemas
+    gateway_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP address of next hop gateway to be monitored"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    vrf_context_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Virtual Routing Context in which this gateway ip is part of "),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'gateway_ip',
+        'vrf_context_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'gateway_ip': gateway_ip_schema,
+        'vrf_context_uuid': vrf_context_uuid_schema,
+    }
+
+
+
+
 class VcenterHosts(object):
     # all schemas
     host_uuids_item_schema = properties.Schema(
@@ -425,9 +456,17 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
-    default_gw_health_check_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable ICMP based gateway health check on the Service Engines within this Service Group"),
+    gateway_mon_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=GatewayMonitor.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    gateway_mon_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Enable ping based heartbeat check to gateway on the Service Engines within this Service Group"),
+        schema=gateway_mon_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -486,7 +525,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip',
         'hm_on_standby',
         'per_app',
-        'default_gw_health_check',
+        'gateway_mon',
     )
 
     # mapping of properties to their schemas
@@ -543,7 +582,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': floating_intf_ip_schema,
         'hm_on_standby': hm_on_standby_schema,
         'per_app': per_app_schema,
-        'default_gw_health_check': default_gw_health_check_schema,
+        'gateway_mon': gateway_mon_schema,
     }
 
 
@@ -607,9 +646,31 @@ class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
     }
 
 
+class ServiceEngineGroupGatewayMon(AviNestedResource, GatewayMonitor):
+    resource_name = "serviceenginegroup"
+    nested_property_name = "gateway_mon"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of serviceenginegroup"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = GatewayMonitor.PROPERTIES + ('serviceenginegroup_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'serviceenginegroup_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(GatewayMonitor.properties_schema)
+
+
 def resource_mapping():
     return {
         'Avi::ServiceEngineGroup::FloatingIntfIp': ServiceEngineGroupFloatingIntfIp,
+        'Avi::ServiceEngineGroup::GatewayMon': ServiceEngineGroupGatewayMon,
         'Avi::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
         'Avi::ServiceEngineGroup': ServiceEngineGroup,
     }
