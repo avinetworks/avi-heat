@@ -1475,8 +1475,8 @@ def resource_mapping():
         'AviBeta16.1::VirtualService::DiscoveredNetwork': VirtualServiceDiscoveredNetworks,
         'AviBeta16.1::VirtualService::VsDatascript': VirtualServiceVsDatascripts,
         'AviBeta16.1::VirtualService::DiscoveredSubnet': VirtualServiceDiscoveredSubnet,
+        'AviBeta16.1::VirtualService::HttpPolicy': VirtualServiceHttpPolicies,
         'AviBeta16.1::VirtualService::SslKeyAndCertificateUuid': VirtualServiceSslKeyAndCertificateUuids,
-        'AviBeta16.1::VirtualService::HttpPolicie': VirtualServiceHttpPolicies,
         'AviBeta16.1::VirtualService': VirtualService,
         'AviBeta16.1::VirtualService::DiscoveredNetworkUuid': VirtualServiceDiscoveredNetworkUuid,
     }

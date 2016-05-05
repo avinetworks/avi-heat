@@ -1515,13 +1515,13 @@ class MatchTarget(object):
 def resource_mapping():
     return {
         'AviBeta16.1::MicroServiceGroup': MicroServiceGroup,
+        'AviBeta16.1::IpAddrGroup::Prefix': IpAddrGroupPrefixes,
         'AviBeta16.1::IpAddrGroup::Addr': IpAddrGroupAddrs,
         'AviBeta16.1::StringGroup::Kv': StringGroupKv,
         'AviBeta16.1::IpAddrGroup': IpAddrGroup,
         'AviBeta16.1::IpAddrGroup::IpPort': IpAddrGroupIpPorts,
-        'AviBeta16.1::IpAddrGroup::Prefixe': IpAddrGroupPrefixes,
-        'AviBeta16.1::IpAddrGroup::Range': IpAddrGroupRanges,
         'AviBeta16.1::IpAddrGroup::CountryCode': IpAddrGroupCountryCodes,
+        'AviBeta16.1::IpAddrGroup::Range': IpAddrGroupRanges,
         'AviBeta16.1::StringGroup': StringGroup,
         'AviBeta16.1::MicroServiceGroup::ServiceUuid': MicroServiceGroupServiceUuids,
     }
