@@ -166,13 +166,16 @@ class AviNestedResource(AviResource):
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
         client = self.get_avi_client()
-        data = {"update": {self.nested_property_name: [res_def]}}
         try:
-            client.patch("%s/%s" % (self.resource_name,
-                                    parent_uuid),
-                         data=data,
-                         tenant_uuid=self.get_avi_tenant_uuid()
-                         ).json()
+            pobj = client.get("%s/%s" % (self.resource_name,
+                                         parent_uuid),
+                              tenant_uuid=self.get_avi_tenant_uuid()).json()
+            pobj[self.nested_property_name].append(res_def)
+            client.put("%s/%s" % (self.resource_name,
+                                  parent_uuid),
+                       data=pobj,
+                       tenant_uuid=self.get_avi_tenant_uuid()
+                       ).json()
         except Exception as e:
             LOG.exception("Error during creation: %s, resname %s/%s, data %s",
                           e, self.resource_name, parent_uuid, data)
@@ -199,13 +202,20 @@ class AviNestedResource(AviResource):
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
         client = self.get_avi_client()
-        data = {"delete": {self.nested_property_name: [res_def]}}
         try:
-            client.patch("%s/%s" % (self.resource_name,
-                                    parent_uuid),
-                         data=data,
-                         tenant_uuid=self.get_avi_tenant_uuid()
-                         ).json()
+            pobj = client.get("%s/%s" % (self.resource_name,
+                                         parent_uuid),
+                              tenant_uuid=self.get_avi_tenant_uuid()).json()
+            prev_items = pobj[self.nested_property_name]
+            pobj[self.nested_property_name] = []
+            for pitem in prev_items:
+                if pitem.copy().update(res_def) != pitem:
+                    pobj[self.nested_property_name].append(pitem)
+            client.put("%s/%s" % (self.resource_name,
+                                  parent_uuid),
+                       data=pobj,
+                       tenant_uuid=self.get_avi_tenant_uuid()
+                       ).json()
         except ObjectNotFound as e:
             LOG.exception("Object %s not found: %s", (self.resource_name,
                                                       parent_uuid), e)
