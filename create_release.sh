@@ -5,7 +5,7 @@ git tag -d latest
 git tag latest
 git push -f origin latest
 set -e
-for BRANCH in master 16.1
+for BRANCH in master 16.2 16.1
 do
     git checkout $BRANCH
     rm -rf dist/
