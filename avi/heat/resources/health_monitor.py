@@ -116,6 +116,9 @@ class HealthMonitorHttp(object):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['HTTP_1XX', 'HTTP_3XX', 'HTTP_2XX', 'HTTP_5XX', 'HTTP_4XX', 'HTTP_ANY']),
+        ],
     )
     http_response_code_schema = properties.Schema(
         properties.Schema.LIST,
@@ -222,12 +225,18 @@ class HealthMonitorDNS(object):
         _("  Query_Type: Response has atleast one answer of which      the resource record type matches the query type   Any_Type: Response should contain atleast one answer  AnyThing: An empty answer is enough"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_ANY_TYPE', 'DNS_ANY_THING', 'DNS_QUERY_TYPE']),
+        ],
     )
     rcode_schema = properties.Schema(
         properties.Schema.STRING,
         _("When No Error is selected, a DNS query will be marked failed is any error code is returned by the server.  With Any selected, the monitor ignores error code in the responses."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['RCODE_NO_ERROR', 'RCODE_ANYTHING']),
+        ],
     )
     response_string_schema = properties.Schema(
         properties.Schema.STRING,
@@ -293,6 +302,9 @@ class HealthMonitor(AviResource):
         _("Type of the health monitor."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_PING']),
+        ],
     )
     tcp_monitor_schema = properties.Schema(
         properties.Schema.MAP,

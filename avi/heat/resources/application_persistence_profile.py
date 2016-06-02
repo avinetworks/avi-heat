@@ -127,6 +127,12 @@ class HttpCookiePersistenceProfile(object):
         required=False,
         update_allowed=True,
     )
+    always_send_cookie_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If no persistence cookie was received from the client, always send it."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -134,6 +140,7 @@ class HttpCookiePersistenceProfile(object):
         'cookie_name',
         'key',
         'timeout',
+        'always_send_cookie',
     )
 
     # mapping of properties to their schemas
@@ -142,6 +149,7 @@ class HttpCookiePersistenceProfile(object):
         'cookie_name': cookie_name_schema,
         'key': key_schema,
         'timeout': timeout_schema,
+        'always_send_cookie': always_send_cookie_schema,
     }
 
 
@@ -199,12 +207,18 @@ class ApplicationPersistenceProfile(AviResource):
         _("Specifies behavior when a persistent server has been marked down by a health monitor."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HM_DOWN_PICK_NEW_SERVER', 'HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_ABORT_CONNECTION']),
+        ],
     )
     persistence_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("Method used to persist clients to the same server for a duration of time or a session."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_TLS']),
+        ],
     )
     ip_persistence_profile_schema = properties.Schema(
         properties.Schema.MAP,

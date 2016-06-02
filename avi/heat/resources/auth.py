@@ -37,6 +37,9 @@ class LdapDirectorySettings(object):
         _("LDAP user search scope defines how deep to search for the user starting from user search DN."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_LDAP_SCOPE_ONE', 'AUTH_LDAP_SCOPE_SUBTREE', 'AUTH_LDAP_SCOPE_BASE']),
+        ],
     )
     user_id_attribute_schema = properties.Schema(
         properties.Schema.STRING,
@@ -74,6 +77,9 @@ class LdapDirectorySettings(object):
         _("LDAP group search scope defines how deep to search for the group starting from the group search DN."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_LDAP_SCOPE_ONE', 'AUTH_LDAP_SCOPE_SUBTREE', 'AUTH_LDAP_SCOPE_BASE']),
+        ],
     )
     group_member_is_full_dn_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -189,6 +195,9 @@ class HTTPClientAuthenticationParams(object):
         _("type of client authentication"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_BASIC_AUTH']),
+        ],
     )
     request_uri_path_schema = properties.Schema(
         properties.Schema.MAP,
@@ -236,6 +245,9 @@ class AuthMatchAttribute(object):
         _("rule match criteria"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_MATCH_DOES_NOT_CONTAIN', 'AUTH_MATCH_CONTAINS']),
+        ],
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -372,6 +384,9 @@ class AuthMatchGroupMembership(object):
         _("rule match criteria"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_MATCH_DOES_NOT_CONTAIN', 'AUTH_MATCH_CONTAINS']),
+        ],
     )
     groups_item_schema = properties.Schema(
         properties.Schema.STRING,
@@ -429,6 +444,9 @@ class AuthMappingRule(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ASSIGN_FROM_SELECT_LIST', 'ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+        ],
     )
     tenant_attribute_name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -454,6 +472,9 @@ class AuthMappingRule(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ASSIGN_FROM_SELECT_LIST', 'ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+        ],
     )
     role_attribute_name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -544,6 +565,9 @@ class TacacsPlusAuthSettings(object):
         _("TACACS+ service"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_TACACS_PLUS_SERVICE_LOGIN', 'AUTH_TACACS_PLUS_SERVICE_NASI', 'AUTH_TACACS_PLUS_SERVICE_FWPROXY', 'AUTH_TACACS_PLUS_SERVICE_X25', 'AUTH_TACACS_PLUS_SERVICE_PPP', 'AUTH_TACACS_PLUS_SERVICE_RCMD', 'AUTH_TACACS_PLUS_SERVICE_ENABLE', 'AUTH_TACACS_PLUS_SERVICE_ARAP', 'AUTH_TACACS_PLUS_SERVICE_NONE', 'AUTH_TACACS_PLUS_SERVICE_PT']),
+        ],
     )
     authorization_attrs_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -607,6 +631,9 @@ class LdapAuthSettings(object):
         _("LDAP connection security mode."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_LDAP_SECURE_NONE', 'AUTH_LDAP_SECURE_USE_LDAPS']),
+        ],
     )
     base_dn_schema = properties.Schema(
         properties.Schema.STRING,
@@ -674,6 +701,9 @@ class AuthProfile(AviResource):
         _("Type of the Auth Profile."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_PROFILE_LDAP', 'AUTH_PROFILE_TACACS_PLUS']),
+        ],
     )
     ldap_schema = properties.Schema(
         properties.Schema.MAP,

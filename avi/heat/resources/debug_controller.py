@@ -116,6 +116,9 @@ class HSMgrDebugFilter(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
+        ],
     )
     entity_schema = properties.Schema(
         properties.Schema.STRING,
@@ -238,6 +241,9 @@ class MesosMetricsDebugFilter(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
+        ],
     )
     mesos_master_schema = properties.Schema(
         properties.Schema.STRING,
@@ -370,6 +376,9 @@ class DebugFilterUnion(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
+        ],
     )
     se_mgr_debug_filter_schema = properties.Schema(
         properties.Schema.MAP,
@@ -471,18 +480,27 @@ class DebugController(AviResource):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
+        ],
     )
     trace_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_ERROR', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_DEBUG_DETAIL']),
+        ],
     )
     log_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOG_LEVEL_INFO', 'LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_WARNING']),
+        ],
     )
     filters_schema = properties.Schema(
         properties.Schema.MAP,

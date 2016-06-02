@@ -90,6 +90,9 @@ class Hypervisor_Properties(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     max_nics_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -298,12 +301,18 @@ class CloudInfo(object):
         _("Cloud type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     htypes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     htypes_schema = properties.Schema(
         properties.Schema.LIST,
@@ -378,6 +387,9 @@ class CloudProperties(AviResource):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     cc_vtypes_schema = properties.Schema(
         properties.Schema.LIST,

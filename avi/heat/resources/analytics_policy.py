@@ -213,6 +213,9 @@ class AnalyticsPolicy(object):
         _("Gain insights from sampled client to server HTTP requests and responses."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PASSIVE', 'ACTIVE', 'NO_INSIGHTS']),
+        ],
     )
     metrics_realtime_update_schema = properties.Schema(
         properties.Schema.MAP,

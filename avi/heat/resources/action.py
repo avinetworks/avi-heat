@@ -19,6 +19,9 @@ class URIParamToken(object):
         _("Token type for constructing the URI"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['URI_TOKEN_TYPE_PATH', 'URI_TOKEN_TYPE_REGEX', 'URI_TOKEN_TYPE_STRING', 'URI_TOKEN_TYPE_STRING_GROUP', 'URI_TOKEN_TYPE_HOST']),
+        ],
     )
     start_index_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -74,9 +77,8 @@ class PoolServer(object):
         update_allowed=True,
     )
     port_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _("Port of the pool server listening for HTTP/HTTPS. Default value is the default port in the pool."),
-        schema=Port.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -165,6 +167,9 @@ class HTTPHdrValue(object):
         _("Variable"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+        ],
     )
     val_schema = properties.Schema(
         properties.Schema.STRING,
@@ -195,6 +200,9 @@ class HTTPSwitchingAction(object):
         _("Content switching action type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_POOL', 'HTTP_SWITCHING_SELECT_LOCAL']),
+        ],
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -207,6 +215,9 @@ class HTTPSwitchingAction(object):
         _("HTTP status code to use when serving local response"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+        ],
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
@@ -251,6 +262,9 @@ class URIParam(object):
         _("URI param type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['URI_PARAM_TYPE_TOKENIZED']),
+        ],
     )
     tokens_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -320,6 +334,9 @@ class HTTPRedirectAction(object):
         _("Protocol type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP', 'HTTPS']),
+        ],
     )
     host_schema = properties.Schema(
         properties.Schema.MAP,
@@ -329,9 +346,8 @@ class HTTPRedirectAction(object):
         update_allowed=True,
     )
     port_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _("Port to which redirect the request"),
-        schema=Port.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -353,6 +369,9 @@ class HTTPRedirectAction(object):
         _("HTTP redirect status code"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+        ],
     )
 
     # properties list
@@ -426,11 +445,13 @@ class HTTPRewriteLocHdrAction(object):
         _("HTTP protocol type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP', 'HTTPS']),
+        ],
     )
     port_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _("Port to use in the redirected URI"),
-        schema=Port.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -483,6 +504,9 @@ class HTTPHdrAction(object):
         _("ADD: A new header with the new value is added irrespective of the existence of an HTTP header of the given name. REPLACE: A new header with the new value is added if no header of the given name exists, else existing headers with the given name are removed and a new header with the new value is added. REMOVE: All the headers of the given name are removed."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_REPLACE_HDR', 'HTTP_ADD_HDR', 'HTTP_REMOVE_HDR']),
+        ],
     )
     hdr_schema = properties.Schema(
         properties.Schema.MAP,

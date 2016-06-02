@@ -19,50 +19,11 @@ from auth import *
 from rate import *
 
 
-class VsSeInitialPlacementParams(object):
-    # all schemas
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'to_new_se',
-        'to_se_uuid',
-        'to_host_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'to_new_se': to_new_se_schema,
-        'to_se_uuid': to_se_uuid_schema,
-        'to_host_uuid': to_host_uuid_schema,
-    }
-
-
-
-
 class ServicePoolSelector(object):
     # all schemas
     service_port_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=Port.properties_schema,
+        properties.Schema.NUMBER,
+        _("Pool based destination port"),
         required=True,
         update_allowed=True,
     )
@@ -158,44 +119,6 @@ class VirtualServiceResource(object):
 
 
 
-class VsScaleinParams(object):
-    # all schemas
-    from_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    scalein_primary_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    admin_down_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'from_se_uuid',
-        'scalein_primary',
-        'admin_down',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'from_se_uuid': from_se_uuid_schema,
-        'scalein_primary': scalein_primary_schema,
-        'admin_down': admin_down_schema,
-    }
-
-
-
-
 class Service(object):
     # all schemas
     port_schema = properties.Schema(
@@ -281,9 +204,9 @@ class VirtualService(AviResource):
         required=True,
         update_allowed=True,
     )
-    address_schema = properties.Schema(
+    fqdn_schema = properties.Schema(
         properties.Schema.STRING,
-        _("IP Address or a DNS resolvable, fully qualified domain name of the Virtual Service."),
+        _("DNS resolvable, fully qualified domain name of the Virtual Service."),
         required=False,
         update_allowed=True,
     )
@@ -537,6 +460,9 @@ class VirtualService(AviResource):
         _("Specify if this is a normal Virtual Service, or if it is the parent or child of an SNI-enabled virtual hosted Virtual Service."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VS_TYPE_VH_PARENT', 'VS_TYPE_VH_CHILD', 'VS_TYPE_NORMAL']),
+        ],
     )
     vh_parent_vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -593,6 +519,9 @@ class VirtualService(AviResource):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     avi_allocated_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -631,6 +560,9 @@ class VirtualService(AviResource):
         _("Criteria for flow distribution among SEs."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LOAD_AWARE', 'CONSISTENT_HASH_SOURCE_IP_ADDRESS']),
+        ],
     )
     ign_pool_net_reach_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -718,7 +650,7 @@ class VirtualService(AviResource):
     # properties list
     PROPERTIES = (
         'name',
-        'address',
+        'fqdn',
         'ip_address',
         'enabled',
         'services',
@@ -781,7 +713,7 @@ class VirtualService(AviResource):
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
-        'address': address_schema,
+        'fqdn': fqdn_schema,
         'ip_address': ip_address_schema,
         'enabled': enabled_schema,
         'services': services_schema,
@@ -1118,60 +1050,6 @@ class VirtualServiceSnatIp(AviNestedResource):
     }
 
 
-class VsScaleoutParams(object):
-    # all schemas
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    admin_up_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    new_vcpus_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'to_se_uuid',
-        'to_new_se',
-        'to_host_uuid',
-        'admin_up',
-        'new_vcpus',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'to_se_uuid': to_se_uuid_schema,
-        'to_new_se': to_new_se_schema,
-        'to_host_uuid': to_host_uuid_schema,
-        'admin_up': admin_up_schema,
-        'new_vcpus': new_vcpus_schema,
-    }
-
-
-
-
 class TLSTicket(object):
     # all schemas
     name_schema = properties.Schema(
@@ -1210,90 +1088,6 @@ class TLSTicket(object):
 
 
 
-class VsInitialPlacementParams(object):
-    # all schemas
-    se_placement_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=VsSeInitialPlacementParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_placement_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=se_placement_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'se_placement_params',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'se_placement_params': se_placement_params_schema,
-    }
-
-
-
-
-class VsMigrateParams(object):
-    # all schemas
-    from_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    new_vcpus_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'from_se_uuid',
-        'to_se_uuid',
-        'to_new_se',
-        'to_host_uuid',
-        'new_vcpus',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'from_se_uuid': from_se_uuid_schema,
-        'to_se_uuid': to_se_uuid_schema,
-        'to_new_se': to_new_se_schema,
-        'to_host_uuid': to_host_uuid_schema,
-        'new_vcpus': new_vcpus_schema,
-    }
-
-
-
-
 class VsSeVnic(object):
     # all schemas
     mac_schema = properties.Schema(
@@ -1307,6 +1101,9 @@ class VsSeVnic(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT_SECONDARY']),
+        ],
     )
     lif_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1399,12 +1196,19 @@ class SeVipInterfaceList(object):
         required=False,
         update_allowed=True,
     )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'vip_intf_mac',
         'vlan_id',
         'vip_intf_ip',
+        'is_portchannel',
     )
 
     # mapping of properties to their schemas
@@ -1412,6 +1216,7 @@ class SeVipInterfaceList(object):
         'vip_intf_mac': vip_intf_mac_schema,
         'vlan_id': vlan_id_schema,
         'vip_intf_ip': vip_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
     }
 
 
@@ -1553,6 +1358,12 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1574,6 +1385,7 @@ class SeList(object):
         'vip_intf_ip',
         'vip_intf_list',
         'floating_intf_ip',
+        'is_portchannel',
     )
 
     # mapping of properties to their schemas
@@ -1596,6 +1408,7 @@ class SeList(object):
         'vip_intf_ip': vip_intf_ip_schema,
         'vip_intf_list': vip_intf_list_schema,
         'floating_intf_ip': floating_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
     }
 
 

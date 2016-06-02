@@ -9,7 +9,6 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
-from common import *
 
 
 class HttpCacheConfig(object):

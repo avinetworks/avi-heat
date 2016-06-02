@@ -120,6 +120,9 @@ class EmailConfiguration(object):
         _("Type of SMTP Mail Service"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SMTP_NONE', 'SMTP_LOCAL_HOST', 'SMTP_SERVER', 'SMTP_ANONYMOUS_SERVER']),
+        ],
     )
     from_email_schema = properties.Schema(
         properties.Schema.STRING,
@@ -520,6 +523,32 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    ssh_ciphers_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    ssh_ciphers_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Allowed Ciphers list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default ciphers are allowed. ssh -Q cipher provides the list of default ciphers supported."),
+        schema=ssh_ciphers_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ssh_hmacs_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    ssh_hmacs_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Allowed HMAC list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default HMACs are allowed. ssh -Q mac provides the list of default HMACs supported."),
+        schema=ssh_hmacs_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -534,6 +563,8 @@ class SystemConfiguration(AviResource):
         'linux_configuration',
         'proxy_configuration',
         'mgmt_ip_access_control',
+        'ssh_ciphers',
+        'ssh_hmacs',
     )
 
     # mapping of properties to their schemas
@@ -549,13 +580,75 @@ class SystemConfiguration(AviResource):
         'linux_configuration': linux_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,
         'mgmt_ip_access_control': mgmt_ip_access_control_schema,
+        'ssh_ciphers': ssh_ciphers_schema,
+        'ssh_hmacs': ssh_hmacs_schema,
     }
 
 
 
 
+class SystemConfigurationSshCiphers(AviNestedResource):
+    resource_name = "systemconfiguration"
+    nested_property_name = "ssh_ciphers"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of systemconfiguration"),
+        required=True,
+        update_allowed=False,
+    )
+    ssh_ciphers_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('systemconfiguration_uuid',
+                  'ssh_ciphers',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'systemconfiguration_uuid': parent_uuid_schema,
+        'ssh_ciphers': ssh_ciphers_item_schema,
+    }
+
+
+class SystemConfigurationSshHmacs(AviNestedResource):
+    resource_name = "systemconfiguration"
+    nested_property_name = "ssh_hmacs"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of systemconfiguration"),
+        required=True,
+        update_allowed=False,
+    )
+    ssh_hmacs_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('systemconfiguration_uuid',
+                  'ssh_hmacs',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'systemconfiguration_uuid': parent_uuid_schema,
+        'ssh_hmacs': ssh_hmacs_item_schema,
+    }
+
+
 def resource_mapping():
     return {
+        'Avi::SystemConfiguration::SshCipher': SystemConfigurationSshCiphers,
         'Avi::SystemConfiguration': SystemConfiguration,
+        'Avi::SystemConfiguration::SshHmac': SystemConfigurationSshHmacs,
     }
 

@@ -20,6 +20,9 @@ class RateLimiterAction(object):
         _("Type of action to be enforced upon hitting the rate limit."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['RL_ACTION_RESET_CONN', 'RL_ACTION_LOCAL_RSP', 'RL_ACTION_DROP_CONN', 'RL_ACTION_CLOSE_CONN', 'RL_ACTION_NONE', 'RL_ACTION_REDIRECT']),
+        ],
     )
     redirect_schema = properties.Schema(
         properties.Schema.MAP,
@@ -33,6 +36,9 @@ class RateLimiterAction(object):
         _("HTTP status code for Local Response rate limit action."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+        ],
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,

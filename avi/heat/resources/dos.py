@@ -11,44 +11,6 @@ from options import *
 from options import *
 
 
-class AttackMetaData(object):
-    # all schemas
-    url_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    ip_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    max_resp_time_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'url',
-        'ip',
-        'max_resp_time',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'url': url_schema,
-        'ip': ip_schema,
-        'max_resp_time': max_resp_time_schema,
-    }
-
-
-
-
 class DosThreshold(object):
     # all schemas
     attack_schema = properties.Schema(
@@ -56,6 +18,9 @@ class DosThreshold(object):
         _("Attack type."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DOS_REQ_IP_URI_RL_DROP_BAD', 'DOS_REQ_CIP_SCAN_BAD_RL_DROP', 'IP_FRAG_OVERRUN', 'POLICY_DROPS', 'IP_FRAG_INCOMPLETE', 'DOS_CONN_IP_RL_DROP', 'FAKE_SESSION', 'DOS_HTTP_ABORT', 'SMURF', 'IP_FRAG_TOOSMALL', 'ICMP_PING_FLOOD', 'DOS_REQ_CIP_SCAN_UNKNOWN_RL_DROP', 'DOS_REQ_IP_URI_RL_DROP', 'LAND', 'UNKOWN_PROTOCOL', 'DOS_SLOW_URL', 'TCP_NON_SYN_FLOOD', 'ZERO_WINDOW_STRESS', 'IP_FRAG_FULL', 'DOS_REQ_RL_DROP', 'SMALL_WINDOW_STRESS', 'BAD_RST_FLOOD', 'DOS_APP_ERROR', 'DOS_SSL_ERROR', 'MALFORMED_FLOOD', 'PORT_SCAN', 'DOS_REQ_IP_RL_DROP', 'DOS_REQ_URI_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD_OLD', 'DOS_REQ_URI_SCAN_BAD_RL_DROP', 'DOS_REQ_IP_RL_DROP_BAD', 'DOS_REQ_URI_RL_DROP', 'SYN_FLOOD', 'DOS_HTTP_ERROR', 'TEARDROP', 'DOS_REQ_URI_SCAN_UNKNOWN_RL_DROP', 'DOS_HTTP_TIMEOUT', 'DOS_CONN_RL_DROP']),
+        ],
     )
     min_value_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -82,97 +47,6 @@ class DosThreshold(object):
         'attack': attack_schema,
         'min_value': min_value_schema,
         'max_value': max_value_schema,
-    }
-
-
-
-
-class DosAttackEventDetails(object):
-    # all schemas
-    attack_count_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    attack_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    src_ips_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    src_ips_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=src_ips_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    urls_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    urls_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=urls_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ipgroup_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    ipgroup_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=ipgroup_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    meta_data_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AttackMetaData.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    meta_data_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=meta_data_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'attack_count',
-        'attack',
-        'src_ips',
-        'urls',
-        'ipgroup_uuids',
-        'meta_data',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'attack_count': attack_count_schema,
-        'attack': attack_schema,
-        'src_ips': src_ips_schema,
-        'urls': urls_schema,
-        'ipgroup_uuids': ipgroup_uuids_schema,
-        'meta_data': meta_data_schema,
     }
 
 

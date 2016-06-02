@@ -49,6 +49,39 @@ class DosRateLimitProfile(object):
 
 
 
+class TCPApplicationProfile(object):
+    # all schemas
+    proxy_protocol_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable/Disable the usage of proxy protocol to convey client connection information to the back-end servers.  Valid only for L4 application profiles and TCP proxy."),
+        required=False,
+        update_allowed=True,
+    )
+    proxy_protocol_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Version of proxy protocol to be used to convey client connection information to the back-end servers."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PROXY_PROTOCOL_VERSION_2', 'PROXY_PROTOCOL_VERSION_1']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'proxy_protocol_enabled',
+        'proxy_protocol_version',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'proxy_protocol_enabled': proxy_protocol_enabled_schema,
+        'proxy_protocol_version': proxy_protocol_version_schema,
+    }
+
+
+
+
 class SSLClientRequestHeader(object):
     # all schemas
     request_header_schema = properties.Schema(
@@ -62,6 +95,9 @@ class SSLClientRequestHeader(object):
         _("Set the request header with the value as indicated by this SSL variable. Eg. send the whole certificate in PEM format"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+        ],
     )
 
     # properties list
@@ -289,6 +325,9 @@ class HTTPApplicationProfile(object):
         _("Specifies whether the client side verification is set to none, request or require."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
+        ],
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -420,6 +459,9 @@ class ApplicationProfile(AviResource):
         _("Specifies which application layer proxy is enabled for the virtual service."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SSL_NON_HTTP']),
+        ],
     )
     http_profile_schema = properties.Schema(
         properties.Schema.MAP,
@@ -435,9 +477,10 @@ class ApplicationProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    proxy_protocol_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Version of proxy protocol to be used to convey client connection information to the back-end servers.  Valid only for L4 application profiles and TCP proxy. If no version is selected, proxy protocol will not be used."),
+    tcp_app_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Specifies the TCP application proxy profile parameters."),
+        schema=TCPApplicationProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -454,7 +497,7 @@ class ApplicationProfile(AviResource):
         'type',
         'http_profile',
         'dos_rl_profile',
-        'proxy_protocol',
+        'tcp_app_profile',
         'description',
     )
 
@@ -464,7 +507,7 @@ class ApplicationProfile(AviResource):
         'type': type_schema,
         'http_profile': http_profile_schema,
         'dos_rl_profile': dos_rl_profile_schema,
-        'proxy_protocol': proxy_protocol_schema,
+        'tcp_app_profile': tcp_app_profile_schema,
         'description': description_schema,
     }
 

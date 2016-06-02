@@ -31,6 +31,9 @@ class CompressionFilter(object):
         _("Whether to apply Filter when group criteria is matched or not"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
     )
     ip_addrs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -104,6 +107,9 @@ class CompressionFilter(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['NORMAL_COMPRESSION', 'AGGRESSIVE_COMPRESSION', 'NO_COMPRESSION']),
+        ],
     )
 
     # properties list
@@ -162,6 +168,9 @@ class CompressionProfile(object):
         _("Compress content automatically or add custom filters to define compressible content and compression levels."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CUSTOM_COMPRESSION', 'AUTO_COMPRESSION']),
+        ],
     )
     filter_item_schema = properties.Schema(
         properties.Schema.MAP,

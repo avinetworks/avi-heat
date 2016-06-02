@@ -21,6 +21,9 @@ class FailActionHTTPLocalResponse(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['FAIL_HTTP_STATUS_CODE_503', 'FAIL_HTTP_STATUS_CODE_200']),
+        ],
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
@@ -104,6 +107,9 @@ class FailActionHTTPRedirect(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP', 'HTTPS']),
+        ],
     )
     host_schema = properties.Schema(
         properties.Schema.STRING,
@@ -128,6 +134,9 @@ class FailActionHTTPRedirect(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+        ],
     )
 
     # properties list
@@ -189,6 +198,9 @@ class FailAction(object):
         _("Enables a response to client when pool experiences a failure. By default TCP connection is closed."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['FAIL_ACTION_BACKUP_POOL', 'FAIL_ACTION_CLOSE_CONN', 'FAIL_ACTION_HTTP_LOCAL_RSP', 'FAIL_ACTION_HTTP_REDIRECT']),
+        ],
     )
     redirect_schema = properties.Schema(
         properties.Schema.MAP,
@@ -226,36 +238,6 @@ class FailAction(object):
         'redirect': redirect_schema,
         'local_rsp': local_rsp_schema,
         'backup_pool': backup_pool_schema,
-    }
-
-
-
-
-class PoolX509Certificate(object):
-    # all schemas
-    pem_cert_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("PEM (Privacy-enhanced Mail) encoded certificate of the backend server."),
-        required=True,
-        update_allowed=True,
-    )
-    is_ca_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Flag to indicate if the certificate is a Certificate Authority. This field is deprecated and CA certificates should now be configured through PKI Profile."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pem_cert',
-        'is_ca',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pem_cert': pem_cert_schema,
-        'is_ca': is_ca_schema,
     }
 
 
@@ -325,6 +307,9 @@ class HTTPReselectRespCode(object):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['HTTP_RSP_5XX', 'HTTP_RSP_4XX']),
+        ],
     )
     resp_code_block_schema = properties.Schema(
         properties.Schema.LIST,
@@ -689,12 +674,18 @@ class Pool(AviResource):
         _("The load balancing algorithm will pick a server within the pool's list of available servers."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_LEAST_CONNECTIONS', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_CONSISTENT_HASH']),
+        ],
     )
     lb_algorithm_hash_schema = properties.Schema(
         properties.Schema.STRING,
         _("Criteria used as a key for determining the hash between the client and  server."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
+        ],
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
         properties.Schema.STRING,
@@ -739,20 +730,6 @@ class Pool(AviResource):
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported."),
-        required=False,
-        update_allowed=True,
-    )
-    x509_cert_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=PoolX509Certificate.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    x509_cert_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("PEM (Privacy-enhanced Mail) encoded public certificate of the backend server.  This optional feature will verify the  certificate presented by the server."),
-        schema=x509_cert_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -923,6 +900,37 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    host_check_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable host header name check for server certificate. If enabled and no explicit domain name is specified, Avi will use the incoming host header to do the match."),
+        required=False,
+        update_allowed=True,
+    )
+    domain_name_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    domain_name_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates if host header check is enabled."),
+        schema=domain_name_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    sni_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable TLS SNI for server connections. If disabled, Avi will not send the SNI extension as part of the handshake."),
+        required=False,
+        update_allowed=True,
+    )
+    server_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Fully qualified DNS hostname which will be used in the TLS SNI extension in server connections if SNI is enabled. If no value is specified, Avi will use the pool name instead."),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
@@ -947,7 +955,6 @@ class Pool(AviResource):
         'placement_networks',
         'application_persistence_profile_uuid',
         'ssl_profile_uuid',
-        'x509_cert',
         'inline_health_monitor',
         'use_service_port',
         'fail_action',
@@ -974,6 +981,10 @@ class Pool(AviResource):
         'server_reselect',
         'a_pool',
         'ab_priority',
+        'host_check_enabled',
+        'domain_name',
+        'sni_enabled',
+        'server_name',
         'description',
     )
 
@@ -994,7 +1005,6 @@ class Pool(AviResource):
         'placement_networks': placement_networks_schema,
         'application_persistence_profile_uuid': application_persistence_profile_uuid_schema,
         'ssl_profile_uuid': ssl_profile_uuid_schema,
-        'x509_cert': x509_cert_schema,
         'inline_health_monitor': inline_health_monitor_schema,
         'use_service_port': use_service_port_schema,
         'fail_action': fail_action_schema,
@@ -1021,6 +1031,10 @@ class Pool(AviResource):
         'server_reselect': server_reselect_schema,
         'a_pool': a_pool_schema,
         'ab_priority': ab_priority_schema,
+        'host_check_enabled': host_check_enabled_schema,
+        'domain_name': domain_name_schema,
+        'sni_enabled': sni_enabled_schema,
+        'server_name': server_name_schema,
         'description': description_schema,
     }
 
@@ -1119,27 +1133,6 @@ class PoolPlacementNetworks(AviNestedResource, PlacementNetwork):
     properties_schema.update(PlacementNetwork.properties_schema)
 
 
-class PoolX509Cert(AviNestedResource, PoolX509Certificate):
-    resource_name = "pool"
-    nested_property_name = "x509_cert"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool"),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = PoolX509Certificate.PROPERTIES + ('pool_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(PoolX509Certificate.properties_schema)
-
-
 class PoolAutoscaleNetworks(AviNestedResource):
     resource_name = "pool"
     nested_property_name = "autoscale_networks"
@@ -1169,12 +1162,41 @@ class PoolAutoscaleNetworks(AviNestedResource):
     }
 
 
+class PoolDomainName(AviNestedResource):
+    resource_name = "pool"
+    nested_property_name = "domain_name"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of pool"),
+        required=True,
+        update_allowed=False,
+    )
+    domain_name_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('pool_uuid',
+                  'domain_name',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': parent_uuid_schema,
+        'domain_name': domain_name_item_schema,
+    }
+
+
 def resource_mapping():
     return {
         'Avi::Pool::PlacementNetwork': PoolPlacementNetworks,
         'Avi::Pool::AutoscaleNetwork': PoolAutoscaleNetworks,
         'Avi::Pool::Server': PoolServers,
-        'Avi::Pool::X509Cert': PoolX509Cert,
+        'Avi::Pool::DomainName': PoolDomainName,
         'Avi::Pool::HealthMonitorUuid': PoolHealthMonitorUuids,
         'Avi::Pool::Network': PoolNetworks,
         'Avi::Pool': Pool,

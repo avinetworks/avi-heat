@@ -25,6 +25,9 @@ class TCPProxyProfile(object):
         _("Controls the behavior of idle connections."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['KEEP_ALIVE', 'CLOSE_IDLE']),
+        ],
     )
     idle_connection_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -91,6 +94,9 @@ class TCPProxyProfile(object):
         _("Controls the congestion control algorithm we use."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CC_ALGO_NEW_RENO', 'CC_ALGO_CUBIC', 'CC_ALGO_HTCP']),
+        ],
     )
     aggressive_congestion_avoidance_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -213,6 +219,9 @@ class NetworkProfileUnion(object):
         _("Configure one of either proxy or fast path profiles."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH']),
+        ],
     )
     tcp_proxy_profile_schema = properties.Schema(
         properties.Schema.MAP,

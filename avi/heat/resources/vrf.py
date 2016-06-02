@@ -121,6 +121,29 @@ class BgpProfile(object):
 
 
 
+class GatewayMonitor(object):
+    # all schemas
+    gateway_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP address of next hop gateway to be monitored"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'gateway_ip',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'gateway_ip': gateway_ip_schema,
+    }
+
+
+
+
 class StaticRoute(object):
     # all schemas
     prefix_schema = properties.Schema(
@@ -199,6 +222,20 @@ class VrfContext(AviResource):
         required=False,
         update_allowed=True,
     )
+    gateway_mon_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=GatewayMonitor.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    gateway_mon_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Enable ping based heartbeat check to gateway on the Service Engines for this Virtual Routing Context"),
+        schema=gateway_mon_item_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -217,6 +254,7 @@ class VrfContext(AviResource):
         'name',
         'static_routes',
         'bgp_profile',
+        'gateway_mon',
         'description',
         'cloud_uuid',
     )
@@ -226,6 +264,7 @@ class VrfContext(AviResource):
         'name': name_schema,
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,
+        'gateway_mon': gateway_mon_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
     }
@@ -254,8 +293,30 @@ class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
     properties_schema.update(StaticRoute.properties_schema)
 
 
+class VrfContextGatewayMon(AviNestedResource, GatewayMonitor):
+    resource_name = "vrfcontext"
+    nested_property_name = "gateway_mon"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of vrfcontext"),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = GatewayMonitor.PROPERTIES + ('vrfcontext_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vrfcontext_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(GatewayMonitor.properties_schema)
+
+
 def resource_mapping():
     return {
+        'Avi::VrfContext::GatewayMon': VrfContextGatewayMon,
         'Avi::VrfContext': VrfContext,
         'Avi::VrfContext::StaticRoute': VrfContextStaticRoutes,
     }

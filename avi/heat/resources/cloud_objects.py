@@ -11,7 +11,6 @@ from options import *
 from common import *
 from options import *
 from system import *
-from license import *
 
 
 class vCloudAirConfiguration(object):
@@ -39,6 +38,9 @@ class vCloudAirConfiguration(object):
         _("vCloudAir access mode"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+        ],
     )
     vca_instance_schema = properties.Schema(
         properties.Schema.STRING,
@@ -173,6 +175,9 @@ class CloudStackConfiguration(object):
         _("Default hypervisor type"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
 
     # properties list
@@ -340,6 +345,9 @@ class vCenterConfiguration(object):
         _("Set the access mode to vCenter as either Read, which allows Avi to discover networks and servers, or Write, which also allows Avi to create Service Engines and configure their network properties."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+        ],
     )
     datacenter_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -389,68 +397,6 @@ class vCenterConfiguration(object):
         'management_network': management_network_schema,
         'management_ip_subnet': management_ip_subnet_schema,
         'vcenter_template_se_location': vcenter_template_se_location_schema,
-    }
-
-
-
-
-class MesosOpenStackConfiguration(object):
-    # all schemas
-    username_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The username Avi Vantage will use when authenticating to Keystone."),
-        required=False,
-        update_allowed=True,
-    )
-    password_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The password Avi Vantage will use when authenticating to Keystone."),
-        required=False,
-        update_allowed=True,
-    )
-    tenant_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Openstack tenant name"),
-        required=False,
-        update_allowed=True,
-    )
-    keystone_host_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Keystone's hostname or IP address."),
-        required=False,
-        update_allowed=True,
-    )
-    vip_network_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Network to be used for VIP allocation"),
-        required=False,
-        update_allowed=True,
-    )
-    region_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Region name"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'username',
-        'password',
-        'tenant',
-        'keystone_host',
-        'vip_network_name',
-        'region',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'username': username_schema,
-        'password': password_schema,
-        'tenant': tenant_schema,
-        'keystone_host': keystone_host_schema,
-        'vip_network_name': vip_network_name_schema,
-        'region': region_schema,
     }
 
 
@@ -670,12 +616,26 @@ class MarathonSeDeployment(object):
         required=False,
         update_allowed=True,
     )
+    resource_roles_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    resource_roles_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Accepted resource roles for SEs"),
+        schema=resource_roles_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'host_os',
         'docker_image',
         'uris',
+        'resource_roles',
     )
 
     # mapping of properties to their schemas
@@ -683,6 +643,7 @@ class MarathonSeDeployment(object):
         'host_os': host_os_schema,
         'docker_image': docker_image_schema,
         'uris': uris_schema,
+        'resource_roles': resource_roles_schema,
     }
 
 
@@ -854,6 +815,9 @@ class APICConfiguration(object):
         _("Context aware for supporting Service Graphs across VRFs"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SINGLE_CONTEXT', 'MULTI_CONTEXT']),
+        ],
     )
 
     # properties list
@@ -994,6 +958,9 @@ class FeProxyRoutePublishConfig(object):
         _("Publish ECMP route to upstream router for VIP"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['FE_PROXY_ROUTE_PUBLISH_NONE', 'FE_PROXY_ROUTE_PUBLISH_QUAGGA_WEBAPP']),
+        ],
     )
     token_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1261,6 +1228,15 @@ class MesosConfiguration(object):
         _("Use Fleet/SSH/Marathon for SE deployment"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['MESOS_SE_CREATE_FLEET', 'MESOS_SE_CREATE_SSH', 'MESOS_SE_CREATE_MARATHON']),
+        ],
+    )
+    use_controller_image_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If true, use controller generated SE docker image via fileservice, else use docker repository image as defined by docker_registry_se"),
+        required=False,
+        update_allowed=True,
     )
     marathon_se_deployment_schema = properties.Schema(
         properties.Schema.MAP,
@@ -1429,13 +1405,6 @@ class MesosConfiguration(object):
         required=False,
         update_allowed=True,
     )
-    openstack_config_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Openstack configuration for floating IP allocation"),
-        schema=MesosOpenStackConfiguration.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -1447,6 +1416,7 @@ class MesosConfiguration(object):
         'http_container_ports',
         'east_west_placement_subnet',
         'se_deployment_method',
+        'use_controller_image',
         'marathon_se_deployment',
         'fleet_endpoint',
         'docker_registry_se',
@@ -1470,7 +1440,6 @@ class MesosConfiguration(object):
         'feproxy_vips_enable_proxy_arp',
         'se_exclude_attributes',
         'se_include_attributes',
-        'openstack_config',
     )
 
     # mapping of properties to their schemas
@@ -1483,6 +1452,7 @@ class MesosConfiguration(object):
         'http_container_ports': http_container_ports_schema,
         'east_west_placement_subnet': east_west_placement_subnet_schema,
         'se_deployment_method': se_deployment_method_schema,
+        'use_controller_image': use_controller_image_schema,
         'marathon_se_deployment': marathon_se_deployment_schema,
         'fleet_endpoint': fleet_endpoint_schema,
         'docker_registry_se': docker_registry_se_schema,
@@ -1506,7 +1476,6 @@ class MesosConfiguration(object):
         'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
-        'openstack_config': openstack_config_schema,
     }
 
 
@@ -1570,6 +1539,9 @@ class RancherConfiguration(object):
         _("Use Fleet/SSH for SE deployment"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+        ],
     )
     fleet_endpoint_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1691,6 +1663,13 @@ class RancherConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    nuage_controller_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Nuage Overlay SDN Controller information"),
+        schema=NuageSDNController.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1718,6 +1697,7 @@ class RancherConfiguration(object):
         'feproxy_vips_enable_proxy_arp',
         'se_exclude_attributes',
         'se_include_attributes',
+        'nuage_controller',
     )
 
     # mapping of properties to their schemas
@@ -1746,6 +1726,7 @@ class RancherConfiguration(object):
         'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
+        'nuage_controller': nuage_controller_schema,
     }
 
 
@@ -1809,6 +1790,9 @@ class DockerConfiguration(object):
         _("Use Fleet/SSH for SE deployment"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+        ],
     )
     fleet_endpoint_schema = properties.Schema(
         properties.Schema.STRING,
@@ -2027,6 +2011,9 @@ class OpenStackConfiguration(object):
         _("Access privilege"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+        ],
     )
     use_keystone_auth_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -2064,6 +2051,9 @@ class OpenStackConfiguration(object):
         _("Default hypervisor type"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     tenant_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -2112,6 +2102,9 @@ class OpenStackConfiguration(object):
         _("If OS_IMG_FMT_RAW, use RAW images else use QCOW2 or streamOptimized/flat VMDK as appropriate. "),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['OS_IMG_FMT_AUTO', 'OS_IMG_FMT_VMDK', 'OS_IMG_FMT_FLAT', 'OS_IMG_FMT_RAW', 'OS_IMG_FMT_QCOW2']),
+        ],
     )
     use_admin_url_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -2142,6 +2135,12 @@ class OpenStackConfiguration(object):
     admin_tenant_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("admin-tenant's UUID in OpenStack"),
+        required=False,
+        update_allowed=True,
+    )
+    config_drive_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If false, metadata service will be used instead of  config-drive functionality to retrieve SE VM metadata."),
         required=False,
         update_allowed=True,
     )
@@ -2213,6 +2212,7 @@ class OpenStackConfiguration(object):
         'role_mapping',
         'use_internal_endpoints',
         'admin_tenant_uuid',
+        'config_drive',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
@@ -2247,6 +2247,7 @@ class OpenStackConfiguration(object):
         'role_mapping': role_mapping_schema,
         'use_internal_endpoints': use_internal_endpoints_schema,
         'admin_tenant_uuid': admin_tenant_uuid_schema,
+        'config_drive': config_drive_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,
@@ -2273,6 +2274,9 @@ class Cloud(AviResource):
         _("Cloud type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     vcenter_configuration_schema = properties.Schema(
         properties.Schema.MAP,
@@ -2387,15 +2391,36 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
-    ipamprofile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the IPAM profile"),
-        required=False,
-        update_allowed=True,
-    )
     license_type_schema = properties.Schema(
         properties.Schema.STRING,
         _("If no license type is specified then default license enforcement for the cloud type is chosen. The default mappings are Container Cloud is Max Ses, OpenStack and VMware is cores and linux it is Sockets."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LIC_SOCKETS', 'LIC_CORES', 'LIC_BACKEND_SERVERS', 'LIC_HOSTS']),
+        ],
+    )
+    ipam_provider_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Ipam Provider for the cloud"),
+        required=False,
+        update_allowed=True,
+    )
+    dns_provider_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("DNS Provider for the cloud"),
+        required=False,
+        update_allowed=True,
+    )
+    east_west_ipam_provider_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Ipam Profile for East West applications"),
+        required=False,
+        update_allowed=True,
+    )
+    east_west_dns_provider_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("DNS Profile for East West applications"),
         required=False,
         update_allowed=True,
     )
@@ -2421,8 +2446,11 @@ class Cloud(AviResource):
         'prefer_static_routes',
         'enable_vip_static_routes',
         'obj_name_prefix',
-        'ipamprofile_uuid',
         'license_type',
+        'ipam_provider_uuid',
+        'dns_provider_uuid',
+        'east_west_ipam_provider_uuid',
+        'east_west_dns_provider_uuid',
     )
 
     # mapping of properties to their schemas
@@ -2446,8 +2474,11 @@ class Cloud(AviResource):
         'prefer_static_routes': prefer_static_routes_schema,
         'enable_vip_static_routes': enable_vip_static_routes_schema,
         'obj_name_prefix': obj_name_prefix_schema,
-        'ipamprofile_uuid': ipamprofile_uuid_schema,
         'license_type': license_type_schema,
+        'ipam_provider_uuid': ipam_provider_uuid_schema,
+        'dns_provider_uuid': dns_provider_uuid_schema,
+        'east_west_ipam_provider_uuid': east_west_ipam_provider_uuid_schema,
+        'east_west_dns_provider_uuid': east_west_dns_provider_uuid_schema,
     }
 
 

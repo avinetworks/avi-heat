@@ -44,60 +44,6 @@ class AlertFilter(object):
 
 
 
-class MetricLog(object):
-    # all schemas
-    metric_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    report_timestamp_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    end_timestamp_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    step_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'metric_id',
-        'value',
-        'report_timestamp',
-        'end_timestamp',
-        'step',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'metric_id': metric_id_schema,
-        'value': value_schema,
-        'report_timestamp': report_timestamp_schema,
-        'end_timestamp': end_timestamp_schema,
-        'step': step_schema,
-    }
-
-
-
-
 class AlertScriptConfig(AviResource):
     resource_name = "alertscriptconfig"
     # all schemas
@@ -179,6 +125,9 @@ class ActionGroupConfig(AviResource):
         _("When an alert is generated, mark its priority via the Alert Level."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ALERT_LOW', 'ALERT_MEDIUM', 'ALERT_HIGH']),
+        ],
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
@@ -263,401 +212,6 @@ class AlertEmailConfig(AviResource):
 
 
 
-class Alert(AviResource):
-    resource_name = "alert"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    alert_config_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    level_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Resolved Alert Type"),
-        required=True,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    state_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("State of the alert. It would be active when createdIt would be changed to state read when read by the admin"),
-        required=True,
-        update_allowed=True,
-    )
-    timestamp_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Unix Timestamp of the last throttling in seconds"),
-        required=True,
-        update_allowed=True,
-    )
-    obj_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the resource"),
-        required=True,
-        update_allowed=True,
-    )
-    obj_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the resource"),
-        required=True,
-        update_allowed=True,
-    )
-    obj_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of the resource"),
-        required=False,
-        update_allowed=True,
-    )
-    threshold_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=EventLog.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    events_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=events_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    app_events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=ApplicationLog.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    app_events_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=app_events_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    conn_events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=ConnectionLog.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    conn_events_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=conn_events_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    metric_info_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=MetricLog.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    metric_info_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=metric_info_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    throttle_count_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of times it was throttled"),
-        required=False,
-        update_allowed=True,
-    )
-    last_throttle_timestamp_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Unix Timestamp of the last throttling in seconds"),
-        required=False,
-        update_allowed=True,
-    )
-    related_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    related_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("related uuids for the connection log. Only Log agent needs to fill this. Server uuid should be in formatpool_uuid-ip-port. In case of no port is set for server it shouldstill be operational port for the server"),
-        schema=related_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    event_pages_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    event_pages_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of event pages this alert is associated with"),
-        schema=event_pages_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    summary_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("summary of alert based on alert config"),
-        required=True,
-        update_allowed=True,
-    )
-    description_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("alert generation criteria"),
-        required=False,
-        update_allowed=True,
-    )
-    action_script_output_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Output of the alert action script"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'alert_config_uuid',
-        'level',
-        'reason',
-        'state',
-        'timestamp',
-        'obj_uuid',
-        'obj_key',
-        'obj_name',
-        'threshold',
-        'events',
-        'app_events',
-        'conn_events',
-        'metric_info',
-        'throttle_count',
-        'last_throttle_timestamp',
-        'related_uuids',
-        'event_pages',
-        'summary',
-        'description',
-        'action_script_output',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'alert_config_uuid': alert_config_uuid_schema,
-        'level': level_schema,
-        'reason': reason_schema,
-        'state': state_schema,
-        'timestamp': timestamp_schema,
-        'obj_uuid': obj_uuid_schema,
-        'obj_key': obj_key_schema,
-        'obj_name': obj_name_schema,
-        'threshold': threshold_schema,
-        'events': events_schema,
-        'app_events': app_events_schema,
-        'conn_events': conn_events_schema,
-        'metric_info': metric_info_schema,
-        'throttle_count': throttle_count_schema,
-        'last_throttle_timestamp': last_throttle_timestamp_schema,
-        'related_uuids': related_uuids_schema,
-        'event_pages': event_pages_schema,
-        'summary': summary_schema,
-        'description': description_schema,
-        'action_script_output': action_script_output_schema,
-    }
-
-
-
-
-class AlertEvents(AviNestedResource):
-    resource_name = "alert"
-    nested_property_name = "events"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-    events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('alert_uuid',
-                  'events',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-        'events': events_item_schema,
-    }
-
-
-class AlertAppEvents(AviNestedResource):
-    resource_name = "alert"
-    nested_property_name = "app_events"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-    app_events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('alert_uuid',
-                  'app_events',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-        'app_events': app_events_item_schema,
-    }
-
-
-class AlertConnEvents(AviNestedResource):
-    resource_name = "alert"
-    nested_property_name = "conn_events"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-    conn_events_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('alert_uuid',
-                  'conn_events',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-        'conn_events': conn_events_item_schema,
-    }
-
-
-class AlertMetricInfo(AviNestedResource, MetricLog):
-    resource_name = "alert"
-    nested_property_name = "metric_info"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = MetricLog.PROPERTIES + ('alert_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(MetricLog.properties_schema)
-
-
-class AlertRelatedUuids(AviNestedResource):
-    resource_name = "alert"
-    nested_property_name = "related_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-    related_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('alert_uuid',
-                  'related_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-        'related_uuids': related_uuids_item_schema,
-    }
-
-
-class AlertEventPages(AviNestedResource):
-    resource_name = "alert"
-    nested_property_name = "event_pages"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of alert"),
-        required=True,
-        update_allowed=False,
-    )
-    event_pages_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('alert_uuid',
-                  'event_pages',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'alert_uuid': parent_uuid_schema,
-        'event_pages': event_pages_item_schema,
-    }
-
-
 class AlertMetricThreshold(object):
     # all schemas
     threshold_schema = properties.Schema(
@@ -671,6 +225,9 @@ class AlertMetricThreshold(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ALERT_OP_LE', 'ALERT_OP_GE', 'ALERT_OP_LT', 'ALERT_OP_GT', 'ALERT_OP_NE', 'ALERT_OP_EQ']),
+        ],
     )
 
     # properties list
@@ -726,6 +283,47 @@ class AlertSyslogServer(object):
 
 
 
+class EventDetailsFilter(object):
+    # all schemas
+    event_details_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    event_details_value_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    comparator_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ALERT_OP_LE', 'ALERT_OP_GE', 'ALERT_OP_LT', 'ALERT_OP_GT', 'ALERT_OP_NE', 'ALERT_OP_EQ']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'event_details_key',
+        'event_details_value',
+        'comparator',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'event_details_key': event_details_key_schema,
+        'event_details_value': event_details_value_schema,
+        'comparator': comparator_schema,
+    }
+
+
+
+
 class AlertObjectList(AviResource):
     resource_name = "alertobjectlist"
     # all schemas
@@ -740,6 +338,9 @@ class AlertObjectList(AviResource):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['CLIENTSUMMARYINTERNAL', 'SEHEADLESSONLINEREQ', 'INTERFACESUMMARYRUNTIME', 'APICTENANTS', 'RTERINGSTATRUNTIME', 'REQUESTQUEUERUNTIME', 'CPUUSAGERUNTIME', 'ALERTPARAMS', 'CONTROLLERPROPERTIES', 'ALERTSYSLOGCONFIG', 'DISPATCHERSTATRUNTIME', 'RATELIMITERSTATRUNTIME', 'SEAGENTGRAPHDBRUNTIME', 'APPLICATIONPROFILE', 'L7VIRTUALSERVICESTATSRUNTIME', 'SEFAULTINJECTEXHAUSTMCLSMALL', 'METRICSAGENTMESSAGE', 'STRINGGROUP', 'SEUPGRADESTATUSDETAIL', 'POOLSTATS', 'VSDOSSTATRUNTIME', 'VIHOSTRESOURCES', 'VIRTUALSERVICE', 'SERVERUPDATEREQ', 'SERVERSTATEUPDATEINFO', 'VCENTERMAP', 'VSCANDIDATESEHOSTLIST', 'APICEPGS', 'DISPATCHERTABLEDUMPRUNTIME', 'DATACENTER', 'MICROSERVICEGROUP', 'LICENSERUNTIME', 'MALLOCSTATRUNTIME', 'VISUBFOLDERS', 'BGPRUNTIME', 'CLUSTER', 'CLOUD', 'POOLSTATEDBCACHESUMMARY', 'AUTHPROFILE', 'SEAGENTVNICDBRUNTIME', 'SELOGSTATSRUNTIME', 'SEUPGRADESTATUS', 'ACTIONGROUPCONFIG', 'HTTPCACHE', 'APICGRAPHINSTANCES', 'POOLDEBUG', 'CONNECTIONDUMPRUNTIME', 'VIRTUALSERVICEANALYSIS', 'METRICSENTITYRUNTIME', 'USER', 'SEMICROSERVICE', 'IPADDRGROUP', 'SEMEMDISTRUNTIME', 'TRANSACTIONSTATS', 'SEDOSSTATRUNTIME', 'VSSCALEOUTLIST', 'SEAUTHSTATSRUNTIME', 'SEFAULTINJECTEXHAUSTM', 'APICTRANSACTION', 'PKIPROFILE', 'SERUMINSERTIONSTATS', 'METRICSSESTATS', 'HTTPCACHESTATS', 'HTTPPOLICYSETSTATS', 'VIRTUALSERVICEAUTHSTATS', 'APICAGENTINTERNAL', 'SEGROUPREBALANCE', 'INTERFACERUNTIME', 'SEGROUPUPGRADE', 'MIGRATEALLSTATUSDETAIL', 'NETWORKSECURITYPOLICYDOS', 'SERVERRUNTIME', 'DISPATCHERREMOTETIMERLISTDUMPRUNTIME', 'ENTITYCOUNTERS', 'ARPSTATRUNTIME', 'DEBUGSERVICEENGINE', 'VCENTER', 'VINETWORKSUBNETVMS', 'SEUPGRADE', 'METRICSRUNTIMESUMMARY', 'SECONSUMERPROTO', 'DISPATCHERSEHMPROBETEMPDISABLERUNTIME', 'ARPTABLERUNTIME', 'SECREATEPENDINGPROTO', 'VSHASHSHOWRUNTIME', 'MICROSERVICEGROUPRUNTIME', 'SHAREDDBSTATSCLEAR', 'PERSISTENCEINTERNAL', 'CLOUDCONNECTOR', 'HEALTHMONITORSTATRUNTIME', 'ALERTTYPECONFIG', 'MICROSERVICERUNTIME', 'SEUPGRADEPREVIEW', 'ALGOSTATRUNTIME', 'CLTRACKSUMMARYINTERNAL', 'IPSTATRUNTIME', 'TCPCONNRUNTIMEDETAIL', 'SHMALLOCSTATRUNTIME', 'IPSTKQSTATSRUNTIME', 'APPLICATION', 'SERESERVEDVSCLEAR', 'POOLSERVER', 'VIMGRVCENTERRUNTIME', 'SERESERVEDVS', 'DISPATCHERSTATCLEARRUNTIME', 'VRFCONTEXT', 'HEALTHMONITORRUNTIME', 'INTERESTEDVMS', 'HARDWARESECURITYMODULEGROUP', 'VIRTUALMACHINE', 'CONNPOOLINTERNAL', 'PORTGROUP', 'ANALYTICSPROFILE', 'SSLPROFILE', 'ICMPSTATRUNTIME', 'CIFTABLE', 'MIGRATEALL', 'CLOUDCONNECTORUSER', 'ACTIONGROUPPROFILE', 'PLACEMENTSTATUS', 'SSLKEYANDCERTIFICATE', 'UDPSTATRUNTIME', 'HOST', 'CLIENTINTERNAL', 'HEALTHMONITOR', 'HTTPPOLICYSETINTERNAL', 'MICROSERVICE', 'SEVMCREATEPROGRESS', 'TENANT', 'CPUSTATRUNTIME', 'HTTPPOLICYSET', 'MBSTATRUNTIME', 'CLOUDPROPERTIES', 'SYSTEMCONFIGURATION', 'SERVICEENGINE', 'VSLOGMGRMAP', 'VIRTUALSERVICESTATEDBCACHESUMMARY', 'MIGRATEALLSTATUSSUMMARY', 'APICVMMDOMAINS', 'NETWORK', 'CLTRACKINTERNAL', 'SEPROPERTIES', 'TCPCONNRUNTIME', 'SERVERSTATEDBCACHESUMMARY', 'APICCONFIGURATION', 'SEFAULTINJECTEXHAUSTCONN', 'APICEPGEPS', 'SHAREDDBSTATS', 'SEFAULTINJECTEXHAUSTMCL', 'KEYVALINTERNAL', 'METRICSRUNTIMEDETAIL', 'MEMINFORUNTIME', 'ALERTEMAILCONFIG', 'KEYVALSUMMARYINTERNAL', 'TCPSTATRUNTIME', 'NETWORKSECURITYPOLICYSTATS', 'IPAMPROFILE', 'VIDATASTORE', 'REBALANCE', 'SEVM', 'NETWORKSECURITYPOLICY', 'SEWRITEOPSINFO', 'CONTROLLERNODE', 'SNMPTRAPPROFILE', 'MAXOBJECTS', 'SERESOURCEPROTO', 'DEBUGCONTROLLER', 'L7GLOBALSTATSRUNTIME', 'VCENTERSUPPORTEDCOUNTERS', 'APICDEVICEPKGVER', 'SEAGENTSTATERUNTIME', 'SEVIPPROTO', 'SERVICEENGINEGROUP', 'VIDATASTORECONTENTS', 'ROUTETABLERUNTIME', 'VSDATASCRIPTSET', 'DEBUGVIRTUALSERVICE', 'SEVSLIST', 'AUTOSCALESTATE', 'APICTRANSACTIONFLAP', 'SERVERAUTOSCALEPOLICY', 'NETWORKSECURITYPOLICYDETAIL', 'POOL', 'NETWORKPROFILE', 'CONNPOOLSTATS', 'ALERTCONFIG', 'ROLE', 'AUTOSCALELAUNCHCONFIG', 'INTERESTEDHOSTS', 'RMVRFPROTO', 'APPLICATIONPERSISTENCEPROFILE']),
+        ],
     )
     objects_schema = properties.Schema(
         properties.Schema.LIST,
@@ -753,6 +354,9 @@ class AlertObjectList(AviResource):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['EVENT_LOGS', 'CONN_LOGS', 'APP_LOGS', 'METRICS']),
+        ],
     )
 
     # properties list
@@ -808,10 +412,27 @@ class AlertRuleEvent(object):
         _("When the selected event occurs, trigger this alert."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VS_REMOVED_SE', 'CONTROLLER_LEADER_FAILOVER', 'NEW_PROBABLE_SRVR', 'ESX_HOST_POWERED_DOWN', 'POOL_SE_HA_ACTIVE', 'MIGRATE_SE_RESTARTED', 'VS_SCALEOUT_DONE_AWAITING_MORE_SE', 'SE_UPGRADING', 'CACHE_OBJ_ALLOC_FAIL', 'CC_UPDATE_VIP_FAILURE', 'CONN_DROP_MAX_SYN_TBL', 'DEL_NW_SE', 'VINFRA_DISC_NW', 'VS_FSM_ACTIVE_AWAITING_SCALEOUT_READY', 'VINFRA_DISC_CLUSTER', 'CREATE_SE_TIMEOUT', 'VS_SCALEOUT_ERR', 'VS_SCALEIN_COMPLETE', 'USER_LOGIN', 'VS_RPC_FAILED_EVENT', 'CONTROLLER_WARM_REBOOT', 'SERVER_DELETED', 'VCENTER_BAD_CREDENTIALS', 'MESOS_ACCESS_FAILURE', 'VS_THROUGHPUT_LIMIT', 'VM_REMOVED', 'UPGRADE_ALL_SE_DONE', 'LS_ACCESS_FAILURE', 'SYSTEM_UPGRADE_COMPLETE', 'PKT_DROP_NO_PKT_BUFF', 'DISCOVERY_DATACENTER_DEL', 'OPENSTACK_ACCESS_FAILURE', 'SYSTEM_ROLLBACK_STARTED', 'LICENSE_LIMIT_THROUGHPUT', 'SE_GROUP_HOST_DEL', 'CONN_DROP_MAX_FLOW_TBL', 'APIC_DELETE_LIFS', 'CONFIG_UPDATE', 'CONFIG_CREATE', 'SE_EXTERNAL_HM_RESTART', 'ROLLBACK_ALL_SE_START', 'VS_SCALEOUT_DONE', 'ESX_HOST_UNREACHABLE', 'AWS_IMAGE_UPLOAD_SUCCESS', 'DOCKER_UCP_ACCESS_FAILURE', 'CC_SE_DELETED', 'LS_IMAGE_UPLOAD_FAILURE', 'SE_VERSION_CHECK_FAILED', 'VS_FSM_PARTITIONED', 'RM_DEL_NETWORK_FAIL', 'CC_CLUSTER_VIP_DECONFIG_FAILURE', 'SE_MIGRATE', 'MIGRATE_SE_STARTED', 'DELETED_SE', 'CLOUDSTACK_IMAGE_UPLOAD_FAILURE', 'VS_SE_HA_ACTIVE', 'CONFIG_ACTION', 'MIGRATE_SE_VS_MIGRATE_STARTED', 'MESOS_ACCESS_SUCCESS', 'UPGRADE_SE_DONE', 'SE_HM_EVENT_SHM_UP', 'NO_HOST_AVAIL', 'VS_SE_HA_COMPROMISED', 'VINFRA_DISC_VM', 'OPENSTACK_VNIC_ADDED', 'SE_PERSIST_TBL_HIGH', 'SERVER_AUTOSCALE_OUT_COMPLETE', 'LICENSE_LIMIT_SE_VCPUS', 'CC_CLUSTER_VIP_CONFIG_SUCCESS', 'OPENSTACK_IP_ATTACH_FAILURE', 'ADD_NW_FAIL', 'CC_SE_START_FAILURE', 'AWS_ACCESS_SUCCESS', 'DOCKER_UCP_ACCESS_SUCCESS', 'OPENSTACK_SE_VM_DELETED', 'CLOUDSTACK_ACCESS_FAILURE', 'CC_VNIC_ADDITION_FAILURE', 'CONN_DROP_NO_PKT_BUFF', 'VS_SCALEIN_ERR', 'CC_SYNC_SERVICES_FAILURE', 'SE_REBOOTED', 'MESOS_STOP_SE_FAIL', 'MESOS_START_SE_FAIL', 'MESOS_STOPPED_SE', 'SE_HEALTH_CHECK_FAIL', 'CC_VIP_DNS_REGISTER_FAILURE', 'SE_VM_DELETED', 'SE_VNIC_DHCP_IP_ALLOC_FAILURE', 'CC_HEALTH_OK', 'SERVER_HEALTH_CHANGE', 'DOCKER_UCP_IMAGE_UPLOAD_IN_PROGRESS', 'VCA_IMAGE_UPLOAD_FAILURE', 'OPENSTACK_LBPLUGIN_OP_FAILURE', 'CC_DECONFIG_FAILURE', 'SE_SYN_TBL_HIGH', 'CREATED_SE', 'VINFRA_DISC_COMPLETE', 'VS_DOWN', 'MESOS_DELETED_SE', 'VS_FSM_INACTIVE', 'CC_MARATHON_SERVICE_PORT_OUTSIDE_VALID_RANGE', 'SERVER_UP_HA_ACTIVE', 'SE_SERVER_DELETED', 'OPENSTACK_LBPROV_AUDIT_SUCCESS', 'REBALANCE_VS_SCALEIN', 'MESOS_CREATE_SE_FAIL', 'VS_SCALEIN_FAILED', 'SERVER_UP', 'SE_DP_HB_FAILED', 'VS_SCALEOUT_FAILED', 'DOCKER_UCP_IMAGE_UPLOAD_FAILURE', 'CLOUDSTACK_IMAGE_UPLOAD_SUCCESS', 'CC_TENANT_INIT_FAILURE', 'SE_CONN_MEM_HIGH', 'SE_HM_EVENT_SHM_DOWN', 'SUMMARIZED_SUBNETS', 'CREATING_SE', 'APIC_DELETE_TENANT', 'SERVER_AUTOSCALE_IN_FAILED', 'VS_MIGRATE_SCALEIN_ERROR', 'MGMT_NW_NAME_CHANGED', 'APIC_DELETE_LIF_CONTEXTS', 'SE_PKT_BUFF_HIGH', 'CC_VNIC_DELETED', 'LICENSE_LIMIT_VS', 'MIGRATE_SE_FAILED', 'CREATE_SE_FAIL', 'VCA_ACCESS_SUCCESS', 'VS_HEALTH_DEGRADED', 'SERVER_HEALTH_DEGRADED', 'OPENSTACK_IP_DETACH_FAILURE', 'SSL_KEY_EXPORTED', 'APIC_DELETE_CDEV', 'UPGRADE_SE_START', 'SE_ENABLE', 'MODIFY_NW_FAIL', 'SE_GATEWAY_HEARTBEAT_SUCCESS', 'VS_MIGRATE_SCALEIN_DONE', 'ANOMALY', 'OPENSTACK_VNIC_REMOVED', 'VS_MIGRATE_COMPLETE', 'MESOS_CREATED_SE', 'CLOUDSTACK_ACCESS_SUCCESS', 'UPGRADE_ALL_SE_START', 'CONN_DROP_POOL_LB_FAILURE', 'SE_DOS_ATTACK', 'CC_SE_DELETION_FAILURE', 'APIC_CREATE_NETWORK', 'SE_MEM_HIGH', 'VINFRA_DISC_HOST', 'PKT_BUFF_ALLOC_FAIL', 'VS_HEALTH_CHANGE', 'CC_IP_DETACHED', 'POOL_UP', 'UPGRADE_SE_VS_DISRUPTED', 'VS_FSM_ACTIVE', 'VS_FSM_AWAITING_SE_ASSIGNMENT', 'APIC_ATTACH_CIF_TO_LIF', 'UPGRADE_SE_NOT_NEEDED', 'CONTROLLER_NODE_LEFT', 'SE_EV_POOL_UP', 'CONFIG_INTERNAL_UPDATE', 'VS_ADD_SE', 'CC_SE_CREATION_FAILURE', 'REBALANCE_VS_MIGRATE', 'SYSTEM_UPGRADE_ABORTED', 'SE_VNIC_DUPLICATE_IP', 'OPENSTACK_ACCESS_SUCCESS', 'VS_SE_IP_FAIL', 'OPENSTACK_SE_VM_CREATED', 'SE_GROUP_MGMT_NW_DEL', 'VS_SCALEIN_DONE', 'VS_CONN_LIMIT', 'METRIC_THRESHOLD_UP_VIOLATION', 'VINFRA_DISC_FAILURE', 'SERVER_DOWN_HA_COMPROMISED', 'MESOS_IMAGE_UPLOAD_SUCCESS', 'VS_SE_BOOTUP_FAIL', 'MGMT_NW_DEL', 'LICENSE_EXPIRY', 'CONN_DROP_MAX_PERSIST_TBL', 'OPENSTACK_VNIC_ADDITION_FAILURE', 'OPENSTACK_IMAGE_UPLOAD_SUCCESS', 'UPGRADE_ALL_SE_NOT_NEEDED', 'SE_SERVER_DISABLED', 'CONFIG_DELETE', 'APIC_NETWORK_VRF_CHANGED', 'VS_MIGRATE_SCALEOUT_DONE', 'VS_FSM_PERMANENT_ERROR', 'UPGRADE_SE_VS_SCALEIN', 'APIC_CREATE_CDEV', 'VS_FSM_DISABLED', 'SERVER_AUTOSCALE_IN', 'VS_REMOVED_SE_INT', 'SE_DISK_HIGH', 'SSL_CERT_RENEW_FAILED', 'LICENSE_ADDITION_NOTIF', 'MESOS_UPDATED_HOSTS', 'DELETE_SE_FAIL', 'CONN_DROP_NO_CONN_MEM', 'CC_VNIC_ADDED', 'LS_IMAGE_UPLOAD_SUCCESS', 'VS_ADD_SE_INT', 'SERVER_AUTOSCALE_OUT_FAILED', 'SE_HEALTH_CHANGE', 'MIGRATE_SE_VS_MIGRATE_FAILED', 'CONTROLLER_NODE_JOINED', 'APIC_BIND_VNIC_TO_NETWORK', 'CC_SE_STARTED', 'SE_VNIC_IP_ADDED', 'SE_GROUP_CLUSTER_DEL', 'OPENSTACK_SE_CREATION_FAILURE', 'CC_SE_DELETION_DETECTED', 'MIGRATE_SE_VS_MIGRATE_FINISHED', 'VS_MIGRATE_SCALEOUT_ERROR', 'APIC_CREATE_LIF_CONTEXTS', 'VS_RPC_TO_RESMGR_FAILED_EVENT', 'VCENTER_VERSION_NOT_SUPPORTED', 'SERVER_AUTOSCALE_OUT', 'CC_VNIC_DELETION_FAILURE', 'APIC_DELETE_NETWORK', 'VS_SCALEIN_DONE_AWAITING_MORE_SE', 'AWS_ACCESS_FAILURE', 'APIC_CREATE_TENANT', 'MESOS_IMAGE_UPLOAD_IN_PROGRESS', 'SE_EV_SERVER_UP', 'SE_UP', 'OPENSTACK_SYNC_SERVICES_SUCCESS', 'VS_FSM_ACTIVE_AWAITING_SE_TRANSITION', 'SE_MARKED_DOWN', 'MIGRATE_SE_FINISHED', 'CC_SYNC_SERVICES_SUCCESS', 'VS_MIGRATE_DONE', 'SSL_CERT_RENEW', 'SERVER_AUTOSCALE_FAILED', 'USER_LOGOUT', 'UPGRADE_SE_VS_SCALEOUT', 'APIC_DETACH_CIF_FROM_LIF', 'MODIFY_NW', 'DOCKER_UCP_IMAGE_UPLOAD_SUCCESS', 'CC_CONFIG_FAILURE', 'AWS_IMAGE_UPLOAD_FAILURE', 'OPENSTACK_SE_DELETION_FAILURE', 'MESOS_IMAGE_UPLOAD_FAILURE', 'METRICS_DB_DISK_FULL', 'SE_CPU_HIGH', 'OPENSTACK_IMAGE_UPLOAD_FAILURE', 'SE_GATEWAY_HEARTBEAT_FAILED', 'SE_SERVER_APP_CHANGED', 'OPENSTACK_TENANTS_DELETED', 'SYSTEM_ROLLBACK_ABORTED', 'SYSTEM_UPGRADE_STARTED', 'CC_IP_ATTACHED', 'SE_DOWN', 'CC_SE_CREATED', 'VS_FSM_UNEXPECTED_EVENT', 'SE_FATAL_ERROR', 'DUPLICATE_SUBNETS', 'SERVER_AUTOSCALE_IN_COMPLETE', 'LICENSE_LIMIT_SE_SOCKETS', 'VS_RPC_TO_SE_FAILED_EVENT', 'SE_HEARTBEAT_FAILURE', 'IP_POOL_ALMOST_EXHAUSTED', 'LICENSE_EXPIRED', 'CC_SE_STOP_FAILURE', 'APIC_VS_PLACEMENT', 'OPENSTACK_VNIC_DELETION_FAILURE', 'VINFRA_DISC_DC', 'VCENTER_ADDRESS_ERROR', 'VS_MIGRATE_FAILED', 'LS_ACCESS_SUCCESS', 'VS_SWITCHOVER', 'ROLLBACK_ALL_SE_DONE', 'VS_UP', 'SE_EV_VS_UP', 'UPGRADE_SE_VS_MIGRATE', 'SE_EV_POOL_DOWN', 'POOL_SE_HA_COMPROMISED', 'CC_DELETE_VIP_FAILURE', 'IP_POOL_EXHAUSTED', 'DOS_ATTACK', 'SYSTEM_ROLLBACK_COMPLETE', 'CC_SE_STOPPED', 'CC_IP_DETACH_FAILURE', 'OPENSTACK_SE_VM_DELETION_DETECTED', 'OPENSTACK_LBPROV_AUDIT_FAILURE', 'OPENSTACK_LBPLUGIN_OP_SUCCESS', 'VM_ADDED', 'CONFIG_INTERNAL_CREATE', 'VCA_ACCESS_FAILURE', 'SSL_CERT_EXPIRE', 'REBOOT_SE', 'AVG_UPTIME_CHANGE', 'VCA_IMAGE_UPLOAD_SUCCESS', 'OPENSTACK_IP_ATTACHED', 'SE_EV_VS_DOWN', 'OPENSTACK_IP_DETACHED', 'CC_IP_ATTACH_FAILURE', 'POOL_HEALTH_DEGRADED', 'APIC_BAD_CREDENTIALS', 'CC_HEALTH_FAILURE', 'SE_SYN_CACHE_USAGE_HIGH', 'SE_POOL_DELETED', 'SE_FLOW_TBL_HIGH', 'LICENSE_LIMIT_SERVERS', 'LICENSE_REMOVAL_NOTIF', 'MESOS_STARTED_SE', 'VS_MIGRATE_STARTED', 'VS_FSM_TRANSIENT_ERROR', 'CC_GENERIC_FAILURE', 'VS_INITIAL_PLACEMENT_FAILED', 'LICENSE_LIMIT_HOSTS', 'VS_SCALEOUT_COMPLETE', 'CC_MARATHON_SERVICE_PORT_ALREADY_IN_USE', 'POOL_HEALTH_CHANGE', 'APIC_CREATE_LIFS', 'ADD_NW_SE', 'CC_CLUSTER_VIP_DECONFIG_SUCCESS', 'SE_VM_PURGED', 'SE_VNIC_IP_REMOVED', 'POOL_DOWN', 'SE_HEALTH_DEGRADED', 'OPENSTACK_SYNC_SERVICES_FAILURE', 'SE_EV_SERVER_DOWN', 'VS_AWAITING_SE', 'MESOS_DELETE_SE_FAIL', 'SERVER_DOWN', 'SE_VNIC_DOWN_EVENT', 'CONTROLLER_SERVICE_FAILURE', 'USER_PASSWORD_CHANGE_REQUEST', 'REBALANCE_VS_SCALEOUT', 'VS_SWITCHOVER_FAIL', 'CC_CLUSTER_VIP_CONFIG_FAILURE', 'SE_POWERED_DOWN', 'DELETING_SE']),
+        ],
     )
     not_cond_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
+        required=False,
+        update_allowed=True,
+    )
+    event_details_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=EventDetailsFilter.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    event_details_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=event_details_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -820,12 +441,14 @@ class AlertRuleEvent(object):
     PROPERTIES = (
         'event_id',
         'not_cond',
+        'event_details',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'event_id': event_id_schema,
         'not_cond': not_cond_schema,
+        'event_details': event_details_schema,
     }
 
 
@@ -986,6 +609,9 @@ class AlertRule(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['OPERATOR_AND', 'OPERATOR_OR']),
+        ],
     )
 
     # properties list
@@ -1066,6 +692,9 @@ class AlertConfig(AviResource):
         _("Signifies system events or the type of client logsused in this alert configuration"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['EVENT_LOGS', 'CONN_LOGS', 'APP_LOGS', 'METRICS']),
+        ],
     )
     obj_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1078,6 +707,9 @@ class AlertConfig(AviResource):
         _("Determines whether an alert is raised as soon as the event occurs (Realtime) or the Controller should wait until the specified number of events has occured in the rolling window's time interval."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ROLLINGWINDOW', 'REALTIME', 'WATERMARK']),
+        ],
     )
     recommendation_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1094,6 +726,12 @@ class AlertConfig(AviResource):
     action_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The alert config will trigger the selected alert action, which send send notifications or execute custom scripts."),
+        required=False,
+        update_allowed=True,
+    )
+    autoscale_alert_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("This alert config applies to auto scale alerts"),
         required=False,
         update_allowed=True,
     )
@@ -1114,6 +752,7 @@ class AlertConfig(AviResource):
         'recommendation',
         'enabled',
         'action_group_uuid',
+        'autoscale_alert',
     )
 
     # mapping of properties to their schemas
@@ -1132,6 +771,7 @@ class AlertConfig(AviResource):
         'recommendation': recommendation_schema,
         'enabled': enabled_schema,
         'action_group_uuid': action_group_uuid_schema,
+        'autoscale_alert': autoscale_alert_schema,
     }
 
 
@@ -1141,16 +781,9 @@ def resource_mapping():
     return {
         'Avi::AlertSyslogConfig': AlertSyslogConfig,
         'Avi::AlertScriptConfig': AlertScriptConfig,
-        'Avi::Alert::AppEvent': AlertAppEvents,
-        'Avi::Alert::Event': AlertEvents,
-        'Avi::Alert::EventPage': AlertEventPages,
         'Avi::AlertObjectList': AlertObjectList,
-        'Avi::Alert': Alert,
-        'Avi::Alert::MetricInfo': AlertMetricInfo,
         'Avi::AlertConfig': AlertConfig,
         'Avi::AlertObjectList::Object': AlertObjectListObjects,
-        'Avi::Alert::RelatedUuid': AlertRelatedUuids,
-        'Avi::Alert::ConnEvent': AlertConnEvents,
         'Avi::ActionGroupConfig': ActionGroupConfig,
         'Avi::AlertEmailConfig': AlertEmailConfig,
         'Avi::AlertSyslogConfig::SyslogServer': AlertSyslogConfigSyslogServers,

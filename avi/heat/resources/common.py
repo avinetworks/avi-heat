@@ -89,6 +89,36 @@ class CustomParams(object):
 
 
 
+class PortRange(object):
+    # all schemas
+    start_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("TCP/UDP port range start (inclusive)."),
+        required=True,
+        update_allowed=True,
+    )
+    end_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("TCP/UDP port range end (inclusive)."),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'start',
+        'end',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'start': start_schema,
+        'end': end_schema,
+    }
+
+
+
+
 class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
@@ -140,6 +170,9 @@ class Tag(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VCENTER_DEFINED', 'AVI_DEFINED', 'USER_DEFINED']),
+        ],
     )
 
     # properties list
@@ -187,6 +220,53 @@ class TimeStamp(object):
 
 
 
+class IpAddrPort(object):
+    # all schemas
+    ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP Address of host. One of IP address or hostname should be set"),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Port number of server"),
+        required=True,
+        update_allowed=True,
+    )
+    hostname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Hostname of server. One of IP address or hostname should be set"),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip',
+        'port',
+        'hostname',
+        'name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip': ip_schema,
+        'port': port_schema,
+        'hostname': hostname_schema,
+        'name': name_schema,
+    }
+
+
+
+
 class HTTPLocalFile(object):
     # all schemas
     content_type_schema = properties.Schema(
@@ -212,120 +292,6 @@ class HTTPLocalFile(object):
     properties_schema = {
         'content_type': content_type_schema,
         'file_content': file_content_schema,
-    }
-
-
-
-
-class OperationalStatus(object):
-    # all schemas
-    state_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=reason_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    last_changed_time_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=TimeStamp.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_string_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'state',
-        'reason',
-        'reason_code',
-        'last_changed_time',
-        'reason_code_string',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'state': state_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
-        'last_changed_time': last_changed_time_schema,
-        'reason_code_string': reason_code_string_schema,
-    }
-
-
-
-
-class AppInfo(object):
-    # all schemas
-    app_hdr_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    app_hdr_value_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'app_hdr_name',
-        'app_hdr_value',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'app_hdr_name': app_hdr_name_schema,
-        'app_hdr_value': app_hdr_value_schema,
-    }
-
-
-
-
-class Port(object):
-    # all schemas
-    port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("TCP/UDP port number."),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'port',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'port': port_schema,
     }
 
 
@@ -374,86 +340,6 @@ class Tenant(AviResource):
         'local': local_schema,
         'description': description_schema,
         'config_settings': config_settings_schema,
-    }
-
-
-
-
-class PortRange(object):
-    # all schemas
-    start_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("TCP/UDP port range start (inclusive)."),
-        schema=Port.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    end_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("TCP/UDP port range end (inclusive)."),
-        schema=Port.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'start',
-        'end',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'start': start_schema,
-        'end': end_schema,
-    }
-
-
-
-
-class IpAddrPort(object):
-    # all schemas
-    ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IP Address of host. One of IP address or hostname should be set"),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    port_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Port number of server"),
-        schema=Port.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    hostname_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Hostname of server. One of IP address or hostname should be set"),
-        required=False,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ip',
-        'port',
-        'hostname',
-        'name',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ip': ip_schema,
-        'port': port_schema,
-        'hostname': hostname_schema,
-        'name': name_schema,
     }
 
 

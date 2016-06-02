@@ -18,6 +18,9 @@ class VSDataScript(object):
         _("Event triggering execution of datascript"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VS_DATASCRIPT_EVT_HTTP_RESP', 'VS_DATASCRIPT_EVT_HTTP_REQ', 'VS_DATASCRIPT_EVT_HTTP_LB_FAILED', 'VS_DATASCRIPT_EVT_HTTP_RESP_DATA', 'VS_DATASCRIPT_EVT_MAX']),
+        ],
     )
     script_schema = properties.Schema(
         properties.Schema.STRING,

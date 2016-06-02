@@ -26,12 +26,18 @@ class AppHdr(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
     )
     hdr_string_op_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+        ],
     )
 
     # properties list
@@ -803,6 +809,12 @@ class SeRuntimeProperties(object):
         required=False,
         update_allowed=True,
     )
+    se_dp_if_state_poll_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of jiffies between polling interface state."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -897,6 +909,7 @@ class SeRuntimeProperties(object):
         'lbaction_num_requests_to_dispatch',
         'lbaction_rq_per_request_max_retries',
         'service_ip_subnets',
+        'se_dp_if_state_poll_interval',
     )
 
     # mapping of properties to their schemas
@@ -992,6 +1005,7 @@ class SeRuntimeProperties(object):
         'lbaction_num_requests_to_dispatch': lbaction_num_requests_to_dispatch_schema,
         'lbaction_rq_per_request_max_retries': lbaction_rq_per_request_max_retries_schema,
         'service_ip_subnets': service_ip_subnets_schema,
+        'se_dp_if_state_poll_interval': se_dp_if_state_poll_interval_schema,
     }
 
 

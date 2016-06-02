@@ -167,6 +167,36 @@ class DefaultGateway(object):
 
 
 
+class MemberInterface(object):
+    # all schemas
+    if_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    active_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'if_name',
+        'active',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'if_name': if_name_schema,
+        'active': active_schema,
+    }
+
+
+
+
 class ServiceEngine(AviResource):
     resource_name = "serviceengine"
     # all schemas
@@ -182,17 +212,28 @@ class ServiceEngine(AviResource):
         required=False,
         update_allowed=True,
     )
+    enable_state_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("inorder to disable SE set this field appropriately"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_STATE_ENABLED', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_DISABLED']),
+        ],
+    )
 
     # properties list
     PROPERTIES = (
         'name',
         'se_group_uuid',
+        'enable_state',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'se_group_uuid': se_group_uuid_schema,
+        'enable_state': enable_state_schema,
     }
 
 
@@ -272,6 +313,9 @@ class vNICNetwork(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DHCP', 'VIP', 'STATIC', 'DOCKER_HOST']),
+        ],
     )
 
     # properties list

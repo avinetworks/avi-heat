@@ -22,17 +22,22 @@ class HTTPSecurityAction(object):
         _("Type of the security action to perform"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+        ],
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
         _("HTTP status code to use for local response"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+        ],
     )
     https_port_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _("Secure SSL/TLS port to redirect the HTTP request to"),
-        schema=Port.properties_schema,
         required=False,
         update_allowed=True,
     )

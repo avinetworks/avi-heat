@@ -11,39 +11,27 @@ from options import *
 from options import *
 
 
-class DNSInternalNSRecord(object):
+class IpamDnsInfobloxProfile(object):
     # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Nameserver for NS record"),
-        required=True,
-        update_allowed=True,
-    )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
-        _("IP address of the Nameserver"),
+        _("Address of Infoblox appliance"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=True,
     )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'ip_address',
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Username for API access for Infoblox appliance"),
+        required=True,
+        update_allowed=True,
     )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'ip_address': ip_address_schema,
-    }
-
-
-
-
-class InfobloxProfile(object):
-    # all schemas
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Password for API access for Infoblox appliance"),
+        required=True,
+        update_allowed=True,
+    )
     wapi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("WAPI version"),
@@ -62,25 +50,62 @@ class InfobloxProfile(object):
         required=False,
         update_allowed=True,
     )
+    usable_subnets_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    usable_subnets_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Usable subnets to pick from Infoblox"),
+        schema=usable_subnets_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    usable_domains_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    usable_domains_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Usable domains to pick from Infoblox"),
+        schema=usable_domains_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'ip_address',
+        'username',
+        'password',
         'wapi_version',
         'dns_view',
         'network_view',
+        'usable_subnets',
+        'usable_domains',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'ip_address': ip_address_schema,
+        'username': username_schema,
+        'password': password_schema,
         'wapi_version': wapi_version_schema,
         'dns_view': dns_view_schema,
         'network_view': network_view_schema,
+        'usable_subnets': usable_subnets_schema,
+        'usable_domains': usable_domains_schema,
     }
 
 
 
 
-class IpamAwsProfile(object):
+class IpamDnsAwsProfile(object):
     # all schemas
     region_schema = properties.Schema(
         properties.Schema.STRING,
@@ -142,104 +167,203 @@ class IpamAwsProfile(object):
 
 
 
-class IpamInternalProfile(object):
+class DnsServiceDomain(object):
     # all schemas
-    service_domain_schema = properties.Schema(
+    domain_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Authority Domain Name for Service Discovery.Services will be registered as service_name.service_domain"),
-        required=False,
-        update_allowed=True,
-    )
-    service_record_ttl_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("TTL value for service records."),
-        required=False,
-        update_allowed=True,
-    )
-    ns_records_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=DNSInternalNSRecord.properties_schema,
+        _("Service domain string used for FQDN"),
         required=True,
-        update_allowed=False,
+        update_allowed=True,
     )
-    ns_records_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("NameServer records for non Avi authoritative domains."),
-        schema=ns_records_item_schema,
+    record_ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("TTL value for DNS records"),
+        required=False,
+        update_allowed=True,
+    )
+    num_dns_ip_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Specifies the number of A records returned by Avi DNS Service."),
+        required=False,
+        update_allowed=True,
+    )
+    pass_through_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Non Avi Authoritative domain requests are delegated toDNS VirtualService's pool of nameservers."),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'service_domain',
-        'service_record_ttl',
-        'ns_records',
+        'domain_name',
+        'record_ttl',
+        'num_dns_ip',
+        'pass_through',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'service_domain': service_domain_schema,
-        'service_record_ttl': service_record_ttl_schema,
-        'ns_records': ns_records_schema,
+        'domain_name': domain_name_schema,
+        'record_ttl': record_ttl_schema,
+        'num_dns_ip': num_dns_ip_schema,
+        'pass_through': pass_through_schema,
     }
 
 
 
 
-class IpamProfile(AviResource):
-    resource_name = "ipamprofile"
+class IpamDnsInternalProfile(object):
+    # all schemas
+    dns_service_domain_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=DnsServiceDomain.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    dns_service_domain_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of service domains"),
+        schema=dns_service_domain_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Default TTL for all records, overridden by TTL value for each service domain configured in DnsServiceDomain."),
+        required=False,
+        update_allowed=True,
+    )
+    dns_virtualservice_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi VirtualService to be used for serving DNS records."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'dns_service_domain',
+        'ttl',
+        'dns_virtualservice_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'dns_service_domain': dns_service_domain_schema,
+        'ttl': ttl_schema,
+        'dns_virtualservice_uuid': dns_virtualservice_uuid_schema,
+    }
+
+
+
+
+class IpamDnsOpenstackProfile(object):
+    # all schemas
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The username Avi Vantage will use when authenticating to Keystone."),
+        required=True,
+        update_allowed=True,
+    )
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The password Avi Vantage will use when authenticating to Keystone."),
+        required=True,
+        update_allowed=True,
+    )
+    tenant_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Openstack tenant name"),
+        required=True,
+        update_allowed=True,
+    )
+    keystone_host_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Keystone's hostname or IP address."),
+        required=True,
+        update_allowed=True,
+    )
+    vip_network_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Network to be used for VIP allocation"),
+        required=True,
+        update_allowed=True,
+    )
+    region_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Region name"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'username',
+        'password',
+        'tenant',
+        'keystone_host',
+        'vip_network_name',
+        'region',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'username': username_schema,
+        'password': password_schema,
+        'tenant': tenant_schema,
+        'keystone_host': keystone_host_schema,
+        'vip_network_name': vip_network_name_schema,
+        'region': region_schema,
+    }
+
+
+
+
+class IpamDnsProviderProfile(AviResource):
+    resource_name = "ipamdnsproviderprofile"
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The name of the IPAM profile"),
+        _("Name for the IPAM/DNS Provider profile"),
         required=True,
         update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Type of IPAM profile"),
+        _("Provider Type for the IPAM/DNS Provider profile"),
         required=True,
         update_allowed=True,
-    )
-    ip_address_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IPAM_TYPE_INFOBLOX address of IPAM appliance"),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    username_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Username for API access for IPAM appliance"),
-        required=False,
-        update_allowed=True,
-    )
-    password_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Username for API access for IPAM appliance"),
-        required=False,
-        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_OPENSTACK', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_AWS']),
+        ],
     )
     infoblox_profile_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
-        schema=InfobloxProfile.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    internal_profile_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpamInternalProfile.properties_schema,
+        _("Provider details if type is Infoblox"),
+        schema=IpamDnsInfobloxProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
     aws_profile_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
-        schema=IpamAwsProfile.properties_schema,
+        _("Provider details if type is AWS"),
+        schema=IpamDnsAwsProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    openstack_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Provider details if type is Openstack"),
+        schema=IpamDnsOpenstackProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    internal_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Provider details if type is Avi"),
+        schema=IpamDnsInternalProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -248,24 +372,20 @@ class IpamProfile(AviResource):
     PROPERTIES = (
         'name',
         'type',
-        'ip_address',
-        'username',
-        'password',
         'infoblox_profile',
-        'internal_profile',
         'aws_profile',
+        'openstack_profile',
+        'internal_profile',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'type': type_schema,
-        'ip_address': ip_address_schema,
-        'username': username_schema,
-        'password': password_schema,
         'infoblox_profile': infoblox_profile_schema,
-        'internal_profile': internal_profile_schema,
         'aws_profile': aws_profile_schema,
+        'openstack_profile': openstack_profile_schema,
+        'internal_profile': internal_profile_schema,
     }
 
 
@@ -273,6 +393,6 @@ class IpamProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::IpamProfile': IpamProfile,
+        'Avi::IpamDnsProviderProfile': IpamDnsProviderProfile,
     }
 

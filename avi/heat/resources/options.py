@@ -23,6 +23,9 @@ class IpAddr(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['V4', 'DNS']),
+        ],
     )
 
     # properties list

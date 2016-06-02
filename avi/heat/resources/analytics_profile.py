@@ -9,7 +9,6 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
-from match import *
 
 
 class AnalyticsProfile(AviResource):
@@ -136,9 +135,8 @@ class AnalyticsProfile(AviResource):
         update_allowed=True,
     )
     exclude_http_error_codes_item_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _(""),
-        schema=HTTPStatusCode.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -478,7 +476,7 @@ class AnalyticsProfileExcludeHttpErrorCodes(AviNestedResource):
         update_allowed=False,
     )
     exclude_http_error_codes_item_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _(""),
         required=True,
         update_allowed=False,
