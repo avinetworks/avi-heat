@@ -37,24 +37,47 @@ class AviResource(resource.Resource):
         )
         return api_session
 
-    def create_clean_properties(self, inp):
+    def create_clean_properties(self, inp, field_refs=None, client=None,
+                                keyname=None):
+        LOG.debug("args fpr clean (inp, frefs, keyname): %s, %s, %s", inp, field_refs, keyname)
         if isinstance(inp, dict):
             newdict = dict()
+            newfrefs = field_refs
+            if field_refs and keyname and keyname in field_refs:
+                newfrefs = field_refs[keyname]
             for k, v in inp.items():
                 if v is None:
                     continue
-                newdict[k] = self.create_clean_properties(v)
+                newdict[k] = self.create_clean_properties(
+                    v, field_refs=newfrefs, client=client, keyname=k)
             return newdict
         elif isinstance(inp, list):
             newlist = []
             for entry in inp:
-                newlist.append(self.create_clean_properties(entry))
+                newlist.append(self.create_clean_properties(
+                    entry, field_refs, client, keyname=keyname))
             return newlist
+        elif field_refs and isinstance(inp, basestring):
+            if keyname and client and inp.startswith("get_avi_uuid_by_name:"):
+                objname = inp.split(":", 1)[1]
+                resname = field_refs.get(keyname, "").lower()
+                if resname:
+                    return client.get_obj_uuid(
+                        client.get_object_by_name(
+                                resname, objname,
+                                tenant_uuid=self.get_avi_tenant_uuid()
+                            )
+                        )
         return inp
 
     def handle_create(self):
-        res_def = self.create_clean_properties(dict(self.properties))
         client = self.get_avi_client()
+        res_def = self.create_clean_properties(
+            dict(self.properties),
+            field_refs=getattr(self, "field_references", {}),
+            client=client
+        )
+        LOG.debug("Resource def for create: %s", res_def)
         try:
             obj = client.post(self.resource_name,
                               data=res_def,
@@ -161,11 +184,15 @@ class AviNestedResource(AviResource):
         return self.properties[parent_uuid_prop]
 
     def handle_create(self):
-        res_def = self.create_clean_properties(dict(self.properties))
+        client = self.get_avi_client()
+        res_def = self.create_clean_properties(
+            dict(self.properties),
+            field_refs=getattr(self, "field_references", {}),
+            client=client
+        )
         parent_uuid_prop = self.resource_name + "_uuid"
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
-        client = self.get_avi_client()
         data = {"update": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
@@ -194,11 +221,15 @@ class AviNestedResource(AviResource):
             raise HeatException.UpdateReplace()
 
     def handle_delete(self):
-        res_def = self.create_clean_properties(dict(self.properties))
+        client = self.get_avi_client()
+        res_def = self.create_clean_properties(
+            dict(self.properties),
+            field_refs=getattr(self, "field_references", {}),
+            client=client
+        )
         parent_uuid_prop = self.resource_name + "_uuid"
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
-        client = self.get_avi_client()
         data = {"delete": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
