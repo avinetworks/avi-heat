@@ -1,10 +1,12 @@
 heat_template_version: 2015-04-30
 description: Template to Avi Heat resources
+# Make sure that testpool already exists on Avi
+# you can create it using test-vs.yaml example
 resources:
   member:
     type: Avi::Pool::Server
     properties:
-      pool_uuid: pool-4c829700-fbfe-447c-8d94-4599752a5720
+      pool_uuid:  get_avi_uuid_by_name:testpool
       ip:
         addr: 10.10.10.50
         type: V4

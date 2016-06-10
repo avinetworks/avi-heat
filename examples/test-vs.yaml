@@ -32,3 +32,14 @@ resources:
             addr: 10.10.10.20
             type: V4
           port: 8081
+  vs:
+    type: Avi::VirtualService
+    properties:
+      name: "testvs"
+      pool_uuid: {get_resource: pool}
+      ip_address:
+        addr: 10.10.32.100
+        type: V4
+      services:
+        - port: 80
+      application_profile_uuid: get_avi_uuid_by_name:System-Secure-HTTP
