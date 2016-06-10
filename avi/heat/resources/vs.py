@@ -19,56 +19,17 @@ from auth import *
 from rate import *
 
 
-class VsSeInitialPlacementParams(object):
-    # all schemas
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'to_new_se',
-        'to_se_uuid',
-        'to_host_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'to_new_se': to_new_se_schema,
-        'to_se_uuid': to_se_uuid_schema,
-        'to_host_uuid': to_host_uuid_schema,
-    }
-
-
-
-
 class ServicePoolSelector(object):
     # all schemas
     service_port_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=Port.properties_schema,
+        properties.Schema.NUMBER,
+        _("Pool based destination port"),
         required=True,
         update_allowed=True,
     )
     service_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -85,6 +46,10 @@ class ServicePoolSelector(object):
         'service_pool_uuid': service_pool_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'service_pool_uuid': 'pool',
+    }
 
 
 
@@ -158,44 +123,6 @@ class VirtualServiceResource(object):
 
 
 
-class VsScaleinParams(object):
-    # all schemas
-    from_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    scalein_primary_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    admin_down_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'from_se_uuid',
-        'scalein_primary',
-        'admin_down',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'from_se_uuid': from_se_uuid_schema,
-        'scalein_primary': scalein_primary_schema,
-        'admin_down': admin_down_schema,
-    }
-
-
-
-
 class Service(object):
     # all schemas
     port_schema = properties.Schema(
@@ -212,7 +139,7 @@ class Service(object):
     )
     override_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Override the network profile for this specific service port."),
+        _("Override the network profile for this specific service port. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -239,6 +166,10 @@ class Service(object):
         'port_range_end': port_range_end_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'override_network_profile_uuid': 'networkprofile',
+    }
 
 
 
@@ -281,9 +212,9 @@ class VirtualService(AviResource):
         required=True,
         update_allowed=True,
     )
-    address_schema = properties.Schema(
+    fqdn_schema = properties.Schema(
         properties.Schema.STRING,
-        _("IP Address or a DNS resolvable, fully qualified domain name of the Virtual Service."),
+        _("DNS resolvable, fully qualified domain name of the Virtual Service."),
         required=False,
         update_allowed=True,
     )
@@ -316,37 +247,37 @@ class VirtualService(AviResource):
     )
     application_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Enable application layer specific features for the Virtual Service."),
+        _("Enable application layer specific features for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines network settings such as protocol, TCP or UDP, and related options for the protocol."),
+        _("Determines network settings such as protocol, TCP or UDP, and related options for the protocol. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     server_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines the network settings profile for the server side of TCP proxied connections.  Leave blank to use the same settings as the client to VS side of the connection."),
+        _("Determines the network settings profile for the server side of TCP proxied connections.  Leave blank to use the same settings as the client to VS side of the connection. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The pool is an object that contains destination servers and related attributes such as load-balancing and persistence."),
+        _("The pool is an object that contains destination servers and related attributes such as load-balancing and persistence. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connection for this VS."),
+        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connection for this VS. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     network_security_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Network security policies for the Virtual Service."),
+        _("Network security policies for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -372,14 +303,14 @@ class VirtualService(AviResource):
     )
     ssl_key_and_certificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Select or create one or two certificates, EC and/or RSA, that will be presented to SSL/TLS terminated connections."),
+        _("Select or create one or two certificates, EC and/or RSA, that will be presented to SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=ssl_key_and_certificate_uuids_item_schema,
         required=False,
         update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines the set of SSL versions and ciphers to accept for SSL/TLS terminated connections."),
+        _("Determines the set of SSL versions and ciphers to accept for SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -399,13 +330,13 @@ class VirtualService(AviResource):
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Manually override the network on which the Virtual Service is placed."),
+        _("Manually override the network on which the Virtual Service is placed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to."),
+        _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -429,7 +360,7 @@ class VirtualService(AviResource):
     )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies settings related to analytics."),
+        _("Specifies settings related to analytics. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -441,7 +372,7 @@ class VirtualService(AviResource):
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Discovered networks providing reachability for client facing Virtual Service IP."),
+        _("Discovered networks providing reachability for client facing Virtual Service IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -537,6 +468,9 @@ class VirtualService(AviResource):
         _("Specify if this is a normal Virtual Service, or if it is the parent or child of an SNI-enabled virtual hosted Virtual Service."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VS_TYPE_VH_PARENT', 'VS_TYPE_VH_CHILD', 'VS_TYPE_NORMAL']),
+        ],
     )
     vh_parent_vs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -593,6 +527,9 @@ class VirtualService(AviResource):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     avi_allocated_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -631,6 +568,9 @@ class VirtualService(AviResource):
         _("Criteria for flow distribution among SEs."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LOAD_AWARE', 'CONSISTENT_HASH_SOURCE_IP_ADDRESS']),
+        ],
     )
     ign_pool_net_reach_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -664,7 +604,7 @@ class VirtualService(AviResource):
     )
     microservice_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Microservice representing the virtual service"),
+        _("Microservice representing the virtual service You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -718,7 +658,7 @@ class VirtualService(AviResource):
     # properties list
     PROPERTIES = (
         'name',
-        'address',
+        'fqdn',
         'ip_address',
         'enabled',
         'services',
@@ -781,7 +721,7 @@ class VirtualService(AviResource):
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
-        'address': address_schema,
+        'fqdn': fqdn_schema,
         'ip_address': ip_address_schema,
         'enabled': enabled_schema,
         'services': services_schema,
@@ -841,6 +781,37 @@ class VirtualService(AviResource):
         'snat_ip': snat_ip_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_auth': getattr(HTTPClientAuthenticationParams, 'field_references', {}),
+        'network_uuid': 'network',
+        'network_profile_uuid': 'networkprofile',
+        'vs_datascripts': getattr(VSDataScripts, 'field_references', {}),
+        'snat_ip': getattr(IpAddr, 'field_references', {}),
+        'discovered_network_uuid': 'network',
+        'vrf_context_uuid': 'vrfcontext',
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'se_group_uuid': 'serviceenginegroup',
+        'requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'application_profile_uuid': 'applicationprofile',
+        'analytics_profile_uuid': 'analyticsprofile',
+        'performance_limits': getattr(PerformanceLimits, 'field_references', {}),
+        'http_policies': getattr(HTTPPolicies, 'field_references', {}),
+        'server_network_profile_uuid': 'networkprofile',
+        'floating_ip': getattr(IpAddr, 'field_references', {}),
+        'microservice_uuid': 'microservice',
+        'services': getattr(Service, 'field_references', {}),
+        'connections_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'ip_address': getattr(IpAddr, 'field_references', {}),
+        'service_pool_select': getattr(ServicePoolSelector, 'field_references', {}),
+        'network_security_policy_uuid': 'networksecuritypolicy',
+        'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
+        'ssl_key_and_certificate_uuids': 'sslkeyandcertificate',
+        'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'ssl_profile_uuid': 'sslprofile',
+        'analytics_policy': getattr(AnalyticsPolicy, 'field_references', {}),
+        'pool_uuid': 'pool',
+    }
 
 
 
@@ -850,7 +821,10 @@ class VirtualServiceServices(AviNestedResource, Service):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -864,6 +838,12 @@ class VirtualServiceServices(AviNestedResource, Service):
     }
     properties_schema.update(Service.properties_schema)
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+    }
+    field_references.update(getattr(Service, 'field_references', {}))
+
 
 class VirtualServiceHttpPolicies(AviNestedResource):
     resource_name = "virtualservice"
@@ -871,7 +851,10 @@ class VirtualServiceHttpPolicies(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -893,6 +876,12 @@ class VirtualServiceHttpPolicies(AviNestedResource):
         'http_policies': http_policies_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'http_policies': getattr(HTTPPolicies, 'field_references', {}),
+    }
+
 
 class VirtualServiceSslKeyAndCertificateUuids(AviNestedResource):
     resource_name = "virtualservice"
@@ -900,7 +889,10 @@ class VirtualServiceSslKeyAndCertificateUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -922,6 +914,12 @@ class VirtualServiceSslKeyAndCertificateUuids(AviNestedResource):
         'ssl_key_and_certificate_uuids': ssl_key_and_certificate_uuids_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'ssl_key_and_certificate_uuids': 'sslkeyandcertificate',
+    }
+
 
 class VirtualServiceDiscoveredNetworkUuid(AviNestedResource):
     resource_name = "virtualservice"
@@ -929,7 +927,10 @@ class VirtualServiceDiscoveredNetworkUuid(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -951,6 +952,12 @@ class VirtualServiceDiscoveredNetworkUuid(AviNestedResource):
         'discovered_network_uuid': discovered_network_uuid_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'discovered_network_uuid': 'network',
+    }
+
 
 class VirtualServiceDiscoveredSubnet(AviNestedResource):
     resource_name = "virtualservice"
@@ -958,7 +965,10 @@ class VirtualServiceDiscoveredSubnet(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -980,6 +990,12 @@ class VirtualServiceDiscoveredSubnet(AviNestedResource):
         'discovered_subnet': discovered_subnet_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
 
 class VirtualServiceDiscoveredNetworks(AviNestedResource):
     resource_name = "virtualservice"
@@ -987,7 +1003,10 @@ class VirtualServiceDiscoveredNetworks(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1009,6 +1028,12 @@ class VirtualServiceDiscoveredNetworks(AviNestedResource):
         'discovered_networks': discovered_networks_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
+    }
+
 
 class VirtualServiceVsDatascripts(AviNestedResource):
     resource_name = "virtualservice"
@@ -1016,7 +1041,10 @@ class VirtualServiceVsDatascripts(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1038,6 +1066,12 @@ class VirtualServiceVsDatascripts(AviNestedResource):
         'vs_datascripts': vs_datascripts_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'vs_datascripts': getattr(VSDataScripts, 'field_references', {}),
+    }
+
 
 class VirtualServiceVhDomainName(AviNestedResource):
     resource_name = "virtualservice"
@@ -1045,7 +1079,10 @@ class VirtualServiceVhDomainName(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1067,6 +1104,11 @@ class VirtualServiceVhDomainName(AviNestedResource):
         'vh_domain_name': vh_domain_name_item_schema,
     }
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+    }
+
 
 class VirtualServiceServicePoolSelect(AviNestedResource, ServicePoolSelector):
     resource_name = "virtualservice"
@@ -1074,7 +1116,10 @@ class VirtualServiceServicePoolSelect(AviNestedResource, ServicePoolSelector):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1088,6 +1133,12 @@ class VirtualServiceServicePoolSelect(AviNestedResource, ServicePoolSelector):
     }
     properties_schema.update(ServicePoolSelector.properties_schema)
 
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+    }
+    field_references.update(getattr(ServicePoolSelector, 'field_references', {}))
+
 
 class VirtualServiceSnatIp(AviNestedResource):
     resource_name = "virtualservice"
@@ -1095,7 +1146,10 @@ class VirtualServiceSnatIp(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of virtualservice"),
+        _("UUID of virtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1117,59 +1171,11 @@ class VirtualServiceSnatIp(AviNestedResource):
         'snat_ip': snat_ip_item_schema,
     }
 
-
-class VsScaleoutParams(object):
-    # all schemas
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    admin_up_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    new_vcpus_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'to_se_uuid',
-        'to_new_se',
-        'to_host_uuid',
-        'admin_up',
-        'new_vcpus',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'to_se_uuid': to_se_uuid_schema,
-        'to_new_se': to_new_se_schema,
-        'to_host_uuid': to_host_uuid_schema,
-        'admin_up': admin_up_schema,
-        'new_vcpus': new_vcpus_schema,
+    # field references
+    field_references = {
+        'virtualservice_uuid': 'virtualservice',
+        'snat_ip': getattr(IpAddr, 'field_references', {}),
     }
-
-
 
 
 class TLSTicket(object):
@@ -1210,90 +1216,6 @@ class TLSTicket(object):
 
 
 
-class VsInitialPlacementParams(object):
-    # all schemas
-    se_placement_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=VsSeInitialPlacementParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    se_placement_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=se_placement_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'se_placement_params',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'se_placement_params': se_placement_params_schema,
-    }
-
-
-
-
-class VsMigrateParams(object):
-    # all schemas
-    from_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_new_se_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    to_host_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    new_vcpus_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'from_se_uuid',
-        'to_se_uuid',
-        'to_new_se',
-        'to_host_uuid',
-        'new_vcpus',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'from_se_uuid': from_se_uuid_schema,
-        'to_se_uuid': to_se_uuid_schema,
-        'to_new_se': to_new_se_schema,
-        'to_host_uuid': to_host_uuid_schema,
-        'new_vcpus': new_vcpus_schema,
-    }
-
-
-
-
 class VsSeVnic(object):
     # all schemas
     mac_schema = properties.Schema(
@@ -1307,6 +1229,9 @@ class VsSeVnic(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT_SECONDARY']),
+        ],
     )
     lif_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1375,6 +1300,10 @@ class VsApicExtension(object):
         'vnic': vnic_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic': getattr(VsSeVnic, 'field_references', {}),
+    }
 
 
 
@@ -1399,12 +1328,19 @@ class SeVipInterfaceList(object):
         required=False,
         update_allowed=True,
     )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'vip_intf_mac',
         'vlan_id',
         'vip_intf_ip',
+        'is_portchannel',
     )
 
     # mapping of properties to their schemas
@@ -1412,8 +1348,13 @@ class SeVipInterfaceList(object):
         'vip_intf_mac': vip_intf_mac_schema,
         'vlan_id': vlan_id_schema,
         'vip_intf_ip': vip_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -1421,7 +1362,7 @@ class SeList(object):
     # all schemas
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -1553,6 +1494,12 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1574,6 +1521,7 @@ class SeList(object):
         'vip_intf_ip',
         'vip_intf_list',
         'floating_intf_ip',
+        'is_portchannel',
     )
 
     # mapping of properties to their schemas
@@ -1596,8 +1544,18 @@ class SeList(object):
         'vip_intf_ip': vip_intf_ip_schema,
         'vip_intf_list': vip_intf_list_schema,
         'floating_intf_ip': floating_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic': getattr(VsSeVnic, 'field_references', {}),
+        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+        'vip_intf_list': getattr(SeVipInterfaceList, 'field_references', {}),
+        'snat_ip': getattr(IpAddr, 'field_references', {}),
+        'se_uuid': 'serviceengine',
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 

@@ -64,6 +64,12 @@ class Subnet(object):
         'static_ranges': static_ranges_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'prefix': getattr(IpAddrPrefix, 'field_references', {}),
+        'static_ips': getattr(IpAddr, 'field_references', {}),
+        'static_ranges': getattr(IpAddrRange, 'field_references', {}),
+    }
 
 
 
@@ -84,7 +90,7 @@ class Network(AviResource):
     )
     vimgrnw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -116,7 +122,7 @@ class Network(AviResource):
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -159,6 +165,12 @@ class Network(AviResource):
         'cloud_uuid': cloud_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vrf_context_uuid': 'vrfcontext',
+        'configured_subnets': getattr(Subnet, 'field_references', {}),
+        'vimgrnw_uuid': 'vimgrnwruntime',
+    }
 
 
 
@@ -168,7 +180,10 @@ class NetworkConfiguredSubnets(AviNestedResource, Subnet):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of network"),
+        _("UUID of network."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -181,6 +196,12 @@ class NetworkConfiguredSubnets(AviNestedResource, Subnet):
         'network_uuid': parent_uuid_schema,
     }
     properties_schema.update(Subnet.properties_schema)
+
+    # field references
+    field_references = {
+        'network_uuid': 'network',
+    }
+    field_references.update(getattr(Subnet, 'field_references', {}))
 
 
 def resource_mapping():

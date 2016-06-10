@@ -21,6 +21,9 @@ class VIMgrVcenterRuntime(AviResource):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+        ],
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -54,7 +57,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     datacenter_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=datacenter_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -64,12 +67,18 @@ class VIMgrVcenterRuntime(AviResource):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+        ],
     )
     inventory_state_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
+        ],
     )
     discovered_datacenter_item_schema = properties.Schema(
         properties.Schema.STRING,
@@ -247,6 +256,10 @@ class VIMgrVcenterRuntime(AviResource):
         'cloud_uuid': cloud_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'datacenter_uuids': 'vimgrdcruntime',
+    }
 
 
 
@@ -256,7 +269,10 @@ class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime"),
+        _("UUID of vimgrvcenterruntime."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -278,6 +294,12 @@ class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
         'datacenter_uuids': datacenter_uuids_item_schema,
     }
 
+    # field references
+    field_references = {
+        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
+        'datacenter_uuids': 'vimgrdcruntime',
+    }
+
 
 class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
     resource_name = "vimgrvcenterruntime"
@@ -285,7 +307,10 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime"),
+        _("UUID of vimgrvcenterruntime."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -305,6 +330,11 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
     properties_schema = {
         'vimgrvcenterruntime_uuid': parent_uuid_schema,
         'discovered_datacenter': discovered_datacenter_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
     }
 
 

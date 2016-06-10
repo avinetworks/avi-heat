@@ -25,7 +25,7 @@ class VcenterClusters(object):
     )
     cluster_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=cluster_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -49,37 +49,10 @@ class VcenterClusters(object):
         'include': include_schema,
     }
 
-
-
-
-class GatewayMonitor(object):
-    # all schemas
-    gateway_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IP address of next hop gateway to be monitored"),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    vrf_context_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Virtual Routing Context in which this gateway ip is part of "),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'gateway_ip',
-        'vrf_context_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'gateway_ip': gateway_ip_schema,
-        'vrf_context_uuid': vrf_context_uuid_schema,
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cluster_uuids': 'vimgrclusterruntime',
     }
-
 
 
 
@@ -93,7 +66,7 @@ class VcenterHosts(object):
     )
     host_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=host_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -117,6 +90,10 @@ class VcenterHosts(object):
         'include': include_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_uuids': 'vimgrhostruntime',
+    }
 
 
 
@@ -244,6 +221,9 @@ class ServiceEngineGroup(AviResource):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VCENTER_DATASTORE_ANY', 'VCENTER_DATASTORE_LOCAL', 'VCENTER_DATASTORE_SHARED']),
+        ],
     )
     vcenter_clusters_schema = properties.Schema(
         properties.Schema.MAP,
@@ -279,7 +259,7 @@ class ServiceEngineGroup(AviResource):
     )
     mgmt_network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Management network to use for Avi Service Engines"),
+        _("Management network to use for Avi Service Engines You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -295,12 +275,18 @@ class ServiceEngineGroup(AviResource):
         _("High Availability mode for all the Virtual Services using this Service Engine group."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HA_MODE_SHARED_PAIR', 'HA_MODE_LEGACY_ACTIVE_STANDBY', 'HA_MODE_SHARED']),
+        ],
     )
     algo_schema = properties.Schema(
         properties.Schema.STRING,
         _("If 'compact' placement algorithm is used, Virtual Services are placed on existing Service Engines until they all have the maximum number of Virtual Services. Otherwise, Virtual Services are distributed to as many Service Engines as possible."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PLACEMENT_ALGO_PACKED', 'PLACEMENT_ALGO_DISTRIBUTED']),
+        ],
     )
     buffer_se_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -319,6 +305,9 @@ class ServiceEngineGroup(AviResource):
         _("If placement mode is 'Auto', Virtual Services are automatically placed on Service Engines. If 'Manual' placement mode is selected, user must specify the Service Engine where the Virtual Service should be placed."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PLACEMENT_MODE_AUTO', 'PLACEMENT_MODE_MANUAL']),
+        ],
     )
     openstack_mgmt_network_name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -343,6 +332,9 @@ class ServiceEngineGroup(AviResource):
         _("Override default hypervisor"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     se_dos_profile_schema = properties.Schema(
         properties.Schema.MAP,
@@ -384,7 +376,7 @@ class ServiceEngineGroup(AviResource):
     )
     hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -452,21 +444,25 @@ class ServiceEngineGroup(AviResource):
     )
     per_app_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("indicates if per_app licensing is enabled"),
+        _("Per-App SE mode is designed for deploying dedicated load balancers per App (VS). In this mode, each SE is limited to a max of 2 VSs. vCPUs in Per-App SEs count towards licensing usage at 25% rate."),
         required=False,
         update_allowed=True,
     )
-    gateway_mon_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=GatewayMonitor.properties_schema,
-        required=True,
-        update_allowed=False,
+    gateway_monitor_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The interval between two ping requests sent by the gateway monitor.  If a value is not specified, requests are sent every second (1000 milliseconds)."),
+        required=False,
+        update_allowed=True,
     )
-    gateway_mon_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Enable ping based heartbeat check to gateway on the Service Engines within this Service Group"),
-        schema=gateway_mon_item_schema,
+    gateway_monitor_fail_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive failed gateway health checks before a gateway is marked down."),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_success_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up."),
         required=False,
         update_allowed=True,
     )
@@ -525,7 +521,9 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip',
         'hm_on_standby',
         'per_app',
-        'gateway_mon',
+        'gateway_monitor_interval',
+        'gateway_monitor_fail_threshold',
+        'gateway_monitor_success_threshold',
     )
 
     # mapping of properties to their schemas
@@ -582,9 +580,23 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': floating_intf_ip_schema,
         'hm_on_standby': hm_on_standby_schema,
         'per_app': per_app_schema,
-        'gateway_mon': gateway_mon_schema,
+        'gateway_monitor_interval': gateway_monitor_interval_schema,
+        'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
+        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
+        'vcenter_hosts': getattr(VcenterHosts, 'field_references', {}),
+        'mgmt_network_uuid': 'network',
+        'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
+        'mgmt_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+        'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
+        'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
+        'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+    }
 
 
 
@@ -594,7 +606,10 @@ class ServiceEngineGroupVcenterDatastores(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
+        _("UUID of serviceenginegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -616,6 +631,12 @@ class ServiceEngineGroupVcenterDatastores(AviNestedResource):
         'vcenter_datastores': vcenter_datastores_item_schema,
     }
 
+    # field references
+    field_references = {
+        'serviceenginegroup_uuid': 'serviceenginegroup',
+        'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
+    }
+
 
 class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
     resource_name = "serviceenginegroup"
@@ -623,7 +644,10 @@ class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
+        _("UUID of serviceenginegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -645,32 +669,16 @@ class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
         'floating_intf_ip': floating_intf_ip_item_schema,
     }
 
-
-class ServiceEngineGroupGatewayMon(AviNestedResource, GatewayMonitor):
-    resource_name = "serviceenginegroup"
-    nested_property_name = "gateway_mon"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = GatewayMonitor.PROPERTIES + ('serviceenginegroup_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serviceenginegroup_uuid': parent_uuid_schema,
+    # field references
+    field_references = {
+        'serviceenginegroup_uuid': 'serviceenginegroup',
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
     }
-    properties_schema.update(GatewayMonitor.properties_schema)
 
 
 def resource_mapping():
     return {
         'Avi::ServiceEngineGroup::FloatingIntfIp': ServiceEngineGroupFloatingIntfIp,
-        'Avi::ServiceEngineGroup::GatewayMon': ServiceEngineGroupGatewayMon,
         'Avi::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
         'Avi::ServiceEngineGroup': ServiceEngineGroup,
     }

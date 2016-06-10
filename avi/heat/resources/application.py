@@ -28,7 +28,7 @@ class Application(AviResource):
     )
     virtualservice_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=virtualservice_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -54,6 +54,10 @@ class Application(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'virtualservice_uuids': 'virtualservice',
+    }
 
 
 
@@ -63,7 +67,10 @@ class ApplicationVirtualserviceUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of application"),
+        _("UUID of application."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -83,6 +90,12 @@ class ApplicationVirtualserviceUuids(AviNestedResource):
     properties_schema = {
         'application_uuid': parent_uuid_schema,
         'virtualservice_uuids': virtualservice_uuids_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'application_uuid': 'application',
+        'virtualservice_uuids': 'virtualservice',
     }
 
 

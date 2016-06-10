@@ -31,10 +31,13 @@ class CompressionFilter(object):
         _("Whether to apply Filter when group criteria is matched or not"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
     )
     ip_addrs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -82,7 +85,7 @@ class CompressionFilter(object):
     )
     devices_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -104,6 +107,9 @@ class CompressionFilter(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['NORMAL_COMPRESSION', 'AGGRESSIVE_COMPRESSION', 'NO_COMPRESSION']),
+        ],
     )
 
     # properties list
@@ -134,6 +140,14 @@ class CompressionFilter(object):
         'level': level_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_addr_ranges': getattr(IpAddrRange, 'field_references', {}),
+        'devices_uuid': 'stringgroup',
+        'ip_addrs': getattr(IpAddr, 'field_references', {}),
+        'ip_addrs_uuid': 'ipaddrgroup',
+        'ip_addr_prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+    }
 
 
 
@@ -153,7 +167,7 @@ class CompressionProfile(object):
     )
     compressible_content_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Compress only content types listed in this string group. Content types not present in this list are not compressed."),
+        _("Compress only content types listed in this string group. Content types not present in this list are not compressed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -162,6 +176,9 @@ class CompressionProfile(object):
         _("Compress content automatically or add custom filters to define compressible content and compression levels."),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CUSTOM_COMPRESSION', 'AUTO_COMPRESSION']),
+        ],
     )
     filter_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -196,4 +213,9 @@ class CompressionProfile(object):
         'filter': filter_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'filter': getattr(CompressionFilter, 'field_references', {}),
+        'compressible_content_uuid': 'stringgroup',
+    }
 

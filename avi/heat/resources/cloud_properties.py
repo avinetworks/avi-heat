@@ -90,6 +90,9 @@ class Hypervisor_Properties(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     max_nics_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -288,6 +291,10 @@ class CloudFlavor(object):
         'cost': cost_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'meta': getattr(CloudMeta, 'field_references', {}),
+    }
 
 
 
@@ -298,12 +305,18 @@ class CloudInfo(object):
         _("Cloud type"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     htypes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+        ],
     )
     htypes_schema = properties.Schema(
         properties.Schema.LIST,
@@ -367,6 +380,12 @@ class CloudInfo(object):
         'controller_props': controller_props_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'flavor_props': getattr(CloudFlavor, 'field_references', {}),
+        'cca_props': getattr(CC_AgentProperties, 'field_references', {}),
+        'controller_props': getattr(ControllerProperties, 'field_references', {}),
+    }
 
 
 
@@ -378,6 +397,9 @@ class CloudProperties(AviResource):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+        ],
     )
     cc_vtypes_schema = properties.Schema(
         properties.Schema.LIST,
@@ -438,6 +460,12 @@ class CloudProperties(AviResource):
         'info': info_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'info': getattr(CloudInfo, 'field_references', {}),
+        'hyp_props': getattr(Hypervisor_Properties, 'field_references', {}),
+        'cc_props': getattr(CC_Properties, 'field_references', {}),
+    }
 
 
 
@@ -447,7 +475,10 @@ class CloudPropertiesCcVtypes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of cloudproperties"),
+        _("UUID of cloudproperties."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -469,6 +500,11 @@ class CloudPropertiesCcVtypes(AviNestedResource):
         'cc_vtypes': cc_vtypes_item_schema,
     }
 
+    # field references
+    field_references = {
+        'cloudproperties_uuid': 'cloudproperties',
+    }
+
 
 class CloudPropertiesHypProps(AviNestedResource, Hypervisor_Properties):
     resource_name = "cloudproperties"
@@ -476,7 +512,10 @@ class CloudPropertiesHypProps(AviNestedResource, Hypervisor_Properties):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of cloudproperties"),
+        _("UUID of cloudproperties."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -490,6 +529,12 @@ class CloudPropertiesHypProps(AviNestedResource, Hypervisor_Properties):
     }
     properties_schema.update(Hypervisor_Properties.properties_schema)
 
+    # field references
+    field_references = {
+        'cloudproperties_uuid': 'cloudproperties',
+    }
+    field_references.update(getattr(Hypervisor_Properties, 'field_references', {}))
+
 
 class CloudPropertiesInfo(AviNestedResource, CloudInfo):
     resource_name = "cloudproperties"
@@ -497,7 +542,10 @@ class CloudPropertiesInfo(AviNestedResource, CloudInfo):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of cloudproperties"),
+        _("UUID of cloudproperties."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -510,6 +558,12 @@ class CloudPropertiesInfo(AviNestedResource, CloudInfo):
         'cloudproperties_uuid': parent_uuid_schema,
     }
     properties_schema.update(CloudInfo.properties_schema)
+
+    # field references
+    field_references = {
+        'cloudproperties_uuid': 'cloudproperties',
+    }
+    field_references.update(getattr(CloudInfo, 'field_references', {}))
 
 
 def resource_mapping():

@@ -50,6 +50,12 @@ class NetworkSecurityMatchTarget(object):
         'microservice': microservice_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'microservice': getattr(MicroServiceMatch, 'field_references', {}),
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'vs_port': getattr(PortMatch, 'field_references', {}),
+    }
 
 
 
@@ -115,6 +121,9 @@ class NetworkSecurityRule(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT']),
+        ],
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -160,6 +169,11 @@ class NetworkSecurityRule(object):
         'age': age_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rl_param': getattr(NetworkSecurityPolicyActionRLParam, 'field_references', {}),
+        'match': getattr(NetworkSecurityMatchTarget, 'field_references', {}),
+    }
 
 
 
@@ -215,6 +229,10 @@ class NetworkSecurityPolicy(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(NetworkSecurityRule, 'field_references', {}),
+    }
 
 
 
@@ -224,7 +242,10 @@ class NetworkSecurityPolicyRules(AviNestedResource, NetworkSecurityRule):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of networksecuritypolicy"),
+        _("UUID of networksecuritypolicy."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -237,6 +258,12 @@ class NetworkSecurityPolicyRules(AviNestedResource, NetworkSecurityRule):
         'networksecuritypolicy_uuid': parent_uuid_schema,
     }
     properties_schema.update(NetworkSecurityRule.properties_schema)
+
+    # field references
+    field_references = {
+        'networksecuritypolicy_uuid': 'networksecuritypolicy',
+    }
+    field_references.update(getattr(NetworkSecurityRule, 'field_references', {}))
 
 
 def resource_mapping():

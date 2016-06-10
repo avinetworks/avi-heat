@@ -35,169 +35,6 @@ class AutoScaleMesosSettings(object):
 
 
 
-class ServerAutoScaleOutInfo(object):
-    # all schemas
-    pool_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the Pool"),
-        required=True,
-        update_allowed=True,
-    )
-    num_scaleout_servers_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    num_servers_up_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    load_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    available_capacity_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pool_uuid',
-        'num_scaleout_servers',
-        'num_servers_up',
-        'reason',
-        'reason_code',
-        'load',
-        'available_capacity',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': pool_uuid_schema,
-        'num_scaleout_servers': num_scaleout_servers_schema,
-        'num_servers_up': num_servers_up_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
-        'load': load_schema,
-        'available_capacity': available_capacity_schema,
-    }
-
-
-
-
-class ServerAutoScaleFailedInfo(object):
-    # all schemas
-    pool_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the Pool"),
-        required=True,
-        update_allowed=True,
-    )
-    num_scalein_servers_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    num_servers_up_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pool_uuid',
-        'num_scalein_servers',
-        'num_servers_up',
-        'reason',
-        'reason_code',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': pool_uuid_schema,
-        'num_scalein_servers': num_scalein_servers_schema,
-        'num_servers_up': num_servers_up_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
-    }
-
-
-
-
-class ServerId(object):
-    # all schemas
-    ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    external_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("This is the Pool servers external uuid"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ip',
-        'port',
-        'external_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ip': ip_schema,
-        'port': port_schema,
-        'external_uuid': external_uuid_schema,
-    }
-
-
-
-
 class ServerAutoScalePolicy(AviResource):
     resource_name = "serverautoscalepolicy"
     # all schemas
@@ -239,25 +76,25 @@ class ServerAutoScalePolicy(AviResource):
     )
     max_scaleout_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of servers to scale up. When  target servers are more than the max_servers then it would be  less than the min_scaleout_adjustment_step"),
+        _("Maximum number of servers to scaleout simultaneously. The actual number of servers to scaleout is chosen such that target number of servers is always less than or equal to the max_size"),
         required=False,
         update_allowed=True,
     )
     max_scalein_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of servers to scale in. When  target servers are more than the max_servers then it would be  less than the scaleout_adjustment_step"),
+        _("Maximum number of servers to scalein simultaneously. The actual number of servers to scalein is chosen such that target number of servers is always more than or equal to the min_size"),
         required=False,
         update_allowed=True,
     )
     scaleout_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("No two scaleout happens within this period"),
+        _("Cooldown period during which no new scaleout is triggered to allow previous scaleout to successfully complete"),
         required=False,
         update_allowed=True,
     )
     scalein_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("No two scale-in happens within this period"),
+        _("Cooldown period during which no new scalein is triggered to allow previous scalein to successfully complete"),
         required=False,
         update_allowed=True,
     )
@@ -269,7 +106,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scaleout_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of alert related to these alert configs used as triggers for server scale out"),
+        _("Trigger scaleout when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=scaleout_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -282,7 +119,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scalein_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of alert related to these alert configs used as triggers for server scale in"),
+        _("Trigger scalein when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=scalein_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -336,6 +173,11 @@ class ServerAutoScalePolicy(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'scaleout_alertconfig_uuids': 'alertconfig',
+        'scalein_alertconfig_uuids': 'alertconfig',
+    }
 
 
 
@@ -345,7 +187,10 @@ class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy"),
+        _("UUID of serverautoscalepolicy."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -367,6 +212,12 @@ class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
         'scaleout_alertconfig_uuids': scaleout_alertconfig_uuids_item_schema,
     }
 
+    # field references
+    field_references = {
+        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
+        'scaleout_alertconfig_uuids': 'alertconfig',
+    }
+
 
 class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
     resource_name = "serverautoscalepolicy"
@@ -374,7 +225,10 @@ class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy"),
+        _("UUID of serverautoscalepolicy."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -396,67 +250,11 @@ class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
         'scalein_alertconfig_uuids': scalein_alertconfig_uuids_item_schema,
     }
 
-
-class ServerAutoScaleInCompleteInfo(object):
-    # all schemas
-    pool_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the Pool"),
-        required=True,
-        update_allowed=True,
-    )
-    scaled_in_servers_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=ServerId.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    scaled_in_servers_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=scaled_in_servers_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    nscalein_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pool_uuid',
-        'scaled_in_servers',
-        'nscalein',
-        'reason',
-        'reason_code',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': pool_uuid_schema,
-        'scaled_in_servers': scaled_in_servers_schema,
-        'nscalein': nscalein_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
+    # field references
+    field_references = {
+        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
+        'scalein_alertconfig_uuids': 'alertconfig',
     }
-
-
 
 
 class AutoScaleKVData(object):
@@ -587,162 +385,10 @@ class AutoScaleAWSSettings(object):
         'ramdisk_id': ramdisk_id_schema,
     }
 
-
-
-
-class ServerAutoScaleInInfo(object):
-    # all schemas
-    pool_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the Pool"),
-        required=True,
-        update_allowed=True,
-    )
-    num_scalein_servers_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    num_servers_up_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    load_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    available_capacity_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    scalein_server_candidates_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=ServerId.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    scalein_server_candidates_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=scalein_server_candidates_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pool_uuid',
-        'num_scalein_servers',
-        'num_servers_up',
-        'reason',
-        'reason_code',
-        'load',
-        'available_capacity',
-        'scalein_server_candidates',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': pool_uuid_schema,
-        'num_scalein_servers': num_scalein_servers_schema,
-        'num_servers_up': num_servers_up_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
-        'load': load_schema,
-        'available_capacity': available_capacity_schema,
-        'scalein_server_candidates': scalein_server_candidates_schema,
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
     }
-
-
-
-
-class ServerAutoScaleOutCompleteInfo(object):
-    # all schemas
-    pool_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the Pool"),
-        required=True,
-        update_allowed=True,
-    )
-    nscaleout_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    scaled_out_servers_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=ServerId.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    scaled_out_servers_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=scaled_out_servers_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    launch_config_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    reason_code_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'pool_uuid',
-        'nscaleout',
-        'scaled_out_servers',
-        'launch_config_uuid',
-        'reason',
-        'reason_code',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': pool_uuid_schema,
-        'nscaleout': nscaleout_schema,
-        'scaled_out_servers': scaled_out_servers_schema,
-        'launch_config_uuid': launch_config_uuid_schema,
-        'reason': reason_schema,
-        'reason_code': reason_code_schema,
-    }
-
 
 
 
@@ -818,6 +464,9 @@ class AutoScaleOpenStackSettings(object):
         _("control how the disk is partitioned when the server is created. possible values are AUTO or MANUAL"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTO', 'MANUAL']),
+        ],
     )
     scheduler_hints_schema = properties.Schema(
         properties.Schema.MAP,
@@ -853,6 +502,12 @@ class AutoScaleOpenStackSettings(object):
         'scheduler_hints': scheduler_hints_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'scheduler_hints': getattr(AutoScaleKVData, 'field_references', {}),
+        'metadata': getattr(AutoScaleKVData, 'field_references', {}),
+        'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
+    }
 
 
 
@@ -919,6 +574,12 @@ class AutoScaleLaunchConfig(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'openstack': getattr(AutoScaleOpenStackSettings, 'field_references', {}),
+        'aws': getattr(AutoScaleAWSSettings, 'field_references', {}),
+        'mesos': getattr(AutoScaleMesosSettings, 'field_references', {}),
+    }
 
 
 

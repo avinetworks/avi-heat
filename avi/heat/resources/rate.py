@@ -20,6 +20,9 @@ class RateLimiterAction(object):
         _("Type of action to be enforced upon hitting the rate limit."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['RL_ACTION_RESET_CONN', 'RL_ACTION_LOCAL_RSP', 'RL_ACTION_DROP_CONN', 'RL_ACTION_CLOSE_CONN', 'RL_ACTION_NONE', 'RL_ACTION_REDIRECT']),
+        ],
     )
     redirect_schema = properties.Schema(
         properties.Schema.MAP,
@@ -33,6 +36,9 @@ class RateLimiterAction(object):
         _("HTTP status code for Local Response rate limit action."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+        ],
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
@@ -58,6 +64,11 @@ class RateLimiterAction(object):
         'file': file_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'redirect': getattr(HTTPRedirectAction, 'field_references', {}),
+        'file': getattr(HTTPLocalFile, 'field_references', {}),
+    }
 
 
 
@@ -121,6 +132,10 @@ class RateProfile(object):
         'action': action_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'action': getattr(RateLimiterAction, 'field_references', {}),
+    }
 
 
 
@@ -216,4 +231,16 @@ class RateLimiterProfile(object):
         'uri_scanners_requests_rate_limit': uri_scanners_requests_rate_limit_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'uri_failed_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_scanners_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_to_uri_failed_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_to_uri_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'uri_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'uri_scanners_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_failed_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'client_ip_connections_rate_limit': getattr(RateProfile, 'field_references', {}),
+    }
 

@@ -18,6 +18,9 @@ class VSDataScript(object):
         _("Event triggering execution of datascript"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VS_DATASCRIPT_EVT_HTTP_RESP', 'VS_DATASCRIPT_EVT_HTTP_REQ', 'VS_DATASCRIPT_EVT_HTTP_LB_FAILED', 'VS_DATASCRIPT_EVT_HTTP_RESP_DATA', 'VS_DATASCRIPT_EVT_MAX']),
+        ],
     )
     script_schema = properties.Schema(
         properties.Schema.STRING,
@@ -51,7 +54,7 @@ class VSDataScripts(object):
     )
     vs_datascript_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the virtual service datascript collection"),
+        _("UUID of the virtual service datascript collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -68,6 +71,10 @@ class VSDataScripts(object):
         'vs_datascript_set_uuid': vs_datascript_set_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vs_datascript_set_uuid': 'vsdatascriptset',
+    }
 
 
 
@@ -102,7 +109,7 @@ class VSDataScriptSet(AviResource):
     )
     pool_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of pools that could be referred by VSDataScriptSet objects."),
+        _("UUID of pools that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=pool_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -130,6 +137,11 @@ class VSDataScriptSet(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'pool_uuids': 'pool',
+        'datascript': getattr(VSDataScript, 'field_references', {}),
+    }
 
 
 
@@ -139,7 +151,10 @@ class VSDataScriptSetDatascript(AviNestedResource, VSDataScript):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vsdatascriptset"),
+        _("UUID of vsdatascriptset."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -153,6 +168,12 @@ class VSDataScriptSetDatascript(AviNestedResource, VSDataScript):
     }
     properties_schema.update(VSDataScript.properties_schema)
 
+    # field references
+    field_references = {
+        'vsdatascriptset_uuid': 'vsdatascriptset',
+    }
+    field_references.update(getattr(VSDataScript, 'field_references', {}))
+
 
 class VSDataScriptSetPoolUuids(AviNestedResource):
     resource_name = "vsdatascriptset"
@@ -160,7 +181,10 @@ class VSDataScriptSetPoolUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vsdatascriptset"),
+        _("UUID of vsdatascriptset."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -180,6 +204,12 @@ class VSDataScriptSetPoolUuids(AviNestedResource):
     properties_schema = {
         'vsdatascriptset_uuid': parent_uuid_schema,
         'pool_uuids': pool_uuids_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'vsdatascriptset_uuid': 'vsdatascriptset',
+        'pool_uuids': 'pool',
     }
 
 

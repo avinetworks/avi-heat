@@ -141,6 +141,11 @@ class ClientLogFilter(object):
         'duration': duration_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'uri': getattr(StringMatch, 'field_references', {}),
+    }
 
 
 
@@ -182,6 +187,12 @@ class ClientInsightsSampling(object):
         'client_ip': client_ip_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'skip_uris': getattr(StringMatch, 'field_references', {}),
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'sample_uris': getattr(StringMatch, 'field_references', {}),
+    }
 
 
 
@@ -213,6 +224,9 @@ class AnalyticsPolicy(object):
         _("Gain insights from sampled client to server HTTP requests and responses."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PASSIVE', 'ACTIVE', 'NO_INSIGHTS']),
+        ],
     )
     metrics_realtime_update_schema = properties.Schema(
         properties.Schema.MAP,
@@ -223,7 +237,7 @@ class AnalyticsPolicy(object):
     )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Analytics preferences and settings."),
+        _("Analytics preferences and settings. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -255,4 +269,12 @@ class AnalyticsPolicy(object):
         'client_insights_sampling': client_insights_sampling_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_log_filters': getattr(ClientLogFilter, 'field_references', {}),
+        'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+        'client_insights_sampling': getattr(ClientInsightsSampling, 'field_references', {}),
+        'analytics_profile_uuid': 'analyticsprofile',
+        'full_client_logs': getattr(FullClientLogs, 'field_references', {}),
+    }
 

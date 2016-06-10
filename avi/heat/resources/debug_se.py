@@ -20,18 +20,27 @@ class DebugSeAgent(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
+        ],
     )
     trace_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_ERROR', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_DEBUG_DETAIL']),
+        ],
     )
     log_level_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOG_LEVEL_INFO', 'LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_WARNING']),
+        ],
     )
 
     # properties list
@@ -58,6 +67,9 @@ class DebugSeDataplane(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEBUG_STRICT', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ARP_PKT_OUT', 'DEBUG_ALL', 'DEBUG_PCAP_RX', 'DEBUG_IP_PKT_OUT', 'DEBUG_ARP_PKT_IN', 'DEBUG_POOL', 'DEBUG_MISC', 'DEBUG_CRUD', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_NONE', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_ICMP', 'DEBUG_ERROR', 'DEBUG_ARP', 'DEBUG_SE_APP', 'DEBUG_ETHERNET', 'DEBUG_IP_PKT_IN', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_IP', 'DEBUG_PCAP_TX', 'DEBUG_CONFIG', 'DEBUG_DISPATCHER_FLOW_ALL']),
+        ],
     )
 
     # properties list
@@ -171,6 +183,12 @@ class DebugServiceEngine(AviResource):
         'cpu_shares': cpu_shares_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'flags': getattr(DebugSeDataplane, 'field_references', {}),
+        'seagent_debug': getattr(DebugSeAgent, 'field_references', {}),
+        'cpu_shares': getattr(DebugSeCpuShares, 'field_references', {}),
+    }
 
 
 
@@ -180,7 +198,10 @@ class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -194,6 +215,12 @@ class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
     }
     properties_schema.update(DebugSeAgent.properties_schema)
 
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeAgent, 'field_references', {}))
+
 
 class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
     resource_name = "debugserviceengine"
@@ -201,7 +228,10 @@ class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -215,6 +245,12 @@ class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
     }
     properties_schema.update(DebugSeDataplane.properties_schema)
 
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeDataplane, 'field_references', {}))
+
 
 class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
     resource_name = "debugserviceengine"
@@ -222,7 +258,10 @@ class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -235,6 +274,12 @@ class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
         'debugserviceengine_uuid': parent_uuid_schema,
     }
     properties_schema.update(DebugSeCpuShares.properties_schema)
+
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeCpuShares, 'field_references', {}))
 
 
 class DebugIpAddr(object):
@@ -296,6 +341,12 @@ class DebugIpAddr(object):
         'prefixes': prefixes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -373,6 +424,9 @@ class DebugVsDataplane(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEBUG_VS_UDP', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_HM', 'DEBUG_VS_CONFIG', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_ERROR', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_NONE', 'DEBUG_VS_CREDIT', 'DEBUG_VS_UDP_PKT']),
+        ],
     )
 
     # properties list
@@ -443,6 +497,9 @@ class DebugVirtualService(AviResource):
         _("Health Monitor debug options."),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEBUG_VS_HM_NONE', 'DEBUG_VS_HM_INCLUDE', 'DEBUG_VS_HM_ONLY']),
+        ],
     )
 
     # properties list
@@ -467,6 +524,13 @@ class DebugVirtualService(AviResource):
         'debug_hm': debug_hm_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'capture_params': getattr(DebugVirtualServiceCapture, 'field_references', {}),
+        'debug_ip': getattr(DebugIpAddr, 'field_references', {}),
+        'flags': getattr(DebugVsDataplane, 'field_references', {}),
+        'se_params': getattr(DebugVirtualServiceSeParams, 'field_references', {}),
+    }
 
 
 
@@ -476,7 +540,10 @@ class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugvirtualservice"),
+        _("UUID of debugvirtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -489,6 +556,12 @@ class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
         'debugvirtualservice_uuid': parent_uuid_schema,
     }
     properties_schema.update(DebugVsDataplane.properties_schema)
+
+    # field references
+    field_references = {
+        'debugvirtualservice_uuid': 'debugvirtualservice',
+    }
+    field_references.update(getattr(DebugVsDataplane, 'field_references', {}))
 
 
 def resource_mapping():

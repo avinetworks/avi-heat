@@ -19,12 +19,18 @@ class Permission(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+        ],
     )
     resource_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PERMISSION_SSLPROFILE', 'PERMISSION_ROLE', 'PERMISSION_NETWORK', 'PERMISSION_AUTHPROFILE', 'PERMISSION_POOL', 'PERMISSION_ALERT', 'PERMISSION_VIRTUALSERVICE_MAINTENANCE', 'PERMISSION_MICROSERVICEGROUP', 'PERMISSION_ALERTSYSLOGCONFIG', 'PERMISSION_EXEMPT', 'PERMISSION_ANALYTICSPROFILE', 'PERMISSION_HTTPPOLICYSET', 'PERMISSION_VRFCONTEXT', 'PERMISSION_APPLICATIONPROFILE', 'PERMISSION_NETWORKSECURITYPOLICY', 'PERMISSION_VSDATASCRIPTSET', 'PERMISSION_TECHSUPPORT', 'PERMISSION_ALERTCONFIG', 'PERMISSION_NETWORKPROFILE', 'PERMISSION_SERVICEENGINEGROUP', 'PERMISSION_UPGRADE', 'PERMISSION_INTERNAL', 'PERMISSION_APPLICATIONPERSISTENCEPROFILE', 'PERMISSION_SNMPTRAPPROFILE', 'PERMISSION_ACTIONGROUPCONFIG', 'PERMISSION_REBOOT', 'PERMISSION_SSLKEYANDCERTIFICATE', 'PERMISSION_CONTROLLER', 'PERMISSION_IPAMDNSPROVIDERPROFILE', 'PERMISSION_HEALTHMONITOR', 'PERMISSION_ALERTEMAILCONFIG', 'PERMISSION_CERTIFICATEMANAGEMENTPROFILE', 'PERMISSION_SERVICEENGINE', 'PERMISSION_TENANT', 'PERMISSION_TRAFFIC_CAPTURE', 'PERMISSION_USER', 'PERMISSION_VIRTUALSERVICE', 'PERMISSION_PKIPROFILE', 'PERMISSION_CLOUD', 'PERMISSION_IPADDRGROUP', 'PERMISSION_SYSTEMCONFIGURATION', 'PERMISSION_POOL_MAINTENANCE', 'PERMISSION_STRINGGROUP']),
+        ],
     )
 
     # properties list
@@ -78,6 +84,10 @@ class Role(AviResource):
         'privileges': privileges_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'privileges': getattr(Permission, 'field_references', {}),
+    }
 
 
 
@@ -87,7 +97,10 @@ class RolePrivileges(AviNestedResource, Permission):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of role"),
+        _("UUID of role."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -100,6 +113,12 @@ class RolePrivileges(AviNestedResource, Permission):
         'role_uuid': parent_uuid_schema,
     }
     properties_schema.update(Permission.properties_schema)
+
+    # field references
+    field_references = {
+        'role_uuid': 'role',
+    }
+    field_references.update(getattr(Permission, 'field_references', {}))
 
 
 def resource_mapping():

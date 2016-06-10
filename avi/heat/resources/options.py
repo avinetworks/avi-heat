@@ -23,6 +23,9 @@ class IpAddr(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['V4', 'DNS']),
+        ],
     )
 
     # properties list
@@ -68,4 +71,8 @@ class IpAddrPrefix(object):
         'mask': mask_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_addr': getattr(IpAddr, 'field_references', {}),
+    }
 

@@ -20,6 +20,9 @@ class SSLKeyRSAParams(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_2048_BITS', 'SSL_KEY_4096_BITS', 'SSL_KEY_3072_BITS']),
+        ],
     )
     exponent_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -50,6 +53,9 @@ class SSLVersion(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_VERSION_TLS1_1', 'SSL_VERSION_TLS1', 'SSL_VERSION_TLS1_2']),
+        ],
     )
 
     # properties list
@@ -65,36 +71,6 @@ class SSLVersion(object):
 
 
 
-class CertificateAuthority(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    ca_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'ca_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'ca_uuid': ca_uuid_schema,
-    }
-
-
-
-
 class SSLKeyECParams(object):
     # all schemas
     curve_schema = properties.Schema(
@@ -102,6 +78,9 @@ class SSLKeyECParams(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_KEY_EC_CURVE_SECP521R1', 'SSL_KEY_EC_CURVE_SECP256R1', 'SSL_KEY_EC_CURVE_SECP384R1']),
+        ],
     )
 
     # properties list
@@ -239,6 +218,10 @@ class CertificateManagementProfile(AviResource):
         'script_path': script_path_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'script_params': getattr(CustomParams, 'field_references', {}),
+    }
 
 
 
@@ -248,7 +231,10 @@ class CertificateManagementProfileScriptParams(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of certificatemanagementprofile"),
+        _("UUID of certificatemanagementprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -270,6 +256,12 @@ class CertificateManagementProfileScriptParams(AviNestedResource):
         'script_params': script_params_item_schema,
     }
 
+    # field references
+    field_references = {
+        'certificatemanagementprofile_uuid': 'certificatemanagementprofile',
+        'script_params': getattr(CustomParams, 'field_references', {}),
+    }
+
 
 class SSLRating(object):
     # all schemas
@@ -284,12 +276,18 @@ class SSLRating(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+        ],
     )
     compatibility_rating_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+        ],
     )
 
     # properties list
@@ -337,7 +335,7 @@ class CRL(object):
     )
     update_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Interval in minutes to check for CRL update."),
+        _("Interval in minutes to check for CRL update. If not specified, interval will be 1 day"),
         required=False,
         update_allowed=True,
     )
@@ -410,6 +408,9 @@ class SSLKeyParams(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_KEY_ALGORITHM_RSA', 'SSL_KEY_ALGORITHM_EC']),
+        ],
     )
     rsa_params_schema = properties.Schema(
         properties.Schema.MAP,
@@ -440,6 +441,11 @@ class SSLKeyParams(object):
         'ec_params': ec_params_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ec_params': getattr(SSLKeyECParams, 'field_references', {}),
+        'rsa_params': getattr(SSLKeyRSAParams, 'field_references', {}),
+    }
 
 
 
@@ -477,6 +483,9 @@ class SSLProfile(AviResource):
         _(""),
         required=True,
         update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_RC4_128_SHA', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA']),
+        ],
     )
     cipher_enums_schema = properties.Schema(
         properties.Schema.LIST,
@@ -543,6 +552,12 @@ class SSLProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssl_rating': getattr(SSLRating, 'field_references', {}),
+        'accepted_versions': getattr(SSLVersion, 'field_references', {}),
+        'tags': getattr(Tag, 'field_references', {}),
+    }
 
 
 
@@ -552,7 +567,10 @@ class SSLProfileAcceptedVersions(AviNestedResource, SSLVersion):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -566,6 +584,12 @@ class SSLProfileAcceptedVersions(AviNestedResource, SSLVersion):
     }
     properties_schema.update(SSLVersion.properties_schema)
 
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+    }
+    field_references.update(getattr(SSLVersion, 'field_references', {}))
+
 
 class SSLProfileCipherEnums(AviNestedResource):
     resource_name = "sslprofile"
@@ -573,7 +597,10 @@ class SSLProfileCipherEnums(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -595,6 +622,11 @@ class SSLProfileCipherEnums(AviNestedResource):
         'cipher_enums': cipher_enums_item_schema,
     }
 
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+    }
+
 
 class SSLProfileTags(AviNestedResource):
     resource_name = "sslprofile"
@@ -602,7 +634,10 @@ class SSLProfileTags(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -622,6 +657,12 @@ class SSLProfileTags(AviNestedResource):
     properties_schema = {
         'sslprofile_uuid': parent_uuid_schema,
         'tags': tags_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+        'tags': getattr(Tag, 'field_references', {}),
     }
 
 
@@ -725,6 +766,9 @@ class SSLCertificate(object):
         _(""),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_CERTIFICATE_EXPIRED', 'SSL_CERTIFICATE_GOOD', 'SSL_CERTIFICATE_EXPIRY_WARNING']),
+        ],
     )
     chain_verified_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -775,6 +819,12 @@ class SSLCertificate(object):
         'chain_verified': chain_verified_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'key_params': getattr(SSLKeyParams, 'field_references', {}),
+        'subject': getattr(SSLCertificateDescription, 'field_references', {}),
+        'issuer': getattr(SSLCertificateDescription, 'field_references', {}),
+    }
 
 
 
@@ -821,12 +871,6 @@ class PKIProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    header_chk_enabled_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable host header name check for server cert"),
-        required=True,
-        update_allowed=True,
-    )
     crl_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked."),
@@ -846,7 +890,6 @@ class PKIProfile(AviResource):
         'ca_certs',
         'crls',
         'ignore_peer_chain',
-        'header_chk_enabled',
         'crl_check',
         'validate_only_leaf_crl',
     )
@@ -857,11 +900,15 @@ class PKIProfile(AviResource):
         'ca_certs': ca_certs_schema,
         'crls': crls_schema,
         'ignore_peer_chain': ignore_peer_chain_schema,
-        'header_chk_enabled': header_chk_enabled_schema,
         'crl_check': crl_check_schema,
         'validate_only_leaf_crl': validate_only_leaf_crl_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ca_certs': getattr(SSLCertificate, 'field_references', {}),
+        'crls': getattr(CRL, 'field_references', {}),
+    }
 
 
 
@@ -871,7 +918,10 @@ class PKIProfileCaCerts(AviNestedResource, SSLCertificate):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of pkiprofile"),
+        _("UUID of pkiprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -885,6 +935,12 @@ class PKIProfileCaCerts(AviNestedResource, SSLCertificate):
     }
     properties_schema.update(SSLCertificate.properties_schema)
 
+    # field references
+    field_references = {
+        'pkiprofile_uuid': 'pkiprofile',
+    }
+    field_references.update(getattr(SSLCertificate, 'field_references', {}))
+
 
 class PKIProfileCrls(AviNestedResource, CRL):
     resource_name = "pkiprofile"
@@ -892,7 +948,10 @@ class PKIProfileCrls(AviNestedResource, CRL):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of pkiprofile"),
+        _("UUID of pkiprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -906,199 +965,23 @@ class PKIProfileCrls(AviNestedResource, CRL):
     }
     properties_schema.update(CRL.properties_schema)
 
-
-class SSLKeyAndCertificate(AviResource):
-    resource_name = "sslkeyandcertificate"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    certificate_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SSLCertificate.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    key_params_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SSLKeyParams.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Private key"),
-        required=False,
-        update_allowed=True,
-    )
-    status_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    ca_certs_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=CertificateAuthority.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    ca_certs_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("CA certificates in certificate chain"),
-        schema=ca_certs_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    enckey_base64_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Encrypted private key corresponding to the private key (e.g. those generated by an HSM such as Thales nShield)"),
-        required=False,
-        update_allowed=True,
-    )
-    enckey_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of the encrypted private key (e.g. those generated by an HSM such as Thales nShield)"),
-        required=False,
-        update_allowed=True,
-    )
-    hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    certificate_management_profile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    dynamic_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=CustomParams.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    dynamic_params_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Dynamic parameters needed for certificate management profile"),
-        schema=dynamic_params_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'type',
-        'certificate',
-        'key_params',
-        'key',
-        'status',
-        'ca_certs',
-        'enckey_base64',
-        'enckey_name',
-        'hardwaresecuritymodulegroup_uuid',
-        'certificate_management_profile_uuid',
-        'dynamic_params',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'type': type_schema,
-        'certificate': certificate_schema,
-        'key_params': key_params_schema,
-        'key': key_schema,
-        'status': status_schema,
-        'ca_certs': ca_certs_schema,
-        'enckey_base64': enckey_base64_schema,
-        'enckey_name': enckey_name_schema,
-        'hardwaresecuritymodulegroup_uuid': hardwaresecuritymodulegroup_uuid_schema,
-        'certificate_management_profile_uuid': certificate_management_profile_uuid_schema,
-        'dynamic_params': dynamic_params_schema,
+    # field references
+    field_references = {
+        'pkiprofile_uuid': 'pkiprofile',
     }
-
-
-
-
-class SSLKeyAndCertificateCaCerts(AviNestedResource, CertificateAuthority):
-    resource_name = "sslkeyandcertificate"
-    nested_property_name = "ca_certs"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslkeyandcertificate"),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = CertificateAuthority.PROPERTIES + ('sslkeyandcertificate_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslkeyandcertificate_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(CertificateAuthority.properties_schema)
-
-
-class SSLKeyAndCertificateDynamicParams(AviNestedResource):
-    resource_name = "sslkeyandcertificate"
-    nested_property_name = "dynamic_params"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslkeyandcertificate"),
-        required=True,
-        update_allowed=False,
-    )
-    dynamic_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('sslkeyandcertificate_uuid',
-                  'dynamic_params',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslkeyandcertificate_uuid': parent_uuid_schema,
-        'dynamic_params': dynamic_params_item_schema,
-    }
+    field_references.update(getattr(CRL, 'field_references', {}))
 
 
 def resource_mapping():
     return {
-        'Avi::SSLKeyAndCertificate::DynamicParam': SSLKeyAndCertificateDynamicParams,
         'Avi::CertificateManagementProfile::ScriptParam': CertificateManagementProfileScriptParams,
-        'Avi::SSLKeyAndCertificate': SSLKeyAndCertificate,
         'Avi::SSLProfile::CipherEnum': SSLProfileCipherEnums,
         'Avi::PKIProfile::Crl': PKIProfileCrls,
         'Avi::SSLProfile::Tag': SSLProfileTags,
         'Avi::CertificateManagementProfile': CertificateManagementProfile,
         'Avi::SSLProfile': SSLProfile,
-        'Avi::SSLKeyAndCertificate::CaCert': SSLKeyAndCertificateCaCerts,
+        'Avi::PKIProfile': PKIProfile,
         'Avi::PKIProfile::CaCert': PKIProfileCaCerts,
         'Avi::SSLProfile::AcceptedVersion': SSLProfileAcceptedVersions,
-        'Avi::PKIProfile': PKIProfile,
     }
 

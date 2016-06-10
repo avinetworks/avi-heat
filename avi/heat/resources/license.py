@@ -314,6 +314,10 @@ class ControllerLicense(AviResource):
         'licenses': licenses_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'licenses': getattr(SingleLicense, 'field_references', {}),
+    }
 
 
 
@@ -323,7 +327,10 @@ class ControllerLicenseLicenseTier(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of controllerlicense"),
+        _("UUID of controllerlicense."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -345,6 +352,11 @@ class ControllerLicenseLicenseTier(AviNestedResource):
         'license_tier': license_tier_item_schema,
     }
 
+    # field references
+    field_references = {
+        'controllerlicense_uuid': 'controllerlicense',
+    }
+
 
 class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
     resource_name = "controllerlicense"
@@ -352,7 +364,10 @@ class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of controllerlicense"),
+        _("UUID of controllerlicense."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -365,6 +380,12 @@ class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
         'controllerlicense_uuid': parent_uuid_schema,
     }
     properties_schema.update(SingleLicense.properties_schema)
+
+    # field references
+    field_references = {
+        'controllerlicense_uuid': 'controllerlicense',
+    }
+    field_references.update(getattr(SingleLicense, 'field_references', {}))
 
 
 def resource_mapping():

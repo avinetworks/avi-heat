@@ -72,6 +72,10 @@ class ClusterNode(object):
         'vm_hostname': vm_hostname_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -120,6 +124,11 @@ class Cluster(AviResource):
         'nodes': nodes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'nodes': getattr(ClusterNode, 'field_references', {}),
+        'virtual_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -129,7 +138,10 @@ class ClusterNodes(AviNestedResource, ClusterNode):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of cluster"),
+        _("UUID of cluster."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -142,6 +154,12 @@ class ClusterNodes(AviNestedResource, ClusterNode):
         'cluster_uuid': parent_uuid_schema,
     }
     properties_schema.update(ClusterNode.properties_schema)
+
+    # field references
+    field_references = {
+        'cluster_uuid': 'cluster',
+    }
+    field_references.update(getattr(ClusterNode, 'field_references', {}))
 
 
 def resource_mapping():

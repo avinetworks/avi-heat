@@ -12,6 +12,181 @@ from common import *
 from options import *
 
 
+class ProtocolMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for protocol matching the HTTP request"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
+    )
+    protocols_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP or HTTPS protocol"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HTTP', 'HTTPS']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'protocols',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'protocols': protocols_schema,
+    }
+
+
+
+
+class MicroServiceGroup(AviResource):
+    resource_name = "microservicegroup"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of the MicroService group"),
+        required=True,
+        update_allowed=True,
+    )
+    service_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    service_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Configure MicroService(es) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=service_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'service_uuids',
+        'created_by',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'service_uuids': service_uuids_schema,
+        'created_by': created_by_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'service_uuids': 'microservice',
+    }
+
+
+
+class MicroServiceGroupServiceUuids(AviNestedResource):
+    resource_name = "microservicegroup"
+    nested_property_name = "service_uuids"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of microservicegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
+        required=True,
+        update_allowed=False,
+    )
+    service_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = ('microservicegroup_uuid',
+                  'service_uuids',
+                 )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'microservicegroup_uuid': parent_uuid_schema,
+        'service_uuids': service_uuids_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'microservicegroup_uuid': 'microservicegroup',
+        'service_uuids': 'microservice',
+    }
+
+
+class MethodMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for HTTP method matching the method in the HTTP request"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
+    )
+    methods_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_PUT', 'HTTP_METHOD_DELETE', 'HTTP_METHOD_POST', 'HTTP_METHOD_GET', 'HTTP_METHOD_TRACE']),
+        ],
+    )
+    methods_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Configure HTTP method(s)"),
+        schema=methods_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'methods',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'methods': methods_schema,
+    }
+
+
+
+
 class IpAddrMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -19,6 +194,9 @@ class IpAddrMatch(object):
         _("Criterion to use for IP address matching the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -70,7 +248,7 @@ class IpAddrMatch(object):
     )
     group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of IP address group(s)"),
+        _("UUID of IP address group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -94,6 +272,13 @@ class IpAddrMatch(object):
         'group_uuids': group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+        'group_uuids': 'ipaddrgroup',
+    }
 
 
 
@@ -104,6 +289,9 @@ class HdrMatch(object):
         _("Criterion to use for matching headers in the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+        ],
     )
     hdr_schema = properties.Schema(
         properties.Schema.STRING,
@@ -116,6 +304,9 @@ class HdrMatch(object):
         _("Case sensitivity to use for the match"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
@@ -180,30 +371,20 @@ class HTTPStatusRange(object):
 
 
 
-class LocationHdrMatch(object):
+class MicroServiceMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Criterion to use for matching location header value in the HTTP response"),
+        _("Criterion to use for Micro Service matching the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
     )
-    match_case_schema = properties.Schema(
+    group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
-        required=False,
-        update_allowed=True,
-    )
-    value_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("String value(s) in the location header"),
-        schema=value_item_schema,
+        _("UUID of Micro Service group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -211,183 +392,20 @@ class LocationHdrMatch(object):
     # properties list
     PROPERTIES = (
         'match_criteria',
-        'match_case',
-        'value',
+        'group_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'match_criteria': match_criteria_schema,
-        'match_case': match_case_schema,
-        'value': value_schema,
+        'group_uuid': group_uuid_schema,
     }
 
-
-
-
-class PathMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for matching the path in the HTTP request URI"),
-        required=True,
-        update_allowed=True,
-    )
-    match_case_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Case sensitivity to use for the matching"),
-        required=False,
-        update_allowed=True,
-    )
-    match_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    match_str_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("String values"),
-        schema=match_str_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    string_group_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    string_group_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("UUID of the string group(s)"),
-        schema=string_group_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'match_case',
-        'match_str',
-        'string_group_uuids',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'match_case': match_case_schema,
-        'match_str': match_str_schema,
-        'string_group_uuids': string_group_uuids_schema,
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'group_uuid': 'microservicegroup',
     }
 
-
-
-
-class HTTPStatusCode(object):
-    # all schemas
-    status_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("HTTP response status code"),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'status',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'status': status_schema,
-    }
-
-
-
-
-class MicroServiceGroup(AviResource):
-    resource_name = "microservicegroup"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of the MicroService group"),
-        required=True,
-        update_allowed=True,
-    )
-    service_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    service_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Configure MicroService(es)"),
-        schema=service_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    created_by_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Creator name"),
-        required=False,
-        update_allowed=True,
-    )
-    description_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'service_uuids',
-        'created_by',
-        'description',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'service_uuids': service_uuids_schema,
-        'created_by': created_by_schema,
-        'description': description_schema,
-    }
-
-
-
-
-class MicroServiceGroupServiceUuids(AviNestedResource):
-    resource_name = "microservicegroup"
-    nested_property_name = "service_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of microservicegroup"),
-        required=True,
-        update_allowed=False,
-    )
-    service_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('microservicegroup_uuid',
-                  'service_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'microservicegroup_uuid': parent_uuid_schema,
-        'service_uuids': service_uuids_item_schema,
-    }
 
 
 class PortMatch(object):
@@ -397,11 +415,13 @@ class PortMatch(object):
         _("Criterion to use for port matching the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
     )
     ports_item_schema = properties.Schema(
-        properties.Schema.MAP,
+        properties.Schema.NUMBER,
         _(""),
-        schema=Port.properties_schema,
         required=True,
         update_allowed=False,
     )
@@ -428,299 +448,6 @@ class PortMatch(object):
 
 
 
-class HTTPStatusMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for matching the HTTP response status code(s)"),
-        required=True,
-        update_allowed=True,
-    )
-    status_codes_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HTTPStatusCode.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    status_codes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("HTTP response status code(s)"),
-        schema=status_codes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ranges_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HTTPStatusRange.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    ranges_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("HTTP response status code range(s)"),
-        schema=ranges_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'status_codes',
-        'ranges',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'status_codes': status_codes_schema,
-        'ranges': ranges_schema,
-    }
-
-
-
-
-class HostHdrMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for the host header value match"),
-        required=True,
-        update_allowed=True,
-    )
-    match_case_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
-        required=False,
-        update_allowed=True,
-    )
-    value_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("String value(s) in the host header"),
-        schema=value_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'match_case',
-        'value',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'match_case': match_case_schema,
-        'value': value_schema,
-    }
-
-
-
-
-class KeyValue(object):
-    # all schemas
-    key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Key"),
-        required=True,
-        update_allowed=True,
-    )
-    value_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Value"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'key',
-        'value',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'key': key_schema,
-        'value': value_schema,
-    }
-
-
-
-
-class QueryMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for matching the query in HTTP request URI"),
-        required=True,
-        update_allowed=True,
-    )
-    match_case_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
-        required=False,
-        update_allowed=True,
-    )
-    match_str_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    match_str_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("String value(s)"),
-        schema=match_str_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    string_group_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    string_group_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("UUID of the string group(s)"),
-        schema=string_group_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'match_case',
-        'match_str',
-        'string_group_uuids',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'match_case': match_case_schema,
-        'match_str': match_str_schema,
-        'string_group_uuids': string_group_uuids_schema,
-    }
-
-
-
-
-class MicroServiceMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for Micro Service matching the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    group_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of Micro Service group(s)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'group_uuid',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'group_uuid': group_uuid_schema,
-    }
-
-
-
-
-class MethodMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for HTTP method matching the method in the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    methods_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    methods_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Configure HTTP method(s)"),
-        schema=methods_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'methods',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'methods': methods_schema,
-    }
-
-
-
-
-class HTTPVersionMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for HTTP version matching the version used in the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    versions_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    versions_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("HTTP protocol version"),
-        schema=versions_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'versions',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'versions': versions_schema,
-    }
-
-
-
-
 class CookieMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -728,6 +455,9 @@ class CookieMatch(object):
         _("Criterion to use for matching the cookie in the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+        ],
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
@@ -740,6 +470,9 @@ class CookieMatch(object):
         _("Case sensitivity to use for the match"),
         required=False,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
     )
     value_schema = properties.Schema(
         properties.Schema.STRING,
@@ -767,112 +500,6 @@ class CookieMatch(object):
 
 
 
-class StringGroup(AviResource):
-    resource_name = "stringgroup"
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name of the string group"),
-        required=True,
-        update_allowed=True,
-    )
-    kv_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=KeyValue.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    kv_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Configure Key:Value in the string group"),
-        schema=kv_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Type of StringGroup."),
-        required=True,
-        update_allowed=True,
-    )
-    description_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'kv',
-        'type',
-        'description',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'kv': kv_schema,
-        'type': type_schema,
-        'description': description_schema,
-    }
-
-
-
-
-class StringGroupKv(AviNestedResource, KeyValue):
-    resource_name = "stringgroup"
-    nested_property_name = "kv"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of stringgroup"),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = KeyValue.PROPERTIES + ('stringgroup_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'stringgroup_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(KeyValue.properties_schema)
-
-
-class ProtocolMatch(object):
-    # all schemas
-    match_criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Criterion to use for protocol matching the HTTP request"),
-        required=True,
-        update_allowed=True,
-    )
-    protocols_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("HTTP or HTTPS protocol"),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'match_criteria',
-        'protocols',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'match_criteria': match_criteria_schema,
-        'protocols': protocols_schema,
-    }
-
-
-
-
 class StringMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -880,6 +507,9 @@ class StringMatch(object):
         _("Criterion to use for string matching the HTTP request"),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+        ],
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
@@ -902,7 +532,7 @@ class StringMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s)"),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -922,6 +552,10 @@ class StringMatch(object):
         'string_group_uuids': string_group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
 
 
 
@@ -1056,6 +690,13 @@ class IpAddrGroup(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+        'ip_ports': getattr(IpAddrPort, 'field_references', {}),
+    }
 
 
 
@@ -1065,7 +706,10 @@ class IpAddrGroupAddrs(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1087,6 +731,12 @@ class IpAddrGroupAddrs(AviNestedResource):
         'addrs': addrs_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'addrs': getattr(IpAddr, 'field_references', {}),
+    }
+
 
 class IpAddrGroupRanges(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -1094,7 +744,10 @@ class IpAddrGroupRanges(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1116,6 +769,12 @@ class IpAddrGroupRanges(AviNestedResource):
         'ranges': ranges_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+    }
+
 
 class IpAddrGroupPrefixes(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -1123,7 +782,10 @@ class IpAddrGroupPrefixes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1145,6 +807,12 @@ class IpAddrGroupPrefixes(AviNestedResource):
         'prefixes': prefixes_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
 
 class IpAddrGroupCountryCodes(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -1152,7 +820,10 @@ class IpAddrGroupCountryCodes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1174,6 +845,11 @@ class IpAddrGroupCountryCodes(AviNestedResource):
         'country_codes': country_codes_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+    }
+
 
 class IpAddrGroupIpPorts(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -1181,7 +857,10 @@ class IpAddrGroupIpPorts(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1202,6 +881,479 @@ class IpAddrGroupIpPorts(AviNestedResource):
         'ipaddrgroup_uuid': parent_uuid_schema,
         'ip_ports': ip_ports_item_schema,
     }
+
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'ip_ports': getattr(IpAddrPort, 'field_references', {}),
+    }
+
+
+class HTTPStatusMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for matching the HTTP response status code(s)"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
+    )
+    status_codes_item_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    status_codes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("HTTP response status code(s)"),
+        schema=status_codes_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ranges_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HTTPStatusRange.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ranges_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("HTTP response status code range(s)"),
+        schema=ranges_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'status_codes',
+        'ranges',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'status_codes': status_codes_schema,
+        'ranges': ranges_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(HTTPStatusRange, 'field_references', {}),
+    }
+
+
+
+class HostHdrMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for the host header value match"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+        ],
+    )
+    match_case_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Case sensitivity to use for the match"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
+    )
+    value_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("String value(s) in the host header"),
+        schema=value_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'match_case',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'match_case': match_case_schema,
+        'value': value_schema,
+    }
+
+
+
+
+class KeyValue(object):
+    # all schemas
+    key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Key"),
+        required=True,
+        update_allowed=True,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Value"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'key',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'key': key_schema,
+        'value': value_schema,
+    }
+
+
+
+
+class QueryMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for matching the query in HTTP request URI"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['QUERY_MATCH_CONTAINS']),
+        ],
+    )
+    match_case_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Case sensitivity to use for the match"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
+    )
+    match_str_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    match_str_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("String value(s)"),
+        schema=match_str_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    string_group_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    string_group_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=string_group_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'match_case',
+        'match_str',
+        'string_group_uuids',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'match_case': match_case_schema,
+        'match_str': match_str_schema,
+        'string_group_uuids': string_group_uuids_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
+
+
+
+class HTTPVersionMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for HTTP version matching the version used in the HTTP request"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+        ],
+    )
+    versions_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['ZERO_NINE', 'ONE_ZERO', 'ONE_ONE']),
+        ],
+    )
+    versions_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("HTTP protocol version"),
+        schema=versions_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'versions',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'versions': versions_schema,
+    }
+
+
+
+
+class PathMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for matching the path in the HTTP request URI"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+        ],
+    )
+    match_case_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Case sensitivity to use for the matching"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
+    )
+    match_str_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    match_str_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("String values"),
+        schema=match_str_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    string_group_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    string_group_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=string_group_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'match_case',
+        'match_str',
+        'string_group_uuids',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'match_case': match_case_schema,
+        'match_str': match_str_schema,
+        'string_group_uuids': string_group_uuids_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
+
+
+
+class StringGroup(AviResource):
+    resource_name = "stringgroup"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of the string group"),
+        required=True,
+        update_allowed=True,
+    )
+    kv_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=KeyValue.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    kv_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Configure Key:Value in the string group"),
+        schema=kv_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Type of StringGroup."),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SG_TYPE_KEYVAL', 'SG_TYPE_STRING']),
+        ],
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'kv',
+        'type',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'kv': kv_schema,
+        'type': type_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'kv': getattr(KeyValue, 'field_references', {}),
+    }
+
+
+
+class StringGroupKv(AviNestedResource, KeyValue):
+    resource_name = "stringgroup"
+    nested_property_name = "kv"
+
+    parent_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of stringgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
+        required=True,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = KeyValue.PROPERTIES + ('stringgroup_uuid',)
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'stringgroup_uuid': parent_uuid_schema,
+    }
+    properties_schema.update(KeyValue.properties_schema)
+
+    # field references
+    field_references = {
+        'stringgroup_uuid': 'stringgroup',
+    }
+    field_references.update(getattr(KeyValue, 'field_references', {}))
+
+
+class LocationHdrMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Criterion to use for matching location header value in the HTTP response"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+        ],
+    )
+    match_case_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Case sensitivity to use for the match"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+        ],
+    )
+    value_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("String value(s) in the location header"),
+        schema=value_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'match_case',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'match_case': match_case_schema,
+        'value': value_schema,
+    }
+
+
 
 
 class MatchTarget(object):
@@ -1312,6 +1464,19 @@ class MatchTarget(object):
         'host_hdr': host_hdr_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'protocol': getattr(ProtocolMatch, 'field_references', {}),
+        'hdrs': getattr(HdrMatch, 'field_references', {}),
+        'host_hdr': getattr(HostHdrMatch, 'field_references', {}),
+        'vs_port': getattr(PortMatch, 'field_references', {}),
+        'version': getattr(HTTPVersionMatch, 'field_references', {}),
+        'cookie': getattr(CookieMatch, 'field_references', {}),
+        'query': getattr(QueryMatch, 'field_references', {}),
+        'path': getattr(PathMatch, 'field_references', {}),
+        'method': getattr(MethodMatch, 'field_references', {}),
+    }
 
 
 
@@ -1457,6 +1622,22 @@ class ResponseMatchTarget(object):
         'rsp_hdrs': rsp_hdrs_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'status': getattr(HTTPStatusMatch, 'field_references', {}),
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'protocol': getattr(ProtocolMatch, 'field_references', {}),
+        'hdrs': getattr(HdrMatch, 'field_references', {}),
+        'loc_hdr': getattr(LocationHdrMatch, 'field_references', {}),
+        'rsp_hdrs': getattr(HdrMatch, 'field_references', {}),
+        'host_hdr': getattr(HostHdrMatch, 'field_references', {}),
+        'vs_port': getattr(PortMatch, 'field_references', {}),
+        'version': getattr(HTTPVersionMatch, 'field_references', {}),
+        'cookie': getattr(CookieMatch, 'field_references', {}),
+        'query': getattr(QueryMatch, 'field_references', {}),
+        'path': getattr(PathMatch, 'field_references', {}),
+        'method': getattr(MethodMatch, 'field_references', {}),
+    }
 
 
 

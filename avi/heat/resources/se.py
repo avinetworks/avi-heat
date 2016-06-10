@@ -133,6 +133,11 @@ class ConServer(object):
         'pool_uuid': pool_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'server_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -164,6 +169,40 @@ class DefaultGateway(object):
         'discovered': discovered_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
+class MemberInterface(object):
+    # all schemas
+    if_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    active_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'if_name',
+        'active',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'if_name': if_name_schema,
+        'active': active_schema,
+    }
+
 
 
 
@@ -178,23 +217,38 @@ class ServiceEngine(AviResource):
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
+    )
+    enable_state_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("inorder to disable SE set this field appropriately"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_STATE_ENABLED', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_DISABLED']),
+        ],
     )
 
     # properties list
     PROPERTIES = (
         'name',
         'se_group_uuid',
+        'enable_state',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'se_group_uuid': se_group_uuid_schema,
+        'enable_state': enable_state_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_group_uuid': 'serviceenginegroup',
+    }
 
 
 
@@ -249,6 +303,11 @@ class ConVip(object):
         'subnet': subnet_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'vip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -272,6 +331,9 @@ class vNICNetwork(object):
         _(""),
         required=True,
         update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DHCP', 'VIP', 'STATIC', 'DOCKER_HOST']),
+        ],
     )
 
     # properties list
@@ -288,6 +350,10 @@ class vNICNetwork(object):
         'mode': mode_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddrPrefix, 'field_references', {}),
+    }
 
 
 
@@ -335,6 +401,11 @@ class ConInfo(object):
         'servers': servers_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vip': getattr(ConVip, 'field_references', {}),
+        'servers': getattr(ConServer, 'field_references', {}),
+    }
 
 
 
@@ -389,6 +460,10 @@ class VlanInterface(object):
         'vnic_networks': vnic_networks_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
 
 
 
@@ -422,7 +497,7 @@ class vNIC(object):
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -459,6 +534,12 @@ class vNIC(object):
         'vlan_interfaces': vlan_interfaces_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vlan_interfaces': getattr(VlanInterface, 'field_references', {}),
+        'vrf_uuid': 'vrfcontext',
+        'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
 
 
 
