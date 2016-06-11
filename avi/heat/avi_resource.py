@@ -90,6 +90,27 @@ class AviResource(resource.Resource):
         self.resource_id_set(obj['uuid'])
         return True
 
+    def _fix_dict_refs(self, obj):
+        for k in obj.keys():
+            if k.endswith("_refs") or k.endswith("_ref"):
+                newval = self._fix_non_dict_refs(obj[k])
+                obj.pop(k)
+                new_key = "uuid".join(k.rsplit("ref", 1))
+                obj[new_key] = newval
+            elif isinstance(obj[k], dict):
+                obj[k] = self._fix_dict_refs(obj[k])
+        return obj
+
+    def _fix_non_dict_refs(self, obj):
+        if isinstance(obj, list):
+            nlist = []
+            for k in obj:
+                nlist.append(self._fix_non_dict_refs(k))
+            return nlist
+        elif isinstance(obj, basestring):
+            return obj.split("/")[-1].split("#")[0]
+        return obj
+
     def _show_resource(self, client=None):
         if not client:
             client = self.get_avi_client()
@@ -97,7 +118,7 @@ class AviResource(resource.Resource):
                                     self.resource_id),
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
-        return obj
+        return self._fix_dict_refs(obj)
 
     def _update_obj(self, obj, old_diffs, new_diffs):
         for p in new_diffs.keys():
@@ -147,15 +168,20 @@ class AviResource(resource.Resource):
         # pdb = Pdb()
         # pdb.set_trace()
         self._update_obj(obj, tmpl_diff["Properties"], prop_diff)
+        res_def = self.create_clean_properties(
+            obj,
+            field_refs=getattr(self, "field_references", {}),
+            client=client
+        )
         try:
             client.put(
                 "%s/%s" % (self.resource_name, self.resource_id),
-                data=obj,
+                data=res_def,
                 tenant_uuid=self.get_avi_tenant_uuid()
                 ).json()
         except:
             LOG.exception("Update failed: (%s, %s): %s",
-                          self.resource_name, self.resource_id, obj)
+                          self.resource_name, self.resource_id, res_def)
             raise
         return True
 
