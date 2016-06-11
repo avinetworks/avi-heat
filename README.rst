@@ -8,6 +8,10 @@ Pre-requisites
 
 Install the AviSDK PIP Package from https://github.com/avinetworks/sdk/releases
 
+Also make sure to have "avi-lbaas" service defined in your keystone catalog.
+Please refer to Avi Knowledge Brief at https://kb.avinetworks.com/installing-the-lbaas-driver-cli-shell-openstack/ for details on how to
+define this service and an endpoint for it in your keystone catalog.
+
 
 Installation Steps
 ------------------
