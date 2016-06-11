@@ -128,7 +128,7 @@ class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When "Per Tenant IP Domain" is selected, each tenant gets its own routing domain that is not shared with any other tenant. When "Share IP Domain across all tenants" is selected, all tenants share the same routing domain."),
+        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain."),
         required=False,
         update_allowed=True,
     )
