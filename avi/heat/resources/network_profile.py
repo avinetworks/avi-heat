@@ -261,6 +261,12 @@ class NetworkProfileUnion(object):
         'udp_fast_path_profile': udp_fast_path_profile_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'tcp_proxy_profile': getattr(TCPProxyProfile, 'field_references', {}),
+        'tcp_fast_path_profile': getattr(TCPFastPathProfile, 'field_references', {}),
+        'udp_fast_path_profile': getattr(UDPFastPathProfile, 'field_references', {}),
+    }
 
 
 
@@ -301,6 +307,10 @@ class NetworkProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'profile': getattr(NetworkProfileUnion, 'field_references', {}),
+    }
 
 
 

@@ -39,6 +39,10 @@ class HSMThalesRFS(object):
         'port': port_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -102,6 +106,10 @@ class HSMThalesNetHsm(object):
         'priority': priority_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'remote_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -194,6 +202,10 @@ class HSMSafenetLuna(object):
         'client_cert': client_cert_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'server': getattr(HSMSafenetLunaServer, 'field_references', {}),
+    }
 
 
 
@@ -253,6 +265,12 @@ class HardwareSecurityModule(object):
         'sluna': sluna_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rfs': getattr(HSMThalesRFS, 'field_references', {}),
+        'sluna': getattr(HSMSafenetLuna, 'field_references', {}),
+        'nethsm': getattr(HSMThalesNetHsm, 'field_references', {}),
+    }
 
 
 
@@ -285,6 +303,10 @@ class HardwareSecurityModuleGroup(AviResource):
         'hsm': hsm_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'hsm': getattr(HardwareSecurityModule, 'field_references', {}),
+    }
 
 
 

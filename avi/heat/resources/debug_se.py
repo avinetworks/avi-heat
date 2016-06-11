@@ -183,6 +183,12 @@ class DebugServiceEngine(AviResource):
         'cpu_shares': cpu_shares_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'flags': getattr(DebugSeDataplane, 'field_references', {}),
+        'seagent_debug': getattr(DebugSeAgent, 'field_references', {}),
+        'cpu_shares': getattr(DebugSeCpuShares, 'field_references', {}),
+    }
 
 
 
@@ -192,7 +198,10 @@ class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -206,6 +215,12 @@ class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
     }
     properties_schema.update(DebugSeAgent.properties_schema)
 
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeAgent, 'field_references', {}))
+
 
 class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
     resource_name = "debugserviceengine"
@@ -213,7 +228,10 @@ class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -227,6 +245,12 @@ class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
     }
     properties_schema.update(DebugSeDataplane.properties_schema)
 
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeDataplane, 'field_references', {}))
+
 
 class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
     resource_name = "debugserviceengine"
@@ -234,7 +258,10 @@ class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugserviceengine"),
+        _("UUID of debugserviceengine."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -247,6 +274,12 @@ class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
         'debugserviceengine_uuid': parent_uuid_schema,
     }
     properties_schema.update(DebugSeCpuShares.properties_schema)
+
+    # field references
+    field_references = {
+        'debugserviceengine_uuid': 'debugserviceengine',
+    }
+    field_references.update(getattr(DebugSeCpuShares, 'field_references', {}))
 
 
 class DebugIpAddr(object):
@@ -308,6 +341,12 @@ class DebugIpAddr(object):
         'prefixes': prefixes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -485,6 +524,13 @@ class DebugVirtualService(AviResource):
         'debug_hm': debug_hm_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'capture_params': getattr(DebugVirtualServiceCapture, 'field_references', {}),
+        'debug_ip': getattr(DebugIpAddr, 'field_references', {}),
+        'flags': getattr(DebugVsDataplane, 'field_references', {}),
+        'se_params': getattr(DebugVirtualServiceSeParams, 'field_references', {}),
+    }
 
 
 
@@ -494,7 +540,10 @@ class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of debugvirtualservice"),
+        _("UUID of debugvirtualservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -507,6 +556,12 @@ class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
         'debugvirtualservice_uuid': parent_uuid_schema,
     }
     properties_schema.update(DebugVsDataplane.properties_schema)
+
+    # field references
+    field_references = {
+        'debugvirtualservice_uuid': 'debugvirtualservice',
+    }
+    field_references.update(getattr(DebugVsDataplane, 'field_references', {}))
 
 
 def resource_mapping():

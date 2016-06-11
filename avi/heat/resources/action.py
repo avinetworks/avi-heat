@@ -97,6 +97,10 @@ class PoolServer(object):
         'port': port_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -206,7 +210,7 @@ class HTTPSwitchingAction(object):
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool of servers to serve the request"),
+        _("UUID of the pool of servers to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -252,6 +256,12 @@ class HTTPSwitchingAction(object):
         'server': server_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'pool_uuid': 'pool',
+        'file': getattr(HTTPLocalFile, 'field_references', {}),
+        'server': getattr(PoolServer, 'field_references', {}),
+    }
 
 
 
@@ -293,6 +303,10 @@ class URIParam(object):
         'tokens': tokens_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'tokens': getattr(URIParamToken, 'field_references', {}),
+    }
 
 
 
@@ -324,6 +338,10 @@ class HTTPHdrData(object):
         'value': value_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'value': getattr(HTTPHdrValue, 'field_references', {}),
+    }
 
 
 
@@ -394,6 +412,11 @@ class HTTPRedirectAction(object):
         'status_code': status_code_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'path': getattr(URIParam, 'field_references', {}),
+        'host': getattr(URIParam, 'field_references', {}),
+    }
 
 
 
@@ -435,6 +458,12 @@ class HTTPRewriteURLAction(object):
         'query': query_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_hdr': getattr(URIParam, 'field_references', {}),
+        'query': getattr(URIParamQuery, 'field_references', {}),
+        'path': getattr(URIParam, 'field_references', {}),
+    }
 
 
 
@@ -494,6 +523,11 @@ class HTTPRewriteLocHdrAction(object):
         'keep_query': keep_query_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'path': getattr(URIParam, 'field_references', {}),
+        'host': getattr(URIParam, 'field_references', {}),
+    }
 
 
 
@@ -537,4 +571,9 @@ class HTTPHdrAction(object):
         'cookie': cookie_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cookie': getattr(HTTPCookieData, 'field_references', {}),
+        'hdr': getattr(HTTPHdrData, 'field_references', {}),
+    }
 

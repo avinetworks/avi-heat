@@ -50,6 +50,10 @@ class DNSConfiguration(object):
         'search_domain': search_domain_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'server_list': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -57,7 +61,7 @@ class AdminAuthConfiguration(object):
     # all schemas
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -88,6 +92,11 @@ class AdminAuthConfiguration(object):
         'mapping_rules': mapping_rules_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'mapping_rules': getattr(AuthMappingRule, 'field_references', {}),
+        'auth_profile_uuid': 'authprofile',
+    }
 
 
 
@@ -282,7 +291,7 @@ class PortalConfiguration(object):
     )
     sslkeyandcertificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs"),
+        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=sslkeyandcertificate_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -295,7 +304,7 @@ class PortalConfiguration(object):
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -360,6 +369,11 @@ class PortalConfiguration(object):
         'password_strength_check': password_strength_check_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+        'sslkeyandcertificate_uuids': 'sslkeyandcertificate',
+    }
 
 
 
@@ -390,6 +404,10 @@ class NTPConfiguration(object):
         'ntp_server_list': ntp_server_list_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ntp_server_list': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -440,6 +458,13 @@ class MgmtIpAccessControl(object):
         'snmp_access': snmp_access_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'snmp_access': getattr(IpAddrMatch, 'field_references', {}),
+        'api_access': getattr(IpAddrMatch, 'field_references', {}),
+        'ssh_access': getattr(IpAddrMatch, 'field_references', {}),
+        'shell_server_access': getattr(IpAddrMatch, 'field_references', {}),
+    }
 
 
 
@@ -584,6 +609,20 @@ class SystemConfiguration(AviResource):
         'ssh_hmacs': ssh_hmacs_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'email_configuration': getattr(EmailConfiguration, 'field_references', {}),
+        'global_tenant_config': getattr(TenantConfiguration, 'field_references', {}),
+        'dns_configuration': getattr(DNSConfiguration, 'field_references', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
+        'tech_support_uploader_configuration': getattr(TechSupportUploaderConfiguration, 'field_references', {}),
+        'snmp_configuration': getattr(SnmpConfiguration, 'field_references', {}),
+        'linux_configuration': getattr(LinuxConfiguration, 'field_references', {}),
+        'portal_configuration': getattr(PortalConfiguration, 'field_references', {}),
+        'ntp_configuration': getattr(NTPConfiguration, 'field_references', {}),
+        'admin_auth_configuration': getattr(AdminAuthConfiguration, 'field_references', {}),
+        'mgmt_ip_access_control': getattr(MgmtIpAccessControl, 'field_references', {}),
+    }
 
 
 
@@ -593,7 +632,10 @@ class SystemConfigurationSshCiphers(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of systemconfiguration"),
+        _("UUID of systemconfiguration."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -615,6 +657,11 @@ class SystemConfigurationSshCiphers(AviNestedResource):
         'ssh_ciphers': ssh_ciphers_item_schema,
     }
 
+    # field references
+    field_references = {
+        'systemconfiguration_uuid': 'systemconfiguration',
+    }
+
 
 class SystemConfigurationSshHmacs(AviNestedResource):
     resource_name = "systemconfiguration"
@@ -622,7 +669,10 @@ class SystemConfigurationSshHmacs(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of systemconfiguration"),
+        _("UUID of systemconfiguration."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -642,6 +692,11 @@ class SystemConfigurationSshHmacs(AviNestedResource):
     properties_schema = {
         'systemconfiguration_uuid': parent_uuid_schema,
         'ssh_hmacs': ssh_hmacs_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'systemconfiguration_uuid': 'systemconfiguration',
     }
 
 

@@ -72,6 +72,11 @@ class BgpPeer(object):
         'network_uuid': network_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'peer_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -118,6 +123,10 @@ class BgpProfile(object):
         'peers': peers_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'peers': getattr(BgpPeer, 'field_references', {}),
+    }
 
 
 
@@ -141,6 +150,10 @@ class GatewayMonitor(object):
         'gateway_ip': gateway_ip_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'gateway_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -189,6 +202,11 @@ class StaticRoute(object):
         'route_id': route_id_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'prefix': getattr(IpAddrPrefix, 'field_references', {}),
+        'next_hop': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -269,6 +287,12 @@ class VrfContext(AviResource):
         'cloud_uuid': cloud_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'gateway_mon': getattr(GatewayMonitor, 'field_references', {}),
+        'bgp_profile': getattr(BgpProfile, 'field_references', {}),
+        'static_routes': getattr(StaticRoute, 'field_references', {}),
+    }
 
 
 
@@ -278,7 +302,10 @@ class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vrfcontext"),
+        _("UUID of vrfcontext."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -292,6 +319,12 @@ class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
     }
     properties_schema.update(StaticRoute.properties_schema)
 
+    # field references
+    field_references = {
+        'vrfcontext_uuid': 'vrfcontext',
+    }
+    field_references.update(getattr(StaticRoute, 'field_references', {}))
+
 
 class VrfContextGatewayMon(AviNestedResource, GatewayMonitor):
     resource_name = "vrfcontext"
@@ -299,7 +332,10 @@ class VrfContextGatewayMon(AviNestedResource, GatewayMonitor):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vrfcontext"),
+        _("UUID of vrfcontext."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -312,6 +348,12 @@ class VrfContextGatewayMon(AviNestedResource, GatewayMonitor):
         'vrfcontext_uuid': parent_uuid_schema,
     }
     properties_schema.update(GatewayMonitor.properties_schema)
+
+    # field references
+    field_references = {
+        'vrfcontext_uuid': 'vrfcontext',
+    }
+    field_references.update(getattr(GatewayMonitor, 'field_references', {}))
 
 
 def resource_mapping():

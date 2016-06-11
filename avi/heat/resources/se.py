@@ -133,6 +133,11 @@ class ConServer(object):
         'pool_uuid': pool_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'server_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -164,6 +169,10 @@ class DefaultGateway(object):
         'discovered': discovered_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -208,7 +217,7 @@ class ServiceEngine(AviResource):
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -236,6 +245,10 @@ class ServiceEngine(AviResource):
         'enable_state': enable_state_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_group_uuid': 'serviceenginegroup',
+    }
 
 
 
@@ -290,6 +303,11 @@ class ConVip(object):
         'subnet': subnet_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'vip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -332,6 +350,10 @@ class vNICNetwork(object):
         'mode': mode_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddrPrefix, 'field_references', {}),
+    }
 
 
 
@@ -379,6 +401,11 @@ class ConInfo(object):
         'servers': servers_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vip': getattr(ConVip, 'field_references', {}),
+        'servers': getattr(ConServer, 'field_references', {}),
+    }
 
 
 
@@ -433,6 +460,10 @@ class VlanInterface(object):
         'vnic_networks': vnic_networks_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
 
 
 
@@ -466,7 +497,7 @@ class vNIC(object):
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -503,6 +534,12 @@ class vNIC(object):
         'vlan_interfaces': vlan_interfaces_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vlan_interfaces': getattr(VlanInterface, 'field_references', {}),
+        'vrf_uuid': 'vrfcontext',
+        'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
 
 
 

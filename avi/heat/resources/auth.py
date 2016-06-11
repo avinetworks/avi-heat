@@ -208,7 +208,7 @@ class HTTPClientAuthenticationParams(object):
     )
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Auth Profile to use for validating users"),
+        _("Auth Profile to use for validating users You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -235,6 +235,11 @@ class HTTPClientAuthenticationParams(object):
         'realm': realm_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'auth_profile_uuid': 'authprofile',
+        'request_uri_path': getattr(StringMatch, 'field_references', {}),
+    }
 
 
 
@@ -462,7 +467,7 @@ class AuthMappingRule(object):
     )
     tenant_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=tenant_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -490,7 +495,7 @@ class AuthMappingRule(object):
     )
     role_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=role_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -530,6 +535,13 @@ class AuthMappingRule(object):
         'is_superuser': is_superuser_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'role_uuids': 'role',
+        'group_match': getattr(AuthMatchGroupMembership, 'field_references', {}),
+        'attribute_match': getattr(AuthMatchAttribute, 'field_references', {}),
+        'tenant_uuids': 'tenant',
+    }
 
 
 
@@ -602,6 +614,10 @@ class TacacsPlusAuthSettings(object):
         'authorization_attrs': authorization_attrs_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'authorization_attrs': getattr(AuthTacacsPlusAttributeValuePair, 'field_references', {}),
+    }
 
 
 
@@ -684,6 +700,11 @@ class LdapAuthSettings(object):
         'user_bind': user_bind_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'user_bind': getattr(LdapUserBindSettings, 'field_references', {}),
+        'settings': getattr(LdapDirectorySettings, 'field_references', {}),
+    }
 
 
 
@@ -753,6 +774,12 @@ class AuthProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'http': getattr(AuthProfileHTTPClientParams, 'field_references', {}),
+        'tacacs_plus': getattr(TacacsPlusAuthSettings, 'field_references', {}),
+        'ldap': getattr(LdapAuthSettings, 'field_references', {}),
+    }
 
 
 

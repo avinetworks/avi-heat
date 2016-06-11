@@ -471,7 +471,10 @@ class AnalyticsProfileExcludeHttpErrorCodes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of analyticsprofile"),
+        _("UUID of analyticsprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -491,6 +494,11 @@ class AnalyticsProfileExcludeHttpErrorCodes(AviNestedResource):
     properties_schema = {
         'analyticsprofile_uuid': parent_uuid_schema,
         'exclude_http_error_codes': exclude_http_error_codes_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'analyticsprofile_uuid': 'analyticsprofile',
     }
 
 

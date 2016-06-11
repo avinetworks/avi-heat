@@ -65,7 +65,7 @@ class MicroServiceGroup(AviResource):
     )
     service_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Configure MicroService(es)"),
+        _("Configure MicroService(es) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=service_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -99,6 +99,10 @@ class MicroServiceGroup(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'service_uuids': 'microservice',
+    }
 
 
 
@@ -108,7 +112,10 @@ class MicroServiceGroupServiceUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of microservicegroup"),
+        _("UUID of microservicegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -128,6 +135,12 @@ class MicroServiceGroupServiceUuids(AviNestedResource):
     properties_schema = {
         'microservicegroup_uuid': parent_uuid_schema,
         'service_uuids': service_uuids_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'microservicegroup_uuid': 'microservicegroup',
+        'service_uuids': 'microservice',
     }
 
 
@@ -235,7 +248,7 @@ class IpAddrMatch(object):
     )
     group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of IP address group(s)"),
+        _("UUID of IP address group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -259,6 +272,13 @@ class IpAddrMatch(object):
         'group_uuids': group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+        'group_uuids': 'ipaddrgroup',
+    }
 
 
 
@@ -364,7 +384,7 @@ class MicroServiceMatch(object):
     )
     group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of Micro Service group(s)"),
+        _("UUID of Micro Service group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -381,6 +401,10 @@ class MicroServiceMatch(object):
         'group_uuid': group_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'group_uuid': 'microservicegroup',
+    }
 
 
 
@@ -508,7 +532,7 @@ class StringMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s)"),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -528,6 +552,10 @@ class StringMatch(object):
         'string_group_uuids': string_group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
 
 
 
@@ -662,6 +690,13 @@ class IpAddrGroup(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+        'ip_ports': getattr(IpAddrPort, 'field_references', {}),
+    }
 
 
 
@@ -671,7 +706,10 @@ class IpAddrGroupAddrs(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -693,6 +731,12 @@ class IpAddrGroupAddrs(AviNestedResource):
         'addrs': addrs_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'addrs': getattr(IpAddr, 'field_references', {}),
+    }
+
 
 class IpAddrGroupRanges(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -700,7 +744,10 @@ class IpAddrGroupRanges(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -722,6 +769,12 @@ class IpAddrGroupRanges(AviNestedResource):
         'ranges': ranges_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+    }
+
 
 class IpAddrGroupPrefixes(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -729,7 +782,10 @@ class IpAddrGroupPrefixes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -751,6 +807,12 @@ class IpAddrGroupPrefixes(AviNestedResource):
         'prefixes': prefixes_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
 
 class IpAddrGroupCountryCodes(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -758,7 +820,10 @@ class IpAddrGroupCountryCodes(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -780,6 +845,11 @@ class IpAddrGroupCountryCodes(AviNestedResource):
         'country_codes': country_codes_item_schema,
     }
 
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+    }
+
 
 class IpAddrGroupIpPorts(AviNestedResource):
     resource_name = "ipaddrgroup"
@@ -787,7 +857,10 @@ class IpAddrGroupIpPorts(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of ipaddrgroup"),
+        _("UUID of ipaddrgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -807,6 +880,12 @@ class IpAddrGroupIpPorts(AviNestedResource):
     properties_schema = {
         'ipaddrgroup_uuid': parent_uuid_schema,
         'ip_ports': ip_ports_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'ipaddrgroup_uuid': 'ipaddrgroup',
+        'ip_ports': getattr(IpAddrPort, 'field_references', {}),
     }
 
 
@@ -863,6 +942,10 @@ class HTTPStatusMatch(object):
         'ranges': ranges_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(HTTPStatusRange, 'field_references', {}),
+    }
 
 
 
@@ -988,7 +1071,7 @@ class QueryMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s)"),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -1010,6 +1093,10 @@ class QueryMatch(object):
         'string_group_uuids': string_group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
 
 
 
@@ -1097,7 +1184,7 @@ class PathMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s)"),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -1119,6 +1206,10 @@ class PathMatch(object):
         'string_group_uuids': string_group_uuids_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'string_group_uuids': 'stringgroup',
+    }
 
 
 
@@ -1177,6 +1268,10 @@ class StringGroup(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'kv': getattr(KeyValue, 'field_references', {}),
+    }
 
 
 
@@ -1186,7 +1281,10 @@ class StringGroupKv(AviNestedResource, KeyValue):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of stringgroup"),
+        _("UUID of stringgroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -1199,6 +1297,12 @@ class StringGroupKv(AviNestedResource, KeyValue):
         'stringgroup_uuid': parent_uuid_schema,
     }
     properties_schema.update(KeyValue.properties_schema)
+
+    # field references
+    field_references = {
+        'stringgroup_uuid': 'stringgroup',
+    }
+    field_references.update(getattr(KeyValue, 'field_references', {}))
 
 
 class LocationHdrMatch(object):
@@ -1360,6 +1464,19 @@ class MatchTarget(object):
         'host_hdr': host_hdr_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'protocol': getattr(ProtocolMatch, 'field_references', {}),
+        'hdrs': getattr(HdrMatch, 'field_references', {}),
+        'host_hdr': getattr(HostHdrMatch, 'field_references', {}),
+        'vs_port': getattr(PortMatch, 'field_references', {}),
+        'version': getattr(HTTPVersionMatch, 'field_references', {}),
+        'cookie': getattr(CookieMatch, 'field_references', {}),
+        'query': getattr(QueryMatch, 'field_references', {}),
+        'path': getattr(PathMatch, 'field_references', {}),
+        'method': getattr(MethodMatch, 'field_references', {}),
+    }
 
 
 
@@ -1505,6 +1622,22 @@ class ResponseMatchTarget(object):
         'rsp_hdrs': rsp_hdrs_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'status': getattr(HTTPStatusMatch, 'field_references', {}),
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+        'protocol': getattr(ProtocolMatch, 'field_references', {}),
+        'hdrs': getattr(HdrMatch, 'field_references', {}),
+        'loc_hdr': getattr(LocationHdrMatch, 'field_references', {}),
+        'rsp_hdrs': getattr(HdrMatch, 'field_references', {}),
+        'host_hdr': getattr(HostHdrMatch, 'field_references', {}),
+        'vs_port': getattr(PortMatch, 'field_references', {}),
+        'version': getattr(HTTPVersionMatch, 'field_references', {}),
+        'cookie': getattr(CookieMatch, 'field_references', {}),
+        'query': getattr(QueryMatch, 'field_references', {}),
+        'path': getattr(PathMatch, 'field_references', {}),
+        'method': getattr(MethodMatch, 'field_references', {}),
+    }
 
 
 

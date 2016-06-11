@@ -397,6 +397,15 @@ class HealthMonitor(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'https_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
+        'dns_monitor': getattr(HealthMonitorDNS, 'field_references', {}),
+        'tcp_monitor': getattr(HealthMonitorTcp, 'field_references', {}),
+        'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
+        'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
+        'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
+    }
 
 
 

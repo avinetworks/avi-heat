@@ -76,25 +76,25 @@ class ServerAutoScalePolicy(AviResource):
     )
     max_scaleout_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of servers to scale up. When  target servers are more than the max_servers then it would be  less than the min_scaleout_adjustment_step"),
+        _("Maximum number of servers to scaleout simultaneously. The actual number of servers to scaleout is chosen such that target number of servers is always less than or equal to the max_size"),
         required=False,
         update_allowed=True,
     )
     max_scalein_adjustment_step_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of servers to scale in. When  target servers are more than the max_servers then it would be  less than the scaleout_adjustment_step"),
+        _("Maximum number of servers to scalein simultaneously. The actual number of servers to scalein is chosen such that target number of servers is always more than or equal to the min_size"),
         required=False,
         update_allowed=True,
     )
     scaleout_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("No two scaleout happens within this period"),
+        _("Cooldown period during which no new scaleout is triggered to allow previous scaleout to successfully complete"),
         required=False,
         update_allowed=True,
     )
     scalein_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("No two scale-in happens within this period"),
+        _("Cooldown period during which no new scalein is triggered to allow previous scalein to successfully complete"),
         required=False,
         update_allowed=True,
     )
@@ -106,7 +106,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scaleout_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of alert related to these alert configs used as triggers for server scale out"),
+        _("Trigger scaleout when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=scaleout_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -119,7 +119,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scalein_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of alert related to these alert configs used as triggers for server scale in"),
+        _("Trigger scalein when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=scalein_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -173,6 +173,11 @@ class ServerAutoScalePolicy(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'scaleout_alertconfig_uuids': 'alertconfig',
+        'scalein_alertconfig_uuids': 'alertconfig',
+    }
 
 
 
@@ -182,7 +187,10 @@ class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy"),
+        _("UUID of serverautoscalepolicy."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -204,6 +212,12 @@ class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
         'scaleout_alertconfig_uuids': scaleout_alertconfig_uuids_item_schema,
     }
 
+    # field references
+    field_references = {
+        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
+        'scaleout_alertconfig_uuids': 'alertconfig',
+    }
+
 
 class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
     resource_name = "serverautoscalepolicy"
@@ -211,7 +225,10 @@ class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy"),
+        _("UUID of serverautoscalepolicy."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -231,6 +248,12 @@ class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
     properties_schema = {
         'serverautoscalepolicy_uuid': parent_uuid_schema,
         'scalein_alertconfig_uuids': scalein_alertconfig_uuids_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
+        'scalein_alertconfig_uuids': 'alertconfig',
     }
 
 
@@ -362,6 +385,10 @@ class AutoScaleAWSSettings(object):
         'ramdisk_id': ramdisk_id_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
+    }
 
 
 
@@ -475,6 +502,12 @@ class AutoScaleOpenStackSettings(object):
         'scheduler_hints': scheduler_hints_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'scheduler_hints': getattr(AutoScaleKVData, 'field_references', {}),
+        'metadata': getattr(AutoScaleKVData, 'field_references', {}),
+        'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
+    }
 
 
 
@@ -541,6 +574,12 @@ class AutoScaleLaunchConfig(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'openstack': getattr(AutoScaleOpenStackSettings, 'field_references', {}),
+        'aws': getattr(AutoScaleAWSSettings, 'field_references', {}),
+        'mesos': getattr(AutoScaleMesosSettings, 'field_references', {}),
+    }
 
 
 

@@ -1008,6 +1008,15 @@ class SeRuntimeProperties(object):
         'se_dp_if_state_poll_interval': se_dp_if_state_poll_interval_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_dp_compression': getattr(SeRuntimeCompressionProperties, 'field_references', {}),
+        'service_ip_subnets': getattr(IpAddrPrefix, 'field_references', {}),
+        'app_headers': getattr(AppHdr, 'field_references', {}),
+        'service_port_ranges': getattr(PortRange, 'field_references', {}),
+        'se_rate_limiters': getattr(SeRateLimiters, 'field_references', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
+    }
 
 
 
@@ -1509,6 +1518,10 @@ class SeBootupProperties(object):
         'distribute_vnics': distribute_vnics_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_dp_compression': getattr(SeBootupCompressionProperties, 'field_references', {}),
+    }
 
 
 
@@ -1551,6 +1564,12 @@ class SeProperties(AviResource):
         'se_agent_properties': se_agent_properties_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_agent_properties': getattr(SeAgentProperties, 'field_references', {}),
+        'se_runtime_properties': getattr(SeRuntimeProperties, 'field_references', {}),
+        'se_bootup_properties': getattr(SeBootupProperties, 'field_references', {}),
+    }
 
 
 

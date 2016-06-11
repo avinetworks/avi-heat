@@ -84,6 +84,10 @@ class Role(AviResource):
         'privileges': privileges_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'privileges': getattr(Permission, 'field_references', {}),
+    }
 
 
 
@@ -93,7 +97,10 @@ class RolePrivileges(AviNestedResource, Permission):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of role"),
+        _("UUID of role."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -106,6 +113,12 @@ class RolePrivileges(AviNestedResource, Permission):
         'role_uuid': parent_uuid_schema,
     }
     properties_schema.update(Permission.properties_schema)
+
+    # field references
+    field_references = {
+        'role_uuid': 'role',
+    }
+    field_references.update(getattr(Permission, 'field_references', {}))
 
 
 def resource_mapping():

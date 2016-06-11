@@ -28,4 +28,3 @@ from se_group import *
 from cloud_objects import *
 from micro_service import *
 from syserr import *
-from se import *

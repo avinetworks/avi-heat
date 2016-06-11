@@ -102,6 +102,11 @@ class IpamDnsInfobloxProfile(object):
         'usable_domains': usable_domains_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'usable_subnets': getattr(IpAddrPrefix, 'field_references', {}),
+        'ip_address': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -256,6 +261,10 @@ class IpamDnsInternalProfile(object):
         'dns_virtualservice_uuid': dns_virtualservice_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'dns_service_domain': getattr(DnsServiceDomain, 'field_references', {}),
+    }
 
 
 
@@ -264,31 +273,31 @@ class IpamDnsOpenstackProfile(object):
     username_schema = properties.Schema(
         properties.Schema.STRING,
         _("The username Avi Vantage will use when authenticating to Keystone."),
-        required=True,
+        required=False,
         update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
         _("The password Avi Vantage will use when authenticating to Keystone."),
-        required=True,
+        required=False,
         update_allowed=True,
     )
     tenant_schema = properties.Schema(
         properties.Schema.STRING,
         _("Openstack tenant name"),
-        required=True,
+        required=False,
         update_allowed=True,
     )
     keystone_host_schema = properties.Schema(
         properties.Schema.STRING,
         _("Keystone's hostname or IP address."),
-        required=True,
+        required=False,
         update_allowed=True,
     )
     vip_network_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network to be used for VIP allocation"),
-        required=True,
+        required=False,
         update_allowed=True,
     )
     region_schema = properties.Schema(
@@ -388,6 +397,13 @@ class IpamDnsProviderProfile(AviResource):
         'internal_profile': internal_profile_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'infoblox_profile': getattr(IpamDnsInfobloxProfile, 'field_references', {}),
+        'aws_profile': getattr(IpamDnsAwsProfile, 'field_references', {}),
+        'openstack_profile': getattr(IpamDnsOpenstackProfile, 'field_references', {}),
+        'internal_profile': getattr(IpamDnsInternalProfile, 'field_references', {}),
+    }
 
 
 

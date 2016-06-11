@@ -40,6 +40,11 @@ class IpAddrRange(object):
         'end': end_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'begin': getattr(IpAddr, 'field_references', {}),
+        'end': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -123,13 +128,13 @@ class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain."),
         required=False,
         update_allowed=True,
     )
     se_in_provider_context_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Controls the ownership of ServiceEngines. Service Engines can either be exclusively owned by each tenant or owned by the administrator and shared by all tenants. When ServiceEngines are owned by the administrator, each tenant can have either read access or no access to their Service Engines."),
         required=False,
         update_allowed=True,
     )
@@ -264,6 +269,10 @@ class IpAddrPort(object):
         'name': name_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -342,6 +351,10 @@ class Tenant(AviResource):
         'config_settings': config_settings_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'config_settings': getattr(TenantConfiguration, 'field_references', {}),
+    }
 
 
 

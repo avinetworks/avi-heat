@@ -57,7 +57,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     datacenter_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=datacenter_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -256,6 +256,10 @@ class VIMgrVcenterRuntime(AviResource):
         'cloud_uuid': cloud_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'datacenter_uuids': 'vimgrdcruntime',
+    }
 
 
 
@@ -265,7 +269,10 @@ class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime"),
+        _("UUID of vimgrvcenterruntime."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -287,6 +294,12 @@ class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
         'datacenter_uuids': datacenter_uuids_item_schema,
     }
 
+    # field references
+    field_references = {
+        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
+        'datacenter_uuids': 'vimgrdcruntime',
+    }
+
 
 class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
     resource_name = "vimgrvcenterruntime"
@@ -294,7 +307,10 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime"),
+        _("UUID of vimgrvcenterruntime."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -314,6 +330,11 @@ class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
     properties_schema = {
         'vimgrvcenterruntime_uuid': parent_uuid_schema,
         'discovered_datacenter': discovered_datacenter_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
     }
 
 

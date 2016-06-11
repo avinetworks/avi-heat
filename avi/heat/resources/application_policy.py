@@ -74,6 +74,11 @@ class HTTPSecurityAction(object):
         'rate_limit': rate_limit_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rate_limit': getattr(RateProfile, 'field_references', {}),
+        'file': getattr(HTTPLocalFile, 'field_references', {}),
+    }
 
 
 
@@ -87,7 +92,7 @@ class HTTPPolicies(object):
     )
     http_policy_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the virtual service HTTP policy collection"),
+        _("UUID of the virtual service HTTP policy collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -104,6 +109,10 @@ class HTTPPolicies(object):
         'http_policy_set_uuid': http_policy_set_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'http_policy_set_uuid': 'httppolicyset',
+    }
 
 
 
@@ -210,6 +219,14 @@ class HTTPRequestRule(object):
         'all_headers': all_headers_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rewrite_url_action': getattr(HTTPRewriteURLAction, 'field_references', {}),
+        'redirect_action': getattr(HTTPRedirectAction, 'field_references', {}),
+        'hdr_action': getattr(HTTPHdrAction, 'field_references', {}),
+        'match': getattr(MatchTarget, 'field_references', {}),
+        'switching_action': getattr(HTTPSwitchingAction, 'field_references', {}),
+    }
 
 
 
@@ -298,6 +315,12 @@ class HTTPResponseRule(object):
         'all_headers': all_headers_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'loc_hdr_action': getattr(HTTPRewriteLocHdrAction, 'field_references', {}),
+        'hdr_action': getattr(HTTPHdrAction, 'field_references', {}),
+        'match': getattr(ResponseMatchTarget, 'field_references', {}),
+    }
 
 
 
@@ -362,6 +385,11 @@ class HTTPSecurityRule(object):
         'log': log_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'action': getattr(HTTPSecurityAction, 'field_references', {}),
+        'match': getattr(MatchTarget, 'field_references', {}),
+    }
 
 
 
@@ -392,6 +420,10 @@ class HTTPRequestPolicy(object):
         'rules': rules_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(HTTPRequestRule, 'field_references', {}),
+    }
 
 
 
@@ -422,6 +454,10 @@ class HTTPSecurityPolicy(object):
         'rules': rules_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(HTTPSecurityRule, 'field_references', {}),
+    }
 
 
 
@@ -452,6 +488,10 @@ class HTTPResponsePolicy(object):
         'rules': rules_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(HTTPResponseRule, 'field_references', {}),
+    }
 
 
 
@@ -534,6 +574,12 @@ class HTTPPolicySet(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'http_request_policy': getattr(HTTPRequestPolicy, 'field_references', {}),
+        'http_response_policy': getattr(HTTPResponsePolicy, 'field_references', {}),
+        'http_security_policy': getattr(HTTPSecurityPolicy, 'field_references', {}),
+    }
 
 
 

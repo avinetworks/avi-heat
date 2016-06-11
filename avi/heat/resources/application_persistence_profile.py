@@ -152,6 +152,10 @@ class HttpCookiePersistenceProfile(object):
         'always_send_cookie': always_send_cookie_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'key': getattr(HttpCookiePersistenceKey, 'field_references', {}),
+    }
 
 
 
@@ -279,6 +283,13 @@ class ApplicationPersistenceProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'http_cookie_persistence_profile': getattr(HttpCookiePersistenceProfile, 'field_references', {}),
+        'ip_persistence_profile': getattr(IPPersistenceProfile, 'field_references', {}),
+        'app_cookie_persistence_profile': getattr(AppCookiePersistenceProfile, 'field_references', {}),
+        'hdr_persistence_profile': getattr(HdrPersistenceProfile, 'field_references', {}),
+    }
 
 
 

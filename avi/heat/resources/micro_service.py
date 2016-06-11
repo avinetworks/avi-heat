@@ -63,6 +63,10 @@ class MicroServiceContainer(object):
         'task_id': task_id_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -142,6 +146,10 @@ class MicroService(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'containers': getattr(MicroServiceContainer, 'field_references', {}),
+    }
 
 
 
@@ -151,7 +159,10 @@ class MicroServiceContainers(AviNestedResource, MicroServiceContainer):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of microservice"),
+        _("UUID of microservice."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -164,6 +175,12 @@ class MicroServiceContainers(AviNestedResource, MicroServiceContainer):
         'microservice_uuid': parent_uuid_schema,
     }
     properties_schema.update(MicroServiceContainer.properties_schema)
+
+    # field references
+    field_references = {
+        'microservice_uuid': 'microservice',
+    }
+    field_references.update(getattr(MicroServiceContainer, 'field_references', {}))
 
 
 def resource_mapping():

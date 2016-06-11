@@ -463,6 +463,17 @@ class DebugFilterUnion(object):
         'mesos_metrics_debug_filter': mesos_metrics_debug_filter_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'mesos_metrics_debug_filter': getattr(MesosMetricsDebugFilter, 'field_references', {}),
+        'cloud_connector_debug_filter': getattr(CloudConnectorDebugFilter, 'field_references', {}),
+        'metrics_debug_filter': getattr(MetricsMgrDebugFilter, 'field_references', {}),
+        'alert_debug_filter': getattr(AlertMgrDebugFilter, 'field_references', {}),
+        'se_mgr_debug_filter': getattr(SeMgrDebugFilter, 'field_references', {}),
+        'autoscale_mgr_debug_filter': getattr(AutoScaleMgrDebugFilter, 'field_references', {}),
+        'vs_debug_filter': getattr(VsDebugFilter, 'field_references', {}),
+        'hs_debug_filter': getattr(HSMgrDebugFilter, 'field_references', {}),
+    }
 
 
 
@@ -528,6 +539,10 @@ class DebugController(AviResource):
         'filters': filters_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'filters': getattr(DebugFilterUnion, 'field_references', {}),
+    }
 
 
 

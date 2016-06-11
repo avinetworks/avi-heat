@@ -71,4 +71,8 @@ class IpAddrPrefix(object):
         'mask': mask_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_addr': getattr(IpAddr, 'field_references', {}),
+    }
 

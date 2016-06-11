@@ -218,6 +218,10 @@ class CertificateManagementProfile(AviResource):
         'script_path': script_path_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'script_params': getattr(CustomParams, 'field_references', {}),
+    }
 
 
 
@@ -227,7 +231,10 @@ class CertificateManagementProfileScriptParams(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of certificatemanagementprofile"),
+        _("UUID of certificatemanagementprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -247,6 +254,12 @@ class CertificateManagementProfileScriptParams(AviNestedResource):
     properties_schema = {
         'certificatemanagementprofile_uuid': parent_uuid_schema,
         'script_params': script_params_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'certificatemanagementprofile_uuid': 'certificatemanagementprofile',
+        'script_params': getattr(CustomParams, 'field_references', {}),
     }
 
 
@@ -428,6 +441,11 @@ class SSLKeyParams(object):
         'ec_params': ec_params_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ec_params': getattr(SSLKeyECParams, 'field_references', {}),
+        'rsa_params': getattr(SSLKeyRSAParams, 'field_references', {}),
+    }
 
 
 
@@ -534,6 +552,12 @@ class SSLProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssl_rating': getattr(SSLRating, 'field_references', {}),
+        'accepted_versions': getattr(SSLVersion, 'field_references', {}),
+        'tags': getattr(Tag, 'field_references', {}),
+    }
 
 
 
@@ -543,7 +567,10 @@ class SSLProfileAcceptedVersions(AviNestedResource, SSLVersion):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -557,6 +584,12 @@ class SSLProfileAcceptedVersions(AviNestedResource, SSLVersion):
     }
     properties_schema.update(SSLVersion.properties_schema)
 
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+    }
+    field_references.update(getattr(SSLVersion, 'field_references', {}))
+
 
 class SSLProfileCipherEnums(AviNestedResource):
     resource_name = "sslprofile"
@@ -564,7 +597,10 @@ class SSLProfileCipherEnums(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -586,6 +622,11 @@ class SSLProfileCipherEnums(AviNestedResource):
         'cipher_enums': cipher_enums_item_schema,
     }
 
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+    }
+
 
 class SSLProfileTags(AviNestedResource):
     resource_name = "sslprofile"
@@ -593,7 +634,10 @@ class SSLProfileTags(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of sslprofile"),
+        _("UUID of sslprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -613,6 +657,12 @@ class SSLProfileTags(AviNestedResource):
     properties_schema = {
         'sslprofile_uuid': parent_uuid_schema,
         'tags': tags_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'sslprofile_uuid': 'sslprofile',
+        'tags': getattr(Tag, 'field_references', {}),
     }
 
 
@@ -769,6 +819,12 @@ class SSLCertificate(object):
         'chain_verified': chain_verified_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'key_params': getattr(SSLKeyParams, 'field_references', {}),
+        'subject': getattr(SSLCertificateDescription, 'field_references', {}),
+        'issuer': getattr(SSLCertificateDescription, 'field_references', {}),
+    }
 
 
 
@@ -848,6 +904,11 @@ class PKIProfile(AviResource):
         'validate_only_leaf_crl': validate_only_leaf_crl_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ca_certs': getattr(SSLCertificate, 'field_references', {}),
+        'crls': getattr(CRL, 'field_references', {}),
+    }
 
 
 
@@ -857,7 +918,10 @@ class PKIProfileCaCerts(AviNestedResource, SSLCertificate):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of pkiprofile"),
+        _("UUID of pkiprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -871,6 +935,12 @@ class PKIProfileCaCerts(AviNestedResource, SSLCertificate):
     }
     properties_schema.update(SSLCertificate.properties_schema)
 
+    # field references
+    field_references = {
+        'pkiprofile_uuid': 'pkiprofile',
+    }
+    field_references.update(getattr(SSLCertificate, 'field_references', {}))
+
 
 class PKIProfileCrls(AviNestedResource, CRL):
     resource_name = "pkiprofile"
@@ -878,7 +948,10 @@ class PKIProfileCrls(AviNestedResource, CRL):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of pkiprofile"),
+        _("UUID of pkiprofile."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -891,6 +964,12 @@ class PKIProfileCrls(AviNestedResource, CRL):
         'pkiprofile_uuid': parent_uuid_schema,
     }
     properties_schema.update(CRL.properties_schema)
+
+    # field references
+    field_references = {
+        'pkiprofile_uuid': 'pkiprofile',
+    }
+    field_references.update(getattr(CRL, 'field_references', {}))
 
 
 def resource_mapping():

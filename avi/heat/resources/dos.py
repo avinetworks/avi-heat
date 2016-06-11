@@ -87,4 +87,8 @@ class DosThresholdProfile(object):
         'thresh_info': thresh_info_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'thresh_info': getattr(DosThreshold, 'field_references', {}),
+    }
 

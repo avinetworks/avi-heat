@@ -25,7 +25,7 @@ class VcenterClusters(object):
     )
     cluster_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=cluster_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -49,6 +49,10 @@ class VcenterClusters(object):
         'include': include_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cluster_uuids': 'vimgrclusterruntime',
+    }
 
 
 
@@ -62,7 +66,7 @@ class VcenterHosts(object):
     )
     host_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=host_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -86,6 +90,10 @@ class VcenterHosts(object):
         'include': include_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_uuids': 'vimgrhostruntime',
+    }
 
 
 
@@ -251,7 +259,7 @@ class ServiceEngineGroup(AviResource):
     )
     mgmt_network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Management network to use for Avi Service Engines"),
+        _("Management network to use for Avi Service Engines You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -368,7 +376,7 @@ class ServiceEngineGroup(AviResource):
     )
     hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -577,6 +585,18 @@ class ServiceEngineGroup(AviResource):
         'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
+        'vcenter_hosts': getattr(VcenterHosts, 'field_references', {}),
+        'mgmt_network_uuid': 'network',
+        'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
+        'mgmt_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+        'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
+        'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
+        'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+    }
 
 
 
@@ -586,7 +606,10 @@ class ServiceEngineGroupVcenterDatastores(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
+        _("UUID of serviceenginegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -608,6 +631,12 @@ class ServiceEngineGroupVcenterDatastores(AviNestedResource):
         'vcenter_datastores': vcenter_datastores_item_schema,
     }
 
+    # field references
+    field_references = {
+        'serviceenginegroup_uuid': 'serviceenginegroup',
+        'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
+    }
+
 
 class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
     resource_name = "serviceenginegroup"
@@ -615,7 +644,10 @@ class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
 
     parent_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of serviceenginegroup"),
+        _("UUID of serviceenginegroup."
+          " You can also provide a name"
+          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
+          " 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -635,6 +667,12 @@ class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
     properties_schema = {
         'serviceenginegroup_uuid': parent_uuid_schema,
         'floating_intf_ip': floating_intf_ip_item_schema,
+    }
+
+    # field references
+    field_references = {
+        'serviceenginegroup_uuid': 'serviceenginegroup',
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
     }
 
 

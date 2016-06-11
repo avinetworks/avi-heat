@@ -317,6 +317,11 @@ class LinuxServerHost(object):
         'host_attr': host_attr_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_attr': getattr(HostAttributes, 'field_references', {}),
+        'host_ip': getattr(IpAddr, 'field_references', {}),
+    }
 
 
 
@@ -357,7 +362,7 @@ class vCenterConfiguration(object):
     )
     management_network_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Management network to use for Avi Service Engines"),
+        _("Management network to use for Avi Service Engines You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -399,6 +404,11 @@ class vCenterConfiguration(object):
         'vcenter_template_se_location': vcenter_template_se_location_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'management_ip_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'management_network': 'vimgrnwruntime',
+    }
 
 
 
@@ -726,6 +736,11 @@ class MarathonConfiguration(object):
         'use_token_auth': use_token_auth_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'public_port_range': getattr(PortRange, 'field_references', {}),
+        'private_port_range': getattr(PortRange, 'field_references', {}),
+    }
 
 
 
@@ -948,6 +963,10 @@ class AwsConfiguration(object):
         'use_iam_roles': use_iam_roles_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'zones': getattr(AwsZoneConfig, 'field_references', {}),
+    }
 
 
 
@@ -1159,6 +1178,12 @@ class LinuxServerConfiguration(object):
         'hosts': hosts_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssh_attr': getattr(SSHSeDeployment, 'field_references', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
+        'hosts': getattr(LinuxServerHost, 'field_references', {}),
+    }
 
 
 
@@ -1478,6 +1503,20 @@ class MesosConfiguration(object):
         'se_include_attributes': se_include_attributes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'field_references', {}),
+        'marathon_configurations': getattr(MarathonConfiguration, 'field_references', {}),
+        'marathon_se_deployment': getattr(MarathonSeDeployment, 'field_references', {}),
+        'nuage_controller': getattr(NuageSDNController, 'field_references', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'se_resources': getattr(MesosSeResources, 'field_references', {}),
+        'vip': getattr(IpAddr, 'field_references', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
+        'feproxy_route_publish': getattr(FeProxyRoutePublishConfig, 'field_references', {}),
+    }
 
 
 
@@ -1729,6 +1768,15 @@ class RancherConfiguration(object):
         'nuage_controller': nuage_controller_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'field_references', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'nuage_controller': getattr(NuageSDNController, 'field_references', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
+    }
 
 
 
@@ -1749,13 +1797,13 @@ class DockerConfiguration(object):
     )
     client_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the client TLS cert and key"),
+        _("UUID of the client TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ca_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the UCP CA TLS cert and key"),
+        _("UUID of the UCP CA TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1971,6 +2019,16 @@ class DockerConfiguration(object):
         'se_include_attributes': se_include_attributes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'field_references', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'client_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
+        'se_include_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
+        'ca_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
+    }
 
 
 
@@ -2257,6 +2315,10 @@ class OpenStackConfiguration(object):
         'se_group_uuid': se_group_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'role_mapping': getattr(OpenStackRoleMapping, 'field_references', {}),
+    }
 
 
 
@@ -2402,25 +2464,25 @@ class Cloud(AviResource):
     )
     ipam_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ipam Provider for the cloud"),
+        _("Ipam Provider for the cloud You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     dns_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS Provider for the cloud"),
+        _("DNS Provider for the cloud You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     east_west_ipam_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ipam Profile for East West applications"),
+        _("Ipam Profile for East West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     east_west_dns_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS Profile for East West applications"),
+        _("DNS Profile for East West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -2481,6 +2543,24 @@ class Cloud(AviResource):
         'east_west_dns_provider_uuid': east_west_dns_provider_uuid_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vca_configuration': getattr(vCloudAirConfiguration, 'field_references', {}),
+        'rancher_configuration': getattr(RancherConfiguration, 'field_references', {}),
+        'mesos_configuration': getattr(MesosConfiguration, 'field_references', {}),
+        'east_west_ipam_provider_uuid': 'ipamdnsproviderprofile',
+        'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
+        'east_west_dns_provider_uuid': 'ipamdnsproviderprofile',
+        'docker_configuration': getattr(DockerConfiguration, 'field_references', {}),
+        'openstack_configuration': getattr(OpenStackConfiguration, 'field_references', {}),
+        'dns_provider_uuid': 'ipamdnsproviderprofile',
+        'linuxserver_configuration': getattr(LinuxServerConfiguration, 'field_references', {}),
+        'apic_configuration': getattr(APICConfiguration, 'field_references', {}),
+        'aws_configuration': getattr(AwsConfiguration, 'field_references', {}),
+        'ipam_provider_uuid': 'ipamdnsproviderprofile',
+        'cloudstack_configuration': getattr(CloudStackConfiguration, 'field_references', {}),
+        'vcenter_configuration': getattr(vCenterConfiguration, 'field_references', {}),
+    }
 
 
 

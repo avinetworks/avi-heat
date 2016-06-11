@@ -46,6 +46,11 @@ class DosRateLimitProfile(object):
         'dos_profile': dos_profile_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rl_profile': getattr(RateLimiterProfile, 'field_references', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
+    }
 
 
 
@@ -150,6 +155,10 @@ class SSLClientCertificateAction(object):
         'close_connection': close_connection_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'headers': getattr(SSLClientRequestHeader, 'field_references', {}),
+    }
 
 
 
@@ -331,7 +340,7 @@ class HTTPApplicationProfile(object):
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List."),
+        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -362,6 +371,12 @@ class HTTPApplicationProfile(object):
     max_bad_rps_cip_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Maximum bad requests per second per client IP and URI."),
+        required=False,
+        update_allowed=True,
+    )
+    keepalive_header_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Send 'Keep-Alive' header to the client with timeout as specified in the Keep-Alive Timeout."),
         required=False,
         update_allowed=True,
     )
@@ -402,6 +417,7 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip',
         'max_bad_rps_uri',
         'max_bad_rps_cip_uri',
+        'keepalive_header',
     )
 
     # mapping of properties to their schemas
@@ -440,8 +456,16 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip': max_bad_rps_cip_schema,
         'max_bad_rps_uri': max_bad_rps_uri_schema,
         'max_bad_rps_cip_uri': max_bad_rps_cip_uri_schema,
+        'keepalive_header': keepalive_header_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'pki_profile_uuid': 'pkiprofile',
+        'compression_profile': getattr(CompressionProfile, 'field_references', {}),
+        'ssl_client_certificate_action': getattr(SSLClientCertificateAction, 'field_references', {}),
+        'cache_config': getattr(HttpCacheConfig, 'field_references', {}),
+    }
 
 
 
@@ -511,6 +535,12 @@ class ApplicationProfile(AviResource):
         'description': description_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'tcp_app_profile': getattr(TCPApplicationProfile, 'field_references', {}),
+        'http_profile': getattr(HTTPApplicationProfile, 'field_references', {}),
+        'dos_rl_profile': getattr(DosRateLimitProfile, 'field_references', {}),
+    }
 
 
 
