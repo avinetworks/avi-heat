@@ -431,7 +431,7 @@ class ServiceEngineGroup(AviResource):
     )
     floating_intf_ip_schema = properties.Schema(
         properties.Schema.LIST,
-        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect"),
+        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect. If manual load distribution among the Active Standby ServiceEngines is enabled, Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 1 Tag."),
         schema=floating_intf_ip_item_schema,
         required=False,
         update_allowed=True,
@@ -463,6 +463,32 @@ class ServiceEngineGroup(AviResource):
     gateway_monitor_success_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up."),
+        required=False,
+        update_allowed=True,
+    )
+    distribute_load_active_standby_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use both the active and standby Service Engines for Virtual Service placement in the legacy active standby HA mode."),
+        required=False,
+        update_allowed=True,
+    )
+    auto_redistribute_active_standby_load_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("This setting applies only if Load distribution across Active Standby is enabled. On failover of a Service Engine, all Virtual Services will end up using the same Service Engine as Active. If this option is enabled, controller will auto redistribute the Virtual Services when the failed Service Engine comes back up, this can cause momentary traffic loss on redistribution. If this option is disabled, user has to manually execute the redistribute API on the Service Engine Group to achieve the same."),
+        required=False,
+        update_allowed=True,
+    )
+    floating_intf_ip_se_2_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    floating_intf_ip_se_2_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("This field is applicable only if the ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, with manual load distribution among the Active Standby ServiceEngines enabled. Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 2 Tag."),
+        schema=floating_intf_ip_se_2_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -524,6 +550,9 @@ class ServiceEngineGroup(AviResource):
         'gateway_monitor_interval',
         'gateway_monitor_fail_threshold',
         'gateway_monitor_success_threshold',
+        'distribute_load_active_standby',
+        'auto_redistribute_active_standby_load',
+        'floating_intf_ip_se_2',
     )
 
     # mapping of properties to their schemas
@@ -583,10 +612,14 @@ class ServiceEngineGroup(AviResource):
         'gateway_monitor_interval': gateway_monitor_interval_schema,
         'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
         'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
+        'distribute_load_active_standby': distribute_load_active_standby_schema,
+        'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
+        'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'floating_intf_ip_se_2': getattr(IpAddr, 'field_references', {}),
         'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
         'vcenter_hosts': getattr(VcenterHosts, 'field_references', {}),
         'mgmt_network_uuid': 'network',
@@ -600,86 +633,8 @@ class ServiceEngineGroup(AviResource):
 
 
 
-class ServiceEngineGroupVcenterDatastores(AviNestedResource):
-    resource_name = "serviceenginegroup"
-    nested_property_name = "vcenter_datastores"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serviceenginegroup."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    vcenter_datastores_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('serviceenginegroup_uuid',
-                  'vcenter_datastores',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serviceenginegroup_uuid': parent_uuid_schema,
-        'vcenter_datastores': vcenter_datastores_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'serviceenginegroup_uuid': 'serviceenginegroup',
-        'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
-    }
-
-
-class ServiceEngineGroupFloatingIntfIp(AviNestedResource):
-    resource_name = "serviceenginegroup"
-    nested_property_name = "floating_intf_ip"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serviceenginegroup."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    floating_intf_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('serviceenginegroup_uuid',
-                  'floating_intf_ip',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serviceenginegroup_uuid': parent_uuid_schema,
-        'floating_intf_ip': floating_intf_ip_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'serviceenginegroup_uuid': 'serviceenginegroup',
-        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::ServiceEngineGroup::FloatingIntfIp': ServiceEngineGroupFloatingIntfIp,
-        'Avi::ServiceEngineGroup::VcenterDatastore': ServiceEngineGroupVcenterDatastores,
         'Avi::ServiceEngineGroup': ServiceEngineGroup,
     }
 

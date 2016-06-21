@@ -362,7 +362,7 @@ class vCenterConfiguration(object):
     )
     management_network_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Management network to use for Avi Service Engines You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Management network to use for Avi Service Engines"),
         required=False,
         update_allowed=True,
     )
@@ -407,7 +407,6 @@ class vCenterConfiguration(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'management_ip_subnet': getattr(IpAddrPrefix, 'field_references', {}),
-        'management_network': 'vimgrnwruntime',
     }
 
 
@@ -2048,14 +2047,14 @@ class OpenStackConfiguration(object):
     )
     admin_tenant_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Openstack admin tenant name"),
+        _("Openstack admin tenant (or project) information."),
         required=True,
         update_allowed=True,
     )
     keystone_host_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Keystone's hostname or IP address."),
-        required=True,
+        _("Keystone's hostname or IP address. (Deprecated) Use auth_url instead."),
+        required=False,
         update_allowed=True,
     )
     mgmt_network_name_schema = properties.Schema(
@@ -2202,6 +2201,18 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    auth_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Auth URL for connecting to keystone. If this is specified, any value provided for keystone_host is ignored."),
+        required=False,
+        update_allowed=True,
+    )
+    insecure_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow self-signed certificates when communicating with https service endpoints."),
+        required=False,
+        update_allowed=True,
+    )
     nuage_vsd_host_schema = properties.Schema(
         properties.Schema.STRING,
         _("Nuage VSD host name or IP address"),
@@ -2271,6 +2282,8 @@ class OpenStackConfiguration(object):
         'use_internal_endpoints',
         'admin_tenant_uuid',
         'config_drive',
+        'auth_url',
+        'insecure',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
@@ -2306,6 +2319,8 @@ class OpenStackConfiguration(object):
         'use_internal_endpoints': use_internal_endpoints_schema,
         'admin_tenant_uuid': admin_tenant_uuid_schema,
         'config_drive': config_drive_schema,
+        'auth_url': auth_url_schema,
+        'insecure': insecure_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,

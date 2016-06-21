@@ -237,6 +237,12 @@ class HTTPSwitchingAction(object):
         required=False,
         update_allowed=True,
     )
+    pool_group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the pool group to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -245,6 +251,7 @@ class HTTPSwitchingAction(object):
         'status_code',
         'file',
         'server',
+        'pool_group_uuid',
     )
 
     # mapping of properties to their schemas
@@ -254,11 +261,13 @@ class HTTPSwitchingAction(object):
         'status_code': status_code_schema,
         'file': file_schema,
         'server': server_schema,
+        'pool_group_uuid': pool_group_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'pool_uuid': 'pool',
+        'pool_group_uuid': 'poolgroup',
         'file': getattr(HTTPLocalFile, 'field_references', {}),
         'server': getattr(PoolServer, 'field_references', {}),
     }

@@ -72,6 +72,35 @@ class RateLimiterAction(object):
 
 
 
+class EquivalentLabels(object):
+    # all schemas
+    labels_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    labels_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Equivalent labels."),
+        schema=labels_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'labels',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'labels': labels_schema,
+    }
+
+
+
+
 class RateProfile(object):
     # all schemas
     count_schema = properties.Schema(

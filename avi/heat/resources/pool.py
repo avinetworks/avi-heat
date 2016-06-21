@@ -52,6 +52,99 @@ class FailActionHTTPLocalResponse(object):
 
 
 
+class PriorityLabels(AviResource):
+    resource_name = "prioritylabels"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The name of the pool group."),
+        required=True,
+        update_allowed=True,
+    )
+    equivalent_labels_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=EquivalentLabels.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    equivalent_labels_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Equivalent priority labels in descending order."),
+        schema=equivalent_labels_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("A description of the priority labels."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'equivalent_labels',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'equivalent_labels': equivalent_labels_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'equivalent_labels': getattr(EquivalentLabels, 'field_references', {}),
+    }
+
+
+
+class PoolGroupMember(object):
+    # all schemas
+    pool_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the pool You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+    ratio_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Overrides the default ratio of 1. Reduces the percentage the LB algorithm would pick the pool in relation to its peers."),
+        required=False,
+        update_allowed=True,
+    )
+    priority_label_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("All pools with same label are treated similarly in a pool group."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'pool_uuid',
+        'ratio',
+        'priority_label',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'pool_uuid': pool_uuid_schema,
+        'ratio': ratio_schema,
+        'priority_label': priority_label_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'pool_uuid': 'pool',
+    }
+
+
+
 class AbPool(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -410,6 +503,74 @@ class DiscoveredNetwork(object):
 
 
 
+class PoolGroup(AviResource):
+    resource_name = "poolgroup"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The name of the pool group."),
+        required=True,
+        update_allowed=True,
+    )
+    members_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=PoolGroupMember.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    members_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Member details"),
+        schema=members_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    priority_labels_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the priority labels You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    min_servers_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The minimum number of servers to distribute traffic to."),
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("A description of the pool group."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'members',
+        'priority_labels_uuid',
+        'min_servers',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'members': members_schema,
+        'priority_labels_uuid': priority_labels_uuid_schema,
+        'min_servers': min_servers_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'priority_labels_uuid': 'prioritylabels',
+        'members': getattr(PoolGroupMember, 'field_references', {}),
+    }
+
+
+
 class HTTPServerReselect(object):
     # all schemas
     enabled_schema = properties.Schema(
@@ -496,13 +657,13 @@ class Server(object):
     )
     vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     nw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -514,7 +675,7 @@ class Server(object):
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Discovered network for this server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -534,7 +695,7 @@ class Server(object):
     )
     discovered_subnet_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Discovered subnet for this server."),
+        _("(internal-use) Discovered subnet for this server. This field is deprecated."),
         schema=discovered_subnet_item_schema,
         required=False,
         update_allowed=True,
@@ -554,7 +715,7 @@ class Server(object):
     )
     discovered_networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Discovered networks providing reachability for server IP."),
+        _("(internal-use) Discovered networks providing reachability for server IP. This field is used internally by Avi, not editable by the user."),
         schema=discovered_networks_item_schema,
         required=False,
         update_allowed=True,
@@ -751,7 +912,7 @@ class Pool(AviResource):
     )
     networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Networks designated as containing servers for this pool.  The servers may be further narrowed down by a filter."),
+        _("(internal-use) Networks designated as containing servers for this pool.  The servers may be further narrowed down by a filter. This field is used internally by Avi, not editable by the user."),
         schema=networks_item_schema,
         required=False,
         update_allowed=True,
@@ -765,7 +926,7 @@ class Pool(AviResource):
     )
     placement_networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10.1.1.0/24"),
+        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10.1.1.0/24. If the Pool Servers are not directly connected, but routable from the ServiceEngine, please also provide the appropriate static routes to reach the Servers in the VRF configuration."),
         schema=placement_networks_item_schema,
         required=False,
         update_allowed=True,
@@ -1108,44 +1269,6 @@ class Pool(AviResource):
 
 
 
-class PoolHealthMonitorUuids(AviNestedResource):
-    resource_name = "pool"
-    nested_property_name = "health_monitor_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    health_monitor_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('pool_uuid',
-                  'health_monitor_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-        'health_monitor_uuids': health_monitor_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'pool_uuid': 'pool',
-        'health_monitor_uuids': 'healthmonitor',
-    }
-
-
 class PoolServers(AviNestedResource, Server):
     resource_name = "pool"
     nested_property_name = "servers"
@@ -1176,148 +1299,11 @@ class PoolServers(AviNestedResource, Server):
     field_references.update(getattr(Server, 'field_references', {}))
 
 
-class PoolNetworks(AviNestedResource, NetworkFilter):
-    resource_name = "pool"
-    nested_property_name = "networks"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = NetworkFilter.PROPERTIES + ('pool_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(NetworkFilter.properties_schema)
-
-    # field references
-    field_references = {
-        'pool_uuid': 'pool',
-    }
-    field_references.update(getattr(NetworkFilter, 'field_references', {}))
-
-
-class PoolPlacementNetworks(AviNestedResource, PlacementNetwork):
-    resource_name = "pool"
-    nested_property_name = "placement_networks"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = PlacementNetwork.PROPERTIES + ('pool_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(PlacementNetwork.properties_schema)
-
-    # field references
-    field_references = {
-        'pool_uuid': 'pool',
-    }
-    field_references.update(getattr(PlacementNetwork, 'field_references', {}))
-
-
-class PoolAutoscaleNetworks(AviNestedResource):
-    resource_name = "pool"
-    nested_property_name = "autoscale_networks"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    autoscale_networks_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('pool_uuid',
-                  'autoscale_networks',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-        'autoscale_networks': autoscale_networks_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'pool_uuid': 'pool',
-    }
-
-
-class PoolDomainName(AviNestedResource):
-    resource_name = "pool"
-    nested_property_name = "domain_name"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pool."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    domain_name_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('pool_uuid',
-                  'domain_name',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pool_uuid': parent_uuid_schema,
-        'domain_name': domain_name_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'pool_uuid': 'pool',
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::Pool::PlacementNetwork': PoolPlacementNetworks,
-        'Avi::Pool::AutoscaleNetwork': PoolAutoscaleNetworks,
+        'Avi::PriorityLabels': PriorityLabels,
+        'Avi::PoolGroup': PoolGroup,
         'Avi::Pool::Server': PoolServers,
-        'Avi::Pool::DomainName': PoolDomainName,
-        'Avi::Pool::HealthMonitorUuid': PoolHealthMonitorUuids,
-        'Avi::Pool::Network': PoolNetworks,
         'Avi::Pool': Pool,
     }
 

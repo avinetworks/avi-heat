@@ -321,77 +321,8 @@ class ControllerLicense(AviResource):
 
 
 
-class ControllerLicenseLicenseTier(AviNestedResource):
-    resource_name = "controllerlicense"
-    nested_property_name = "license_tier"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of controllerlicense."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    license_tier_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('controllerlicense_uuid',
-                  'license_tier',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'controllerlicense_uuid': parent_uuid_schema,
-        'license_tier': license_tier_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'controllerlicense_uuid': 'controllerlicense',
-    }
-
-
-class ControllerLicenseLicenses(AviNestedResource, SingleLicense):
-    resource_name = "controllerlicense"
-    nested_property_name = "licenses"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of controllerlicense."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = SingleLicense.PROPERTIES + ('controllerlicense_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'controllerlicense_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(SingleLicense.properties_schema)
-
-    # field references
-    field_references = {
-        'controllerlicense_uuid': 'controllerlicense',
-    }
-    field_references.update(getattr(SingleLicense, 'field_references', {}))
-
-
 def resource_mapping():
     return {
         'Avi::ControllerLicense': ControllerLicense,
-        'Avi::ControllerLicense::LicenseTier': ControllerLicenseLicenseTier,
-        'Avi::ControllerLicense::License': ControllerLicenseLicenses,
     }
 

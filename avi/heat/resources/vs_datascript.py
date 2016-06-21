@@ -114,6 +114,19 @@ class VSDataScriptSet(AviResource):
         required=False,
         update_allowed=True,
     )
+    pool_group_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    pool_group_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("UUID of pool groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=pool_group_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -126,6 +139,7 @@ class VSDataScriptSet(AviResource):
         'name',
         'datascript',
         'pool_uuids',
+        'pool_group_uuids',
         'description',
     )
 
@@ -134,6 +148,7 @@ class VSDataScriptSet(AviResource):
         'name': name_schema,
         'datascript': datascript_schema,
         'pool_uuids': pool_uuids_schema,
+        'pool_group_uuids': pool_group_uuids_schema,
         'description': description_schema,
     }
 
@@ -141,82 +156,13 @@ class VSDataScriptSet(AviResource):
     field_references = {
         'pool_uuids': 'pool',
         'datascript': getattr(VSDataScript, 'field_references', {}),
+        'pool_group_uuids': 'poolgroup',
     }
 
-
-
-class VSDataScriptSetDatascript(AviNestedResource, VSDataScript):
-    resource_name = "vsdatascriptset"
-    nested_property_name = "datascript"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vsdatascriptset."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = VSDataScript.PROPERTIES + ('vsdatascriptset_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vsdatascriptset_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(VSDataScript.properties_schema)
-
-    # field references
-    field_references = {
-        'vsdatascriptset_uuid': 'vsdatascriptset',
-    }
-    field_references.update(getattr(VSDataScript, 'field_references', {}))
-
-
-class VSDataScriptSetPoolUuids(AviNestedResource):
-    resource_name = "vsdatascriptset"
-    nested_property_name = "pool_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vsdatascriptset."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    pool_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('vsdatascriptset_uuid',
-                  'pool_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vsdatascriptset_uuid': parent_uuid_schema,
-        'pool_uuids': pool_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'vsdatascriptset_uuid': 'vsdatascriptset',
-        'pool_uuids': 'pool',
-    }
 
 
 def resource_mapping():
     return {
-        'Avi::VSDataScriptSet::Datascript': VSDataScriptSetDatascript,
         'Avi::VSDataScriptSet': VSDataScriptSet,
-        'Avi::VSDataScriptSet::PoolUuid': VSDataScriptSetPoolUuids,
     }
 

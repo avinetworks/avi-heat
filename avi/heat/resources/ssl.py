@@ -10,7 +10,6 @@ from options import *
 
 from common import *
 from options import *
-from ssl_cipher_enums import *
 
 
 class SSLKeyRSAParams(object):
@@ -223,44 +222,6 @@ class CertificateManagementProfile(AviResource):
         'script_params': getattr(CustomParams, 'field_references', {}),
     }
 
-
-
-class CertificateManagementProfileScriptParams(AviNestedResource):
-    resource_name = "certificatemanagementprofile"
-    nested_property_name = "script_params"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of certificatemanagementprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    script_params_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('certificatemanagementprofile_uuid',
-                  'script_params',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'certificatemanagementprofile_uuid': parent_uuid_schema,
-        'script_params': script_params_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'certificatemanagementprofile_uuid': 'certificatemanagementprofile',
-        'script_params': getattr(CustomParams, 'field_references', {}),
-    }
 
 
 class SSLRating(object):
@@ -561,111 +522,6 @@ class SSLProfile(AviResource):
 
 
 
-class SSLProfileAcceptedVersions(AviNestedResource, SSLVersion):
-    resource_name = "sslprofile"
-    nested_property_name = "accepted_versions"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = SSLVersion.PROPERTIES + ('sslprofile_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslprofile_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(SSLVersion.properties_schema)
-
-    # field references
-    field_references = {
-        'sslprofile_uuid': 'sslprofile',
-    }
-    field_references.update(getattr(SSLVersion, 'field_references', {}))
-
-
-class SSLProfileCipherEnums(AviNestedResource):
-    resource_name = "sslprofile"
-    nested_property_name = "cipher_enums"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    cipher_enums_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('sslprofile_uuid',
-                  'cipher_enums',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslprofile_uuid': parent_uuid_schema,
-        'cipher_enums': cipher_enums_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'sslprofile_uuid': 'sslprofile',
-    }
-
-
-class SSLProfileTags(AviNestedResource):
-    resource_name = "sslprofile"
-    nested_property_name = "tags"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of sslprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    tags_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('sslprofile_uuid',
-                  'tags',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'sslprofile_uuid': parent_uuid_schema,
-        'tags': tags_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'sslprofile_uuid': 'sslprofile',
-        'tags': getattr(Tag, 'field_references', {}),
-    }
-
-
 class SSLCertificate(object):
     # all schemas
     version_schema = properties.Schema(
@@ -912,76 +768,10 @@ class PKIProfile(AviResource):
 
 
 
-class PKIProfileCaCerts(AviNestedResource, SSLCertificate):
-    resource_name = "pkiprofile"
-    nested_property_name = "ca_certs"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pkiprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = SSLCertificate.PROPERTIES + ('pkiprofile_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pkiprofile_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(SSLCertificate.properties_schema)
-
-    # field references
-    field_references = {
-        'pkiprofile_uuid': 'pkiprofile',
-    }
-    field_references.update(getattr(SSLCertificate, 'field_references', {}))
-
-
-class PKIProfileCrls(AviNestedResource, CRL):
-    resource_name = "pkiprofile"
-    nested_property_name = "crls"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of pkiprofile."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = CRL.PROPERTIES + ('pkiprofile_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'pkiprofile_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(CRL.properties_schema)
-
-    # field references
-    field_references = {
-        'pkiprofile_uuid': 'pkiprofile',
-    }
-    field_references.update(getattr(CRL, 'field_references', {}))
-
-
 def resource_mapping():
     return {
-        'Avi::CertificateManagementProfile::ScriptParam': CertificateManagementProfileScriptParams,
-        'Avi::SSLProfile::CipherEnum': SSLProfileCipherEnums,
-        'Avi::PKIProfile::Crl': PKIProfileCrls,
-        'Avi::SSLProfile::Tag': SSLProfileTags,
-        'Avi::CertificateManagementProfile': CertificateManagementProfile,
         'Avi::SSLProfile': SSLProfile,
         'Avi::PKIProfile': PKIProfile,
-        'Avi::PKIProfile::CaCert': PKIProfileCaCerts,
-        'Avi::SSLProfile::AcceptedVersion': SSLProfileAcceptedVersions,
+        'Avi::CertificateManagementProfile': CertificateManagementProfile,
     }
 

@@ -174,39 +174,8 @@ class Network(AviResource):
 
 
 
-class NetworkConfiguredSubnets(AviNestedResource, Subnet):
-    resource_name = "network"
-    nested_property_name = "configured_subnets"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of network."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = Subnet.PROPERTIES + ('network_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'network_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(Subnet.properties_schema)
-
-    # field references
-    field_references = {
-        'network_uuid': 'network',
-    }
-    field_references.update(getattr(Subnet, 'field_references', {}))
-
-
 def resource_mapping():
     return {
-        'Avi::Network::ConfiguredSubnet': NetworkConfiguredSubnets,
         'Avi::Network': Network,
     }
 

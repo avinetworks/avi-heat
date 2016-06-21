@@ -263,85 +263,8 @@ class VIMgrVcenterRuntime(AviResource):
 
 
 
-class VIMgrVcenterRuntimeDatacenterUuids(AviNestedResource):
-    resource_name = "vimgrvcenterruntime"
-    nested_property_name = "datacenter_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    datacenter_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('vimgrvcenterruntime_uuid',
-                  'datacenter_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vimgrvcenterruntime_uuid': parent_uuid_schema,
-        'datacenter_uuids': datacenter_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
-        'datacenter_uuids': 'vimgrdcruntime',
-    }
-
-
-class VIMgrVcenterRuntimeDiscoveredDatacenter(AviNestedResource):
-    resource_name = "vimgrvcenterruntime"
-    nested_property_name = "discovered_datacenter"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vimgrvcenterruntime."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    discovered_datacenter_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('vimgrvcenterruntime_uuid',
-                  'discovered_datacenter',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vimgrvcenterruntime_uuid': parent_uuid_schema,
-        'discovered_datacenter': discovered_datacenter_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'vimgrvcenterruntime_uuid': 'vimgrvcenterruntime',
-    }
-
-
 def resource_mapping():
     return {
         'Avi::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
-        'Avi::VIMgrVcenterRuntime::DiscoveredDatacenter': VIMgrVcenterRuntimeDiscoveredDatacenter,
-        'Avi::VIMgrVcenterRuntime::DatacenterUuid': VIMgrVcenterRuntimeDatacenterUuids,
     }
 

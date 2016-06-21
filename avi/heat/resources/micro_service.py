@@ -153,39 +153,8 @@ class MicroService(AviResource):
 
 
 
-class MicroServiceContainers(AviNestedResource, MicroServiceContainer):
-    resource_name = "microservice"
-    nested_property_name = "containers"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of microservice."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = MicroServiceContainer.PROPERTIES + ('microservice_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'microservice_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(MicroServiceContainer.properties_schema)
-
-    # field references
-    field_references = {
-        'microservice_uuid': 'microservice',
-    }
-    field_references.update(getattr(MicroServiceContainer, 'field_references', {}))
-
-
 def resource_mapping():
     return {
         'Avi::MicroService': MicroService,
-        'Avi::MicroService::Container': MicroServiceContainers,
     }
 

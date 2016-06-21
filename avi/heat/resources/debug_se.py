@@ -192,96 +192,6 @@ class DebugServiceEngine(AviResource):
 
 
 
-class DebugServiceEngineSeagentDebug(AviNestedResource, DebugSeAgent):
-    resource_name = "debugserviceengine"
-    nested_property_name = "seagent_debug"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of debugserviceengine."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = DebugSeAgent.PROPERTIES + ('debugserviceengine_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'debugserviceengine_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(DebugSeAgent.properties_schema)
-
-    # field references
-    field_references = {
-        'debugserviceengine_uuid': 'debugserviceengine',
-    }
-    field_references.update(getattr(DebugSeAgent, 'field_references', {}))
-
-
-class DebugServiceEngineFlags(AviNestedResource, DebugSeDataplane):
-    resource_name = "debugserviceengine"
-    nested_property_name = "flags"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of debugserviceengine."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = DebugSeDataplane.PROPERTIES + ('debugserviceengine_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'debugserviceengine_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(DebugSeDataplane.properties_schema)
-
-    # field references
-    field_references = {
-        'debugserviceengine_uuid': 'debugserviceengine',
-    }
-    field_references.update(getattr(DebugSeDataplane, 'field_references', {}))
-
-
-class DebugServiceEngineCpuShares(AviNestedResource, DebugSeCpuShares):
-    resource_name = "debugserviceengine"
-    nested_property_name = "cpu_shares"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of debugserviceengine."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = DebugSeCpuShares.PROPERTIES + ('debugserviceengine_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'debugserviceengine_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(DebugSeCpuShares.properties_schema)
-
-    # field references
-    field_references = {
-        'debugserviceengine_uuid': 'debugserviceengine',
-    }
-    field_references.update(getattr(DebugSeCpuShares, 'field_references', {}))
-
-
 class DebugIpAddr(object):
     # all schemas
     addrs_item_schema = properties.Schema(
@@ -534,43 +444,9 @@ class DebugVirtualService(AviResource):
 
 
 
-class DebugVirtualServiceFlags(AviNestedResource, DebugVsDataplane):
-    resource_name = "debugvirtualservice"
-    nested_property_name = "flags"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of debugvirtualservice."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = DebugVsDataplane.PROPERTIES + ('debugvirtualservice_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'debugvirtualservice_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(DebugVsDataplane.properties_schema)
-
-    # field references
-    field_references = {
-        'debugvirtualservice_uuid': 'debugvirtualservice',
-    }
-    field_references.update(getattr(DebugVsDataplane, 'field_references', {}))
-
-
 def resource_mapping():
     return {
-        'Avi::DebugServiceEngine::Flag': DebugServiceEngineFlags,
         'Avi::DebugVirtualService': DebugVirtualService,
         'Avi::DebugServiceEngine': DebugServiceEngine,
-        'Avi::DebugServiceEngine::CpuShare': DebugServiceEngineCpuShares,
-        'Avi::DebugVirtualService::Flag': DebugVirtualServiceFlags,
-        'Avi::DebugServiceEngine::SeagentDebug': DebugServiceEngineSeagentDebug,
     }
 

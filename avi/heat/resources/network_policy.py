@@ -236,39 +236,8 @@ class NetworkSecurityPolicy(AviResource):
 
 
 
-class NetworkSecurityPolicyRules(AviNestedResource, NetworkSecurityRule):
-    resource_name = "networksecuritypolicy"
-    nested_property_name = "rules"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of networksecuritypolicy."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = NetworkSecurityRule.PROPERTIES + ('networksecuritypolicy_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'networksecuritypolicy_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(NetworkSecurityRule.properties_schema)
-
-    # field references
-    field_references = {
-        'networksecuritypolicy_uuid': 'networksecuritypolicy',
-    }
-    field_references.update(getattr(NetworkSecurityRule, 'field_references', {}))
-
-
 def resource_mapping():
     return {
         'Avi::NetworkSecurityPolicy': NetworkSecurityPolicy,
-        'Avi::NetworkSecurityPolicy::Rule': NetworkSecurityPolicyRules,
     }
 
