@@ -91,39 +91,8 @@ class Role(AviResource):
 
 
 
-class RolePrivileges(AviNestedResource, Permission):
-    resource_name = "role"
-    nested_property_name = "privileges"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of role."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = Permission.PROPERTIES + ('role_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'role_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(Permission.properties_schema)
-
-    # field references
-    field_references = {
-        'role_uuid': 'role',
-    }
-    field_references.update(getattr(Permission, 'field_references', {}))
-
-
 def resource_mapping():
     return {
-        'Avi::Role::Privilege': RolePrivileges,
         'Avi::Role': Role,
     }
 

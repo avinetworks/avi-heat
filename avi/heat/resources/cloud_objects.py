@@ -362,7 +362,7 @@ class vCenterConfiguration(object):
     )
     management_network_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Management network to use for Avi Service Engines You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Management network to use for Avi Service Engines"),
         required=False,
         update_allowed=True,
     )
@@ -407,7 +407,6 @@ class vCenterConfiguration(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'management_ip_subnet': getattr(IpAddrPrefix, 'field_references', {}),
-        'management_network': 'vimgrnwruntime',
     }
 
 

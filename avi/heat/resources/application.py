@@ -61,47 +61,8 @@ class Application(AviResource):
 
 
 
-class ApplicationVirtualserviceUuids(AviNestedResource):
-    resource_name = "application"
-    nested_property_name = "virtualservice_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of application."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    virtualservice_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('application_uuid',
-                  'virtualservice_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'application_uuid': parent_uuid_schema,
-        'virtualservice_uuids': virtualservice_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'application_uuid': 'application',
-        'virtualservice_uuids': 'virtualservice',
-    }
-
-
 def resource_mapping():
     return {
         'Avi::Application': Application,
-        'Avi::Application::VirtualserviceUuid': ApplicationVirtualserviceUuids,
     }
 

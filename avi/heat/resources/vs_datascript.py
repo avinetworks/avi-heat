@@ -145,78 +145,8 @@ class VSDataScriptSet(AviResource):
 
 
 
-class VSDataScriptSetDatascript(AviNestedResource, VSDataScript):
-    resource_name = "vsdatascriptset"
-    nested_property_name = "datascript"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vsdatascriptset."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = VSDataScript.PROPERTIES + ('vsdatascriptset_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vsdatascriptset_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(VSDataScript.properties_schema)
-
-    # field references
-    field_references = {
-        'vsdatascriptset_uuid': 'vsdatascriptset',
-    }
-    field_references.update(getattr(VSDataScript, 'field_references', {}))
-
-
-class VSDataScriptSetPoolUuids(AviNestedResource):
-    resource_name = "vsdatascriptset"
-    nested_property_name = "pool_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vsdatascriptset."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    pool_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('vsdatascriptset_uuid',
-                  'pool_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vsdatascriptset_uuid': parent_uuid_schema,
-        'pool_uuids': pool_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'vsdatascriptset_uuid': 'vsdatascriptset',
-        'pool_uuids': 'pool',
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::VSDataScriptSet::Datascript': VSDataScriptSetDatascript,
         'Avi::VSDataScriptSet': VSDataScriptSet,
-        'Avi::VSDataScriptSet::PoolUuid': VSDataScriptSetPoolUuids,
     }
 

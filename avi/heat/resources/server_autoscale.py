@@ -9,7 +9,6 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
-from syserr import *
 from common import *
 
 
@@ -179,82 +178,6 @@ class ServerAutoScalePolicy(AviResource):
         'scalein_alertconfig_uuids': 'alertconfig',
     }
 
-
-
-class ServerAutoScalePolicyScaleoutAlertconfigUuids(AviNestedResource):
-    resource_name = "serverautoscalepolicy"
-    nested_property_name = "scaleout_alertconfig_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    scaleout_alertconfig_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('serverautoscalepolicy_uuid',
-                  'scaleout_alertconfig_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serverautoscalepolicy_uuid': parent_uuid_schema,
-        'scaleout_alertconfig_uuids': scaleout_alertconfig_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
-        'scaleout_alertconfig_uuids': 'alertconfig',
-    }
-
-
-class ServerAutoScalePolicyScaleinAlertconfigUuids(AviNestedResource):
-    resource_name = "serverautoscalepolicy"
-    nested_property_name = "scalein_alertconfig_uuids"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of serverautoscalepolicy."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    scalein_alertconfig_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('serverautoscalepolicy_uuid',
-                  'scalein_alertconfig_uuids',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'serverautoscalepolicy_uuid': parent_uuid_schema,
-        'scalein_alertconfig_uuids': scalein_alertconfig_uuids_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'serverautoscalepolicy_uuid': 'serverautoscalepolicy',
-        'scalein_alertconfig_uuids': 'alertconfig',
-    }
 
 
 class AutoScaleKVData(object):
@@ -586,8 +509,6 @@ class AutoScaleLaunchConfig(AviResource):
 def resource_mapping():
     return {
         'Avi::ServerAutoScalePolicy': ServerAutoScalePolicy,
-        'Avi::ServerAutoScalePolicy::ScaleinAlertconfigUuid': ServerAutoScalePolicyScaleinAlertconfigUuids,
-        'Avi::ServerAutoScalePolicy::ScaleoutAlertconfigUuid': ServerAutoScalePolicyScaleoutAlertconfigUuids,
         'Avi::AutoScaleLaunchConfig': AutoScaleLaunchConfig,
     }
 

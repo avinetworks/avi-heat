@@ -626,84 +626,8 @@ class SystemConfiguration(AviResource):
 
 
 
-class SystemConfigurationSshCiphers(AviNestedResource):
-    resource_name = "systemconfiguration"
-    nested_property_name = "ssh_ciphers"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of systemconfiguration."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    ssh_ciphers_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('systemconfiguration_uuid',
-                  'ssh_ciphers',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'systemconfiguration_uuid': parent_uuid_schema,
-        'ssh_ciphers': ssh_ciphers_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'systemconfiguration_uuid': 'systemconfiguration',
-    }
-
-
-class SystemConfigurationSshHmacs(AviNestedResource):
-    resource_name = "systemconfiguration"
-    nested_property_name = "ssh_hmacs"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of systemconfiguration."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-    ssh_hmacs_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = ('systemconfiguration_uuid',
-                  'ssh_hmacs',
-                 )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'systemconfiguration_uuid': parent_uuid_schema,
-        'ssh_hmacs': ssh_hmacs_item_schema,
-    }
-
-    # field references
-    field_references = {
-        'systemconfiguration_uuid': 'systemconfiguration',
-    }
-
-
 def resource_mapping():
     return {
-        'Avi::SystemConfiguration::SshCipher': SystemConfigurationSshCiphers,
         'Avi::SystemConfiguration': SystemConfiguration,
-        'Avi::SystemConfiguration::SshHmac': SystemConfigurationSshHmacs,
     }
 

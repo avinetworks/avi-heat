@@ -296,70 +296,8 @@ class VrfContext(AviResource):
 
 
 
-class VrfContextStaticRoutes(AviNestedResource, StaticRoute):
-    resource_name = "vrfcontext"
-    nested_property_name = "static_routes"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vrfcontext."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = StaticRoute.PROPERTIES + ('vrfcontext_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vrfcontext_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(StaticRoute.properties_schema)
-
-    # field references
-    field_references = {
-        'vrfcontext_uuid': 'vrfcontext',
-    }
-    field_references.update(getattr(StaticRoute, 'field_references', {}))
-
-
-class VrfContextGatewayMon(AviNestedResource, GatewayMonitor):
-    resource_name = "vrfcontext"
-    nested_property_name = "gateway_mon"
-
-    parent_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of vrfcontext."
-          " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=False,
-    )
-
-    # properties list
-    PROPERTIES = GatewayMonitor.PROPERTIES + ('vrfcontext_uuid',)
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vrfcontext_uuid': parent_uuid_schema,
-    }
-    properties_schema.update(GatewayMonitor.properties_schema)
-
-    # field references
-    field_references = {
-        'vrfcontext_uuid': 'vrfcontext',
-    }
-    field_references.update(getattr(GatewayMonitor, 'field_references', {}))
-
-
 def resource_mapping():
     return {
-        'Avi::VrfContext::GatewayMon': VrfContextGatewayMon,
         'Avi::VrfContext': VrfContext,
-        'Avi::VrfContext::StaticRoute': VrfContextStaticRoutes,
     }
 
