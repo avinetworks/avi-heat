@@ -2,8 +2,8 @@ import uuid
 import logging
 from heat.engine import resource
 from heat.common import exception as HeatException
-from avi.sdk.avi_api import ApiSession
-from avi.sdk.avi_api import ObjectNotFound
+from avi_api import ApiSession
+from avi_api import ObjectNotFound
 
 LOG = logging.getLogger(__name__)
 
