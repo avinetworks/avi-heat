@@ -1,6 +1,8 @@
 #!/bin/bash
 set -x
 assets=""
+rm -rf *tar.gz
+git checkout master
 git tag -d latest
 git tag latest
 git push -f origin latest
@@ -11,7 +13,8 @@ do
     git pull --rebase
     rm -rf dist/
     python setup.py sdist
-    mv dist/*tar.gz aviheat-$BRANCH.tar.gz
-    assets="$assets -a aviheat-$BRANCH.tar.gz#pip-package-$BRANCH"
+    fname=`ls dist`
+    mv dist/$fname ./
+    assets="$assets -a $fname#pip-package-$BRANCH"
 done
 /root/bin/hub release edit $assets -F ReleaseNote latest
