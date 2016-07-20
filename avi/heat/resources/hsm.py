@@ -185,6 +185,12 @@ class HSMSafenetLuna(object):
         required=False,
         update_allowed=True,
     )
+    client_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name prepended to client key and certificate filename"),
+        required=True,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -192,6 +198,7 @@ class HSMSafenetLuna(object):
         'is_ha',
         'client_priv_key',
         'client_cert',
+        'client_name',
     )
 
     # mapping of properties to their schemas
@@ -200,6 +207,7 @@ class HSMSafenetLuna(object):
         'is_ha': is_ha_schema,
         'client_priv_key': client_priv_key_schema,
         'client_cert': client_cert_schema,
+        'client_name': client_name_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

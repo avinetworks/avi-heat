@@ -71,42 +71,19 @@ class TCPApplicationProfile(object):
             constraints.AllowedValues(['PROXY_PROTOCOL_VERSION_2', 'PROXY_PROTOCOL_VERSION_1']),
         ],
     )
-    ssl_client_certificate_mode_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Specifies whether the client side verification is set to none, request or require."),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
-        ],
-    )
-    pki_profile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
         'proxy_protocol_enabled',
         'proxy_protocol_version',
-        'ssl_client_certificate_mode',
-        'pki_profile_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'proxy_protocol_enabled': proxy_protocol_enabled_schema,
         'proxy_protocol_version': proxy_protocol_version_schema,
-        'ssl_client_certificate_mode': ssl_client_certificate_mode_schema,
-        'pki_profile_uuid': pki_profile_uuid_schema,
     }
 
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'pki_profile_uuid': 'pkiprofile',
-    }
 
 
 
@@ -507,7 +484,7 @@ class ApplicationProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SSL_NON_HTTP']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
         ],
     )
     http_profile_schema = properties.Schema(

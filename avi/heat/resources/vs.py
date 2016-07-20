@@ -584,6 +584,12 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
+    remove_listening_port_on_vs_down_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Remove listening port if VirtualService is down"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -716,6 +722,7 @@ class VirtualService(AviResource):
         'flow_dist',
         'ign_pool_net_reach',
         'ssl_sess_cache_avg_size',
+        'remove_listening_port_on_vs_down',
         'description',
         'east_west_placement',
         'scaleout_ecmp',
@@ -780,6 +787,7 @@ class VirtualService(AviResource):
         'flow_dist': flow_dist_schema,
         'ign_pool_net_reach': ign_pool_net_reach_schema,
         'ssl_sess_cache_avg_size': ssl_sess_cache_avg_size_schema,
+        'remove_listening_port_on_vs_down': remove_listening_port_on_vs_down_schema,
         'description': description_schema,
         'east_west_placement': east_west_placement_schema,
         'scaleout_ecmp': scaleout_ecmp_schema,

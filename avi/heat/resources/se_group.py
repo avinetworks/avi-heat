@@ -15,6 +15,36 @@ from dos import *
 from analytics_policy import *
 
 
+class CustomTag(object):
+    # all schemas
+    tag_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    tag_val_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'tag_key',
+        'tag_val',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'tag_key': tag_key_schema,
+        'tag_val': tag_val_schema,
+    }
+
+
+
+
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -382,7 +412,7 @@ class ServiceEngineGroup(AviResource):
     )
     connection_memory_percentage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Percentage of memory for connection state. This will come at the expence of memory used for http in-memory cache."),
+        _("Percentage of memory for connection state. This will come at the expense of memory used for HTTP in-memory cache."),
         required=False,
         update_allowed=True,
     )
@@ -412,7 +442,7 @@ class ServiceEngineGroup(AviResource):
     )
     log_disksz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum disk space to be used for debug and application logs in MB"),
+        _("Maximum disk capacity (in MB) to be allocated to an SE. This is exclusively used for debug and log data."),
         required=False,
         update_allowed=True,
     )
@@ -438,7 +468,7 @@ class ServiceEngineGroup(AviResource):
     )
     hm_on_standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable health monitoring on standby SE."),
+        _("Enable active health monitoring from the standby SE for all placed virtual services."),
         required=False,
         update_allowed=True,
     )
@@ -474,7 +504,7 @@ class ServiceEngineGroup(AviResource):
     )
     auto_redistribute_active_standby_load_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("This setting applies only if Load distribution across Active Standby is enabled. On failover of a Service Engine, all Virtual Services will end up using the same Service Engine as Active. If this option is enabled, controller will auto redistribute the Virtual Services when the failed Service Engine comes back up, this can cause momentary traffic loss on redistribution. If this option is disabled, user has to manually execute the redistribute API on the Service Engine Group to achieve the same."),
+        _("Redistribution of virtual services from the takeover SE to the replacement SE can cause momentary traffic loss. If the auto-redistribute load option is left in its default off state, any desired rebalancing requires calls to REST API."),
         required=False,
         update_allowed=True,
     )
@@ -489,6 +519,20 @@ class ServiceEngineGroup(AviResource):
         properties.Schema.LIST,
         _("This field is applicable only if the ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, with manual load distribution among the Active Standby ServiceEngines enabled. Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 2 Tag."),
         schema=floating_intf_ip_se_2_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    custom_tag_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=CustomTag.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    custom_tag_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Custom tag will be used to create the tags for SE instance in AWS. Note this is not the same as the prefix for SE name"),
+        schema=custom_tag_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -553,6 +597,7 @@ class ServiceEngineGroup(AviResource):
         'distribute_load_active_standby',
         'auto_redistribute_active_standby_load',
         'floating_intf_ip_se_2',
+        'custom_tag',
     )
 
     # mapping of properties to their schemas
@@ -615,6 +660,7 @@ class ServiceEngineGroup(AviResource):
         'distribute_load_active_standby': distribute_load_active_standby_schema,
         'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
         'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
+        'custom_tag': custom_tag_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -622,6 +668,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip_se_2': getattr(IpAddr, 'field_references', {}),
         'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
         'vcenter_hosts': getattr(VcenterHosts, 'field_references', {}),
+        'custom_tag': getattr(CustomTag, 'field_references', {}),
         'mgmt_network_uuid': 'network',
         'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
         'mgmt_subnet': getattr(IpAddrPrefix, 'field_references', {}),

@@ -668,13 +668,13 @@ class MarathonConfiguration(object):
     )
     marathon_username_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Username for Basic Auth"),
+        _("Username for Marathon authentication"),
         required=False,
         update_allowed=True,
     )
     marathon_password_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Password for Basic Auth"),
+        _("Password for Marathon authentication"),
         required=False,
         update_allowed=True,
     )
@@ -710,6 +710,12 @@ class MarathonConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    tenant_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Tenant to pin this Marathon instance to. If set, a tenant object will be created in Avi bearing this name and all applications created in this marathon will be associated with this tenant regardless of the label contents in the application description."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -721,6 +727,7 @@ class MarathonConfiguration(object):
         'framework_tag',
         'vs_name_tag_framework',
         'use_token_auth',
+        'tenant',
     )
 
     # mapping of properties to their schemas
@@ -733,6 +740,7 @@ class MarathonConfiguration(object):
         'framework_tag': framework_tag_schema,
         'vs_name_tag_framework': vs_name_tag_framework_schema,
         'use_token_auth': use_token_auth_schema,
+        'tenant': tenant_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1162,12 +1170,40 @@ class LinuxServerConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    se_sys_disk_path_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("SE System Logs disk path for cloud"),
+        required=False,
+        update_allowed=True,
+    )
+    se_sys_disk_size_GB_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("SE System Logs disk size for cloud"),
+        required=False,
+        update_allowed=True,
+    )
+    se_log_disk_path_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("SE Client Logs disk path for cloud"),
+        required=False,
+        update_allowed=True,
+    )
+    se_log_disk_size_GB_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("SE Client Log disk size for cloud"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'ssh_attr',
         'docker_registry_se',
         'hosts',
+        'se_sys_disk_path',
+        'se_sys_disk_size_GB',
+        'se_log_disk_path',
+        'se_log_disk_size_GB',
     )
 
     # mapping of properties to their schemas
@@ -1175,6 +1211,10 @@ class LinuxServerConfiguration(object):
         'ssh_attr': ssh_attr_schema,
         'docker_registry_se': docker_registry_se_schema,
         'hosts': hosts_schema,
+        'se_sys_disk_path': se_sys_disk_path_schema,
+        'se_sys_disk_size_GB': se_sys_disk_size_GB_schema,
+        'se_log_disk_path': se_log_disk_path_schema,
+        'se_log_disk_size_GB': se_log_disk_size_GB_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2047,14 +2087,14 @@ class OpenStackConfiguration(object):
     )
     admin_tenant_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Openstack admin tenant name"),
+        _("Openstack admin tenant (or project) information."),
         required=True,
         update_allowed=True,
     )
     keystone_host_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Keystone's hostname or IP address."),
-        required=True,
+        _("Keystone's hostname or IP address. (Deprecated) Use auth_url instead."),
+        required=False,
         update_allowed=True,
     )
     mgmt_network_name_schema = properties.Schema(
@@ -2201,6 +2241,18 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    auth_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Auth URL for connecting to keystone. If this is specified, any value provided for keystone_host is ignored."),
+        required=False,
+        update_allowed=True,
+    )
+    insecure_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow self-signed certificates when communicating with https service endpoints."),
+        required=False,
+        update_allowed=True,
+    )
     nuage_vsd_host_schema = properties.Schema(
         properties.Schema.STRING,
         _("Nuage VSD host name or IP address"),
@@ -2270,6 +2322,8 @@ class OpenStackConfiguration(object):
         'use_internal_endpoints',
         'admin_tenant_uuid',
         'config_drive',
+        'auth_url',
+        'insecure',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
@@ -2305,6 +2359,8 @@ class OpenStackConfiguration(object):
         'use_internal_endpoints': use_internal_endpoints_schema,
         'admin_tenant_uuid': admin_tenant_uuid_schema,
         'config_drive': config_drive_schema,
+        'auth_url': auth_url_schema,
+        'insecure': insecure_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,

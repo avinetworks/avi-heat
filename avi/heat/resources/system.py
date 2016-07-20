@@ -338,6 +338,12 @@ class PortalConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    disable_remote_cli_shell_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable Remote CLI Shell Client access"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -352,6 +358,7 @@ class PortalConfiguration(object):
         'http_port',
         'https_port',
         'password_strength_check',
+        'disable_remote_cli_shell',
     )
 
     # mapping of properties to their schemas
@@ -367,6 +374,7 @@ class PortalConfiguration(object):
         'http_port': http_port_schema,
         'https_port': https_port_schema,
         'password_strength_check': password_strength_check_schema,
+        'disable_remote_cli_shell': disable_remote_cli_shell_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
