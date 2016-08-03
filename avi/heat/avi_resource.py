@@ -255,6 +255,9 @@ class AviNestedResource(AviResource):
         )
         parent_uuid_prop = self.resource_name + "_uuid"
         parent_uuid = res_def[parent_uuid_prop]
+        if not parent_uuid:
+            LOG.info("Parent already deleted!")
+            return True
         res_def.pop(parent_uuid_prop)
         data = {"delete": {self.nested_property_name: [res_def]}}
         try:
