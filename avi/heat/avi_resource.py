@@ -1,5 +1,6 @@
 import uuid
 import logging
+import time
 from heat.engine import resource
 from heat.common import exception as HeatException
 from avi_api import ApiSession
@@ -192,6 +193,9 @@ class AviResource(resource.Resource):
                                      self.resource_id),
                           tenant_uuid=self.get_avi_tenant_uuid()
                           ).json()
+            if self.resource_name == 'virtualservice':
+                LOG.info('await ports cleanup for VS %s', self.resource_id)
+                time.sleep(30)
         except ObjectNotFound as e:
             LOG.exception("Object %s not found: %s", (self.resource_name,
                                                       self.resource_id), e)
