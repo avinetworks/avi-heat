@@ -15,8 +15,19 @@ def os2avi_uuid(obj_type, eid):
 
 
 class AviResource(resource.Resource):
+
+    def get_project_name(self):
+        if "access" in self.context.auth_token_info:
+            return self.context.auth_token_info["access"]["token"]["tenant"]["name"]
+        return self.context.auth_token_info['token']['project']['name']
+
+    def get_user_name(self):
+        if "access" in self.context.auth_token_info:
+            return self.context.auth_token_info["access"]["user"]["name"]
+        return self.context.auth_token_info['token']['user']['name']
+
     def get_avi_tenant_uuid(self):
-        if self.context.auth_token_info['token']['project']['name'] == 'admin':
+        if self.get_project_name() == 'admin':
             return "admin"
         return os2avi_uuid("tenant",
                            self.context.tenant_id)
@@ -30,7 +41,7 @@ class AviResource(resource.Resource):
         except Exception as e:
             LOG.exception("Error during finding avi address: %s", e)
             return None
-        username = self.context.auth_token_info['token']['user']['name']
+        username = self.get_user_name()
         api_session = ApiSession(
             controller_ip=address,
             username=username,
