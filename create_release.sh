@@ -9,6 +9,7 @@ git push -f origin latest
 set -e
 for BRANCH in master 16.2
 do
+    rm -rf VERSION
     git checkout $BRANCH
     git pull --rebase
     rm -rf dist/
@@ -17,4 +18,6 @@ do
     mv dist/$fname ./
     assets="$assets -a $fname#pip-package-$BRANCH"
 done
+rm -rf VERSION
+git checkout master
 /root/bin/hub release edit $assets -F ReleaseNote latest
