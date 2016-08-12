@@ -9,13 +9,15 @@ from setuptools import setup, find_packages
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-ct = time.gmtime()
-date = "%d%02d%02d" % (ct.tm_year, ct.tm_mon, ct.tm_mday)
-AVI_PIP_VERSION = '16.2b' + date
 if os.path.exists("./VERSION"):
     with open("./VERSION", "r") as f:
-        fs = yaml.load(f.read())
-        AVI_PIP_VERSION = "%s.%s" % (fs["Version"], fs["build"])
+        AVI_PIP_VERSION = f.readline()
+else:
+    ct = time.gmtime()
+    date = "%d%02d%02d" % (ct.tm_year, ct.tm_mon, ct.tm_mday)
+    AVI_PIP_VERSION = '16.2b' + date
+    with open("./VERSION", "w+") as f:
+        f.write("%s" % AVI_PIP_VERSION)
 
 setup(
     name = 'aviheat',
