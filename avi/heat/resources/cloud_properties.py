@@ -306,7 +306,7 @@ class CloudInfo(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
         ],
     )
     htypes_item_schema = properties.Schema(
@@ -398,7 +398,7 @@ class CloudProperties(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
         ],
     )
     cc_vtypes_schema = properties.Schema(
@@ -471,6 +471,6 @@ class CloudProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::CloudProperties': CloudProperties,
+        'Avi::LBaaS::CloudProperties': CloudProperties,
     }
 

@@ -677,6 +677,18 @@ class LdapAuthSettings(object):
         required=False,
         update_allowed=True,
     )
+    email_attribute_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("LDAP attribute that refers to user email"),
+        required=False,
+        update_allowed=True,
+    )
+    full_name_attribute_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("LDAP attribute that refers to user's full name"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -687,6 +699,8 @@ class LdapAuthSettings(object):
         'bind_as_administrator',
         'settings',
         'user_bind',
+        'email_attribute',
+        'full_name_attribute',
     )
 
     # mapping of properties to their schemas
@@ -698,6 +712,8 @@ class LdapAuthSettings(object):
         'bind_as_administrator': bind_as_administrator_schema,
         'settings': settings_schema,
         'user_bind': user_bind_schema,
+        'email_attribute': email_attribute_schema,
+        'full_name_attribute': full_name_attribute_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -785,6 +801,6 @@ class AuthProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AuthProfile': AuthProfile,
+        'Avi::LBaaS::AuthProfile': AuthProfile,
     }
 

@@ -60,6 +60,6 @@ class Backup(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Backup': Backup,
+        'Avi::LBaaS::Backup': Backup,
     }
 

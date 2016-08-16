@@ -508,7 +508,7 @@ class AutoScaleLaunchConfig(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ServerAutoScalePolicy': ServerAutoScalePolicy,
-        'Avi::AutoScaleLaunchConfig': AutoScaleLaunchConfig,
+        'Avi::LBaaS::ServerAutoScalePolicy': ServerAutoScalePolicy,
+        'Avi::LBaaS::AutoScaleLaunchConfig': AutoScaleLaunchConfig,
     }
 

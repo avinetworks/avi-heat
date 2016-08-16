@@ -33,3 +33,68 @@ class VcenterDatastore(object):
     }
 
 
+
+
+class CdpLldpInfo(object):
+    # all schemas
+    switch_info_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LLDP', 'NOT_APPLICABLE', 'CDP']),
+        ],
+    )
+    device_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    chassis_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    port_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    mgmtaddr_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    system_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'switch_info_type',
+        'device',
+        'chassis',
+        'port',
+        'mgmtaddr',
+        'system_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'switch_info_type': switch_info_type_schema,
+        'device': device_schema,
+        'chassis': chassis_schema,
+        'port': port_schema,
+        'mgmtaddr': mgmtaddr_schema,
+        'system_name': system_name_schema,
+    }
+
+

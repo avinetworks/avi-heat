@@ -194,6 +194,12 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    allow_unauthenticated_apis_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow unauthenticated access for special APIs"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -227,6 +233,7 @@ class ControllerProperties(AviResource):
         'attach_ip_retry_interval',
         'attach_ip_retry_limit',
         'persistence_key_rotate_period',
+        'allow_unauthenticated_apis',
     )
 
     # mapping of properties to their schemas
@@ -261,6 +268,7 @@ class ControllerProperties(AviResource):
         'attach_ip_retry_interval': attach_ip_retry_interval_schema,
         'attach_ip_retry_limit': attach_ip_retry_limit_schema,
         'persistence_key_rotate_period': persistence_key_rotate_period_schema,
+        'allow_unauthenticated_apis': allow_unauthenticated_apis_schema,
     }
 
 
@@ -268,6 +276,6 @@ class ControllerProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ControllerProperties': ControllerProperties,
+        'Avi::LBaaS::ControllerProperties': ControllerProperties,
     }
 

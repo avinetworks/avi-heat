@@ -770,8 +770,8 @@ class PKIProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SSLProfile': SSLProfile,
-        'Avi::PKIProfile': PKIProfile,
-        'Avi::CertificateManagementProfile': CertificateManagementProfile,
+        'Avi::LBaaS::SSLProfile': SSLProfile,
+        'Avi::LBaaS::PKIProfile': PKIProfile,
+        'Avi::LBaaS::CertificateManagementProfile': CertificateManagementProfile,
     }
 

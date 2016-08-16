@@ -246,12 +246,26 @@ class IpamDnsInternalProfile(object):
         required=False,
         update_allowed=True,
     )
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'dns_service_domain',
         'ttl',
         'dns_virtualservice_uuid',
+        'usable_network_uuids',
     )
 
     # mapping of properties to their schemas
@@ -259,6 +273,7 @@ class IpamDnsInternalProfile(object):
         'dns_service_domain': dns_service_domain_schema,
         'ttl': ttl_schema,
         'dns_virtualservice_uuid': dns_virtualservice_uuid_schema,
+        'usable_network_uuids': usable_network_uuids_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -409,6 +424,6 @@ class IpamDnsProviderProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::IpamDnsProviderProfile': IpamDnsProviderProfile,
+        'Avi::LBaaS::IpamDnsProviderProfile': IpamDnsProviderProfile,
     }
 

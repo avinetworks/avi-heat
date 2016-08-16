@@ -443,6 +443,12 @@ class VlanInterface(object):
         required=False,
         update_allowed=True,
     )
+    vrf_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -450,6 +456,7 @@ class VlanInterface(object):
         'vlan_id',
         'dhcp_enabled',
         'vnic_networks',
+        'vrf_uuid',
     )
 
     # mapping of properties to their schemas
@@ -458,10 +465,12 @@ class VlanInterface(object):
         'vlan_id': vlan_id_schema,
         'dhcp_enabled': dhcp_enabled_schema,
         'vnic_networks': vnic_networks_schema,
+        'vrf_uuid': vrf_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'vrf_uuid': 'vrfcontext',
         'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
     }
 
@@ -545,6 +554,6 @@ class vNIC(object):
 
 def resource_mapping():
     return {
-        'Avi::ServiceEngine': ServiceEngine,
+        'Avi::LBaaS::ServiceEngine': ServiceEngine,
     }
 

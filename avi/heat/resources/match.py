@@ -1424,9 +1424,9 @@ class ResponseMatchTarget(object):
 
 def resource_mapping():
     return {
-        'Avi::IpAddrGroup': IpAddrGroup,
-        'Avi::MicroServiceGroup': MicroServiceGroup,
-        'Avi::StringGroup': StringGroup,
-        'Avi::IpAddrGroup::Addr': IpAddrGroupAddrs,
+        'Avi::LBaaS::IpAddrGroup': IpAddrGroup,
+        'Avi::LBaaS::MicroServiceGroup': MicroServiceGroup,
+        'Avi::LBaaS::StringGroup': StringGroup,
+        'Avi::LBaaS::IpAddrGroup::Addr': IpAddrGroupAddrs,
     }
 

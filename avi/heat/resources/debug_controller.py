@@ -548,6 +548,6 @@ class DebugController(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::DebugController': DebugController,
+        'Avi::LBaaS::DebugController': DebugController,
     }
 
