@@ -1575,6 +1575,6 @@ class SeProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SeProperties': SeProperties,
+        'Avi::LBaaS::SeProperties': SeProperties,
     }
 

@@ -235,12 +235,6 @@ class AnalyticsPolicy(object):
         required=False,
         update_allowed=True,
     )
-    analytics_profile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Analytics preferences and settings. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=False,
-        update_allowed=True,
-    )
     client_insights_sampling_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -255,7 +249,6 @@ class AnalyticsPolicy(object):
         'client_log_filters',
         'client_insights',
         'metrics_realtime_update',
-        'analytics_profile_uuid',
         'client_insights_sampling',
     )
 
@@ -265,7 +258,6 @@ class AnalyticsPolicy(object):
         'client_log_filters': client_log_filters_schema,
         'client_insights': client_insights_schema,
         'metrics_realtime_update': metrics_realtime_update_schema,
-        'analytics_profile_uuid': analytics_profile_uuid_schema,
         'client_insights_sampling': client_insights_sampling_schema,
     }
 
@@ -274,7 +266,6 @@ class AnalyticsPolicy(object):
         'client_log_filters': getattr(ClientLogFilter, 'field_references', {}),
         'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'field_references', {}),
         'client_insights_sampling': getattr(ClientInsightsSampling, 'field_references', {}),
-        'analytics_profile_uuid': 'analyticsprofile',
         'full_client_logs': getattr(FullClientLogs, 'field_references', {}),
     }
 

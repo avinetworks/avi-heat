@@ -51,6 +51,18 @@ class BgpPeer(object):
         required=False,
         update_allowed=True,
     )
+    advertise_vip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Advertise VIP to this Peer"),
+        required=False,
+        update_allowed=True,
+    )
+    advertise_snat_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Advertise SNAT IP to this Peer"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -60,6 +72,8 @@ class BgpPeer(object):
         'md5_secret',
         'bfd',
         'network_uuid',
+        'advertise_vip',
+        'advertise_snat_ip',
     )
 
     # mapping of properties to their schemas
@@ -70,6 +84,8 @@ class BgpPeer(object):
         'md5_secret': md5_secret_schema,
         'bfd': bfd_schema,
         'network_uuid': network_uuid_schema,
+        'advertise_vip': advertise_vip_schema,
+        'advertise_snat_ip': advertise_snat_ip_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -298,6 +314,6 @@ class VrfContext(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::VrfContext': VrfContext,
+        'Avi::LBaaS::VrfContext': VrfContext,
     }
 

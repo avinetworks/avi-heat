@@ -17,6 +17,7 @@ from vs_datascript import *
 from application_policy import *
 from auth import *
 from rate import *
+from gslb import *
 
 
 class ServicePoolSelector(object):
@@ -528,7 +529,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
         ],
     )
     avi_allocated_vip_schema = properties.Schema(
@@ -587,6 +588,12 @@ class VirtualService(AviResource):
     pool_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The pool group is an object that contains pools. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    remove_listening_port_on_vs_down_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Remove listening port if VirtualService is down"),
         required=False,
         update_allowed=True,
     )
@@ -678,6 +685,12 @@ class VirtualService(AviResource):
             constraints.AllowedValues(['NO_LABEL', 'SE_LABEL', 'CLIENT_LABEL', 'OTHER_LABEL']),
         ],
     )
+    enable_rhi_snat_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable Route Health Injection for Source NAT'ted floating IP Address using the BGP Config in the vrf context"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -732,6 +745,7 @@ class VirtualService(AviResource):
         'ign_pool_net_reach',
         'ssl_sess_cache_avg_size',
         'pool_group_uuid',
+        'remove_listening_port_on_vs_down',
         'description',
         'east_west_placement',
         'scaleout_ecmp',
@@ -743,6 +757,7 @@ class VirtualService(AviResource):
         'snat_ip',
         'active_standby_se_tag',
         'flow_label_type',
+        'enable_rhi_snat',
     )
 
     # mapping of properties to their schemas
@@ -798,6 +813,7 @@ class VirtualService(AviResource):
         'ign_pool_net_reach': ign_pool_net_reach_schema,
         'ssl_sess_cache_avg_size': ssl_sess_cache_avg_size_schema,
         'pool_group_uuid': pool_group_uuid_schema,
+        'remove_listening_port_on_vs_down': remove_listening_port_on_vs_down_schema,
         'description': description_schema,
         'east_west_placement': east_west_placement_schema,
         'scaleout_ecmp': scaleout_ecmp_schema,
@@ -809,6 +825,7 @@ class VirtualService(AviResource):
         'snat_ip': snat_ip_schema,
         'active_standby_se_tag': active_standby_se_tag_schema,
         'flow_label_type': flow_label_type_schema,
+        'enable_rhi_snat': enable_rhi_snat_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1254,6 +1271,6 @@ class SeList(object):
 
 def resource_mapping():
     return {
-        'Avi::VirtualService': VirtualService,
+        'Avi::LBaaS::VirtualService': VirtualService,
     }
 

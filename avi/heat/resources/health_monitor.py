@@ -264,6 +264,151 @@ class HealthMonitorDNS(object):
 
 
 
+class GlobalHealthMonitor(AviResource):
+    resource_name = "globalhealthmonitor"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("A user friendly name for this health monitor."),
+        required=True,
+        update_allowed=True,
+    )
+    send_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Frequency, in seconds, that monitors are sent to a server."),
+        required=False,
+        update_allowed=True,
+    )
+    receive_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value."),
+        required=False,
+        update_allowed=True,
+    )
+    successful_checks_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of continuous successful health checks before server is marked up."),
+        required=False,
+        update_allowed=True,
+    )
+    failed_checks_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of continuous failed health checks before the server is marked down."),
+        required=False,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Type of the health monitor."),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_PING']),
+        ],
+    )
+    tcp_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorTcp.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    http_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorHttp.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    https_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorHttp.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    external_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorExternal.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    udp_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorUdp.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    dns_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HealthMonitorDNS.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    monitor_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Use this port instead of the port defined for the server in the Pool. If the monitor succeeds to this port, the load balanced traffic will still be sent to the port of the server defined within the Pool."),
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'send_interval',
+        'receive_timeout',
+        'successful_checks',
+        'failed_checks',
+        'type',
+        'tcp_monitor',
+        'http_monitor',
+        'https_monitor',
+        'external_monitor',
+        'udp_monitor',
+        'dns_monitor',
+        'monitor_port',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'send_interval': send_interval_schema,
+        'receive_timeout': receive_timeout_schema,
+        'successful_checks': successful_checks_schema,
+        'failed_checks': failed_checks_schema,
+        'type': type_schema,
+        'tcp_monitor': tcp_monitor_schema,
+        'http_monitor': http_monitor_schema,
+        'https_monitor': https_monitor_schema,
+        'external_monitor': external_monitor_schema,
+        'udp_monitor': udp_monitor_schema,
+        'dns_monitor': dns_monitor_schema,
+        'monitor_port': monitor_port_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'https_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
+        'dns_monitor': getattr(HealthMonitorDNS, 'field_references', {}),
+        'tcp_monitor': getattr(HealthMonitorTcp, 'field_references', {}),
+        'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
+        'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
+        'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
+    }
+
+
+
 class HealthMonitor(AviResource):
     resource_name = "healthmonitor"
     # all schemas
@@ -411,6 +556,7 @@ class HealthMonitor(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HealthMonitor': HealthMonitor,
+        'Avi::LBaaS::GlobalHealthMonitor': GlobalHealthMonitor,
+        'Avi::LBaaS::HealthMonitor': HealthMonitor,
     }
 

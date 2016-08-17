@@ -177,6 +177,24 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    exclude_invalid_dns_query_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude 'invalid dns query' from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
+    exclude_invalid_dns_domain_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude 'invalid dns domain' from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
+    exclude_no_dns_record_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude 'no dns record' from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
     hs_performance_boost_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Adds free performance score credits to health score. It can be used for compensating health score for known slow applications."),
@@ -345,6 +363,18 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    exclude_gs_down_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude 'global service down' from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
+    exclude_no_valid_gs_member_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude 'no valid global service member' from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -374,6 +404,9 @@ class AnalyticsProfile(AviResource):
         'exclude_server_tcp_reset_as_error',
         'exclude_persistence_change_as_error',
         'exclude_syn_retransmit_as_error',
+        'exclude_invalid_dns_query_as_error',
+        'exclude_invalid_dns_domain_as_error',
+        'exclude_no_dns_record_as_error',
         'hs_performance_boost',
         'hs_max_anomaly_penalty',
         'hs_max_resources_penalty',
@@ -402,6 +435,8 @@ class AnalyticsProfile(AviResource):
         'disable_se_analytics',
         'hs_pscore_traffic_threshold_l4_client',
         'hs_pscore_traffic_threshold_l4_server',
+        'exclude_gs_down_as_error',
+        'exclude_no_valid_gs_member_as_error',
     )
 
     # mapping of properties to their schemas
@@ -432,6 +467,9 @@ class AnalyticsProfile(AviResource):
         'exclude_server_tcp_reset_as_error': exclude_server_tcp_reset_as_error_schema,
         'exclude_persistence_change_as_error': exclude_persistence_change_as_error_schema,
         'exclude_syn_retransmit_as_error': exclude_syn_retransmit_as_error_schema,
+        'exclude_invalid_dns_query_as_error': exclude_invalid_dns_query_as_error_schema,
+        'exclude_invalid_dns_domain_as_error': exclude_invalid_dns_domain_as_error_schema,
+        'exclude_no_dns_record_as_error': exclude_no_dns_record_as_error_schema,
         'hs_performance_boost': hs_performance_boost_schema,
         'hs_max_anomaly_penalty': hs_max_anomaly_penalty_schema,
         'hs_max_resources_penalty': hs_max_resources_penalty_schema,
@@ -460,6 +498,8 @@ class AnalyticsProfile(AviResource):
         'disable_se_analytics': disable_se_analytics_schema,
         'hs_pscore_traffic_threshold_l4_client': hs_pscore_traffic_threshold_l4_client_schema,
         'hs_pscore_traffic_threshold_l4_server': hs_pscore_traffic_threshold_l4_server_schema,
+        'exclude_gs_down_as_error': exclude_gs_down_as_error_schema,
+        'exclude_no_valid_gs_member_as_error': exclude_no_valid_gs_member_as_error_schema,
     }
 
 
@@ -467,6 +507,6 @@ class AnalyticsProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AnalyticsProfile': AnalyticsProfile,
+        'Avi::LBaaS::AnalyticsProfile': AnalyticsProfile,
     }
 

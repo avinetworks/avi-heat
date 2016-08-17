@@ -57,7 +57,7 @@ class PriorityLabels(AviResource):
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The name of the pool group."),
+        _("The name of the priority labels."),
         required=True,
         update_allowed=True,
     )
@@ -123,12 +123,22 @@ class PoolGroupMember(object):
         required=False,
         update_allowed=True,
     )
+    deployment_state_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Pool deployment state used with the PG deployment policy"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['EVALUATION_IN_PROGRESS', 'IN_SERVICE', 'OUT_OF_SERVICE', 'EVALUATION_FAILED']),
+        ],
+    )
 
     # properties list
     PROPERTIES = (
         'pool_uuid',
         'ratio',
         'priority_label',
+        'deployment_state',
     )
 
     # mapping of properties to their schemas
@@ -136,6 +146,7 @@ class PoolGroupMember(object):
         'pool_uuid': pool_uuid_schema,
         'ratio': ratio_schema,
         'priority_label': priority_label_schema,
+        'deployment_state': deployment_state_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -265,6 +276,47 @@ class FailActionHTTPRedirect(object):
 
 
 
+class PGDeploymentRule(object):
+    # all schemas
+    metric_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    operator_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['CO_GE', 'CO_LE', 'CO_LT', 'CO_GT', 'CO_EQ', 'CO_NE']),
+        ],
+    )
+    threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("metric threshold that is used as the pass fail. If it is not provided then it will simply compare it with current pool vs new pool"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'metric_id',
+        'operator',
+        'threshold',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'metric_id': metric_id_schema,
+        'operator': operator_schema,
+        'threshold': threshold_schema,
+    }
+
+
+
+
 class PlacementNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -355,6 +407,100 @@ class FailAction(object):
         'redirect': getattr(FailActionHTTPRedirect, 'field_references', {}),
         'backup_pool': getattr(FailActionBackupPool, 'field_references', {}),
         'local_rsp': getattr(FailActionHTTPLocalResponse, 'field_references', {}),
+    }
+
+
+
+class PoolGroupDeploymentPolicy(AviResource):
+    resource_name = "poolgroupdeploymentpolicy"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The name of the pool group deployment policy"),
+        required=True,
+        update_allowed=True,
+    )
+    scheme_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("deployment scheme"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['BLUE_GREEN', 'CANARY']),
+        ],
+    )
+    test_traffic_ratio_rampup_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Ratio of the traffic that is sent to the pool under test. test ratio of 100 means blue green"),
+        required=False,
+        update_allowed=True,
+    )
+    rules_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=PGDeploymentRule.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    rules_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=rules_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    evaluation_duration_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Duration of evaluation period for automatic deployment"),
+        required=False,
+        update_allowed=True,
+    )
+    target_test_traffic_ratio_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Target traffic ratio before pool is made production"),
+        required=False,
+        update_allowed=True,
+    )
+    auto_disable_old_prod_pools_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("It will automatically disable old production pools once there is a new production candidate"),
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'scheme',
+        'test_traffic_ratio_rampup',
+        'rules',
+        'evaluation_duration',
+        'target_test_traffic_ratio',
+        'auto_disable_old_prod_pools',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'scheme': scheme_schema,
+        'test_traffic_ratio_rampup': test_traffic_ratio_rampup_schema,
+        'rules': rules_schema,
+        'evaluation_duration': evaluation_duration_schema,
+        'target_test_traffic_ratio': target_test_traffic_ratio_schema,
+        'auto_disable_old_prod_pools': auto_disable_old_prod_pools_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(PGDeploymentRule, 'field_references', {}),
     }
 
 
@@ -528,7 +674,7 @@ class PoolGroup(AviResource):
     )
     priority_labels_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the priority labels You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the priority labels. If not provided, pool group member priority label will be interpreted as a number with a larger number considered higher priority. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -538,9 +684,15 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    deployment_policy_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("When setup autoscale manager will automatically promote new pools into production when deployment goals are met."),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
-        _("A description of the pool group."),
+        _(""),
         required=False,
         update_allowed=True,
     )
@@ -551,6 +703,7 @@ class PoolGroup(AviResource):
         'members',
         'priority_labels_uuid',
         'min_servers',
+        'deployment_policy_uuid',
         'description',
     )
 
@@ -560,6 +713,7 @@ class PoolGroup(AviResource):
         'members': members_schema,
         'priority_labels_uuid': priority_labels_uuid_schema,
         'min_servers': min_servers_schema,
+        'deployment_policy_uuid': deployment_policy_uuid_schema,
         'description': description_schema,
     }
 
@@ -756,6 +910,12 @@ class Server(object):
         required=False,
         update_allowed=True,
     )
+    external_orchestration_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UID of server in external orchestration systems"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -777,6 +937,7 @@ class Server(object):
         'static',
         'server_node',
         'availability_zone',
+        'external_orchestration_id',
     )
 
     # mapping of properties to their schemas
@@ -799,6 +960,7 @@ class Server(object):
         'static': static_schema,
         'server_node': server_node_schema,
         'availability_zone': availability_zone_schema,
+        'external_orchestration_id': external_orchestration_id_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1301,9 +1463,10 @@ class PoolServers(AviNestedResource, Server):
 
 def resource_mapping():
     return {
-        'Avi::PriorityLabels': PriorityLabels,
-        'Avi::PoolGroup': PoolGroup,
-        'Avi::Pool::Server': PoolServers,
-        'Avi::Pool': Pool,
+        'Avi::LBaaS::PriorityLabels': PriorityLabels,
+        'Avi::LBaaS::PoolGroup': PoolGroup,
+        'Avi::LBaaS::Pool::Server': PoolServers,
+        'Avi::LBaaS::PoolGroupDeploymentPolicy': PoolGroupDeploymentPolicy,
+        'Avi::LBaaS::Pool': Pool,
     }
 

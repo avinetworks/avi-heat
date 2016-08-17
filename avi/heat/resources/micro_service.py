@@ -155,6 +155,6 @@ class MicroService(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::MicroService': MicroService,
+        'Avi::LBaaS::MicroService': MicroService,
     }
 

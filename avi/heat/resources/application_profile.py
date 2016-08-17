@@ -15,6 +15,7 @@ from common import *
 from ssl import *
 from rate import *
 from dos import *
+from match import *
 
 
 class DosRateLimitProfile(object):
@@ -54,6 +55,85 @@ class DosRateLimitProfile(object):
 
 
 
+class DnsServiceApplicationProfile(object):
+    # all schemas
+    num_dns_ip_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Specifies the number of IP addresses returned by the DNS Service. Enter 0 to return all IP addresses"),
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Specifies the TTL value for A records served by DNS Service"),
+        required=False,
+        update_allowed=True,
+    )
+    error_response_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Error response to the client when the DNS service encounters an error processing the client query"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_ERROR_RESPONSE_ERROR', 'DNS_ERROR_RESPONSE_NONE']),
+        ],
+    )
+    domain_names_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    domain_names_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Subdomain names serviced by this Virtual Service. These are configured as Ends-With semantics"),
+        schema=domain_names_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    private_addresses_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnets of clients that can be construed as a private subnet, so that the private vIP can be served. If client ip does not fall in this subnet, then they are assumed to be internet clients, and the public ip is served"),
+        schema=IpAddrMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    public_addresses_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnets of clients that can be construed as a public subnet, so that the public vIP can be served. If client ip does not fall in this subnet, then they are assumed to be private clients, and the private ip is served"),
+        schema=IpAddrMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'num_dns_ip',
+        'ttl',
+        'error_response',
+        'domain_names',
+        'private_addresses',
+        'public_addresses',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'num_dns_ip': num_dns_ip_schema,
+        'ttl': ttl_schema,
+        'error_response': error_response_schema,
+        'domain_names': domain_names_schema,
+        'private_addresses': private_addresses_schema,
+        'public_addresses': public_addresses_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'private_addresses': getattr(IpAddrMatch, 'field_references', {}),
+        'public_addresses': getattr(IpAddrMatch, 'field_references', {}),
+    }
+
+
+
 class TCPApplicationProfile(object):
     # all schemas
     proxy_protocol_enabled_schema = properties.Schema(
@@ -71,42 +151,19 @@ class TCPApplicationProfile(object):
             constraints.AllowedValues(['PROXY_PROTOCOL_VERSION_2', 'PROXY_PROTOCOL_VERSION_1']),
         ],
     )
-    ssl_client_certificate_mode_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Specifies whether the client side verification is set to none, request or require."),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
-        ],
-    )
-    pki_profile_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
         'proxy_protocol_enabled',
         'proxy_protocol_version',
-        'ssl_client_certificate_mode',
-        'pki_profile_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'proxy_protocol_enabled': proxy_protocol_enabled_schema,
         'proxy_protocol_version': proxy_protocol_version_schema,
-        'ssl_client_certificate_mode': ssl_client_certificate_mode_schema,
-        'pki_profile_uuid': pki_profile_uuid_schema,
     }
 
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'pki_profile_uuid': 'pkiprofile',
-    }
 
 
 
@@ -507,7 +564,7 @@ class ApplicationProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SSL_NON_HTTP']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
         ],
     )
     http_profile_schema = properties.Schema(
@@ -531,6 +588,19 @@ class ApplicationProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    dns_service_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Specifies various DNS service related controls for virtual service."),
+        schema=DnsServiceApplicationProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    preserve_client_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Specifies if client IP needs to be preserved for backend connection"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -545,6 +615,8 @@ class ApplicationProfile(AviResource):
         'http_profile',
         'dos_rl_profile',
         'tcp_app_profile',
+        'dns_service_profile',
+        'preserve_client_ip',
         'description',
     )
 
@@ -555,11 +627,14 @@ class ApplicationProfile(AviResource):
         'http_profile': http_profile_schema,
         'dos_rl_profile': dos_rl_profile_schema,
         'tcp_app_profile': tcp_app_profile_schema,
+        'dns_service_profile': dns_service_profile_schema,
+        'preserve_client_ip': preserve_client_ip_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'dns_service_profile': getattr(DnsServiceApplicationProfile, 'field_references', {}),
         'tcp_app_profile': getattr(TCPApplicationProfile, 'field_references', {}),
         'http_profile': getattr(HTTPApplicationProfile, 'field_references', {}),
         'dos_rl_profile': getattr(DosRateLimitProfile, 'field_references', {}),
@@ -569,6 +644,6 @@ class ApplicationProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ApplicationProfile': ApplicationProfile,
+        'Avi::LBaaS::ApplicationProfile': ApplicationProfile,
     }
 

@@ -316,6 +316,6 @@ class NetworkProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::NetworkProfile': NetworkProfile,
+        'Avi::LBaaS::NetworkProfile': NetworkProfile,
     }
 

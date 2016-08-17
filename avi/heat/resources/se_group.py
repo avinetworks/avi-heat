@@ -15,6 +15,36 @@ from dos import *
 from analytics_policy import *
 
 
+class CustomTag(object):
+    # all schemas
+    tag_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    tag_val_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'tag_key',
+        'tag_val',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'tag_key': tag_key_schema,
+        'tag_val': tag_val_schema,
+    }
+
+
+
+
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -93,6 +123,169 @@ class VcenterHosts(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'host_uuids': 'vimgrhostruntime',
+    }
+
+
+
+class IptableRule(object):
+    # all schemas
+    src_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    dst_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    src_port_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=PortRange.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    dst_port_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=PortRange.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    proto_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PROTO_TCP', 'PROTO_UDP', 'PROTO_ICMP', 'PROTO_ALL']),
+        ],
+    )
+    input_interface_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    output_interface_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    action_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['MASQUERADE', 'DROP', 'DNAT', 'ACCEPT', 'REJECT']),
+        ],
+    )
+    dnat_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    tag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'src_ip',
+        'dst_ip',
+        'src_port',
+        'dst_port',
+        'proto',
+        'input_interface',
+        'output_interface',
+        'action',
+        'dnat_ip',
+        'tag',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'src_ip': src_ip_schema,
+        'dst_ip': dst_ip_schema,
+        'src_port': src_port_schema,
+        'dst_port': dst_port_schema,
+        'proto': proto_schema,
+        'input_interface': input_interface_schema,
+        'output_interface': output_interface_schema,
+        'action': action_schema,
+        'dnat_ip': dnat_ip_schema,
+        'tag': tag_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'src_ip': getattr(IpAddrPrefix, 'field_references', {}),
+        'dst_ip': getattr(IpAddrPrefix, 'field_references', {}),
+        'src_port': getattr(PortRange, 'field_references', {}),
+        'dst_port': getattr(PortRange, 'field_references', {}),
+        'dnat_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
+class IptableRuleSet(object):
+    # all schemas
+    table_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    chain_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    rules_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IptableRule.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    rules_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=rules_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'table',
+        'chain',
+        'rules',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'table': table_schema,
+        'chain': chain_schema,
+        'rules': rules_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'rules': getattr(IptableRule, 'field_references', {}),
     }
 
 
@@ -382,7 +575,7 @@ class ServiceEngineGroup(AviResource):
     )
     connection_memory_percentage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Percentage of memory for connection state. This will come at the expence of memory used for http in-memory cache."),
+        _("Percentage of memory for connection state. This will come at the expense of memory used for HTTP in-memory cache."),
         required=False,
         update_allowed=True,
     )
@@ -400,19 +593,19 @@ class ServiceEngineGroup(AviResource):
     )
     host_attribute_key_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Host Attribute key"),
+        _("Key of a Key,Value pair identifying a set of hosts. Currently used to separate North-South and East-West ServiceEngine sizing requirements, specifically in Container ecosystems, where ServiceEngines on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
         required=False,
         update_allowed=True,
     )
     host_attribute_value_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Host Attribute value"),
+        _("Value of a Key,Value pair identifying a set of hosts. Currently used to separate North-South and East-West ServiceEngine sizing requirements, specifically in Container ecosystems, where ServiceEngines on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
         required=False,
         update_allowed=True,
     )
     log_disksz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum disk space to be used for debug and application logs in MB"),
+        _("Maximum disk capacity (in MB) to be allocated to an SE. This is exclusively used for debug and log data."),
         required=False,
         update_allowed=True,
     )
@@ -438,13 +631,13 @@ class ServiceEngineGroup(AviResource):
     )
     hm_on_standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable health monitoring on standby SE."),
+        _("Enable active health monitoring from the standby SE for all placed virtual services."),
         required=False,
         update_allowed=True,
     )
     per_app_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Per-App SE mode is designed for deploying dedicated load balancers per App (VS). In this mode, each SE is limited to a max of 2 VSs. vCPUs in Per-App SEs count towards licensing usage at 25% rate."),
+        _("Per-app SE mode is designed for deploying dedicated load balancers per app (VS). In this mode, each SE is limited to a max of 2 VSs. vCPUs in per-app SEs count towards licensing usage at 25% rate."),
         required=False,
         update_allowed=True,
     )
@@ -474,7 +667,7 @@ class ServiceEngineGroup(AviResource):
     )
     auto_redistribute_active_standby_load_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("This setting applies only if Load distribution across Active Standby is enabled. On failover of a Service Engine, all Virtual Services will end up using the same Service Engine as Active. If this option is enabled, controller will auto redistribute the Virtual Services when the failed Service Engine comes back up, this can cause momentary traffic loss on redistribution. If this option is disabled, user has to manually execute the redistribute API on the Service Engine Group to achieve the same."),
+        _("Redistribution of virtual services from the takeover SE to the replacement SE can cause momentary traffic loss. If the auto-redistribute load option is left in its default off state, any desired rebalancing requires calls to REST API."),
         required=False,
         update_allowed=True,
     )
@@ -489,6 +682,64 @@ class ServiceEngineGroup(AviResource):
         properties.Schema.LIST,
         _("This field is applicable only if the ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, with manual load distribution among the Active Standby ServiceEngines enabled. Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 2 Tag."),
         schema=floating_intf_ip_se_2_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    custom_tag_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=CustomTag.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    custom_tag_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Custom tag will be used to create the tags for SE instance in AWS. Note this is not the same as the prefix for SE name"),
+        schema=custom_tag_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    dedicated_dispatcher_core_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Dedicate the core that handles packet receive/transmit from the network to just the dispatching function. Don't use it for TCP/IP and SSL functions."),
+        required=False,
+        update_allowed=True,
+    )
+    cpu_socket_affinity_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allocate all the CPU cores for the Service Engine Virtual Machines  on the same CPU socket. Applicable only for vCenter Cloud."),
+        required=False,
+        update_allowed=True,
+    )
+    num_flow_cores_sum_changes_to_ignore_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of changes in num flow cores sum to ignore."),
+        required=False,
+        update_allowed=True,
+    )
+    iptables_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IptableRuleSet.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    iptables_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Iptable Rules"),
+        schema=iptables_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    enable_routing_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable routing for this ServiceEngineGroup "),
+        required=False,
+        update_allowed=True,
+    )
+    advertise_backend_networks_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Advertise reach-ability of backend server networks via ADC through BGP for default gateway feature."),
         required=False,
         update_allowed=True,
     )
@@ -553,6 +804,13 @@ class ServiceEngineGroup(AviResource):
         'distribute_load_active_standby',
         'auto_redistribute_active_standby_load',
         'floating_intf_ip_se_2',
+        'custom_tag',
+        'dedicated_dispatcher_core',
+        'cpu_socket_affinity',
+        'num_flow_cores_sum_changes_to_ignore',
+        'iptables',
+        'enable_routing',
+        'advertise_backend_networks',
     )
 
     # mapping of properties to their schemas
@@ -615,13 +873,22 @@ class ServiceEngineGroup(AviResource):
         'distribute_load_active_standby': distribute_load_active_standby_schema,
         'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
         'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
+        'custom_tag': custom_tag_schema,
+        'dedicated_dispatcher_core': dedicated_dispatcher_core_schema,
+        'cpu_socket_affinity': cpu_socket_affinity_schema,
+        'num_flow_cores_sum_changes_to_ignore': num_flow_cores_sum_changes_to_ignore_schema,
+        'iptables': iptables_schema,
+        'enable_routing': enable_routing_schema,
+        'advertise_backend_networks': advertise_backend_networks_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'iptables': getattr(IptableRuleSet, 'field_references', {}),
         'floating_intf_ip_se_2': getattr(IpAddr, 'field_references', {}),
         'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
         'vcenter_hosts': getattr(VcenterHosts, 'field_references', {}),
+        'custom_tag': getattr(CustomTag, 'field_references', {}),
         'mgmt_network_uuid': 'network',
         'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
         'mgmt_subnet': getattr(IpAddrPrefix, 'field_references', {}),
@@ -635,6 +902,6 @@ class ServiceEngineGroup(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ServiceEngineGroup': ServiceEngineGroup,
+        'Avi::LBaaS::ServiceEngineGroup': ServiceEngineGroup,
     }
 
