@@ -113,6 +113,6 @@ class SnmpTrapProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SnmpTrapProfile': SnmpTrapProfile,
+        'Avi::LBaaS::SnmpTrapProfile': SnmpTrapProfile,
     }
 

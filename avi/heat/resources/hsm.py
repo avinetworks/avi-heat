@@ -256,6 +256,12 @@ class HardwareSecurityModule(object):
         required=False,
         update_allowed=True,
     )
+    use_data_network_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If enabled, data network is used to communicate with HSM,else, the management network is used."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -263,6 +269,7 @@ class HardwareSecurityModule(object):
         'rfs',
         'nethsm',
         'sluna',
+        'use_data_network',
     )
 
     # mapping of properties to their schemas
@@ -271,6 +278,7 @@ class HardwareSecurityModule(object):
         'rfs': rfs_schema,
         'nethsm': nethsm_schema,
         'sluna': sluna_schema,
+        'use_data_network': use_data_network_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -320,6 +328,6 @@ class HardwareSecurityModuleGroup(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HardwareSecurityModuleGroup': HardwareSecurityModuleGroup,
+        'Avi::LBaaS::HardwareSecurityModuleGroup': HardwareSecurityModuleGroup,
     }
 

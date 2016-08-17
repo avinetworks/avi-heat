@@ -446,7 +446,7 @@ class DebugVirtualService(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::DebugVirtualService': DebugVirtualService,
-        'Avi::DebugServiceEngine': DebugServiceEngine,
+        'Avi::LBaaS::DebugVirtualService': DebugVirtualService,
+        'Avi::LBaaS::DebugServiceEngine': DebugServiceEngine,
     }
 

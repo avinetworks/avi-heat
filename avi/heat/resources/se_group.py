@@ -536,6 +536,18 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    dedicated_dispatcher_core_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Dedicate the core that handles packet receive/transmit from the network to just the dispatching function. Don't use it for TCP/IP and SSL functions."),
+        required=False,
+        update_allowed=True,
+    )
+    cpu_socket_affinity_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allocate all the CPU cores for the Service Engine Virtual Machines  on the same CPU socket. Applicable only for vCenter Cloud."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -598,6 +610,8 @@ class ServiceEngineGroup(AviResource):
         'auto_redistribute_active_standby_load',
         'floating_intf_ip_se_2',
         'custom_tag',
+        'dedicated_dispatcher_core',
+        'cpu_socket_affinity',
     )
 
     # mapping of properties to their schemas
@@ -661,6 +675,8 @@ class ServiceEngineGroup(AviResource):
         'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
         'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
         'custom_tag': custom_tag_schema,
+        'dedicated_dispatcher_core': dedicated_dispatcher_core_schema,
+        'cpu_socket_affinity': cpu_socket_affinity_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -682,6 +698,6 @@ class ServiceEngineGroup(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ServiceEngineGroup': ServiceEngineGroup,
+        'Avi::LBaaS::ServiceEngineGroup': ServiceEngineGroup,
     }
 

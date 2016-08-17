@@ -636,6 +636,6 @@ class SystemConfiguration(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::SystemConfiguration': SystemConfiguration,
+        'Avi::LBaaS::SystemConfiguration': SystemConfiguration,
     }
 

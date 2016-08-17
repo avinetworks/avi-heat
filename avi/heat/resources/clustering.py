@@ -134,6 +134,6 @@ class Cluster(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Cluster': Cluster,
+        'Avi::LBaaS::Cluster': Cluster,
     }
 

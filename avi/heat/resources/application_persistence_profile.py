@@ -295,6 +295,6 @@ class ApplicationPersistenceProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ApplicationPersistenceProfile': ApplicationPersistenceProfile,
+        'Avi::LBaaS::ApplicationPersistenceProfile': ApplicationPersistenceProfile,
     }
 

@@ -467,6 +467,6 @@ class AnalyticsProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AnalyticsProfile': AnalyticsProfile,
+        'Avi::LBaaS::AnalyticsProfile': AnalyticsProfile,
     }
 

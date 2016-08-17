@@ -323,6 +323,6 @@ class ControllerLicense(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ControllerLicense': ControllerLicense,
+        'Avi::LBaaS::ControllerLicense': ControllerLicense,
     }
 
