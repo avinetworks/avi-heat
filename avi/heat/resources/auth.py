@@ -785,6 +785,6 @@ class AuthProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::AuthProfile': AuthProfile,
+        'Avi::LBaaS::AuthProfile': AuthProfile,
     }
 

@@ -545,6 +545,6 @@ class vNIC(object):
 
 def resource_mapping():
     return {
-        'Avi::ServiceEngine': ServiceEngine,
+        'Avi::LBaaS::ServiceEngine': ServiceEngine,
     }
 

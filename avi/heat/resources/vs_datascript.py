@@ -147,6 +147,6 @@ class VSDataScriptSet(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::VSDataScriptSet': VSDataScriptSet,
+        'Avi::LBaaS::VSDataScriptSet': VSDataScriptSet,
     }
 

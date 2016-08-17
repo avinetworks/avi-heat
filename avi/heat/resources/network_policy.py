@@ -63,13 +63,13 @@ class NetworkSecurityPolicyActionRLParam(object):
     # all schemas
     max_rate_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum number of connections or requests or packets per second."),
         required=True,
         update_allowed=True,
     )
     burst_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum number of connections or requests or packets to be rate limited instantaneously."),
         required=True,
         update_allowed=True,
     )
@@ -238,6 +238,6 @@ class NetworkSecurityPolicy(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::NetworkSecurityPolicy': NetworkSecurityPolicy,
+        'Avi::LBaaS::NetworkSecurityPolicy': NetworkSecurityPolicy,
     }
 

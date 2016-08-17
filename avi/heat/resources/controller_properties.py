@@ -276,6 +276,6 @@ class ControllerProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ControllerProperties': ControllerProperties,
+        'Avi::LBaaS::ControllerProperties': ControllerProperties,
     }
 

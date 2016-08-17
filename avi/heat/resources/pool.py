@@ -980,6 +980,12 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    rewrite_host_header_to_sni_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If SNI server name is specified, rewrite incoming host header to the SNI server name."),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
@@ -1034,6 +1040,7 @@ class Pool(AviResource):
         'domain_name',
         'sni_enabled',
         'server_name',
+        'rewrite_host_header_to_sni',
         'description',
     )
 
@@ -1084,6 +1091,7 @@ class Pool(AviResource):
         'domain_name': domain_name_schema,
         'sni_enabled': sni_enabled_schema,
         'server_name': server_name_schema,
+        'rewrite_host_header_to_sni': rewrite_host_header_to_sni_schema,
         'description': description_schema,
     }
 
@@ -1140,7 +1148,7 @@ class PoolServers(AviNestedResource, Server):
 
 def resource_mapping():
     return {
-        'Avi::Pool::Server': PoolServers,
-        'Avi::Pool': Pool,
+        'Avi::LBaaS::Pool::Server': PoolServers,
+        'Avi::LBaaS::Pool': Pool,
     }
 

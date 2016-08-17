@@ -669,6 +669,12 @@ class VirtualService(AviResource):
             constraints.AllowedValues(['ACTIVE_STANDBY_SE_1', 'ACTIVE_STANDBY_SE_2']),
         ],
     )
+    enable_rhi_snat_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable Route Health Injection for Source NAT'ted floating IP Address using the BGP Config in the vrf context"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -733,6 +739,7 @@ class VirtualService(AviResource):
         'enable_rhi',
         'snat_ip',
         'active_standby_se_tag',
+        'enable_rhi_snat',
     )
 
     # mapping of properties to their schemas
@@ -798,6 +805,7 @@ class VirtualService(AviResource):
         'enable_rhi': enable_rhi_schema,
         'snat_ip': snat_ip_schema,
         'active_standby_se_tag': active_standby_se_tag_schema,
+        'enable_rhi_snat': enable_rhi_snat_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1217,6 +1225,6 @@ class SeList(object):
 
 def resource_mapping():
     return {
-        'Avi::VirtualService': VirtualService,
+        'Avi::LBaaS::VirtualService': VirtualService,
     }
 

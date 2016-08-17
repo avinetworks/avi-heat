@@ -176,6 +176,6 @@ class Network(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Network': Network,
+        'Avi::LBaaS::Network': Network,
     }
 

@@ -63,6 +63,6 @@ class Application(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Application': Application,
+        'Avi::LBaaS::Application': Application,
     }
 

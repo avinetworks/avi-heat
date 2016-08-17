@@ -471,6 +471,6 @@ class CloudProperties(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::CloudProperties': CloudProperties,
+        'Avi::LBaaS::CloudProperties': CloudProperties,
     }
 

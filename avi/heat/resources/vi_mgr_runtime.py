@@ -265,6 +265,6 @@ class VIMgrVcenterRuntime(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
+        'Avi::LBaaS::VIMgrVcenterRuntime': VIMgrVcenterRuntime,
     }
 

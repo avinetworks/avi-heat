@@ -93,6 +93,6 @@ class Role(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Role': Role,
+        'Avi::LBaaS::Role': Role,
     }
 

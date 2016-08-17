@@ -2621,7 +2621,7 @@ class Cloud(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::Cloud': Cloud,
-        'Avi::CloudConnectorUser': CloudConnectorUser,
+        'Avi::LBaaS::Cloud': Cloud,
+        'Avi::LBaaS::CloudConnectorUser': CloudConnectorUser,
     }
 

@@ -411,6 +411,6 @@ class HealthMonitor(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::HealthMonitor': HealthMonitor,
+        'Avi::LBaaS::HealthMonitor': HealthMonitor,
     }
 

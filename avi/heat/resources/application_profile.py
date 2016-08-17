@@ -546,6 +546,6 @@ class ApplicationProfile(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::ApplicationProfile': ApplicationProfile,
+        'Avi::LBaaS::ApplicationProfile': ApplicationProfile,
     }
 
