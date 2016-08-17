@@ -199,14 +199,22 @@ class AviResource(resource.Resource):
 
     def handle_delete(self):
         client = self.get_avi_client()
+        cloud_uuid = None
+        uri = '%s/%s' % (self.resource_name, self.resource_id)
+        tenant_uuid = self.get_avi_tenant_uuid()
         try:
-            client.delete("%s/%s" % (self.resource_name,
-                                     self.resource_id),
-                          tenant_uuid=self.get_avi_tenant_uuid()
-                          ).json()
             if self.resource_name == 'virtualservice':
-                LOG.info('await ports cleanup for VS %s', self.resource_id)
-                time.sleep(30)
+                obj = client.get(uri, tenant_uuid=tenant_uuid).json()
+                cloud_uuid = obj['cloud_ref'].rsplit('/', 1)[-1]
+            # delete object
+            client.delete(uri, tenant_uuid=tenant_uuid).json()
+            if cloud_uuid:
+                LOG.info('force invoke ports GC for VS %s in Cloud %s',
+                    self.resource_id, cloud_uuid)
+                gc = 'cloud/%s/gc' % cloud_uuid
+                for i in xrange(4):
+                    time.sleep(30)
+                    client.put(gc, tenant_uuid=tenant_uuid, params={'force':'true'})
         except ObjectNotFound as e:
             LOG.exception("Object %s not found: %s", (self.resource_name,
                                                       self.resource_id), e)

@@ -14,7 +14,7 @@ define this service and an endpoint for it in your keystone catalog.
 Installation Steps
 ------------------
 
-1. Install the AviHeat PIP Package from https://github.com/ypraveen/avi-heat/releases
+1. Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
 
 2. Update your /etc/heat/heat.conf and add the following in [Default] section:
 
