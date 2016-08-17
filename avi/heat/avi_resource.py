@@ -207,7 +207,7 @@ class AviResource(resource.Resource):
                 obj = client.get(uri, tenant_uuid=tenant_uuid).json()
                 cloud_uuid = obj['cloud_ref'].rsplit('/', 1)[-1]
             # delete object
-            client.delete(uri, tenant_uuid=tenant_uuid)
+            client.delete(uri, tenant_uuid=tenant_uuid).json()
             if cloud_uuid:
                 LOG.info('force invoke ports GC for VS %s in Cloud %s',
                     self.resource_id, cloud_uuid)
