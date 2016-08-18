@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 description: Template to Avi Heat resources
 resources:
   hm:
-    type: Avi::HealthMonitor
+    type: Avi::LBaaS::HealthMonitor
     properties:
       name: "mytesthm"
       receive_timeout: 2
@@ -17,7 +17,7 @@ resources:
           - HTTP_4XX 
         http_request: "GET / HTTP/1.0"
   pool:
-    type: Avi::Pool
+    type: Avi::LBaaS::Pool
     properties:
       name: "testpool"
       default_server_port: 8092
@@ -33,7 +33,7 @@ resources:
             type: V4
           port: 8081
   vs:
-    type: Avi::VirtualService
+    type: Avi::LBaaS::VirtualService
     properties:
       name: "testvs"
       pool_uuid: {get_resource: pool}
