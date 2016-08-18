@@ -1,0 +1,177 @@
+heat_template_version: 2015-04-30
+
+description: Create an Avi load balancer
+
+parameters:
+  ext_net:
+    type: string
+    description: External network name/id
+    default: ext-net
+
+  subnet_cidr:
+    type: string
+    description: Private subnet CIDR
+    default: 172.24.16.0/24
+
+  image:
+    type: string
+    label: Image name or ID
+    description: Image to be used for compute instance
+
+  flavor:
+    type: string
+    label: Flavor
+    description: Type of instance (flavor) to be used
+    default: m1.small
+
+
+resources:
+
+  myrouter:
+    type: OS::Neutron::Router
+    properties:
+      ha: False
+      external_gateway_info:
+        network: { get_param: ext_net }
+
+  mynet:
+    type: OS::Neutron::Net
+    properties:
+      name:
+        str_replace:
+          template: $stack_name$_net
+          params:
+            $stack_name$: { get_param: "OS::stack_name" }
+
+  mysubnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: mynet }
+      cidr: { get_param: subnet_cidr }
+      dns_nameservers: [ "8.8.8.8", "8.8.4.4" ]
+
+  myrouterinterface:
+    type: OS::Neutron::RouterInterface
+    depends_on: [ mysubnet ]
+    properties:
+      subnet: { get_resource: mysubnet }
+      router: { get_resource: myrouter }
+
+  securitygroup:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: { get_param: "OS::stack_name" }
+      rules:
+       - direction: ingress
+         remote_ip_prefix: 0.0.0.0/0
+         protocol: icmp
+       - remote_ip_prefix: 0.0.0.0/0
+         protocol: tcp
+         port_range_min: 80
+         port_range_max: 80
+       - remote_ip_prefix: 0.0.0.0/0
+         protocol: tcp
+         port_range_min: 22
+         port_range_max: 22
+
+  myinstance1:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      networks:
+        - network: { get_resource: mynet }
+
+  myinstance2:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      networks:
+        - network: { get_resource: mynet }
+
+  myport:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_resource: mynet }
+      fixed_ips:
+        - subnet: { get_resource: mysubnet }
+      security_groups:
+        - { get_resource: securitygroup }
+
+  myfip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: Ext-Net
+
+  myfipassoc:
+    type: OS::Neutron::FloatingIPAssociation
+    depends_on: myrouterinterface
+    properties:
+      floatingip_id: { get_resource: myfip }
+      port_id: { get_resource: myport }
+
+  # -- Avi Types --
+  hm:
+    type: Avi::HealthMonitor
+    properties:
+      name: "mytesthm"
+      receive_timeout: 2
+      failed_checks: 2
+      successful_checks: 6
+      send_interval: 2
+      type: HEALTH_MONITOR_HTTP
+      http_monitor:
+        http_response_code:
+          - HTTP_2XX
+          - HTTP_3XX
+          - HTTP_4XX
+        http_request: "GET / HTTP/1.0"
+
+  pool:
+    type: Avi::Pool
+    properties:
+      name: "testpool"
+      default_server_port: 8092
+      health_monitor_uuids:
+        - {get_resource: hm}
+      lb_algorithm: LB_ALGORITHM_ROUND_ROBIN
+      servers:
+        - ip:
+            addr: { get_attr: [myinstance1, first_address] }
+            type: V4
+          port: 8080
+        - ip:
+            addr: { get_attr: [myinstance2, first_address] }
+            type: V4
+          port: 8081
+
+  vs:
+    type: Avi::VirtualService
+    properties:
+      name: "testvs"
+      pool_uuid: {get_resource: pool}
+      ip_address:
+        addr: {get_attr: [myport, fixed_ips, 0, ip_address]}
+        type: V4
+      services:
+        - port: 80
+      application_profile_uuid: get_avi_uuid_by_name:System-Secure-HTTP
+
+outputs:
+  pool_members:
+        description: IP address of pool members
+        value: { 
+            list_join: [ ',', [get_attr: [ myinstance1, first_address ], get_attr: [ myinstance2, first_address ]] ] 
+        }
+
+  vs_private_ip:
+        description: Private IP address of VS
+        value: {get_attr: [myport, fixed_ips, 0, ip_address]}
+
+  vs_public_ip:
+        description: Floating IP address of VS
+        value: {get_attr: [myfip, floating_ip_address]}
+
+  # -- Avi types --
+#  heat stack-create -f /tmp/x.hot -P ext_net=ext-net -P subnet_cidr=172.24.17.0/24 -P image=75ea1412-1c14-4f92-b0c5-45460d994e78 twc
