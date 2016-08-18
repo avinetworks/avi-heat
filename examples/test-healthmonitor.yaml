@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 description: Template to Avi Heat resources
 resources:
   hm:
-    type: Avi::HealthMonitor
+    type: Avi::LBaaS::HealthMonitor
     properties:
       name: "mytesthm"
       receive_timeout: 2
