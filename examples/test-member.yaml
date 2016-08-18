@@ -4,7 +4,7 @@ description: Template to Avi Heat resources
 # you can create it using test-vs.yaml example
 resources:
   member:
-    type: Avi::Pool::Server
+    type: Avi::LBaaS::Pool::Server
     properties:
       pool_uuid:  get_avi_uuid_by_name:testpool
       ip:
