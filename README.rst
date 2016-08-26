@@ -29,3 +29,15 @@ Installation Steps
 3. Restart heat-engine after adding this:
 
    e.g., service heat-engine restart
+
+
+Usage Notes
+-----------
+
+For properties that need UUIDs, you can specify a name but prefixed with string "get_avi_uuid_by_name:".
+Internally, heat-engine would perform an API call to resolve the provided name into Avi UUID.
+For an example usage, please refer to test-member.yaml in examples directory: https://github.com/avinetworks/avi-heat/examples/test-member.yaml.
+
+If you want to provide the name for a UUID property via an input parameter to your template,
+please refer to the example in test-member-pool-as-param.yaml: https://github.com/avinetworks/avi-heat/examples/test-member-pool-as-param.yaml.
+

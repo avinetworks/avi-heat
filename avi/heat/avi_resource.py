@@ -126,8 +126,11 @@ class AviResource(resource.Resource):
     def _show_resource(self, client=None):
         if not client:
             client = self.get_avi_client()
-        obj = client.get("%s/%s" % (self.resource_name,
-                                    self.resource_id),
+        url = "%s/%s" % (self.resource_name,
+                         self.resource_id)
+        if self.resource_name in ["virtualservice", "pool"]:
+            url += "?join_subresources=runtime"
+        obj = client.get(url,
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
         return self._fix_dict_refs(obj)

@@ -1,0 +1,24 @@
+heat_template_version: 2015-04-30
+description: Template to Avi Heat resources
+# Make sure that pool_name provided already exists on Avi.
+# You can create it using test-vs.yaml example
+# in which case you should provide "testpool" for the pool_name param
+parameters:
+   pool_name:
+    type: string
+    label: Pool Name
+
+resources:
+  member:
+    type: Avi::LBaaS::Pool::Server
+    properties:
+      pool_uuid:
+        str_replace:
+          template: get_avi_uuid_by_name:pname
+          params:
+            pname: { get_param: pool_name }
+      ip:
+        addr: 10.10.10.50
+        type: V4
+      port: 8080
+
