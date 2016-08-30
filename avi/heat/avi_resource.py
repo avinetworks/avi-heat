@@ -6,6 +6,12 @@ from heat.common import exception as HeatException
 from avi_api import ApiSession
 from avi_api import ObjectNotFound
 
+# for python 2/3 compatibility
+try:
+    basestring
+except:
+    basestring = str
+
 LOG = logging.getLogger(__name__)
 
 
@@ -15,10 +21,12 @@ def os2avi_uuid(obj_type, eid):
 
 
 class AviResource(resource.Resource):
+    resource_name = ""  # should be set by derived resource classes
 
     def get_project_name(self):
         if "access" in self.context.auth_token_info:
-            return self.context.auth_token_info["access"]["token"]["tenant"]["name"]
+            return self.context.auth_token_info["access"]["token"][
+                "tenant"]["name"]
         return self.context.auth_token_info['token']['project']['name']
 
     def get_user_name(self):
@@ -51,7 +59,6 @@ class AviResource(resource.Resource):
 
     def create_clean_properties(self, inp, field_refs=None, client=None,
                                 keyname=None):
-        LOG.debug("args fpr clean (inp, frefs, keyname): %s, %s, %s", inp, field_refs, keyname)
         if isinstance(inp, dict):
             newdict = dict()
             newfrefs = field_refs
@@ -163,7 +170,8 @@ class AviResource(resource.Resource):
                 # for each previous entry, find it in obj and replace it
                 # with the entry from the new val
                 # we need key to match
-                # put a debugger and catch it here to understand how to get keys
+                # put a debugger and catch it here to understand how
+                # to get keys
                 # until then just replace with newval
                 if not new_val:
                     obj.pop(p, None)
@@ -222,6 +230,7 @@ class AviNestedResource(AviResource):
     #   resource uuid
     # nested_property_name would refer to the name of the property in the
     #   parent resource that needs to be patched
+    nested_property_name = ""
 
     def get_parent_uuid(self):
         parent_uuid_prop = self.resource_name + "_uuid"
@@ -261,8 +270,12 @@ class AviNestedResource(AviResource):
 
     def handle_update(self, json_snippet, tmpl_diff, prop_diff):
         # force delete and replace
-        if prop_diff:
+        if not prop_diff:
+            return
+        if hasattr(HeatException, "UpdateReplace"):
             raise HeatException.UpdateReplace()
+        else:
+            raise HeatException.NotSupported()
 
     def handle_delete(self):
         client = self.get_avi_client()
