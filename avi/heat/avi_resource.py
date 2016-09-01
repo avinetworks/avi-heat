@@ -5,20 +5,24 @@ from heat.engine import resource
 from heat.common import exception as HeatException
 from avi_api import ApiSession
 from avi_api import ObjectNotFound
+from avi_utils import os2avi_uuid, cmp_a_in_b, fix_dict_refs
+
+# for python 2/3 compatibility
+try:
+    basestring
+except:
+    basestring = str
 
 LOG = logging.getLogger(__name__)
 
 
-def os2avi_uuid(obj_type, eid):
-    uid = str(uuid.UUID(eid))
-    return obj_type + "-" + uid
-
-
 class AviResource(resource.Resource):
+    resource_name = ""  # should be set by derived resource classes
 
     def get_project_name(self):
         if "access" in self.context.auth_token_info:
-            return self.context.auth_token_info["access"]["token"]["tenant"]["name"]
+            return self.context.auth_token_info["access"]["token"][
+                "tenant"]["name"]
         return self.context.auth_token_info['token']['project']['name']
 
     def get_user_name(self):
@@ -51,7 +55,6 @@ class AviResource(resource.Resource):
 
     def create_clean_properties(self, inp, field_refs=None, client=None,
                                 keyname=None):
-        LOG.debug("args fpr clean (inp, frefs, keyname): %s, %s, %s", inp, field_refs, keyname)
         if isinstance(inp, dict):
             newdict = dict()
             newfrefs = field_refs
@@ -102,27 +105,6 @@ class AviResource(resource.Resource):
         self.resource_id_set(obj['uuid'])
         return True
 
-    def _fix_dict_refs(self, obj):
-        for k in obj.keys():
-            if k.endswith("_refs") or k.endswith("_ref"):
-                newval = self._fix_non_dict_refs(obj[k])
-                obj.pop(k)
-                new_key = "uuid".join(k.rsplit("ref", 1))
-                obj[new_key] = newval
-            elif isinstance(obj[k], dict):
-                obj[k] = self._fix_dict_refs(obj[k])
-        return obj
-
-    def _fix_non_dict_refs(self, obj):
-        if isinstance(obj, list):
-            nlist = []
-            for k in obj:
-                nlist.append(self._fix_non_dict_refs(k))
-            return nlist
-        elif isinstance(obj, basestring):
-            return obj.split("/")[-1].split("#")[0]
-        return obj
-
     def _show_resource(self, client=None):
         if not client:
             client = self.get_avi_client()
@@ -133,7 +115,7 @@ class AviResource(resource.Resource):
         obj = client.get(url,
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
-        return self._fix_dict_refs(obj)
+        return fix_dict_refs(obj)
 
     def _update_obj(self, obj, old_diffs, new_diffs):
         for p in new_diffs.keys():
@@ -153,22 +135,24 @@ class AviResource(resource.Resource):
                         prev_val[k] = None
                 self._update_obj(obj[p], prev_val, new_val)
             elif isinstance(new_val, list) or isinstance(prev_val, list):
-                # figure out which entries match from old
-                if not prev_val:
-                    # blindly add new val to obj and return
-                    if not obj.get(p, None):
-                        obj[p] = []
-                    for v in new_val:
-                        obj[p].append(self.create_clean_properties(v))
-                # for each previous entry, find it in obj and replace it
-                # with the entry from the new val
-                # we need key to match
-                # put a debugger and catch it here to understand how to get keys
-                # until then just replace with newval
-                if not new_val:
-                    obj.pop(p, None)
-                else:
-                    obj[p] = self.create_clean_properties(new_val)
+                # figure out which entries match from old and remove them
+                # from obj;
+                # then add objects from new_val
+                if prev_val and obj[p]:
+                    for pitem in prev_val:
+                        pitem = self.create_clean_properties(pitem)
+                        newobjs = []
+                        found = False
+                        for oitem in obj[p]:
+                            if found:
+                                newobjs.append(oitem)
+                            elif not cmp_a_in_b(pitem, oitem):
+                                newobjs.append(oitem)
+                                found = True
+                        obj[p] = newobjs
+
+                if new_val:
+                    obj[p].extend(self.create_clean_properties(new_val))
             else:
                 if new_diffs[p]:
                     obj[p] = new_diffs[p]
@@ -222,6 +206,7 @@ class AviNestedResource(AviResource):
     #   resource uuid
     # nested_property_name would refer to the name of the property in the
     #   parent resource that needs to be patched
+    nested_property_name = ""
 
     def get_parent_uuid(self):
         parent_uuid_prop = self.resource_name + "_uuid"
@@ -261,8 +246,12 @@ class AviNestedResource(AviResource):
 
     def handle_update(self, json_snippet, tmpl_diff, prop_diff):
         # force delete and replace
-        if prop_diff:
+        if not prop_diff:
+            return
+        if hasattr(HeatException, "UpdateReplace"):
             raise HeatException.UpdateReplace()
+        else:
+            raise HeatException.NotSupported()
 
     def handle_delete(self):
         client = self.get_avi_client()
