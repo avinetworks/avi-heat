@@ -200,6 +200,55 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    warmstart_se_reconnect_wait_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vs_se_ping_fail_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    se_failover_attempt_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Interval between attempting failovers to an SE"),
+        required=False,
+        update_allowed=True,
+    )
+    max_pcap_per_tenant_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Maximum number of pcap files stored per tenant"),
+        required=False,
+        update_allowed=True,
+    )
+    ssl_certificate_expiry_warning_days_item_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    ssl_certificate_expiry_warning_days_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Number of days for SSL Certificate expiry warning"),
+        schema=ssl_certificate_expiry_warning_days_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    seupgrade_fabric_pool_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Pool size used for all fabric commands during se upgrade."),
+        required=False,
+        update_allowed=True,
+    )
+    seupgrade_segroup_min_dead_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Time to wait before marking segroup upgrade as stuck."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -234,6 +283,13 @@ class ControllerProperties(AviResource):
         'attach_ip_retry_limit',
         'persistence_key_rotate_period',
         'allow_unauthenticated_apis',
+        'warmstart_se_reconnect_wait_time',
+        'vs_se_ping_fail',
+        'se_failover_attempt_interval',
+        'max_pcap_per_tenant',
+        'ssl_certificate_expiry_warning_days',
+        'seupgrade_fabric_pool_size',
+        'seupgrade_segroup_min_dead_timeout',
     )
 
     # mapping of properties to their schemas
@@ -269,6 +325,13 @@ class ControllerProperties(AviResource):
         'attach_ip_retry_limit': attach_ip_retry_limit_schema,
         'persistence_key_rotate_period': persistence_key_rotate_period_schema,
         'allow_unauthenticated_apis': allow_unauthenticated_apis_schema,
+        'warmstart_se_reconnect_wait_time': warmstart_se_reconnect_wait_time_schema,
+        'vs_se_ping_fail': vs_se_ping_fail_schema,
+        'se_failover_attempt_interval': se_failover_attempt_interval_schema,
+        'max_pcap_per_tenant': max_pcap_per_tenant_schema,
+        'ssl_certificate_expiry_warning_days': ssl_certificate_expiry_warning_days_schema,
+        'seupgrade_fabric_pool_size': seupgrade_fabric_pool_size_schema,
+        'seupgrade_segroup_min_dead_timeout': seupgrade_segroup_min_dead_timeout_schema,
     }
 
 

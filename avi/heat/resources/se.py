@@ -141,41 +141,6 @@ class ConServer(object):
 
 
 
-class DefaultGateway(object):
-    # all schemas
-    ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    discovered_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'ip',
-        'discovered',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'ip': ip_schema,
-        'discovered': discovered_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'ip': getattr(IpAddr, 'field_references', {}),
-    }
-
-
-
 class MemberInterface(object):
     # all schemas
     if_name_schema = properties.Schema(

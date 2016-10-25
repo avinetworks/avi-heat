@@ -26,17 +26,25 @@ class FullClientLogs(object):
         required=False,
         update_allowed=True,
     )
+    all_headers_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Log all headers."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'enabled',
         'duration',
+        'all_headers',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'enabled': enabled_schema,
         'duration': duration_schema,
+        'all_headers': all_headers_schema,
     }
 
 

@@ -155,15 +155,39 @@ class GatewayMonitor(object):
         required=True,
         update_allowed=True,
     )
+    gateway_monitor_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The interval between two ping requests sent by the gateway monitor.  If a value is not specified, requests are sent every second (1000 milliseconds)."),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_fail_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive failed gateway health checks before a gateway is marked down."),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_success_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'gateway_ip',
+        'gateway_monitor_interval',
+        'gateway_monitor_fail_threshold',
+        'gateway_monitor_success_threshold',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'gateway_ip': gateway_ip_schema,
+        'gateway_monitor_interval': gateway_monitor_interval_schema,
+        'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
+        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

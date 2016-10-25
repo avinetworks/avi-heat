@@ -113,13 +113,13 @@ class PoolGroupMember(object):
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Overrides the default ratio of 1. Reduces the percentage the LB algorithm would pick the pool in relation to its peers."),
+        _("Ratio of selecting eligible pools in the pool group. "),
         required=False,
         update_allowed=True,
     )
     priority_label_schema = properties.Schema(
         properties.Schema.STRING,
-        _("All pools with same label are treated similarly in a pool group."),
+        _("All pools with same label are treated similarly in a pool group. A pool with a higher priority is selected, as long as the pool is eligible or an explicit policy chooses a different pool."),
         required=False,
         update_allowed=True,
     )
@@ -690,6 +690,13 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    fail_action_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Enable an action - Close Connection, HTTP Redirect, or Local HTTP Response - when a pool group failure happens. By default, a connection will be closed, in case the pool group experiences a failure."),
+        schema=FailAction.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -704,6 +711,7 @@ class PoolGroup(AviResource):
         'priority_labels_uuid',
         'min_servers',
         'deployment_policy_uuid',
+        'fail_action',
         'description',
     )
 
@@ -714,12 +722,14 @@ class PoolGroup(AviResource):
         'priority_labels_uuid': priority_labels_uuid_schema,
         'min_servers': min_servers_schema,
         'deployment_policy_uuid': deployment_policy_uuid_schema,
+        'fail_action': fail_action_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'priority_labels_uuid': 'prioritylabels',
+        'fail_action': getattr(FailAction, 'field_references', {}),
         'members': getattr(PoolGroupMember, 'field_references', {}),
     }
 
@@ -805,7 +815,7 @@ class Server(object):
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Overrides the default ratio of 1.  Reduces the percentage the LB algorithm would pick the server in relation to its peers.  Range is 1-20."),
+        _("Ratio of selecting eligible servers in the pool"),
         required=False,
         update_allowed=True,
     )
@@ -910,9 +920,21 @@ class Server(object):
         required=False,
         update_allowed=True,
     )
+    rewrite_host_header_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Rewrite incoming Host Header to server name."),
+        required=False,
+        update_allowed=True,
+    )
     external_orchestration_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("UID of server in external orchestration systems"),
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("A description of the Server."),
         required=False,
         update_allowed=True,
     )
@@ -937,7 +959,9 @@ class Server(object):
         'static',
         'server_node',
         'availability_zone',
+        'rewrite_host_header',
         'external_orchestration_id',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -960,7 +984,9 @@ class Server(object):
         'static': static_schema,
         'server_node': server_node_schema,
         'availability_zone': availability_zone_schema,
+        'rewrite_host_header': rewrite_host_header_schema,
         'external_orchestration_id': external_orchestration_id_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1274,7 +1300,7 @@ class Pool(AviResource):
     )
     host_check_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable host header name check for server certificate. If enabled and no explicit domain name is specified, Avi will use the incoming host header to do the match."),
+        _("Enable common name check for server certificate. If enabled and no explicit domain name is specified, Avi will use the incoming host header to do the match."),
         required=False,
         update_allowed=True,
     )
@@ -1286,7 +1312,7 @@ class Pool(AviResource):
     )
     domain_name_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates if host header check is enabled."),
+        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates if common name check (host_check_enabled) is enabled."),
         schema=domain_name_item_schema,
         required=False,
         update_allowed=True,
@@ -1299,7 +1325,19 @@ class Pool(AviResource):
     )
     server_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Fully qualified DNS hostname which will be used in the TLS SNI extension in server connections if SNI is enabled. If no value is specified, Avi will use the pool name instead."),
+        _("Fully qualified DNS hostname which will be used in the TLS SNI extension in server connections if SNI is enabled. If no value is specified, Avi will use the incoming host header instead."),
+        required=False,
+        update_allowed=True,
+    )
+    rewrite_host_header_to_sni_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If SNI server name is specified, rewrite incoming host header to the SNI server name."),
+        required=False,
+        update_allowed=True,
+    )
+    rewrite_host_header_to_server_name_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Rewrite incoming Host Header to server name of the server to which the request is proxied.  Enabling this feature rewrites Host Header for requests to all servers in the pool."),
         required=False,
         update_allowed=True,
     )
@@ -1357,6 +1395,8 @@ class Pool(AviResource):
         'domain_name',
         'sni_enabled',
         'server_name',
+        'rewrite_host_header_to_sni',
+        'rewrite_host_header_to_server_name',
         'description',
     )
 
@@ -1407,6 +1447,8 @@ class Pool(AviResource):
         'domain_name': domain_name_schema,
         'sni_enabled': sni_enabled_schema,
         'server_name': server_name_schema,
+        'rewrite_host_header_to_sni': rewrite_host_header_to_sni_schema,
+        'rewrite_host_header_to_server_name': rewrite_host_header_to_server_name_schema,
         'description': description_schema,
     }
 

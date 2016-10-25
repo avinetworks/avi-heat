@@ -12,6 +12,69 @@ from options import *
 from common import *
 
 
+class UserAccountProfile(AviResource):
+    resource_name = "useraccountprofile"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    max_password_history_count_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Maximum number of passwords to be maintained in the password history. Default is 5 passwords."),
+        required=False,
+        update_allowed=True,
+    )
+    max_login_failure_count_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of login attempts before lockout. Default is 3 attempts."),
+        required=False,
+        update_allowed=True,
+    )
+    account_lock_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Lock timeout period (in minutes). Default is 30 minutes."),
+        required=False,
+        update_allowed=True,
+    )
+    max_concurrent_sessions_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Maximum number of concurrent sessions allowed. Default is 5 sessions."),
+        required=False,
+        update_allowed=True,
+    )
+    credentials_timeout_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The time period after which credentials expire. Default is 60 days."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'max_password_history_count',
+        'max_login_failure_count',
+        'account_lock_timeout',
+        'max_concurrent_sessions',
+        'credentials_timeout_threshold',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'max_password_history_count': max_password_history_count_schema,
+        'max_login_failure_count': max_login_failure_count_schema,
+        'account_lock_timeout': account_lock_timeout_schema,
+        'max_concurrent_sessions': max_concurrent_sessions_schema,
+        'credentials_timeout_threshold': credentials_timeout_threshold_schema,
+    }
+
+
+
+
 class Permission(object):
     # all schemas
     type_schema = properties.Schema(
@@ -29,7 +92,7 @@ class Permission(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PERMISSION_SSLPROFILE', 'PERMISSION_POOLGROUP', 'PERMISSION_NETWORK', 'PERMISSION_AUTHPROFILE', 'PERMISSION_POOL', 'PERMISSION_ALERT', 'PERMISSION_VIRTUALSERVICE_MAINTENANCE', 'PERMISSION_MICROSERVICEGROUP', 'PERMISSION_ALERTSYSLOGCONFIG', 'PERMISSION_EXEMPT', 'PERMISSION_PRIORITYLABELS', 'PERMISSION_ANALYTICSPROFILE', 'PERMISSION_HTTPPOLICYSET', 'PERMISSION_VRFCONTEXT', 'PERMISSION_APPLICATIONPROFILE', 'PERMISSION_NETWORKSECURITYPOLICY', 'PERMISSION_ROLE', 'PERMISSION_VSDATASCRIPTSET', 'PERMISSION_GLOBALLB', 'PERMISSION_TECHSUPPORT', 'PERMISSION_ALERTCONFIG', 'PERMISSION_NETWORKPROFILE', 'PERMISSION_SERVICEENGINEGROUP', 'PERMISSION_UPGRADE', 'PERMISSION_INTERNAL', 'PERMISSION_APPLICATIONPERSISTENCEPROFILE', 'PERMISSION_TENANT', 'PERMISSION_GLOBALSITEOPS', 'PERMISSION_GLOBALSERVICE', 'PERMISSION_ACTIONGROUPCONFIG', 'PERMISSION_REBOOT', 'PERMISSION_SSLKEYANDCERTIFICATE', 'PERMISSION_SNMPTRAPPROFILE', 'PERMISSION_IPAMDNSPROVIDERPROFILE', 'PERMISSION_HEALTHMONITOR', 'PERMISSION_ALERTEMAILCONFIG', 'PERMISSION_CERTIFICATEMANAGEMENTPROFILE', 'PERMISSION_SERVICEENGINE', 'PERMISSION_GLOBALHEALTHMONITOR', 'PERMISSION_TRAFFIC_CAPTURE', 'PERMISSION_USER', 'PERMISSION_POOLGROUPDEPLOYMENTPOLICY', 'PERMISSION_VIRTUALSERVICE', 'PERMISSION_PKIPROFILE', 'PERMISSION_CLOUD', 'PERMISSION_IPADDRGROUP', 'PERMISSION_SYSTEMCONFIGURATION', 'PERMISSION_POOL_MAINTENANCE', 'PERMISSION_STRINGGROUP', 'PERMISSION_CONTROLLER']),
+            constraints.AllowedValues(['PERMISSION_SSLPROFILE', 'PERMISSION_POOLGROUP', 'PERMISSION_NETWORK', 'PERMISSION_GSLBSERVICE', 'PERMISSION_AUTHPROFILE', 'PERMISSION_POOL', 'PERMISSION_ALERT', 'PERMISSION_CLOUD', 'PERMISSION_MICROSERVICEGROUP', 'PERMISSION_ALERTSYSLOGCONFIG', 'PERMISSION_EXEMPT', 'PERMISSION_PRIORITYLABELS', 'PERMISSION_ANALYTICSPROFILE', 'PERMISSION_HTTPPOLICYSET', 'PERMISSION_VRFCONTEXT', 'PERMISSION_APPLICATIONPROFILE', 'PERMISSION_NETWORKSECURITYPOLICY', 'PERMISSION_ROLE', 'PERMISSION_VSDATASCRIPTSET', 'PERMISSION_TECHSUPPORT', 'PERMISSION_ALERTCONFIG', 'PERMISSION_NETWORKPROFILE', 'PERMISSION_SERVICEENGINEGROUP', 'PERMISSION_UPGRADE', 'PERMISSION_INTERNAL', 'PERMISSION_APPLICATIONPERSISTENCEPROFILE', 'PERMISSION_GSLBHEALTHMONITOR', 'PERMISSION_ALERTEMAILCONFIG', 'PERMISSION_SNMPTRAPPROFILE', 'PERMISSION_ACTIONGROUPCONFIG', 'PERMISSION_REBOOT', 'PERMISSION_SSLKEYANDCERTIFICATE', 'PERMISSION_CONTROLLER', 'PERMISSION_IPAMDNSPROVIDERPROFILE', 'PERMISSION_HEALTHMONITOR', 'PERMISSION_GSLB', 'PERMISSION_CERTIFICATEMANAGEMENTPROFILE', 'PERMISSION_SERVICEENGINE', 'PERMISSION_TENANT', 'PERMISSION_TRAFFIC_CAPTURE', 'PERMISSION_USER', 'PERMISSION_POOLGROUPDEPLOYMENTPOLICY', 'PERMISSION_VIRTUALSERVICE', 'PERMISSION_PKIPROFILE', 'PERMISSION_VIRTUALSERVICE_MAINTENANCE', 'PERMISSION_IPADDRGROUP', 'PERMISSION_SYSTEMCONFIGURATION', 'PERMISSION_POOL_MAINTENANCE', 'PERMISSION_STRINGGROUP']),
         ],
     )
 
@@ -93,6 +156,7 @@ class Role(AviResource):
 
 def resource_mapping():
     return {
+        'Avi::LBaaS::UserAccountProfile': UserAccountProfile,
         'Avi::LBaaS::Role': Role,
     }
 

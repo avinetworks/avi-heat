@@ -375,7 +375,7 @@ class vCenterConfiguration(object):
     )
     vcenter_template_se_location_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi Service Engine Template in Vcenter to be used for creating Service Engines"),
+        _("Avi Service Engine Template in vCenter to be used for creating Service Engines"),
         required=False,
         update_allowed=True,
     )
@@ -720,7 +720,7 @@ class MarathonConfiguration(object):
     )
     tenant_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Tenant to pin this Marathon instance to. If set, a tenant object will be created in Avi bearing this name and all applications created in this marathon will be associated with this tenant regardless of the label contents in the application description."),
+        _("Tenant to pin this Marathon instance to. If set, a tenant object will be created in Avi bearing this name and all applications created in this marathon will be associated with this tenant regardless of, if any, tenant configuration in marathon label for this application."),
         required=False,
         update_allowed=True,
     )
@@ -951,6 +951,12 @@ class AwsConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    iam_assume_role_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("IAM assume role for cross-account access."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -963,6 +969,7 @@ class AwsConfiguration(object):
         'route53_integration',
         'free_elasticips',
         'use_iam_roles',
+        'iam_assume_role',
     )
 
     # mapping of properties to their schemas
@@ -976,6 +983,7 @@ class AwsConfiguration(object):
         'route53_integration': route53_integration_schema,
         'free_elasticips': free_elasticips_schema,
         'use_iam_roles': use_iam_roles_schema,
+        'iam_assume_role': iam_assume_role_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1202,6 +1210,12 @@ class LinuxServerConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    se_inband_mgmt_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Flag to notify the SE's in this cloud have an inband management interface, this can be overridden at SE host level by setting host_attr attr_key as SE_INBAND_MGMT with value of true or false"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1212,6 +1226,7 @@ class LinuxServerConfiguration(object):
         'se_sys_disk_size_GB',
         'se_log_disk_path',
         'se_log_disk_size_GB',
+        'se_inband_mgmt',
     )
 
     # mapping of properties to their schemas
@@ -1223,6 +1238,7 @@ class LinuxServerConfiguration(object):
         'se_sys_disk_size_GB': se_sys_disk_size_GB_schema,
         'se_log_disk_path': se_log_disk_path_schema,
         'se_log_disk_size_GB': se_log_disk_size_GB_schema,
+        'se_inband_mgmt': se_inband_mgmt_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1439,7 +1455,7 @@ class MesosConfiguration(object):
     )
     services_accessible_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS Mesos clusters to export East-West services on Host interface"),
+        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP. Usually enabled AWS Mesos clusters to export East-West services on Host interface"),
         required=False,
         update_allowed=True,
     )
@@ -1711,7 +1727,7 @@ class RancherConfiguration(object):
     )
     services_accessible_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
+        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
         required=False,
         update_allowed=True,
     )
@@ -1971,7 +1987,7 @@ class DockerConfiguration(object):
     )
     services_accessible_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
+        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
         required=False,
         update_allowed=True,
     )
@@ -2089,7 +2105,7 @@ class OShiftK8SConfiguration(object):
     )
     master_nodes_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of OpenShift/Kubernetes master nodes; In case of a load balanced OpenShift/K8S cluster, use Virtual IP of the cluster. Each node is of the form https://node:8443 or node:8443"),
+        _("List of OpenShift/Kubernetes master nodes; In case of a load balanced OpenShift/K8S cluster, use Virtual IP of the cluster. Each node is of the form node:8443 or http://node:8080. If scheme is not provided, https is assumed"),
         schema=master_nodes_item_schema,
         required=False,
         update_allowed=True,
@@ -2212,19 +2228,7 @@ class OShiftK8SConfiguration(object):
     )
     enable_event_subscription_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable Docker event subscription"),
-        required=False,
-        update_allowed=True,
-    )
-    feproxy_container_port_as_service_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("For Front End proxies, use container port as service port"),
-        required=False,
-        update_allowed=True,
-    )
-    services_accessible_all_interfaces_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP. Usually enabled AWS clusters to export East-West services on Host interface"),
+        _("Enable Kubernetes event subscription"),
         required=False,
         update_allowed=True,
     )
@@ -2271,13 +2275,19 @@ class OShiftK8SConfiguration(object):
     )
     use_service_cluster_ip_as_ew_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use Cluster IP of service as VIP for East/West services; This option requires that kube proxy is disabled on all nodes"),
+        _("Use Cluster IP of service as VIP for East-West services; This option requires that kube proxy is disabled on all nodes"),
         required=False,
         update_allowed=True,
     )
     default_service_as_east_west_service_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If there is no explicit east_west_placement field in virtualservice configuration, treat service as a east/west service; default services such a OpenShift API server do not have virtualservice configuration"),
+        _("If there is no explicit east_west_placement field in virtualservice configuration, treat service as a East-West service; default services such a OpenShift API server do not have virtualservice configuration"),
+        required=False,
+        update_allowed=True,
+    )
+    sdn_overlay_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Cluster uses overlay based SDN. Enable this flag if cluster uses a overlay based SDN for OpenShift, Weave, Nuage, etc."),
         required=False,
         update_allowed=True,
     )
@@ -2303,14 +2313,13 @@ class OShiftK8SConfiguration(object):
         'coredump_directory',
         'ssh_se_deployment',
         'enable_event_subscription',
-        'feproxy_container_port_as_service',
-        'services_accessible_all_interfaces',
         'feproxy_vips_enable_proxy_arp',
         'se_exclude_attributes',
         'se_include_attributes',
         'nuage_controller',
         'use_service_cluster_ip_as_ew_vip',
         'default_service_as_east_west_service',
+        'sdn_overlay',
     )
 
     # mapping of properties to their schemas
@@ -2334,14 +2343,13 @@ class OShiftK8SConfiguration(object):
         'coredump_directory': coredump_directory_schema,
         'ssh_se_deployment': ssh_se_deployment_schema,
         'enable_event_subscription': enable_event_subscription_schema,
-        'feproxy_container_port_as_service': feproxy_container_port_as_service_schema,
-        'services_accessible_all_interfaces': services_accessible_all_interfaces_schema,
         'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
         'nuage_controller': nuage_controller_schema,
         'use_service_cluster_ip_as_ew_vip': use_service_cluster_ip_as_ew_vip_schema,
         'default_service_as_east_west_service': default_service_as_east_west_service_schema,
+        'sdn_overlay': sdn_overlay_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2363,7 +2371,7 @@ class OpenStackConfiguration(object):
     # all schemas
     username_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The username Avi Vantage will use when authenticating to Keystone."),
+        _("The username Avi Vantage will use when authenticating to Keystone. For Keystone v3, provide the user information in user@domain format, unless that user belongs to the Default domain."),
         required=True,
         update_allowed=True,
     )
@@ -2375,7 +2383,7 @@ class OpenStackConfiguration(object):
     )
     admin_tenant_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Openstack admin tenant (or project) information."),
+        _("OpenStack admin tenant (or project) information. For Keystone v3, provide the project information in project@domain format. Domain need not be specified if the project belongs to the 'Default' domain."),
         required=True,
         update_allowed=True,
     )
@@ -2460,7 +2468,7 @@ class OpenStackConfiguration(object):
     )
     port_security_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If false, port-security extension will not be used. "),
+        _("If true, port-security extension (if detected) will be used instead of security-groups, allowed-address-pairs or interface-secondary-ips. If false, port-security extension is skipped"),
         required=False,
         update_allowed=True,
     )
@@ -2506,7 +2514,7 @@ class OpenStackConfiguration(object):
     )
     role_mapping_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Defines the mapping from openstack role names to avi local role names. For an OpenStack role, this mapping is consulted only if there is no local Avi role with the same name as the OpenStack role. This is an ordered list and only the first matching entry is used. You can use '*' to match all OpenStack role names."),
+        _("Defines the mapping from OpenStack role names to avi local role names. For an OpenStack role, this mapping is consulted only if there is no local Avi role with the same name as the OpenStack role. This is an ordered list and only the first matching entry is used. You can use '*' to match all OpenStack role names."),
         schema=role_mapping_item_schema,
         required=False,
         update_allowed=True,
@@ -2541,6 +2549,24 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    intf_sec_ips_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If True, interface-secondary-ips method will be used for VIP association."),
+        required=False,
+        update_allowed=True,
+    )
+    external_networks_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If True, allow selection of networks marked as 'external' for management,  vip or data networks."),
+        required=False,
+        update_allowed=True,
+    )
+    neutron_rbac_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If True, enable neutron rbac discovery of networks shared across tenants/projects"),
+        required=False,
+        update_allowed=True,
+    )
     nuage_vsd_host_schema = properties.Schema(
         properties.Schema.STRING,
         _("Nuage VSD host name or IP address"),
@@ -2571,15 +2597,27 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
-    contrail_plugin_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("The Service Engine Group to use as template."),
+        required=False,
+        update_allowed=True,
+    )
+    contrail_plugin_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable Contrail plugin mode. (deprecated)"),
+        required=False,
+        update_allowed=True,
+    )
+    contrail_endpoint_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Contrail VNC endpoint url (example http://10.10.10.100:8082). By default, 'http://' scheme and 8082 port will be used if not provided in the url"),
+        required=False,
+        update_allowed=True,
+    )
+    name_owner_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If True, embed owner info in VIP port 'name', else embed owner info in 'device_id' field"),
         required=False,
         update_allowed=True,
     )
@@ -2612,13 +2650,18 @@ class OpenStackConfiguration(object):
         'config_drive',
         'auth_url',
         'insecure',
+        'intf_sec_ips',
+        'external_networks',
+        'neutron_rbac',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
         'nuage_password',
         'nuage_organization',
-        'contrail_plugin',
         'se_group_uuid',
+        'contrail_plugin',
+        'contrail_endpoint',
+        'name_owner',
     )
 
     # mapping of properties to their schemas
@@ -2649,13 +2692,18 @@ class OpenStackConfiguration(object):
         'config_drive': config_drive_schema,
         'auth_url': auth_url_schema,
         'insecure': insecure_schema,
+        'intf_sec_ips': intf_sec_ips_schema,
+        'external_networks': external_networks_schema,
+        'neutron_rbac': neutron_rbac_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,
         'nuage_password': nuage_password_schema,
         'nuage_organization': nuage_organization_schema,
-        'contrail_plugin': contrail_plugin_schema,
         'se_group_uuid': se_group_uuid_schema,
+        'contrail_plugin': contrail_plugin_schema,
+        'contrail_endpoint': contrail_endpoint_schema,
+        'name_owner': name_owner_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2826,13 +2874,13 @@ class Cloud(AviResource):
     )
     east_west_ipam_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ipam Profile for East West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Ipam Profile for East-West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     east_west_dns_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS Profile for East West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("DNS Profile for East-West applications You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

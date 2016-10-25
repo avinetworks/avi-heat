@@ -761,7 +761,7 @@ class SeRuntimeProperties(object):
     )
     services_accessible_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East/West VIP and/or bridge IP"),
+        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP"),
         required=False,
         update_allowed=True,
     )
@@ -812,6 +812,18 @@ class SeRuntimeProperties(object):
     se_dp_if_state_poll_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of jiffies between polling interface state."),
+        required=False,
+        update_allowed=True,
+    )
+    log_message_max_file_list_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Maximum number of file names in a log message"),
+        required=False,
+        update_allowed=True,
+    )
+    scaleout_udp_per_pkt_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable punting of UDP packets from primary to other Service Engines. This applies to Virtual Services with Per-Packet Loadbalancing enabled"),
         required=False,
         update_allowed=True,
     )
@@ -910,6 +922,8 @@ class SeRuntimeProperties(object):
         'lbaction_rq_per_request_max_retries',
         'service_ip_subnets',
         'se_dp_if_state_poll_interval',
+        'log_message_max_file_list_size',
+        'scaleout_udp_per_pkt',
     )
 
     # mapping of properties to their schemas
@@ -1006,6 +1020,8 @@ class SeRuntimeProperties(object):
         'lbaction_rq_per_request_max_retries': lbaction_rq_per_request_max_retries_schema,
         'service_ip_subnets': service_ip_subnets_schema,
         'se_dp_if_state_poll_interval': se_dp_if_state_poll_interval_schema,
+        'log_message_max_file_list_size': log_message_max_file_list_size_schema,
+        'scaleout_udp_per_pkt': scaleout_udp_per_pkt_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

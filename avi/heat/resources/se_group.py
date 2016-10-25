@@ -495,11 +495,11 @@ class ServiceEngineGroup(AviResource):
     )
     placement_mode_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If placement mode is 'Auto', Virtual Services are automatically placed on Service Engines. If 'Manual' placement mode is selected, user must specify the Service Engine where the Virtual Service should be placed."),
+        _("If placement mode is 'Auto', Virtual Services are automatically placed on Service Engines."),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PLACEMENT_MODE_AUTO', 'PLACEMENT_MODE_MANUAL']),
+            constraints.AllowedValues(['PLACEMENT_MODE_AUTO']),
         ],
     )
     openstack_mgmt_network_name_schema = properties.Schema(
@@ -641,24 +641,6 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
-    gateway_monitor_interval_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The interval between two ping requests sent by the gateway monitor.  If a value is not specified, requests are sent every second (1000 milliseconds)."),
-        required=False,
-        update_allowed=True,
-    )
-    gateway_monitor_fail_threshold_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The number of consecutive failed gateway health checks before a gateway is marked down."),
-        required=False,
-        update_allowed=True,
-    )
-    gateway_monitor_success_threshold_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up."),
-        required=False,
-        update_allowed=True,
-    )
     distribute_load_active_standby_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Use both the active and standby Service Engines for Virtual Service placement in the legacy active standby HA mode."),
@@ -714,6 +696,12 @@ class ServiceEngineGroup(AviResource):
     num_flow_cores_sum_changes_to_ignore_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of changes in num flow cores sum to ignore."),
+        required=False,
+        update_allowed=True,
+    )
+    least_load_core_selection_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Select core with least load for new flow."),
         required=False,
         update_allowed=True,
     )
@@ -798,9 +786,6 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip',
         'hm_on_standby',
         'per_app',
-        'gateway_monitor_interval',
-        'gateway_monitor_fail_threshold',
-        'gateway_monitor_success_threshold',
         'distribute_load_active_standby',
         'auto_redistribute_active_standby_load',
         'floating_intf_ip_se_2',
@@ -808,6 +793,7 @@ class ServiceEngineGroup(AviResource):
         'dedicated_dispatcher_core',
         'cpu_socket_affinity',
         'num_flow_cores_sum_changes_to_ignore',
+        'least_load_core_selection',
         'iptables',
         'enable_routing',
         'advertise_backend_networks',
@@ -867,9 +853,6 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': floating_intf_ip_schema,
         'hm_on_standby': hm_on_standby_schema,
         'per_app': per_app_schema,
-        'gateway_monitor_interval': gateway_monitor_interval_schema,
-        'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
-        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
         'distribute_load_active_standby': distribute_load_active_standby_schema,
         'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
         'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
@@ -877,6 +860,7 @@ class ServiceEngineGroup(AviResource):
         'dedicated_dispatcher_core': dedicated_dispatcher_core_schema,
         'cpu_socket_affinity': cpu_socket_affinity_schema,
         'num_flow_cores_sum_changes_to_ignore': num_flow_cores_sum_changes_to_ignore_schema,
+        'least_load_core_selection': least_load_core_selection_schema,
         'iptables': iptables_schema,
         'enable_routing': enable_routing_schema,
         'advertise_backend_networks': advertise_backend_networks_schema,

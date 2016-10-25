@@ -57,6 +57,47 @@ class DNSConfiguration(object):
 
 
 
+class NTPAuthenticationKey(object):
+    # all schemas
+    key_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Key number to be assigned to the authentication-key."),
+        required=True,
+        update_allowed=True,
+    )
+    algorithm_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Algorithm used for NTP authentication"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['NTP_AUTH_ALGORITHM_SHA1', 'NTP_AUTH_ALGORITHM_MD5']),
+        ],
+    )
+    key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("NTP Authentication key"),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'key_number',
+        'algorithm',
+        'key',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'key_number': key_number_schema,
+        'algorithm': algorithm_schema,
+        'key': key_schema,
+    }
+
+
+
+
 class AdminAuthConfiguration(object):
     # all schemas
     auth_profile_uuid_schema = properties.Schema(
@@ -401,19 +442,36 @@ class NTPConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    ntp_authentication_keys_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=NTPAuthenticationKey.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ntp_authentication_keys_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("NTP Authentication keys"),
+        schema=ntp_authentication_keys_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'ntp_server_list',
+        'ntp_authentication_keys',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'ntp_server_list': ntp_server_list_schema,
+        'ntp_authentication_keys': ntp_authentication_keys_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'ntp_authentication_keys': getattr(NTPAuthenticationKey, 'field_references', {}),
         'ntp_server_list': getattr(IpAddr, 'field_references', {}),
     }
 
@@ -423,28 +481,28 @@ class MgmtIpAccessControl(object):
     # all schemas
     ssh_access_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure ip addresses to access controller using SSH"),
+        _("Configure IP addresses to access controller using SSH"),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
     )
     api_access_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure ip addresses to access controller using api"),
+        _("Configure IP addresses to access controller using API"),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
     )
     shell_server_access_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure ip addresses to access controller using shell cli"),
+        _("Configure IP addresses to access controller using CLI Shell"),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
     )
     snmp_access_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure ip addresses to access controller using snmp"),
+        _("Configure IP addresses to access controller using SNMP"),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
@@ -582,6 +640,19 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    dns_virtualservice_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    dns_virtualservice_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("DNS virtualservices hosting FQDN records for applications across Avi Vantage. If no virtualservices are provided, Avi Vantage will provide DNS services for configured applications. Switching back to Avi Vantage from DNS virtualservices is not allowed."),
+        schema=dns_virtualservice_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -598,6 +669,7 @@ class SystemConfiguration(AviResource):
         'mgmt_ip_access_control',
         'ssh_ciphers',
         'ssh_hmacs',
+        'dns_virtualservice_uuids',
     )
 
     # mapping of properties to their schemas
@@ -615,6 +687,7 @@ class SystemConfiguration(AviResource):
         'mgmt_ip_access_control': mgmt_ip_access_control_schema,
         'ssh_ciphers': ssh_ciphers_schema,
         'ssh_hmacs': ssh_hmacs_schema,
+        'dns_virtualservice_uuids': dns_virtualservice_uuids_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

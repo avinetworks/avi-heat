@@ -9,6 +9,7 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
+from dns import *
 
 
 class IpamDnsInfobloxProfile(object):
@@ -107,6 +108,35 @@ class IpamDnsInfobloxProfile(object):
         'usable_subnets': getattr(IpAddrPrefix, 'field_references', {}),
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
+
+
+
+class IpamDnsGCPProfile(object):
+    # all schemas
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'usable_network_uuids',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'usable_network_uuids': usable_network_uuids_schema,
+    }
+
 
 
 
@@ -299,7 +329,7 @@ class IpamDnsOpenstackProfile(object):
     )
     tenant_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Openstack tenant name"),
+        _("OpenStack tenant name"),
         required=False,
         update_allowed=True,
     )
@@ -360,7 +390,7 @@ class IpamDnsProviderProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_OPENSTACK', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_AWS']),
+            constraints.AllowedValues(['IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_OPENSTACK', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_AWS']),
         ],
     )
     infoblox_profile_schema = properties.Schema(
@@ -379,7 +409,7 @@ class IpamDnsProviderProfile(AviResource):
     )
     openstack_profile_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Provider details if type is Openstack"),
+        _("Provider details if type is OpenStack"),
         schema=IpamDnsOpenstackProfile.properties_schema,
         required=False,
         update_allowed=True,
@@ -388,6 +418,13 @@ class IpamDnsProviderProfile(AviResource):
         properties.Schema.MAP,
         _("Provider details if type is Avi"),
         schema=IpamDnsInternalProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    gcp_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Provider details if type is Google Cloud"),
+        schema=IpamDnsGCPProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -400,6 +437,7 @@ class IpamDnsProviderProfile(AviResource):
         'aws_profile',
         'openstack_profile',
         'internal_profile',
+        'gcp_profile',
     )
 
     # mapping of properties to their schemas
@@ -410,6 +448,7 @@ class IpamDnsProviderProfile(AviResource):
         'aws_profile': aws_profile_schema,
         'openstack_profile': openstack_profile_schema,
         'internal_profile': internal_profile_schema,
+        'gcp_profile': gcp_profile_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -418,6 +457,7 @@ class IpamDnsProviderProfile(AviResource):
         'aws_profile': getattr(IpamDnsAwsProfile, 'field_references', {}),
         'openstack_profile': getattr(IpamDnsOpenstackProfile, 'field_references', {}),
         'internal_profile': getattr(IpamDnsInternalProfile, 'field_references', {}),
+        'gcp_profile': getattr(IpamDnsGCPProfile, 'field_references', {}),
     }
 
 
