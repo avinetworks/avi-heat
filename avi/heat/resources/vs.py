@@ -18,6 +18,7 @@ from application_policy import *
 from auth import *
 from rate import *
 from gslb import *
+from dns import *
 
 
 class ServicePoolSelector(object):
@@ -31,7 +32,22 @@ class ServicePoolSelector(object):
     service_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
+        required=False,
+        update_allowed=True,
+    )
+    service_protocol_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Destination protocol to match for the pool selection. If not specified, it will match any protocol."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH']),
+        ],
+    )
+    service_pool_group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
         update_allowed=True,
     )
 
@@ -39,17 +55,22 @@ class ServicePoolSelector(object):
     PROPERTIES = (
         'service_port',
         'service_pool_uuid',
+        'service_protocol',
+        'service_pool_group_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'service_port': service_port_schema,
         'service_pool_uuid': service_pool_uuid_schema,
+        'service_protocol': service_protocol_schema,
+        'service_pool_group_uuid': service_pool_group_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'service_pool_uuid': 'pool',
+        'service_pool_group_uuid': 'poolgroup',
     }
 
 
@@ -204,6 +225,447 @@ class PerformanceLimits(object):
 
 
 
+class TLSTicket(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    aes_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    hmac_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'aes_key',
+        'hmac_key',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'aes_key': aes_key_schema,
+        'hmac_key': hmac_key_schema,
+    }
+
+
+
+
+class IPNetworkSubnet(object):
+    # all schemas
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Network for VirtualService IP allocation with Vantage as the IPAM provider. Network should be created before this is configured. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnet for VirtualService IP allocation with Vantage or Infoblox as the IPAM provider. Only one of subnet or subnet_uuid configuration is allowed."),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    subnet_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Subnet UUID or Name or Prefix for VirtualService IP allocation with AWS or OpenStack as the IPAM provider. Only one of subnet or subnet_uuid configuration is allowed."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'network_uuid',
+        'subnet',
+        'subnet_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'network_uuid': network_uuid_schema,
+        'subnet': subnet_schema,
+        'subnet_uuid': subnet_uuid_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'network_uuid': 'network',
+    }
+
+
+
+class VsSeVnic(object):
+    # all schemas
+    mac_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT_SECONDARY']),
+        ],
+    )
+    lif_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'mac',
+        'type',
+        'lif',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'mac': mac_schema,
+        'type': type_schema,
+        'lif': lif_schema,
+    }
+
+
+
+
+class VsApicExtension(object):
+    # all schemas
+    txn_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    se_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vnic_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=VsSeVnic.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    vnic_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=vnic_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'txn_uuid',
+        'se_uuid',
+        'vnic',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'txn_uuid': txn_uuid_schema,
+        'se_uuid': se_uuid_schema,
+        'vnic': vnic_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic': getattr(VsSeVnic, 'field_references', {}),
+    }
+
+
+
+class SeVipInterfaceList(object):
+    # all schemas
+    vip_intf_mac_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    vlan_id_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vip_intf_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vip_intf_mac',
+        'vlan_id',
+        'vip_intf_ip',
+        'is_portchannel',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vip_intf_mac': vip_intf_mac_schema,
+        'vlan_id': vlan_id_schema,
+        'vip_intf_ip': vip_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
+class SeList(object):
+    # all schemas
+    se_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+    is_primary_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    is_standby_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    is_connected_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    delete_in_progress_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vcpus_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vip_intf_mac_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vip_subnet_mask_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vnic_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=VsSeVnic.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    vnic_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=vnic_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    pending_download_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    sec_idx_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    download_selist_only_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    vlan_id_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    snat_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    vip_intf_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    vip_intf_list_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SeVipInterfaceList.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    vip_intf_list_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=vip_intf_list_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    floating_intf_ip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    floating_intf_ip_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=floating_intf_ip_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    is_portchannel_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    scalein_in_progress_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    admin_down_requested_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'se_uuid',
+        'is_primary',
+        'is_standby',
+        'is_connected',
+        'delete_in_progress',
+        'vcpus',
+        'memory',
+        'vip_intf_mac',
+        'vip_subnet_mask',
+        'vnic',
+        'pending_download',
+        'sec_idx',
+        'download_selist_only',
+        'vlan_id',
+        'snat_ip',
+        'vip_intf_ip',
+        'vip_intf_list',
+        'floating_intf_ip',
+        'is_portchannel',
+        'scalein_in_progress',
+        'admin_down_requested',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'se_uuid': se_uuid_schema,
+        'is_primary': is_primary_schema,
+        'is_standby': is_standby_schema,
+        'is_connected': is_connected_schema,
+        'delete_in_progress': delete_in_progress_schema,
+        'vcpus': vcpus_schema,
+        'memory': memory_schema,
+        'vip_intf_mac': vip_intf_mac_schema,
+        'vip_subnet_mask': vip_subnet_mask_schema,
+        'vnic': vnic_schema,
+        'pending_download': pending_download_schema,
+        'sec_idx': sec_idx_schema,
+        'download_selist_only': download_selist_only_schema,
+        'vlan_id': vlan_id_schema,
+        'snat_ip': snat_ip_schema,
+        'vip_intf_ip': vip_intf_ip_schema,
+        'vip_intf_list': vip_intf_list_schema,
+        'floating_intf_ip': floating_intf_ip_schema,
+        'is_portchannel': is_portchannel_schema,
+        'scalein_in_progress': scalein_in_progress_schema,
+        'admin_down_requested': admin_down_requested_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'vnic': getattr(VsSeVnic, 'field_references', {}),
+        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+        'vip_intf_list': getattr(SeVipInterfaceList, 'field_references', {}),
+        'snat_ip': getattr(IpAddr, 'field_references', {}),
+        'se_uuid': 'serviceengine',
+        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
 class VirtualService(AviResource):
     resource_name = "virtualservice"
     # all schemas
@@ -215,7 +677,7 @@ class VirtualService(AviResource):
     )
     fqdn_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS resolvable, fully qualified domain name of the Virtual Service."),
+        _("DNS resolvable, fully qualified domain name of the virtualservice. [Note] Only one of 'fqdn' and 'dns_info' configuration is allowed."),
         required=False,
         update_allowed=True,
     )
@@ -272,7 +734,7 @@ class VirtualService(AviResource):
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connection for this VS. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connections for this VS. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -355,7 +817,7 @@ class VirtualService(AviResource):
     )
     subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If auto_allocate_ip is True, then the subnet for the Virtual Service IP address allocation. This field is applicable only if the VirtualService belongs to an Openstack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
+        _("If auto_allocate_ip is True, then the subnet for the Virtual Service IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
         required=False,
         update_allowed=True,
     )
@@ -519,7 +981,7 @@ class VirtualService(AviResource):
     )
     floating_subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation. This field is applicable only if the VirtualService belongs to an Openstack or AWS cloud, in which case it is mandatory, if auto_allocate_floating_ip is selected."),
+        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate_floating_ip is selected."),
         required=False,
         update_allowed=True,
     )
@@ -611,7 +1073,7 @@ class VirtualService(AviResource):
     )
     scaleout_ecmp_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Disable re-distribution of flows across service engines for a virtual service. Enable if the network itself performs flow hashing with ECMP in environments such as GCP"),
         required=False,
         update_allowed=True,
     )
@@ -682,12 +1144,47 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NO_LABEL', 'SE_LABEL', 'CLIENT_LABEL', 'OTHER_LABEL']),
+            constraints.AllowedValues(['NO_LABEL', 'SERVICE_LABEL']),
         ],
     )
     enable_rhi_snat_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Enable Route Health Injection for Source NAT'ted floating IP Address using the BGP Config in the vrf context"),
+        required=False,
+        update_allowed=True,
+    )
+    static_dns_records_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=DnsRecord.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    static_dns_records_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of static DNS records applied to this Virtual Service. These are static entries and no health monitoring is performed against the IP addresses."),
+        schema=static_dns_records_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ipam_network_subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnet and/or Network for allocating VirtualService IP by IPAM Provider module."),
+        schema=IPNetworkSubnet.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    dns_info_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=DnsInfo.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    dns_info_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Service discovery specific data including fully qualified domain name, type and Time-To-Live of the DNS record. [Note] Only one of 'fqdn' and 'dns_info' configuration is allowed."),
+        schema=dns_info_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -758,6 +1255,9 @@ class VirtualService(AviResource):
         'active_standby_se_tag',
         'flow_label_type',
         'enable_rhi_snat',
+        'static_dns_records',
+        'ipam_network_subnet',
+        'dns_info',
     )
 
     # mapping of properties to their schemas
@@ -826,6 +1326,9 @@ class VirtualService(AviResource):
         'active_standby_se_tag': active_standby_se_tag_schema,
         'flow_label_type': flow_label_type_schema,
         'enable_rhi_snat': enable_rhi_snat_schema,
+        'static_dns_records': static_dns_records_schema,
+        'ipam_network_subnet': ipam_network_subnet_schema,
+        'dns_info': dns_info_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -833,6 +1336,7 @@ class VirtualService(AviResource):
         'client_auth': getattr(HTTPClientAuthenticationParams, 'field_references', {}),
         'network_uuid': 'network',
         'network_profile_uuid': 'networkprofile',
+        'dns_info': getattr(DnsInfo, 'field_references', {}),
         'vs_datascripts': getattr(VSDataScripts, 'field_references', {}),
         'snat_ip': getattr(IpAddr, 'field_references', {}),
         'discovered_network_uuid': 'network',
@@ -855,416 +1359,12 @@ class VirtualService(AviResource):
         'network_security_policy_uuid': 'networksecuritypolicy',
         'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'ssl_key_and_certificate_uuids': 'sslkeyandcertificate',
+        'ipam_network_subnet': getattr(IPNetworkSubnet, 'field_references', {}),
         'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'ssl_profile_uuid': 'sslprofile',
+        'static_dns_records': getattr(DnsRecord, 'field_references', {}),
         'analytics_policy': getattr(AnalyticsPolicy, 'field_references', {}),
         'pool_uuid': 'pool',
-    }
-
-
-
-class TLSTicket(object):
-    # all schemas
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    aes_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    hmac_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'name',
-        'aes_key',
-        'hmac_key',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'name': name_schema,
-        'aes_key': aes_key_schema,
-        'hmac_key': hmac_key_schema,
-    }
-
-
-
-
-class VsSeVnic(object):
-    # all schemas
-    mac_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT_SECONDARY']),
-        ],
-    )
-    lif_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'mac',
-        'type',
-        'lif',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'mac': mac_schema,
-        'type': type_schema,
-        'lif': lif_schema,
-    }
-
-
-
-
-class VsApicExtension(object):
-    # all schemas
-    txn_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    vnic_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=VsSeVnic.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    vnic_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=vnic_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'txn_uuid',
-        'se_uuid',
-        'vnic',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'txn_uuid': txn_uuid_schema,
-        'se_uuid': se_uuid_schema,
-        'vnic': vnic_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'vnic': getattr(VsSeVnic, 'field_references', {}),
-    }
-
-
-
-class SeVipInterfaceList(object):
-    # all schemas
-    vip_intf_mac_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vlan_id_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    is_portchannel_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'vip_intf_mac',
-        'vlan_id',
-        'vip_intf_ip',
-        'is_portchannel',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'vip_intf_mac': vip_intf_mac_schema,
-        'vlan_id': vlan_id_schema,
-        'vip_intf_ip': vip_intf_ip_schema,
-        'is_portchannel': is_portchannel_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
-    }
-
-
-
-class SeList(object):
-    # all schemas
-    se_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=True,
-    )
-    is_primary_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    is_standby_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    is_connected_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    delete_in_progress_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vcpus_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    memory_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vip_intf_mac_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vip_subnet_mask_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    vnic_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=VsSeVnic.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    vnic_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=vnic_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    pending_download_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    sec_idx_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    download_selist_only_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    vlan_id_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    snat_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    vip_intf_list_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=SeVipInterfaceList.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    vip_intf_list_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=vip_intf_list_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    floating_intf_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    floating_intf_ip_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=floating_intf_ip_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    is_portchannel_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    se_flow_label_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("SE label for vs."),
-        required=False,
-        update_allowed=True,
-    )
-    equivalent_labels_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=EquivalentLabels.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    equivalent_labels_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Equivalent priority labels in descending order."),
-        schema=equivalent_labels_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'se_uuid',
-        'is_primary',
-        'is_standby',
-        'is_connected',
-        'delete_in_progress',
-        'vcpus',
-        'memory',
-        'vip_intf_mac',
-        'vip_subnet_mask',
-        'vnic',
-        'pending_download',
-        'sec_idx',
-        'download_selist_only',
-        'vlan_id',
-        'snat_ip',
-        'vip_intf_ip',
-        'vip_intf_list',
-        'floating_intf_ip',
-        'is_portchannel',
-        'se_flow_label',
-        'equivalent_labels',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'se_uuid': se_uuid_schema,
-        'is_primary': is_primary_schema,
-        'is_standby': is_standby_schema,
-        'is_connected': is_connected_schema,
-        'delete_in_progress': delete_in_progress_schema,
-        'vcpus': vcpus_schema,
-        'memory': memory_schema,
-        'vip_intf_mac': vip_intf_mac_schema,
-        'vip_subnet_mask': vip_subnet_mask_schema,
-        'vnic': vnic_schema,
-        'pending_download': pending_download_schema,
-        'sec_idx': sec_idx_schema,
-        'download_selist_only': download_selist_only_schema,
-        'vlan_id': vlan_id_schema,
-        'snat_ip': snat_ip_schema,
-        'vip_intf_ip': vip_intf_ip_schema,
-        'vip_intf_list': vip_intf_list_schema,
-        'floating_intf_ip': floating_intf_ip_schema,
-        'is_portchannel': is_portchannel_schema,
-        'se_flow_label': se_flow_label_schema,
-        'equivalent_labels': equivalent_labels_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'vnic': getattr(VsSeVnic, 'field_references', {}),
-        'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
-        'vip_intf_list': getattr(SeVipInterfaceList, 'field_references', {}),
-        'snat_ip': getattr(IpAddr, 'field_references', {}),
-        'se_uuid': 'serviceengine',
-        'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
-        'equivalent_labels': getattr(EquivalentLabels, 'field_references', {}),
     }
 
 

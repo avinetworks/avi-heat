@@ -127,6 +127,32 @@ class VSDataScriptSet(AviResource):
         required=False,
         update_allowed=True,
     )
+    ipgroup_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    ipgroup_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("UUID of IP Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=ipgroup_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    string_group_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    string_group_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("UUID of String Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=string_group_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -140,6 +166,8 @@ class VSDataScriptSet(AviResource):
         'datascript',
         'pool_uuids',
         'pool_group_uuids',
+        'ipgroup_uuids',
+        'string_group_uuids',
         'description',
     )
 
@@ -149,13 +177,17 @@ class VSDataScriptSet(AviResource):
         'datascript': datascript_schema,
         'pool_uuids': pool_uuids_schema,
         'pool_group_uuids': pool_group_uuids_schema,
+        'ipgroup_uuids': ipgroup_uuids_schema,
+        'string_group_uuids': string_group_uuids_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'string_group_uuids': 'stringgroup',
         'pool_uuids': 'pool',
         'datascript': getattr(VSDataScript, 'field_references', {}),
+        'ipgroup_uuids': 'ipaddrgroup',
         'pool_group_uuids': 'poolgroup',
     }
 

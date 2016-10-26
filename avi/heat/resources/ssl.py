@@ -70,6 +70,40 @@ class SSLVersion(object):
 
 
 
+class CertificateAuthority(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    ca_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'ca_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'ca_uuid': ca_uuid_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ca_uuid': 'sslkeyandcertificate',
+    }
+
+
+
 class SSLKeyECParams(object):
     # all schemas
     curve_schema = properties.Schema(
@@ -482,6 +516,24 @@ class SSLProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    prefer_client_cipher_ordering_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("When enabled, Avi will prefer the SSL cipher ordering presented by the client during the SSL handshake rather than the one specified in the SSL Profile."),
+        required=False,
+        update_allowed=True,
+    )
+    enable_ssl_session_reuse_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable SSL session re-use."),
+        required=False,
+        update_allowed=True,
+    )
+    ssl_session_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The amount of time before an SSL session expires."),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -498,6 +550,9 @@ class SSLProfile(AviResource):
         'tags',
         'ssl_rating',
         'send_close_notify',
+        'prefer_client_cipher_ordering',
+        'enable_ssl_session_reuse',
+        'ssl_session_timeout',
         'description',
     )
 
@@ -510,6 +565,9 @@ class SSLProfile(AviResource):
         'tags': tags_schema,
         'ssl_rating': ssl_rating_schema,
         'send_close_notify': send_close_notify_schema,
+        'prefer_client_cipher_ordering': prefer_client_cipher_ordering_schema,
+        'enable_ssl_session_reuse': enable_ssl_session_reuse_schema,
+        'ssl_session_timeout': ssl_session_timeout_schema,
         'description': description_schema,
     }
 
@@ -632,6 +690,25 @@ class SSLCertificate(object):
         required=False,
         update_allowed=True,
     )
+    subject_alt_names_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    subject_alt_names_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("subjectAltName that provides additional subject identities"),
+        schema=subject_alt_names_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    days_until_expire_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -652,6 +729,8 @@ class SSLCertificate(object):
         'fingerprint',
         'expiry_status',
         'chain_verified',
+        'subject_alt_names',
+        'days_until_expire',
     )
 
     # mapping of properties to their schemas
@@ -673,6 +752,8 @@ class SSLCertificate(object):
         'fingerprint': fingerprint_schema,
         'expiry_status': expiry_status_schema,
         'chain_verified': chain_verified_schema,
+        'subject_alt_names': subject_alt_names_schema,
+        'days_until_expire': days_until_expire_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -739,6 +820,12 @@ class PKIProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -748,6 +835,7 @@ class PKIProfile(AviResource):
         'ignore_peer_chain',
         'crl_check',
         'validate_only_leaf_crl',
+        'created_by',
     )
 
     # mapping of properties to their schemas
@@ -758,6 +846,7 @@ class PKIProfile(AviResource):
         'ignore_peer_chain': ignore_peer_chain_schema,
         'crl_check': crl_check_schema,
         'validate_only_leaf_crl': validate_only_leaf_crl_schema,
+        'created_by': created_by_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -768,8 +857,161 @@ class PKIProfile(AviResource):
 
 
 
+class SSLKeyAndCertificate(AviResource):
+    resource_name = "sslkeyandcertificate"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_CERTIFICATE_TYPE_SYSTEM', 'SSL_CERTIFICATE_TYPE_VIRTUALSERVICE', 'SSL_CERTIFICATE_TYPE_CA']),
+        ],
+    )
+    certificate_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SSLCertificate.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    key_params_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SSLKeyParams.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Private key"),
+        required=False,
+        update_allowed=True,
+    )
+    status_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SSL_CERTIFICATE_FINISHED', 'SSL_CERTIFICATE_PENDING']),
+        ],
+    )
+    ca_certs_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=CertificateAuthority.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ca_certs_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("CA certificates in certificate chain"),
+        schema=ca_certs_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    enckey_base64_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Encrypted private key corresponding to the private key (e.g. those generated by an HSM such as Thales nShield)"),
+        required=False,
+        update_allowed=True,
+    )
+    enckey_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of the encrypted private key (e.g. those generated by an HSM such as Thales nShield)"),
+        required=False,
+        update_allowed=True,
+    )
+    hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    certificate_management_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    dynamic_params_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=CustomParams.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    dynamic_params_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Dynamic parameters needed for certificate management profile"),
+        schema=dynamic_params_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'type',
+        'certificate',
+        'key_params',
+        'key',
+        'status',
+        'ca_certs',
+        'enckey_base64',
+        'enckey_name',
+        'hardwaresecuritymodulegroup_uuid',
+        'certificate_management_profile_uuid',
+        'dynamic_params',
+        'created_by',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'type': type_schema,
+        'certificate': certificate_schema,
+        'key_params': key_params_schema,
+        'key': key_schema,
+        'status': status_schema,
+        'ca_certs': ca_certs_schema,
+        'enckey_base64': enckey_base64_schema,
+        'enckey_name': enckey_name_schema,
+        'hardwaresecuritymodulegroup_uuid': hardwaresecuritymodulegroup_uuid_schema,
+        'certificate_management_profile_uuid': certificate_management_profile_uuid_schema,
+        'dynamic_params': dynamic_params_schema,
+        'created_by': created_by_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'hardwaresecuritymodulegroup_uuid': 'hardwaresecuritymodulegroup',
+        'certificate': getattr(SSLCertificate, 'field_references', {}),
+        'dynamic_params': getattr(CustomParams, 'field_references', {}),
+        'ca_certs': getattr(CertificateAuthority, 'field_references', {}),
+        'certificate_management_profile_uuid': 'certificatemanagementprofile',
+        'key_params': getattr(SSLKeyParams, 'field_references', {}),
+    }
+
+
+
 def resource_mapping():
     return {
+        'Avi::LBaaS::SSLKeyAndCertificate': SSLKeyAndCertificate,
         'Avi::LBaaS::SSLProfile': SSLProfile,
         'Avi::LBaaS::PKIProfile': PKIProfile,
         'Avi::LBaaS::CertificateManagementProfile': CertificateManagementProfile,

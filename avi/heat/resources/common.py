@@ -195,6 +195,20 @@ class Tag(object):
 
 
 
+class GcpInfo(object):
+    # all schemas
+
+    # properties list
+    PROPERTIES = (
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+    }
+
+
+
+
 class TimeStamp(object):
     # all schemas
     secs_schema = properties.Schema(

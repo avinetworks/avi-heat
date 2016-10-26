@@ -16,6 +16,7 @@ from ssl import *
 from rate import *
 from dos import *
 from match import *
+from dns import *
 
 
 class DosRateLimitProfile(object):
@@ -65,7 +66,7 @@ class DnsServiceApplicationProfile(object):
     )
     ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Specifies the TTL value for A records served by DNS Service"),
+        _("Specifies the TTL value (in seconds) for records served by DNS Service"),
         required=False,
         update_allowed=True,
     )
@@ -91,20 +92,6 @@ class DnsServiceApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
-    private_addresses_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Subnets of clients that can be construed as a private subnet, so that the private vIP can be served. If client ip does not fall in this subnet, then they are assumed to be internet clients, and the public ip is served"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    public_addresses_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Subnets of clients that can be construed as a public subnet, so that the public vIP can be served. If client ip does not fall in this subnet, then they are assumed to be private clients, and the private ip is served"),
-        schema=IpAddrMatch.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -112,8 +99,6 @@ class DnsServiceApplicationProfile(object):
         'ttl',
         'error_response',
         'domain_names',
-        'private_addresses',
-        'public_addresses',
     )
 
     # mapping of properties to their schemas
@@ -122,15 +107,8 @@ class DnsServiceApplicationProfile(object):
         'ttl': ttl_schema,
         'error_response': error_response_schema,
         'domain_names': domain_names_schema,
-        'private_addresses': private_addresses_schema,
-        'public_addresses': public_addresses_schema,
     }
 
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'private_addresses': getattr(IpAddrMatch, 'field_references', {}),
-        'public_addresses': getattr(IpAddrMatch, 'field_references', {}),
-    }
 
 
 
@@ -337,13 +315,13 @@ class HTTPApplicationProfile(object):
     )
     client_header_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The max length of time allowed for a client to transmit the entire request headers.  This helps to mitigate various forms of SlowLoris attacks."),
+        _("The maximum length of time allowed for a client to transmit an entire request header. This helps mitigate various forms of SlowLoris attacks."),
         required=False,
         update_allowed=True,
     )
     client_body_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The max allowed length of time to receive a request body from a client. Default of 0 specifies no timeout.  This setting generally impacts the length of time allowed for a client to send a POST."),
+        _("The maximum length of time allowed between consecutive read operations for a client request body. The value '0' specifies no timeout. This setting generally impacts the length of time allowed for a client to send a POST."),
         required=False,
         update_allowed=True,
     )
@@ -456,7 +434,13 @@ class HTTPApplicationProfile(object):
     )
     keepalive_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Send 'Keep-Alive' header to the client with timeout as specified in the Keep-Alive Timeout."),
+        _("Send HTTP 'Keep-Alive' header to the client. By default, the timeout specified in the 'Keep-Alive Timeout' field will be used unless the 'Use App Keepalive Timeout' flag is set, in which case the timeout sent by the application will be honored."),
+        required=False,
+        update_allowed=True,
+    )
+    use_app_keepalive_timeout_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use 'Keep-Alive' header timeout sent by application instead of sending the HTTP Keep-Alive Timeout."),
         required=False,
         update_allowed=True,
     )
@@ -498,6 +482,7 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_uri',
         'max_bad_rps_cip_uri',
         'keepalive_header',
+        'use_app_keepalive_timeout',
     )
 
     # mapping of properties to their schemas
@@ -537,6 +522,7 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_uri': max_bad_rps_uri_schema,
         'max_bad_rps_cip_uri': max_bad_rps_cip_uri_schema,
         'keepalive_header': keepalive_header_schema,
+        'use_app_keepalive_timeout': use_app_keepalive_timeout_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

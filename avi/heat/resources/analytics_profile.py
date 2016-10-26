@@ -9,6 +9,29 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
+from match import *
+
+
+class ClientLogConfiguration(object):
+    # all schemas
+    enable_significant_log_collection_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable significant log collection. By default, this flag is enabled, which means that Avi SEs collect significant logs (logs corresponding to error conditions, such as when the response code for a request is 500) and forward them to Controller for further processing. Users can disable this flag to turn off default significant log collection."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'enable_significant_log_collection',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'enable_significant_log_collection': enable_significant_log_collection_schema,
+    }
+
+
 
 
 class AnalyticsProfile(AviResource):
@@ -134,19 +157,6 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    exclude_http_error_codes_item_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    exclude_http_error_codes_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("List of HTTP status codes to be excluded from being classified as an error.  Error connections or responses impacts health score, are included as significant logs, and may be classified as part of a DoS attack."),
-        schema=exclude_http_error_codes_item_schema,
-        required=False,
-        update_allowed=True,
-    )
     exclude_client_close_before_request_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Exclude client closed connection before an HTTP request could be completed from being classified as an error."),
@@ -179,19 +189,19 @@ class AnalyticsProfile(AviResource):
     )
     exclude_invalid_dns_query_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude 'invalid dns query' from the list of errors."),
+        _("Exclude invalid and unsupported dns queries from the list of errors."),
         required=False,
         update_allowed=True,
     )
     exclude_invalid_dns_domain_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude 'invalid dns domain' from the list of errors."),
+        _("Exclude dns queries to domains outside the domains configured in the DNS application profile from the list of errors."),
         required=False,
         update_allowed=True,
     )
     exclude_no_dns_record_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude 'no dns record' from the list of errors."),
+        _("Exclude queries to domains that did not have configured services/records from the list of errors."),
         required=False,
         update_allowed=True,
     )
@@ -365,13 +375,63 @@ class AnalyticsProfile(AviResource):
     )
     exclude_gs_down_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude 'global service down' from the list of errors."),
+        _("Exclude queries to GSLB services that are operationally down from the list of errors."),
         required=False,
         update_allowed=True,
     )
     exclude_no_valid_gs_member_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude 'no valid global service member' from the list of errors."),
+        _("Exclude queries to GSLB services that have no available members from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
+    client_log_config_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=ClientLogConfiguration.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    exclude_http_error_codes_item_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    exclude_http_error_codes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of HTTP status codes to be excluded from being classified as an error.  Error connections or responses impacts health score, are included as significant logs, and may be classified as part of a DoS attack."),
+        schema=exclude_http_error_codes_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ranges_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=HTTPStatusRange.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ranges_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of HTTP status code ranges to be excluded from being classified as an error."),
+        schema=ranges_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    resp_code_block_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+        ],
+    )
+    resp_code_block_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Block of HTTP response codes to be excluded from being classified as an error."),
+        schema=resp_code_block_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -398,7 +458,6 @@ class AnalyticsProfile(AviResource):
         'conn_server_lossy_timeo_rexmt_threshold',
         'conn_server_lossy_ooo_threshold',
         'conn_server_lossy_zero_win_size_event_threshold',
-        'exclude_http_error_codes',
         'exclude_client_close_before_request_as_error',
         'exclude_tcp_reset_as_error',
         'exclude_server_tcp_reset_as_error',
@@ -437,6 +496,10 @@ class AnalyticsProfile(AviResource):
         'hs_pscore_traffic_threshold_l4_server',
         'exclude_gs_down_as_error',
         'exclude_no_valid_gs_member_as_error',
+        'client_log_config',
+        'exclude_http_error_codes',
+        'ranges',
+        'resp_code_block',
     )
 
     # mapping of properties to their schemas
@@ -461,7 +524,6 @@ class AnalyticsProfile(AviResource):
         'conn_server_lossy_timeo_rexmt_threshold': conn_server_lossy_timeo_rexmt_threshold_schema,
         'conn_server_lossy_ooo_threshold': conn_server_lossy_ooo_threshold_schema,
         'conn_server_lossy_zero_win_size_event_threshold': conn_server_lossy_zero_win_size_event_threshold_schema,
-        'exclude_http_error_codes': exclude_http_error_codes_schema,
         'exclude_client_close_before_request_as_error': exclude_client_close_before_request_as_error_schema,
         'exclude_tcp_reset_as_error': exclude_tcp_reset_as_error_schema,
         'exclude_server_tcp_reset_as_error': exclude_server_tcp_reset_as_error_schema,
@@ -500,8 +562,17 @@ class AnalyticsProfile(AviResource):
         'hs_pscore_traffic_threshold_l4_server': hs_pscore_traffic_threshold_l4_server_schema,
         'exclude_gs_down_as_error': exclude_gs_down_as_error_schema,
         'exclude_no_valid_gs_member_as_error': exclude_no_valid_gs_member_as_error_schema,
+        'client_log_config': client_log_config_schema,
+        'exclude_http_error_codes': exclude_http_error_codes_schema,
+        'ranges': ranges_schema,
+        'resp_code_block': resp_code_block_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(HTTPStatusRange, 'field_references', {}),
+        'client_log_config': getattr(ClientLogConfiguration, 'field_references', {}),
+    }
 
 
 

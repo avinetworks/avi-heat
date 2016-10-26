@@ -205,7 +205,7 @@ class HTTPSwitchingAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_POOL', 'HTTP_SWITCHING_SELECT_LOCAL']),
+            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_POOL', 'HTTP_SWITCHING_SELECT_POOLGROUP', 'HTTP_SWITCHING_SELECT_LOCAL']),
         ],
     )
     pool_uuid_schema = properties.Schema(

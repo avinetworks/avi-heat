@@ -109,12 +109,19 @@ class Cluster(AviResource):
         required=False,
         update_allowed=True,
     )
+    rejoin_nodes_automatically_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Re-join cluster nodes automatically in the event one of the node is reset to factory."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'name',
         'virtual_ip',
         'nodes',
+        'rejoin_nodes_automatically',
     )
 
     # mapping of properties to their schemas
@@ -122,6 +129,7 @@ class Cluster(AviResource):
         'name': name_schema,
         'virtual_ip': virtual_ip_schema,
         'nodes': nodes_schema,
+        'rejoin_nodes_automatically': rejoin_nodes_automatically_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
