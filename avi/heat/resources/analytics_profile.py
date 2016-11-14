@@ -189,7 +189,7 @@ class AnalyticsProfile(AviResource):
     )
     exclude_invalid_dns_query_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Exclude invalid and unsupported dns queries from the list of errors."),
+        _("Exclude invalid dns queries from the list of errors."),
         required=False,
         update_allowed=True,
     )
@@ -202,6 +202,12 @@ class AnalyticsProfile(AviResource):
     exclude_no_dns_record_as_error_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Exclude queries to domains that did not have configured services/records from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
+    exclude_unsupported_dns_query_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude unsupported dns queries from the list of errors."),
         required=False,
         update_allowed=True,
     )
@@ -435,6 +441,12 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    exclude_server_dns_error_as_error_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Exclude server dns error response from the list of errors."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -466,6 +478,7 @@ class AnalyticsProfile(AviResource):
         'exclude_invalid_dns_query_as_error',
         'exclude_invalid_dns_domain_as_error',
         'exclude_no_dns_record_as_error',
+        'exclude_unsupported_dns_query_as_error',
         'hs_performance_boost',
         'hs_max_anomaly_penalty',
         'hs_max_resources_penalty',
@@ -500,6 +513,7 @@ class AnalyticsProfile(AviResource):
         'exclude_http_error_codes',
         'ranges',
         'resp_code_block',
+        'exclude_server_dns_error_as_error',
     )
 
     # mapping of properties to their schemas
@@ -532,6 +546,7 @@ class AnalyticsProfile(AviResource):
         'exclude_invalid_dns_query_as_error': exclude_invalid_dns_query_as_error_schema,
         'exclude_invalid_dns_domain_as_error': exclude_invalid_dns_domain_as_error_schema,
         'exclude_no_dns_record_as_error': exclude_no_dns_record_as_error_schema,
+        'exclude_unsupported_dns_query_as_error': exclude_unsupported_dns_query_as_error_schema,
         'hs_performance_boost': hs_performance_boost_schema,
         'hs_max_anomaly_penalty': hs_max_anomaly_penalty_schema,
         'hs_max_resources_penalty': hs_max_resources_penalty_schema,
@@ -566,6 +581,7 @@ class AnalyticsProfile(AviResource):
         'exclude_http_error_codes': exclude_http_error_codes_schema,
         'ranges': ranges_schema,
         'resp_code_block': resp_code_block_schema,
+        'exclude_server_dns_error_as_error': exclude_server_dns_error_as_error_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

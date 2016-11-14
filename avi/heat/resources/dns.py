@@ -76,7 +76,7 @@ class DnsSrvRdata(object):
     )
     target_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Canonical hostname, of the machine hosting the service"),
+        _("Canonical hostname, of the machine hosting the service, with no trailing period. 'default.host' is valid but not 'default.host.'"),
         required=False,
         update_allowed=True,
     )

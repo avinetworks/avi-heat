@@ -23,7 +23,7 @@ class UserAccountProfile(AviResource):
     )
     max_password_history_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of passwords to be maintained in the password history. Default is 5 passwords."),
+        _("Maximum number of passwords to be maintained in the password history. Default is 4 passwords."),
         required=False,
         update_allowed=True,
     )
@@ -41,13 +41,13 @@ class UserAccountProfile(AviResource):
     )
     max_concurrent_sessions_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of concurrent sessions allowed. Default is 5 sessions."),
+        _("Maximum number of concurrent sessions allowed. There are unlimited sessions by default."),
         required=False,
         update_allowed=True,
     )
     credentials_timeout_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The time period after which credentials expire. Default is 60 days."),
+        _("The time period after which credentials expire. Default is 180 days."),
         required=False,
         update_allowed=True,
     )

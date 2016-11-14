@@ -1772,6 +1772,12 @@ class RancherConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    use_controller_image_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If true, use controller generated SE docker image via fileservice, else use docker repository image as defined by docker_registry_se"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1800,6 +1806,7 @@ class RancherConfiguration(object):
         'se_exclude_attributes',
         'se_include_attributes',
         'nuage_controller',
+        'use_controller_image',
     )
 
     # mapping of properties to their schemas
@@ -1829,6 +1836,7 @@ class RancherConfiguration(object):
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
         'nuage_controller': nuage_controller_schema,
+        'use_controller_image': use_controller_image_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2025,6 +2033,12 @@ class DockerConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    use_controller_image_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If true, use controller generated SE docker image via fileservice, else use docker repository image as defined by docker_registry_se"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -2052,6 +2066,7 @@ class DockerConfiguration(object):
         'feproxy_vips_enable_proxy_arp',
         'se_exclude_attributes',
         'se_include_attributes',
+        'use_controller_image',
     )
 
     # mapping of properties to their schemas
@@ -2080,6 +2095,7 @@ class DockerConfiguration(object):
         'feproxy_vips_enable_proxy_arp': feproxy_vips_enable_proxy_arp_schema,
         'se_exclude_attributes': se_exclude_attributes_schema,
         'se_include_attributes': se_include_attributes_schema,
+        'use_controller_image': use_controller_image_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2291,6 +2307,12 @@ class OShiftK8SConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    use_controller_image_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If true, use controller generated SE docker image via fileservice, else use docker repository image as defined by docker_registry_se"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -2320,6 +2342,7 @@ class OShiftK8SConfiguration(object):
         'use_service_cluster_ip_as_ew_vip',
         'default_service_as_east_west_service',
         'sdn_overlay',
+        'use_controller_image',
     )
 
     # mapping of properties to their schemas
@@ -2350,6 +2373,7 @@ class OShiftK8SConfiguration(object):
         'use_service_cluster_ip_as_ew_vip': use_service_cluster_ip_as_ew_vip_schema,
         'default_service_as_east_west_service': default_service_as_east_west_service_schema,
         'sdn_overlay': sdn_overlay_schema,
+        'use_controller_image': use_controller_image_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

@@ -603,6 +603,18 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
+    at_curr_ver_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -627,6 +639,8 @@ class SeList(object):
         'is_portchannel',
         'scalein_in_progress',
         'admin_down_requested',
+        'at_curr_ver',
+        'version',
     )
 
     # mapping of properties to their schemas
@@ -652,6 +666,8 @@ class SeList(object):
         'is_portchannel': is_portchannel_schema,
         'scalein_in_progress': scalein_in_progress_schema,
         'admin_down_requested': admin_down_requested_schema,
+        'at_curr_ver': at_curr_ver_schema,
+        'version': version_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
