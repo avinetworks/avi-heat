@@ -18,26 +18,81 @@ Installation Steps
 
 2. Update your /etc/heat/heat.conf and add the following in [Default] section:
 
-   Ubuntu:
+   Ubuntu::
 
-   plugin_dirs = '/usr/local/lib/python2.7/dist-packages/avi/heat'
+    plugin_dirs = '/usr/local/lib/python2.7/dist-packages/avi/heat'
 
-   RHEL:
+   RHEL::
 
-   plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
+    plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
 
-3. Restart heat-engine after adding this:
+3. Restart heat-engine after adding this. For example::
 
-   e.g., service heat-engine restart
+    $> service heat-engine restart
 
 
 Usage Notes
 -----------
 
-For properties that need UUIDs, you can specify a name but prefixed with string "get_avi_uuid_by_name:".
+Once installed, Heat will expose Avi resource types that users can specify in their heat templates.
+For a full list of resource types, use the following command::
+
+    $> heat resource-type-list | grep Avi
+    ...
+    | Avi::LBaaS::Pool                          |
+    | Avi::LBaaS::Pool::Server                  |
+    | Avi::LBaaS::Role                          |
+    | Avi::LBaaS::SSLProfile                    |
+    | Avi::LBaaS::SeProperties                  |
+    ...
+
+For a full list of attributes available for any resource type, use the following command::
+ 
+    $> heat resource-type-show Avi::LBaaS::Pool
+    ...
+     "properties": {
+       "lb_algorithm": {
+         "description": "The load balancing algorithm will pick a server within the pool's list of available servers.", 
+         "required": false, 
+         "update_allowed": true, 
+         "type": "string", 
+         "immutable": false, 
+         "constraints": [
+           {
+             "allowed_values": [
+               "LB_ALGORITHM_ROUND_ROBIN", 
+               "LB_ALGORITHM_LEAST_LOAD", 
+    ...
+
+For properties that need UUIDs, you can specify a name but prefixed with string "get_avi_uuid_by_name:"::
+
+    ...
+    member:
+      type: Avi::LBaaS::Pool::Server
+      properties:
+        pool_uuid:  get_avi_uuid_by_name:testpool
+    ...
+
 Internally, heat-engine would perform an API call to resolve the provided name into Avi UUID.
-For an example usage, please refer to test-member.yaml in examples directory: https://github.com/avinetworks/avi-heat/examples/test-member.yaml.
+For a complete example, please refer to test-member.yaml in examples directory: https://github.com/avinetworks/avi-heat/blob/master/examples/test-member.yaml.
+
 
 If you want to provide the name for a UUID property via an input parameter to your template,
-please refer to the example in test-member-pool-as-param.yaml: https://github.com/avinetworks/avi-heat/examples/test-member-pool-as-param.yaml.
+please refer to the example in test-member-pool-as-param.yaml: https://github.com/avinetworks/avi-heat/blob/master/examples/test-member-pool-as-param.yaml::
+
+    ...
+    parameters:
+     pool_name:
+       type: string
+    ...
+    resources:
+     member:
+       type: Avi::LBaaS::Pool::Server
+       properties:
+         pool_uuid:
+           str_replace:
+             template: get_avi_uuid_by_name:pname
+             params:
+               pname: { get_param: pool_name }
+    ...
 
