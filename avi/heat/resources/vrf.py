@@ -63,6 +63,18 @@ class BgpPeer(object):
         required=False,
         update_allowed=True,
     )
+    advertisement_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Advertisement interval for this Peer"),
+        required=False,
+        update_allowed=True,
+    )
+    connect_timer_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Connect timer for this Peer"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -74,6 +86,8 @@ class BgpPeer(object):
         'network_uuid',
         'advertise_vip',
         'advertise_snat_ip',
+        'advertisement_interval',
+        'connect_timer',
     )
 
     # mapping of properties to their schemas
@@ -86,6 +100,8 @@ class BgpPeer(object):
         'network_uuid': network_uuid_schema,
         'advertise_vip': advertise_vip_schema,
         'advertise_snat_ip': advertise_snat_ip_schema,
+        'advertisement_interval': advertisement_interval_schema,
+        'connect_timer': connect_timer_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

@@ -354,6 +354,12 @@ class HealthMonitor(AviResource):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -370,6 +376,7 @@ class HealthMonitor(AviResource):
         'udp_monitor',
         'dns_monitor',
         'monitor_port',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -387,6 +394,7 @@ class HealthMonitor(AviResource):
         'udp_monitor': udp_monitor_schema,
         'dns_monitor': dns_monitor_schema,
         'monitor_port': monitor_port_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

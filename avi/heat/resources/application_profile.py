@@ -224,7 +224,7 @@ class HTTPApplicationProfile(object):
     # all schemas
     connection_multiplexing_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance."),
+        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance. Not compatible with Preserve Client IP."),
         required=False,
         update_allowed=True,
     )
@@ -583,7 +583,7 @@ class ApplicationProfile(AviResource):
     )
     preserve_client_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Specifies if client IP needs to be preserved for backend connection"),
+        _("Specifies if client IP needs to be preserved for backend connection. Not compatible with Connection Multiplexing."),
         required=False,
         update_allowed=True,
     )

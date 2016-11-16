@@ -361,7 +361,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_deprovision_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Duration to preserve unused Service Engine virtual machines before deleting them. If traffic to a Virtual Service were to spike up abruptly, this Service Engine would still be available to be utilized again rather than creating a new Service Engine."),
+        _("Duration to preserve unused Service Engine virtual machines before deleting them. If traffic to a Virtual Service were to spike up abruptly, this Service Engine would still be available to be utilized again rather than creating a new Service Engine. If this value is set to 0, Controller will never delete any Service Engines, administrator has to manually cleanup unused Service Engines."),
         required=False,
         update_allowed=True,
     )

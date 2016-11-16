@@ -697,6 +697,18 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Checksum of cloud configuration for PoolGroup. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -712,6 +724,8 @@ class PoolGroup(AviResource):
         'min_servers',
         'deployment_policy_uuid',
         'fail_action',
+        'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
@@ -723,6 +737,8 @@ class PoolGroup(AviResource):
         'min_servers': min_servers_schema,
         'deployment_policy_uuid': deployment_policy_uuid_schema,
         'fail_action': fail_action_schema,
+        'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 

@@ -67,7 +67,7 @@ class NTPAuthenticationKey(object):
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Algorithm used for NTP authentication"),
+        _("Message Digest Algorithm used for NTP authentication. Default is NTP_AUTH_ALGORITHM_MD5"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -137,6 +137,41 @@ class AdminAuthConfiguration(object):
     field_references = {
         'mapping_rules': getattr(AuthMappingRule, 'field_references', {}),
         'auth_profile_uuid': 'authprofile',
+    }
+
+
+
+class NTPServer(object):
+    # all schemas
+    server_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP Address of the NTP Server"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    key_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Key number from the list of trusted keys used to authenticate this server"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'server',
+        'key_number',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'server': server_schema,
+        'key_number': key_number_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'server': getattr(IpAddr, 'field_references', {}),
     }
 
 
@@ -456,21 +491,38 @@ class NTPConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    ntp_servers_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=NTPServer.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ntp_servers_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of NTP Servers"),
+        schema=ntp_servers_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'ntp_server_list',
         'ntp_authentication_keys',
+        'ntp_servers',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'ntp_server_list': ntp_server_list_schema,
         'ntp_authentication_keys': ntp_authentication_keys_schema,
+        'ntp_servers': ntp_servers_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'ntp_servers': getattr(NTPServer, 'field_references', {}),
         'ntp_authentication_keys': getattr(NTPAuthenticationKey, 'field_references', {}),
         'ntp_server_list': getattr(IpAddr, 'field_references', {}),
     }
