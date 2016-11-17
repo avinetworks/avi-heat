@@ -20,12 +20,21 @@ class AviResource(resource.Resource):
     resource_name = ""  # should be set by derived resource classes
 
     def get_project_name(self):
+        if not self.context.auth_token_info:
+            return self.context.tenant
         if "access" in self.context.auth_token_info:
             return self.context.auth_token_info["access"]["token"][
                 "tenant"]["name"]
         return self.context.auth_token_info['token']['project']['name']
 
     def get_user_name(self):
+        if not self.context.auth_token_info:
+            ksc = self.keystone()
+            username = ksc.domain_admin_user
+            if ksc.stack_domain_name:
+                username += "@%s" % ksc.stack_domain_name
+            return username
+
         if "access" in self.context.auth_token_info:
             return self.context.auth_token_info["access"]["user"]["name"]
         return self.context.auth_token_info['token']['user']['name']
@@ -46,10 +55,14 @@ class AviResource(resource.Resource):
             LOG.exception("Error during finding avi address: %s", e)
             return None
         username = self.get_user_name()
+        password = None
+        if not self.context.auth_token:
+            password = self.keystone().domain_admin_password
         api_session = ApiSession(
             controller_ip=address,
             username=username,
             token=self.context.auth_token,
+            password=password,
         )
         return api_session
 
