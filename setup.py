@@ -15,7 +15,7 @@ if os.path.exists("./VERSION"):
 else:
     ct = time.gmtime()
     date = "%d%02d%02d" % (ct.tm_year, ct.tm_mon, ct.tm_mday)
-    AVI_PIP_VERSION = '16.3b' + date
+    AVI_PIP_VERSION = '17.1b' + date
     with open("./VERSION", "w+") as f:
         f.write("%s" % AVI_PIP_VERSION)
 
