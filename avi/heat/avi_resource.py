@@ -31,8 +31,6 @@ class AviResource(resource.Resource):
         if not self.context.auth_token_info:
             ksc = self.keystone()
             username = ksc.domain_admin_user
-            if ksc.stack_domain_name:
-                username += "@%s" % ksc.stack_domain_name
             return username
 
         if "access" in self.context.auth_token_info:
@@ -263,8 +261,8 @@ class AviNestedResource(AviResource):
             return
         if hasattr(HeatException, "UpdateReplace"):
             raise HeatException.UpdateReplace()
-        else:
-            raise HeatException.NotSupported()
+        else:  # in older versions
+            raise resource.UpdateReplace()
 
     def handle_delete(self):
         client = self.get_avi_client()
