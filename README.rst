@@ -38,11 +38,11 @@ For example, consider the following settings in /etc/heat.conf::
     ...
     stack_domain_admin = heat_domain_admin
     stack_domain_admin_password = abc123
-    stack_user_domain_name = heat
     ...
 
-In this case, you need to create a user named "heat_domain_admin@heat" on Avi Controller
-with Tenant-Admin privileges in any tenant. The following picture shows how to create such
+In this case, you need to create a user named "heat_domain_admin" on Avi Controller
+with Tenant-Admin privileges in any tenant, and using the same password as defined
+in the heat.conf. The following picture shows how to create such
 user in Avi UI.
 
 .. image:: heat_user_on_avi.png
@@ -52,7 +52,7 @@ user in Avi UI.
 Alternatively, you can perform a POST API for /api/user URI with the following data
 (role_ref needs to be replaced with the url corresponding to the Tenant-Admin role)::
     {
-        "username": "heat_domain_admin@heat",
+        "username": "heat_domain_admin",
         "password": "abc123",
         "full_name": "Heat Domain Admin",
         "is_active": True,
