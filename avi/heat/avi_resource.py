@@ -88,12 +88,13 @@ class AviResource(resource.Resource):
                 objname = inp.split(":", 1)[1]
                 resname = field_refs.get(keyname, "").lower()
                 if resname:
-                    return client.get_obj_uuid(
-                        client.get_object_by_name(
+                    obj = client.get_object_by_name(
                                 resname, objname,
                                 tenant_uuid=self.get_avi_tenant_uuid()
                             )
-                        )
+                    if not obj:
+                        return None
+                    return client.get_obj_uuid(obj)
         return inp
 
     def handle_create(self):
@@ -110,8 +111,9 @@ class AviResource(resource.Resource):
                               tenant_uuid=self.get_avi_tenant_uuid()
                               ).json()
         except Exception as e:
-            LOG.exception("Error during creation: %s, resname %s, resdef %s",
-                          e, self.resource_name, res_def)
+            LOG.exception("Error during creation: %s, resname %s, "
+                          "resdef %s headers %s",
+                          e, self.resource_name, res_def, client.headers)
             raise
         self.resource_id_set(obj['uuid'])
         return True
