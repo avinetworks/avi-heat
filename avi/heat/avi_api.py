@@ -109,6 +109,7 @@ class ApiSession(Session):
     # a new cache for that process.
     AVI_SLUG = 'Slug'
     SESSION_CACHE_EXPIRY = 20*60
+    SHARED_USER_HDRS = ['Content-Type', 'Referer', 'X-CSRFToken', 'Session-Id']
 
     def __init__(self, controller_ip, username, password=None, token=None,
                  tenant=None, tenant_uuid=None, verify=False, port=None):
@@ -116,6 +117,16 @@ class ApiSession(Session):
         initialize new session object with authenticated token from login api.
         It also keeps a cache of user sessions that are cleaned up if inactive
         for more than 20 mins.
+
+        Notes:
+        01. If mode is https and port is none or 443, we don't embed the
+            port in the prefix. The prefix would be 'https://ip'. If port
+            is a non-default value then we concatenate https://ip:port
+            in the prefix.
+        02. If mode is http and the port is none or 80, we don't embed the
+            port in the prefix. The prefix would be 'http://ip'. If port is
+            a non-default value, then we concatenate http://ip:port in
+            the prefix.
         """
         super(ApiSession, self).__init__()
         self.controller_ip = controller_ip
@@ -125,12 +136,21 @@ class ApiSession(Session):
         self.tenant_uuid = tenant_uuid
         self.tenant = tenant if tenant else "admin"
         self.headers = {}
-        self.prefix = (controller_ip if controller_ip.startswith('http')
-                       else "https://%s" % controller_ip)
         self.verify = verify
         self.port = port
-        self.key = controller_ip + ":" +  username
+        self.key = controller_ip + ":" + username
 
+        # Refer Notes 01 and 02
+        if controller_ip.startswith('http'):
+            if port is None or port == 80:
+                self.prefix = controller_ip
+            else:
+                self.prefix = '{x}:{y}'.format(x=controller_ip, y=port)
+        else:
+            if port is None or port == 443:
+                self.prefix = 'https://{x}'.format(x=controller_ip)
+            else:
+                self.prefix = 'https://{x}:{y}'.format(x=controller_ip, y=port)
         try:
             user_session = ApiSession.sessionDict[self.key]["api"]
         except KeyError:
@@ -140,11 +160,11 @@ class ApiSession(Session):
             ApiSession.sessionDict[self.key] = \
                 {"api": self, "last_used": datetime.utcnow()}
             user_session = self
-        self.headers = copy.deepcopy(user_session.headers)
-        # don't save the tenant headers as it would interfer with the
+        # don't save the tenant headers as it would interfere with the
         # individual method tenant overrides
-        self.headers.pop("X-Avi-Tenant-UUID", None)
-        self.headers.pop("X-Avi-Tenant", None)
+        for hdr in self.SHARED_USER_HDRS:
+            if hdr in user_session.headers:
+                self.headers[hdr] = user_session.headers[hdr]
         self.cookies = user_session.cookies
         self.num_session_retries = 0
         self.pid = os.getpid()
@@ -170,9 +190,9 @@ class ApiSession(Session):
             user_session = ApiSession.sessionDict[key]["api"]
             tenant = tenant if tenant else 'admin'
             if (user_session.password != password or
-                user_session.keystone_token != token or
-                user_session.tenant != tenant or
-                user_session.tenant_uuid != tenant_uuid):
+                    user_session.keystone_token != token or
+                    user_session.tenant != tenant or
+                    user_session.tenant_uuid != tenant_uuid):
                 logger.debug('Api Session auth credential mismatch %s', key)
                 del ApiSession.sessionDict[key]
                 user_session = None
@@ -215,8 +235,9 @@ class ApiSession(Session):
         rsp = super(ApiSession, self).post(self.prefix+"/login", body,
                                            timeout=60)
         if rsp.status_code != 200:
-            raise Exception("Authentication failed: code %d: msg: %s",
-                            rsp.status_code, rsp.text)
+            raise Exception(
+                "Authentication failed with code %d reason msg: %s" %
+                (rsp.status_code, rsp.text))
         logger.debug("rsp cookies: %s", dict(rsp.cookies))
         self.headers.update({
             "Referer": self.prefix,
@@ -238,7 +259,7 @@ class ApiSession(Session):
         returns the headers that are passed to the requests.Session api calls.
         """
         api_hdrs = copy.deepcopy(self.headers)
-        api_hdrs['timeout'] = timeout
+        api_hdrs['timeout'] = str(timeout)
         if tenant:
             tenant_uuid = None
         elif tenant_uuid:
@@ -258,7 +279,7 @@ class ApiSession(Session):
         return api_hdrs
 
     def _api(self, api_name, path, tenant, tenant_uuid, data=None,
-             timeout=60, headers=None, **kwargs):
+             headers=None, timeout=60, **kwargs):
         """
         It calls the requests.Session APIs and handles session expiry
         and other situations where session needs to be reset.
@@ -446,13 +467,13 @@ class ApiSession(Session):
             parameters
         returns session's response object
         """
-        uuid = self._get_uuid_by_name(path, name)
+        uuid = self._get_uuid_by_name(path, name, tenant, tenant_uuid)
         path = '%s/%s' % (path, uuid)
         return self.put(path, data, tenant, tenant_uuid, timeout=timeout,
                         params=params, **kwargs)
 
     def delete(self, path, tenant='', tenant_uuid='', timeout=60, params=None,
-               **kwargs):
+               data=None, **kwargs):
         """
         It extends the Session Library interface to add AVI API prefixes,
         handle session exceptions related to authentication and update
@@ -465,9 +486,11 @@ class ApiSession(Session):
         :param timeout: timeout for API calls
         :param params: dictionary of key value pairs to be sent as query
             parameters
+        :param data: dictionary of the data. Support for json string
+            is deprecated
         returns session's response object
         """
-        return self._api('delete', path, tenant, tenant_uuid, data=None,
+        return self._api('delete', path, tenant, tenant_uuid, data=data,
                          timeout=timeout, params=params, **kwargs)
 
     def delete_by_name(self, path, name, tenant='', tenant_uuid='', timeout=60,
@@ -488,7 +511,7 @@ class ApiSession(Session):
         """
         uuid = self._get_uuid_by_name(path, name, tenant, tenant_uuid)
         if not uuid:
-            raise ObjectNotFound
+            raise ObjectNotFound("%s/?name=%s" % (path, name))
         path = '%s/%s' % (path, uuid)
         return self.delete(path, tenant, tenant_uuid, timeout=timeout,
                            params=params, **kwargs)
@@ -511,7 +534,7 @@ class ApiSession(Session):
     def get_obj_uuid(self, obj):
         """returns uuid from dict object"""
         if not obj:
-           return None
+            raise ObjectNotFound()
         if isinstance(obj, Response):
             obj = json.loads(obj.text)
         if obj.get(0, None):
@@ -526,20 +549,13 @@ class ApiSession(Session):
     def _get_api_path(self, path, uuid=None):
         """
         This function returns the full url from relative path and uuid.
-        If there is a configured port (ex: Rest API port may be something
-        other than 443), then it is included in the path.
         """
-        if self.port is not None:
-            prefix = '{x}:{y}'.format(x=self.prefix, y=self.port)
-        else:
-            prefix = self.prefix
-
         if uuid:
-            return prefix+'/api/'+path+'/'+uuid
+            return self.prefix+'/api/'+path+'/'+uuid
         else:
-            return prefix+'/api/'+path
+            return self.prefix+'/api/'+path
 
-    def _get_uuid_by_name(self, path, name, tenant, tenant_uuid):
+    def _get_uuid_by_name(self, path, name, tenant='admin', tenant_uuid=''):
         """gets object by name and service path and returns uuid"""
         resp = self.get_object_by_name(path, name, tenant, tenant_uuid)
         if not resp:
