@@ -212,7 +212,7 @@ class ApplicationPersistenceProfile(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HM_DOWN_PICK_NEW_SERVER', 'HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_ABORT_CONNECTION']),
+            constraints.AllowedValues(['HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_PICK_NEW_SERVER', 'HM_DOWN_ABORT_CONNECTION']),
         ],
     )
     persistence_type_schema = properties.Schema(

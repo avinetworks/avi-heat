@@ -252,7 +252,7 @@ class HdrMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_DOES_NOT_EXIST', 'HDR_EXISTS', 'HDR_DOES_NOT_END_WITH', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_CONTAIN', 'HDR_CONTAINS', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
         ],
     )
     hdr_schema = properties.Schema(
@@ -418,7 +418,7 @@ class CookieMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_DOES_NOT_EXIST', 'HDR_EXISTS', 'HDR_DOES_NOT_END_WITH', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_CONTAIN', 'HDR_CONTAINS', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
         ],
     )
     name_schema = properties.Schema(
@@ -470,7 +470,7 @@ class StringMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
         ],
     )
     match_str_item_schema = properties.Schema(
@@ -768,7 +768,7 @@ class HostHdrMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_DOES_NOT_EXIST', 'HDR_EXISTS', 'HDR_DOES_NOT_END_WITH', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_CONTAIN', 'HDR_CONTAINS', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
         ],
     )
     match_case_schema = properties.Schema(
@@ -962,7 +962,7 @@ class PathMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
         ],
     )
     match_case_schema = properties.Schema(
@@ -1094,7 +1094,7 @@ class LocationHdrMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_CONTAINS', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_END_WITH', 'HDR_EXISTS', 'HDR_DOES_NOT_CONTAIN', 'HDR_DOES_NOT_EXIST', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
+            constraints.AllowedValues(['HDR_ENDS_WITH', 'HDR_EQUALS', 'HDR_DOES_NOT_EXIST', 'HDR_EXISTS', 'HDR_DOES_NOT_END_WITH', 'HDR_DOES_NOT_EQUAL', 'HDR_DOES_NOT_CONTAIN', 'HDR_CONTAINS', 'HDR_BEGINS_WITH', 'HDR_DOES_NOT_BEGIN_WITH']),
         ],
     )
     match_case_schema = properties.Schema(

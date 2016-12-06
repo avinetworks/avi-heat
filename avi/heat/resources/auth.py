@@ -450,7 +450,7 @@ class AuthMappingRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['ASSIGN_FROM_SELECT_LIST', 'ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_GROUP_NAME']),
         ],
     )
     tenant_attribute_name_schema = properties.Schema(
@@ -478,7 +478,7 @@ class AuthMappingRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['ASSIGN_FROM_SELECT_LIST', 'ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_GROUP_NAME']),
         ],
     )
     role_attribute_name_schema = properties.Schema(
@@ -578,7 +578,7 @@ class TacacsPlusAuthSettings(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['AUTH_TACACS_PLUS_SERVICE_LOGIN', 'AUTH_TACACS_PLUS_SERVICE_NASI', 'AUTH_TACACS_PLUS_SERVICE_FWPROXY', 'AUTH_TACACS_PLUS_SERVICE_X25', 'AUTH_TACACS_PLUS_SERVICE_PPP', 'AUTH_TACACS_PLUS_SERVICE_RCMD', 'AUTH_TACACS_PLUS_SERVICE_ENABLE', 'AUTH_TACACS_PLUS_SERVICE_ARAP', 'AUTH_TACACS_PLUS_SERVICE_NONE', 'AUTH_TACACS_PLUS_SERVICE_PT']),
+            constraints.AllowedValues(['AUTH_TACACS_PLUS_SERVICE_LOGIN', 'AUTH_TACACS_PLUS_SERVICE_NASI', 'AUTH_TACACS_PLUS_SERVICE_ARAP', 'AUTH_TACACS_PLUS_SERVICE_X25', 'AUTH_TACACS_PLUS_SERVICE_PPP', 'AUTH_TACACS_PLUS_SERVICE_RCMD', 'AUTH_TACACS_PLUS_SERVICE_FWPROXY', 'AUTH_TACACS_PLUS_SERVICE_ENABLE', 'AUTH_TACACS_PLUS_SERVICE_NONE', 'AUTH_TACACS_PLUS_SERVICE_PT']),
         ],
     )
     authorization_attrs_item_schema = properties.Schema(

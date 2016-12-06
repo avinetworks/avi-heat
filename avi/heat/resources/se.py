@@ -192,7 +192,7 @@ class ServiceEngine(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_STATE_ENABLED', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_DISABLED']),
+            constraints.AllowedValues(['SE_STATE_DISABLED', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_ENABLED']),
         ],
     )
 

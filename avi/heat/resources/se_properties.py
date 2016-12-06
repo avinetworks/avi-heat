@@ -36,7 +36,7 @@ class AppHdr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
         ],
     )
 

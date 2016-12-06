@@ -140,7 +140,7 @@ class GslbHealthMonitor(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_PING', 'HEALTH_MONITOR_GSLB']),
+            constraints.AllowedValues(['HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_PING']),
         ],
     )
     tcp_monitor_schema = properties.Schema(
@@ -191,6 +191,12 @@ class GslbHealthMonitor(AviResource):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -207,6 +213,7 @@ class GslbHealthMonitor(AviResource):
         'udp_monitor',
         'dns_monitor',
         'monitor_port',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -224,6 +231,7 @@ class GslbHealthMonitor(AviResource):
         'udp_monitor': udp_monitor_schema,
         'dns_monitor': dns_monitor_schema,
         'monitor_port': monitor_port_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -362,7 +370,7 @@ class GslbServiceDownResponse(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_SERVICE_DOWN_RESPONSE_EMPTY', 'GSLB_SERVICE_DOWN_RESPONSE_NONE', 'GSLB_SERVICE_DOWN_RESPONSE_ALL_RECORDS', 'GSLB_SERVICE_DOWN_RESPONSE_FALLBACK_IP']),
+            constraints.AllowedValues(['GSLB_SERVICE_DOWN_RESPONSE_EMPTY', 'GSLB_SERVICE_DOWN_RESPONSE_NONE', 'GSLB_SERVICE_DOWN_RESPONSE_FALLBACK_IP', 'GSLB_SERVICE_DOWN_RESPONSE_ALL_RECORDS']),
         ],
     )
     fallback_ip_schema = properties.Schema(
@@ -447,6 +455,12 @@ class Gslb(AviResource):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -456,6 +470,7 @@ class Gslb(AviResource):
         'leader_cluster_uuid',
         'send_interval',
         'clear_on_max_retries',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -466,6 +481,7 @@ class Gslb(AviResource):
         'leader_cluster_uuid': leader_cluster_uuid_schema,
         'send_interval': send_interval_schema,
         'clear_on_max_retries': clear_on_max_retries_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -634,6 +650,12 @@ class GslbService(AviResource):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -647,6 +669,7 @@ class GslbService(AviResource):
         'controller_health_status_enabled',
         'health_monitor_scope',
         'enabled',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -661,6 +684,7 @@ class GslbService(AviResource):
         'controller_health_status_enabled': controller_health_status_enabled_schema,
         'health_monitor_scope': health_monitor_scope_schema,
         'enabled': enabled_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

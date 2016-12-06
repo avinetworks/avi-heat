@@ -31,12 +31,26 @@ class HSMSafenetClientInfo(object):
         required=True,
         update_allowed=True,
     )
+    session_major_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Major number of the sesseion"),
+        required=False,
+        update_allowed=True,
+    )
+    session_minor_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Minor number of the sesseion"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'client_priv_key',
         'client_cert',
         'client_ip',
+        'session_major_number',
+        'session_minor_number',
     )
 
     # mapping of properties to their schemas
@@ -44,6 +58,8 @@ class HSMSafenetClientInfo(object):
         'client_priv_key': client_priv_key_schema,
         'client_cert': client_cert_schema,
         'client_ip': client_ip_schema,
+        'session_major_number': session_major_number_schema,
+        'session_minor_number': session_minor_number_schema,
     }
 
 

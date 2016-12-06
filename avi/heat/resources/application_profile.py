@@ -92,6 +92,12 @@ class DnsServiceApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    edns_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable DNS service to be aware of EDNS (Extension mechanism for DNS)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -99,6 +105,7 @@ class DnsServiceApplicationProfile(object):
         'ttl',
         'error_response',
         'domain_names',
+        'edns',
     )
 
     # mapping of properties to their schemas
@@ -107,6 +114,7 @@ class DnsServiceApplicationProfile(object):
         'ttl': ttl_schema,
         'error_response': error_response_schema,
         'domain_names': domain_names_schema,
+        'edns': edns_schema,
     }
 
 
@@ -159,7 +167,7 @@ class SSLClientRequestHeader(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
         ],
     )
 
@@ -224,7 +232,7 @@ class HTTPApplicationProfile(object):
     # all schemas
     connection_multiplexing_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance."),
+        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance. Not compatible with Preserve Client IP."),
         required=False,
         update_allowed=True,
     )
@@ -393,7 +401,7 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
+            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_REQUIRE', 'SSL_CLIENT_CERTIFICATE_NONE']),
         ],
     )
     pki_profile_uuid_schema = properties.Schema(
@@ -550,7 +558,7 @@ class ApplicationProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
         ],
     )
     http_profile_schema = properties.Schema(
@@ -583,7 +591,7 @@ class ApplicationProfile(AviResource):
     )
     preserve_client_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Specifies if client IP needs to be preserved for backend connection"),
+        _("Specifies if client IP needs to be preserved for backend connection. Not compatible with Connection Multiplexing."),
         required=False,
         update_allowed=True,
     )

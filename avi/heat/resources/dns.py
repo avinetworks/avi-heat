@@ -76,7 +76,7 @@ class DnsSrvRdata(object):
     )
     target_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Canonical hostname, of the machine hosting the service"),
+        _("Canonical hostname, of the machine hosting the service, with no trailing period. 'default.host' is valid but not 'default.host.'"),
         required=False,
         update_allowed=True,
     )
@@ -126,7 +126,7 @@ class DnsInfo(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_CNAME', 'DNS_RECORD_SOA', 'DNS_RECORD_RRSIG', 'DNS_RECORD_HINFO', 'DNS_RECORD_RP', 'DNS_RECORD_NS', 'DNS_RECORD_AXFR', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_MX', 'DNS_RECORD_ANY']),
+            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_RRSIG', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_AXFR', 'DNS_RECORD_SOA', 'DNS_RECORD_MX', 'DNS_RECORD_SRV', 'DNS_RECORD_HINFO', 'DNS_RECORD_OPT', 'DNS_RECORD_ANY', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_CNAME', 'DNS_RECORD_NS']),
         ],
     )
 
@@ -168,7 +168,7 @@ class DnsRecord(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_CNAME', 'DNS_RECORD_SOA', 'DNS_RECORD_RRSIG', 'DNS_RECORD_HINFO', 'DNS_RECORD_RP', 'DNS_RECORD_NS', 'DNS_RECORD_AXFR', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_MX', 'DNS_RECORD_ANY']),
+            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_RRSIG', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_AXFR', 'DNS_RECORD_SOA', 'DNS_RECORD_MX', 'DNS_RECORD_SRV', 'DNS_RECORD_HINFO', 'DNS_RECORD_OPT', 'DNS_RECORD_ANY', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_CNAME', 'DNS_RECORD_NS']),
         ],
     )
     ttl_schema = properties.Schema(

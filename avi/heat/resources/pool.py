@@ -449,6 +449,12 @@ class PoolGroupDeploymentPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    webhook_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Webhook configured with URL that Avi controller will pass back information about pool group, old and new pool information and current deployment rule results"),
+        required=False,
+        update_allowed=True,
+    )
     evaluation_duration_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Duration of evaluation period for automatic deployment"),
@@ -480,6 +486,7 @@ class PoolGroupDeploymentPolicy(AviResource):
         'scheme',
         'test_traffic_ratio_rampup',
         'rules',
+        'webhook_uuid',
         'evaluation_duration',
         'target_test_traffic_ratio',
         'auto_disable_old_prod_pools',
@@ -492,6 +499,7 @@ class PoolGroupDeploymentPolicy(AviResource):
         'scheme': scheme_schema,
         'test_traffic_ratio_rampup': test_traffic_ratio_rampup_schema,
         'rules': rules_schema,
+        'webhook_uuid': webhook_uuid_schema,
         'evaluation_duration': evaluation_duration_schema,
         'target_test_traffic_ratio': target_test_traffic_ratio_schema,
         'auto_disable_old_prod_pools': auto_disable_old_prod_pools_schema,
@@ -697,6 +705,18 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Checksum of cloud configuration for PoolGroup. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -712,6 +732,8 @@ class PoolGroup(AviResource):
         'min_servers',
         'deployment_policy_uuid',
         'fail_action',
+        'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
@@ -723,6 +745,8 @@ class PoolGroup(AviResource):
         'min_servers': min_servers_schema,
         'deployment_policy_uuid': deployment_policy_uuid_schema,
         'fail_action': fail_action_schema,
+        'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 
@@ -1073,7 +1097,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_LEAST_CONNECTIONS', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_CONSISTENT_HASH']),
+            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_LEAST_CONNECTIONS']),
         ],
     )
     lb_algorithm_hash_schema = properties.Schema(

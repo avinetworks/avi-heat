@@ -603,6 +603,18 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
+    at_curr_ver_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -627,6 +639,8 @@ class SeList(object):
         'is_portchannel',
         'scalein_in_progress',
         'admin_down_requested',
+        'at_curr_ver',
+        'version',
     )
 
     # mapping of properties to their schemas
@@ -652,6 +666,8 @@ class SeList(object):
         'is_portchannel': is_portchannel_schema,
         'scalein_in_progress': scalein_in_progress_schema,
         'admin_down_requested': admin_down_requested_schema,
+        'at_curr_ver': at_curr_ver_schema,
+        'version': version_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -662,6 +678,281 @@ class SeList(object):
         'snat_ip': getattr(IpAddr, 'field_references', {}),
         'se_uuid': 'serviceengine',
         'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
+class VipDbExtension(object):
+    # all schemas
+    vip_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    se_list_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=SeList.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    se_list_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=se_list_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    requested_resource_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=VirtualServiceResource.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    first_se_assigned_time_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=TimeStamp.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vip_id',
+        'se_list',
+        'requested_resource',
+        'first_se_assigned_time',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vip_id': vip_id_schema,
+        'se_list': se_list_schema,
+        'requested_resource': requested_resource_schema,
+        'first_se_assigned_time': first_se_assigned_time_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_list': getattr(SeList, 'field_references', {}),
+        'first_se_assigned_time': getattr(TimeStamp, 'field_references', {}),
+        'requested_resource': getattr(VirtualServiceResource, 'field_references', {}),
+    }
+
+
+
+class Vip(object):
+    # all schemas
+    vip_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Unique ID associated with the vip."),
+        required=False,
+        update_allowed=True,
+    )
+    ip_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP Address of the Vip."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable or disable the Vip."),
+        required=False,
+        update_allowed=True,
+    )
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Manually override the network on which the Vip is placed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    port_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(internal-use) Network port assigned to the Vip IP address."),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("If auto_allocate_ip is True, then the subnet for the Vip IP address allocation. This field is applicable only if the VirtualService belongs to an Openstack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
+        required=False,
+        update_allowed=True,
+    )
+    discovered_network_uuid_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    discovered_network_uuid_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Discovered networks providing reachability for client facing Vip IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        schema=discovered_network_uuid_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    discovered_subnet_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    discovered_subnet_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Discovered subnets providing reachability for client facing Vip IP."),
+        schema=discovered_subnet_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnet providing reachability for client facing Vip IP."),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    discovered_networks_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=DiscoveredNetwork.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    discovered_networks_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Discovered networks providing reachability for client facing Vip IP."),
+        schema=discovered_networks_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    availability_zone_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Availability-zone to place the Virtual Service."),
+        required=False,
+        update_allowed=True,
+    )
+    auto_allocate_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Auto-allocate VIP from the provided subnet."),
+        required=False,
+        update_allowed=True,
+    )
+    floating_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Floating IP to associate with this Vip."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    auto_allocate_floating_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Auto-allocate floating/elastic IP from the Cloud infrastructure."),
+        required=False,
+        update_allowed=True,
+    )
+    floating_subnet_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation."),
+        required=False,
+        update_allowed=True,
+    )
+    avi_allocated_vip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(internal-use) VIP allocated by Avi in the Cloud infrastructure."),
+        required=False,
+        update_allowed=True,
+    )
+    avi_allocated_fip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(internal-use) FIP allocated by Avi in the Cloud infrastructure."),
+        required=False,
+        update_allowed=True,
+    )
+    snat_ip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    snat_ip_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("NAT'ted floating source IP Address(es) for upstream connection to servers"),
+        schema=snat_ip_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ipam_network_subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Subnet and/or Network for allocating VirtualService IP by IPAM Provider module."),
+        schema=IPNetworkSubnet.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vip_id',
+        'ip_address',
+        'enabled',
+        'network_uuid',
+        'port_uuid',
+        'subnet_uuid',
+        'discovered_network_uuid',
+        'discovered_subnet',
+        'subnet',
+        'discovered_networks',
+        'availability_zone',
+        'auto_allocate_ip',
+        'floating_ip',
+        'auto_allocate_floating_ip',
+        'floating_subnet_uuid',
+        'avi_allocated_vip',
+        'avi_allocated_fip',
+        'snat_ip',
+        'ipam_network_subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vip_id': vip_id_schema,
+        'ip_address': ip_address_schema,
+        'enabled': enabled_schema,
+        'network_uuid': network_uuid_schema,
+        'port_uuid': port_uuid_schema,
+        'subnet_uuid': subnet_uuid_schema,
+        'discovered_network_uuid': discovered_network_uuid_schema,
+        'discovered_subnet': discovered_subnet_schema,
+        'subnet': subnet_schema,
+        'discovered_networks': discovered_networks_schema,
+        'availability_zone': availability_zone_schema,
+        'auto_allocate_ip': auto_allocate_ip_schema,
+        'floating_ip': floating_ip_schema,
+        'auto_allocate_floating_ip': auto_allocate_floating_ip_schema,
+        'floating_subnet_uuid': floating_subnet_uuid_schema,
+        'avi_allocated_vip': avi_allocated_vip_schema,
+        'avi_allocated_fip': avi_allocated_fip_schema,
+        'snat_ip': snat_ip_schema,
+        'ipam_network_subnet': ipam_network_subnet_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'network_uuid': 'network',
+        'ipam_network_subnet': getattr(IPNetworkSubnet, 'field_references', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
+        'floating_ip': getattr(IpAddr, 'field_references', {}),
+        'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'snat_ip': getattr(IpAddr, 'field_references', {}),
+        'discovered_network_uuid': 'network',
+        'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
 
@@ -678,13 +969,6 @@ class VirtualService(AviResource):
     fqdn_schema = properties.Schema(
         properties.Schema.STRING,
         _("DNS resolvable, fully qualified domain name of the virtualservice. [Note] Only one of 'fqdn' and 'dns_info' configuration is allowed."),
-        required=False,
-        update_allowed=True,
-    )
-    ip_address_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IP Address of the Virtual Service."),
-        schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -791,12 +1075,6 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
-    network_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Manually override the network on which the Virtual Service is placed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=False,
-        update_allowed=True,
-    )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
@@ -809,75 +1087,15 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
-    port_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(internal-use) Network port assigned to the Virtual Service IP address."),
-        required=False,
-        update_allowed=True,
-    )
-    subnet_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("If auto_allocate_ip is True, then the subnet for the Virtual Service IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
-        required=False,
-        update_allowed=True,
-    )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("Specifies settings related to analytics. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
-    discovered_network_uuid_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    discovered_network_uuid_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("(internal-use) Discovered networks providing reachability for client facing Virtual Service IP. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        schema=discovered_network_uuid_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    discovered_subnet_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddrPrefix.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    discovered_subnet_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("(internal-use) Discovered subnets providing reachability for client facing Virtual Service IP. This field is deprecated."),
-        schema=discovered_subnet_item_schema,
-        required=False,
-        update_allowed=True,
-    )
     host_name_xlate_schema = properties.Schema(
         properties.Schema.STRING,
         _("Translate the host name sent to the servers to this value.  Translate the host name sent from servers back to the value used by the client."),
-        required=False,
-        update_allowed=True,
-    )
-    subnet_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Subnet providing reachability for client facing Virtual Service IP."),
-        schema=IpAddrPrefix.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    discovered_networks_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=DiscoveredNetwork.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    discovered_networks_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("(internal-use) Discovered networks providing reachability for client facing Virtual Service IP. This field is used internally by Avi, not editable by the user."),
-        schema=discovered_networks_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -954,57 +1172,14 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
-    availability_zone_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Availability-zone to place the Virtual Service."),
-        required=False,
-        update_allowed=True,
-    )
-    auto_allocate_ip_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Auto-allocate VIP from the provided subnet."),
-        required=False,
-        update_allowed=True,
-    )
-    floating_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Floating IP to associate with this Virtual Service."),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    auto_allocate_floating_ip_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Auto-allocate floating/elastic IP from the Cloud infrastructure."),
-        required=False,
-        update_allowed=True,
-    )
-    floating_subnet_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate_floating_ip is selected."),
-        required=False,
-        update_allowed=True,
-    )
     cloud_type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
         ],
-    )
-    avi_allocated_vip_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("(internal-use) VIP allocated by Avi in the Cloud infrastructure."),
-        required=False,
-        update_allowed=True,
-    )
-    avi_allocated_fip_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("(internal-use) FIP allocated by Avi in the Cloud infrastructure."),
-        required=False,
-        update_allowed=True,
     )
     connections_rate_limit_schema = properties.Schema(
         properties.Schema.MAP,
@@ -1115,20 +1290,6 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
-    snat_ip_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    snat_ip_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("NAT'ted floating source IP Address(es) for upstream connection to servers"),
-        schema=snat_ip_item_schema,
-        required=False,
-        update_allowed=True,
-    )
     active_standby_se_tag_schema = properties.Schema(
         properties.Schema.STRING,
         _("This configuration only applies if the VirtualService is in Legacy Active Standby HA mode and Load Distribution among Active Standby is enabled. This field is used to tag the VirtualService so that VirtualServices with the same tag will share the same Active ServiceEngine and VirtualServices with different tags will have different Active ServiceEngines. If one of the ServiceEngine's in the ServiceEngineGroup fails, all VirtualServices will end up using the same Active ServiceEngine. Redistribution of the VirtualServices, once the failed ServiceEngine recovers can either be manual or automated, based on the auto redistribute property of the ServiceEngineGroup"),
@@ -1188,12 +1349,25 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
+    vip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=Vip.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    vip_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=vip_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'name',
         'fqdn',
-        'ip_address',
         'enabled',
         'services',
         'application_profile_uuid',
@@ -1207,17 +1381,10 @@ class VirtualService(AviResource):
         'ssl_profile_uuid',
         'performance_limits',
         'analytics_policy',
-        'network_uuid',
         'vrf_context_uuid',
         'enable_autogw',
-        'port_uuid',
-        'subnet_uuid',
         'analytics_profile_uuid',
-        'discovered_network_uuid',
-        'discovered_subnet',
         'host_name_xlate',
-        'subnet',
-        'discovered_networks',
         'vs_datascripts',
         'client_auth',
         'weight',
@@ -1227,14 +1394,7 @@ class VirtualService(AviResource):
         'type',
         'vh_parent_vs_uuid',
         'vh_domain_name',
-        'availability_zone',
-        'auto_allocate_ip',
-        'floating_ip',
-        'auto_allocate_floating_ip',
-        'floating_subnet_uuid',
         'cloud_type',
-        'avi_allocated_vip',
-        'avi_allocated_fip',
         'connections_rate_limit',
         'requests_rate_limit',
         'use_bridge_ip_as_vip',
@@ -1251,20 +1411,19 @@ class VirtualService(AviResource):
         'created_by',
         'cloud_config_cksum',
         'enable_rhi',
-        'snat_ip',
         'active_standby_se_tag',
         'flow_label_type',
         'enable_rhi_snat',
         'static_dns_records',
         'ipam_network_subnet',
         'dns_info',
+        'vip',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'fqdn': fqdn_schema,
-        'ip_address': ip_address_schema,
         'enabled': enabled_schema,
         'services': services_schema,
         'application_profile_uuid': application_profile_uuid_schema,
@@ -1278,17 +1437,10 @@ class VirtualService(AviResource):
         'ssl_profile_uuid': ssl_profile_uuid_schema,
         'performance_limits': performance_limits_schema,
         'analytics_policy': analytics_policy_schema,
-        'network_uuid': network_uuid_schema,
         'vrf_context_uuid': vrf_context_uuid_schema,
         'enable_autogw': enable_autogw_schema,
-        'port_uuid': port_uuid_schema,
-        'subnet_uuid': subnet_uuid_schema,
         'analytics_profile_uuid': analytics_profile_uuid_schema,
-        'discovered_network_uuid': discovered_network_uuid_schema,
-        'discovered_subnet': discovered_subnet_schema,
         'host_name_xlate': host_name_xlate_schema,
-        'subnet': subnet_schema,
-        'discovered_networks': discovered_networks_schema,
         'vs_datascripts': vs_datascripts_schema,
         'client_auth': client_auth_schema,
         'weight': weight_schema,
@@ -1298,14 +1450,7 @@ class VirtualService(AviResource):
         'type': type_schema,
         'vh_parent_vs_uuid': vh_parent_vs_uuid_schema,
         'vh_domain_name': vh_domain_name_schema,
-        'availability_zone': availability_zone_schema,
-        'auto_allocate_ip': auto_allocate_ip_schema,
-        'floating_ip': floating_ip_schema,
-        'auto_allocate_floating_ip': auto_allocate_floating_ip_schema,
-        'floating_subnet_uuid': floating_subnet_uuid_schema,
         'cloud_type': cloud_type_schema,
-        'avi_allocated_vip': avi_allocated_vip_schema,
-        'avi_allocated_fip': avi_allocated_fip_schema,
         'connections_rate_limit': connections_rate_limit_schema,
         'requests_rate_limit': requests_rate_limit_schema,
         'use_bridge_ip_as_vip': use_bridge_ip_as_vip_schema,
@@ -1322,26 +1467,24 @@ class VirtualService(AviResource):
         'created_by': created_by_schema,
         'cloud_config_cksum': cloud_config_cksum_schema,
         'enable_rhi': enable_rhi_schema,
-        'snat_ip': snat_ip_schema,
         'active_standby_se_tag': active_standby_se_tag_schema,
         'flow_label_type': flow_label_type_schema,
         'enable_rhi_snat': enable_rhi_snat_schema,
         'static_dns_records': static_dns_records_schema,
         'ipam_network_subnet': ipam_network_subnet_schema,
         'dns_info': dns_info_schema,
+        'vip': vip_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'client_auth': getattr(HTTPClientAuthenticationParams, 'field_references', {}),
-        'network_uuid': 'network',
         'network_profile_uuid': 'networkprofile',
         'dns_info': getattr(DnsInfo, 'field_references', {}),
         'vs_datascripts': getattr(VSDataScripts, 'field_references', {}),
-        'snat_ip': getattr(IpAddr, 'field_references', {}),
-        'discovered_network_uuid': 'network',
+        'vip': getattr(Vip, 'field_references', {}),
+        'static_dns_records': getattr(DnsRecord, 'field_references', {}),
         'vrf_context_uuid': 'vrfcontext',
-        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'se_group_uuid': 'serviceenginegroup',
         'requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'application_profile_uuid': 'applicationprofile',
@@ -1350,19 +1493,14 @@ class VirtualService(AviResource):
         'performance_limits': getattr(PerformanceLimits, 'field_references', {}),
         'http_policies': getattr(HTTPPolicies, 'field_references', {}),
         'server_network_profile_uuid': 'networkprofile',
-        'floating_ip': getattr(IpAddr, 'field_references', {}),
         'microservice_uuid': 'microservice',
         'services': getattr(Service, 'field_references', {}),
         'connections_rate_limit': getattr(RateProfile, 'field_references', {}),
-        'ip_address': getattr(IpAddr, 'field_references', {}),
         'service_pool_select': getattr(ServicePoolSelector, 'field_references', {}),
         'network_security_policy_uuid': 'networksecuritypolicy',
-        'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'ssl_key_and_certificate_uuids': 'sslkeyandcertificate',
         'ipam_network_subnet': getattr(IPNetworkSubnet, 'field_references', {}),
-        'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'ssl_profile_uuid': 'sslprofile',
-        'static_dns_records': getattr(DnsRecord, 'field_references', {}),
         'analytics_policy': getattr(AnalyticsPolicy, 'field_references', {}),
         'pool_uuid': 'pool',
     }

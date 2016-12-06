@@ -95,7 +95,7 @@ class TCPProxyProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CC_ALGO_NEW_RENO', 'CC_ALGO_CUBIC', 'CC_ALGO_HTCP']),
+            constraints.AllowedValues(['CC_ALGO_NEW_RENO', 'CC_ALGO_HTCP', 'CC_ALGO_CUBIC']),
         ],
     )
     aggressive_congestion_avoidance_schema = properties.Schema(

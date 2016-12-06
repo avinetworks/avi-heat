@@ -122,7 +122,7 @@ class NetworkSecurityRule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT']),
+            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW']),
         ],
     )
     log_schema = properties.Schema(
