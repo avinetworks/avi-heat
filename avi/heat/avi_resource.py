@@ -34,8 +34,13 @@ class AviResource(resource.Resource):
             return username
 
         if "access" in self.context.auth_token_info:
-            return self.context.auth_token_info["access"]["user"]["name"]
-        return self.context.auth_token_info['token']['user']['name']
+            user = self.context.auth_token_info["access"]["user"]
+        else:
+            user = self.context.auth_token_info['token']['user']
+        username = user["name"]
+        if "domain" in user and user["domain"]["name"] != "Default":
+            username += "@%s" % user["domain"]["name"]
+        return username
 
     def get_avi_tenant_uuid(self):
         if self.get_project_name() == 'admin':
