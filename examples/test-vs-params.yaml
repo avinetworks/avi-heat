@@ -1,0 +1,72 @@
+heat_template_version: 2015-04-30
+description:  HTTP VS with params
+parameters:
+  name:
+    type: string
+    description: Name for the loadbalancer
+  port:
+    type: number
+    description: Port number
+    default: 80
+  vipnet:
+    type: string
+    description: Name of the network for VIP
+    constraints:
+      - custom_constraint: neutron.network
+  members:
+    type: comma_delimited_list
+    description: Comma separated list of pool member IP addresses
+resources:
+  hm:
+    type: Avi::LBaaS::HealthMonitor
+    properties:
+      name: 
+        str_replace:
+          template: vsname%-hm
+          params:
+            vsname%: { get_param: name }
+      receive_timeout: 2
+      failed_checks: 2 
+      successful_checks: 6 
+      send_interval: 2
+      type: HEALTH_MONITOR_HTTP
+      http_monitor:
+        http_response_code:
+          - HTTP_2XX
+          - HTTP_3XX 
+          - HTTP_4XX 
+        http_request: "GET / HTTP/1.0"
+  pool:
+    type: Avi::LBaaS::Pool
+    properties:
+      name:
+        str_replace:
+          template: vsname%-pool
+          params:
+            vsname%: { get_param: name }
+      default_server_port: { get_param: port } 
+      health_monitor_uuids:
+        - {get_resource: hm}
+      servers:
+        repeat:
+          for_each:
+            <%mem%>: { get_param: members}
+          template:
+            ip:
+              addr: <%mem%>
+              type: V4
+  vip_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: vipnet }
+  vs:
+    type: Avi::LBaaS::VirtualService
+    properties:
+      name: { get_param: name }
+      pool_uuid: {get_resource: pool}
+      ip_address:
+        addr: { get_attr: [vip_port, fixed_ips, 0, ip_address] }
+        type: V4
+      services:
+        - port: 80
+      application_profile_uuid: get_avi_uuid_by_name:System-Secure-HTTP
