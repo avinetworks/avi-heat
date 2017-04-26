@@ -17,7 +17,7 @@ class RateLimiterAction(object):
     # all schemas
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Type of action to be enforced upon hitting the rate limit."),
+        _("Type of action to be enforced upon hitting the rate limit. (Default: RL_ACTION_NONE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -33,7 +33,7 @@ class RateLimiterAction(object):
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
-        _("HTTP status code for Local Response rate limit action."),
+        _("HTTP status code for Local Response rate limit action. (Default: HTTP_LOCAL_RESPONSE_STATUS_CODE_429)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -76,7 +76,7 @@ class EquivalentLabels(object):
     # all schemas
     labels_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Equivalent labels."),
         required=True,
         update_allowed=False,
     )
@@ -105,31 +105,31 @@ class RateProfile(object):
     # all schemas
     count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of connections or requests or packets"),
+        _("Maximum number of connections or requests or packets (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     burst_sz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of connections or requests or packets to be let through instantaneously"),
+        _("Maximum number of connections or requests or packets to be let through instantaneously (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time value in seconds to enforce rate count"),
+        _("Time value in seconds to enforce rate count (Units: SEC) (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     explicit_tracking_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Explicitly tracks an attacker across rate periods"),
+        _("Explicitly tracks an attacker across rate periods (Default: False)"),
         required=False,
         update_allowed=True,
     )
     fine_grain_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable fine granularity"),
+        _("Enable fine granularity (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -137,6 +137,18 @@ class RateProfile(object):
         properties.Schema.MAP,
         _("Action to perform upon rate limiting"),
         schema=RateLimiterAction.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    http_header_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP header name."),
+        required=False,
+        update_allowed=True,
+    )
+    http_cookie_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("HTTP cookie name."),
         required=False,
         update_allowed=True,
     )
@@ -149,6 +161,8 @@ class RateProfile(object):
         'explicit_tracking',
         'fine_grain',
         'action',
+        'http_header',
+        'http_cookie',
     )
 
     # mapping of properties to their schemas
@@ -159,6 +173,8 @@ class RateProfile(object):
         'explicit_tracking': explicit_tracking_schema,
         'fine_grain': fine_grain_schema,
         'action': action_schema,
+        'http_header': http_header_schema,
+        'http_cookie': http_cookie_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -233,6 +249,20 @@ class RateLimiterProfile(object):
         required=False,
         update_allowed=True,
     )
+    http_header_rate_limits_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
+        schema=RateProfile.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    http_header_rate_limits_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
+        schema=http_header_rate_limits_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -245,6 +275,7 @@ class RateLimiterProfile(object):
         'client_ip_to_uri_failed_requests_rate_limit',
         'client_ip_scanners_requests_rate_limit',
         'uri_scanners_requests_rate_limit',
+        'http_header_rate_limits',
     )
 
     # mapping of properties to their schemas
@@ -258,6 +289,7 @@ class RateLimiterProfile(object):
         'client_ip_to_uri_failed_requests_rate_limit': client_ip_to_uri_failed_requests_rate_limit_schema,
         'client_ip_scanners_requests_rate_limit': client_ip_scanners_requests_rate_limit_schema,
         'uri_scanners_requests_rate_limit': uri_scanners_requests_rate_limit_schema,
+        'http_header_rate_limits': http_header_rate_limits_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -271,5 +303,6 @@ class RateLimiterProfile(object):
         'client_ip_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'client_ip_failed_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'client_ip_connections_rate_limit': getattr(RateProfile, 'field_references', {}),
+        'http_header_rate_limits': getattr(RateProfile, 'field_references', {}),
     }
 

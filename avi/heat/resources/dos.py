@@ -56,13 +56,13 @@ class DosThresholdProfile(object):
     # all schemas
     thresh_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Timer value in seconds to collect DoS attack metrics based on threshold on the Service Engine for this Virtual Service."),
+        _("Timer value in seconds to collect DoS attack metrics based on threshold on the Service Engine for this Virtual Service. (Units: SEC) (Default: 5)"),
         required=True,
         update_allowed=True,
     )
     thresh_info_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Attack type, min and max values for DoS attack detection."),
         schema=DosThreshold.properties_schema,
         required=True,
         update_allowed=False,

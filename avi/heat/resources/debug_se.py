@@ -21,7 +21,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['RPC_INFRA_DEBUG', 'TRANSACTION_DEBUG', 'NSX_AGENT_DEBUG', 'ALERT_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'HS_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'RES_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'TASK_QUEUE_DEBUG', 'VI_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'APIC_AGENT_DEBUG', 'METRICS_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(
@@ -68,7 +68,7 @@ class DebugSeDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_STRICT', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ARP_PKT_OUT', 'DEBUG_ALL', 'DEBUG_PCAP_RX', 'DEBUG_IP_PKT_OUT', 'DEBUG_ARP_PKT_IN', 'DEBUG_POOL', 'DEBUG_MISC', 'DEBUG_CRUD', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_UDP', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_NONE', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_ICMP', 'DEBUG_ERROR', 'DEBUG_ARP', 'DEBUG_SE_APP', 'DEBUG_ETHERNET', 'DEBUG_IP_PKT_IN', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_IP', 'DEBUG_PCAP_TX', 'DEBUG_CONFIG', 'DEBUG_DISPATCHER_FLOW_ALL']),
+            constraints.AllowedValues(['DEBUG_STRICT', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ARP_PKT_OUT', 'DEBUG_ALL', 'DEBUG_PCAP_RX', 'DEBUG_IP_PKT_OUT', 'DEBUG_ARP_PKT_IN', 'DEBUG_POOL', 'DEBUG_MISC', 'DEBUG_CRUD', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_UDP', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_NONE', 'DEBUG_SE_VS_HB', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_ICMP', 'DEBUG_ERROR', 'DEBUG_ARP', 'DEBUG_SE_APP', 'DEBUG_ETHERNET', 'DEBUG_IP_PKT_IN', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_IP', 'DEBUG_PCAP_TX', 'DEBUG_CONFIG', 'DEBUG_DISPATCHER_FLOW_ALL']),
         ],
     )
 
@@ -293,13 +293,13 @@ class DebugVirtualServiceCapture(object):
     # all schemas
     pkt_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of bytes of each packet to capture. Use 0 to capture the entire packet."),
+        _("Number of bytes of each packet to capture. Use 0 to capture the entire packet. (Units: BYTES) (Default: 128)"),
         required=False,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of minutes to capture packets. Use 0 to capture until manually stopped."),
+        _("Number of minutes to capture packets. Use 0 to capture until manually stopped. (Units: MIN) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -404,7 +404,7 @@ class DebugVirtualService(AviResource):
     )
     debug_hm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This option controls the capture of Health Monitor flows."),
+        _("This option controls the capture of Health Monitor flows. (Default: DEBUG_VS_HM_NONE)"),
         required=False,
         update_allowed=True,
         constraints=[

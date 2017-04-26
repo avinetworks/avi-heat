@@ -11,6 +11,50 @@ from options import *
 from options import *
 
 
+class HealthMonitorSSLAttributes(object):
+    # all schemas
+    ssl_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("SSL profile defines ciphers and SSL versions to be used for healthmonitor traffic to the back-end servers. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+    pki_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("PKI profile used to validate the SSL certificate presented by a server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    ssl_key_and_certificate_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Service engines will present this SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ssl_profile_uuid',
+        'pki_profile_uuid',
+        'ssl_key_and_certificate_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ssl_profile_uuid': ssl_profile_uuid_schema,
+        'pki_profile_uuid': pki_profile_uuid_schema,
+        'ssl_key_and_certificate_uuid': ssl_key_and_certificate_uuid_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'pki_profile_uuid': 'pkiprofile',
+        'ssl_profile_uuid': 'sslprofile',
+        'ssl_key_and_certificate_uuid': 'sslkeyandcertificate',
+    }
+
+
+
 class HealthMonitorTcp(object):
     # all schemas
     tcp_request_schema = properties.Schema(
@@ -33,7 +77,7 @@ class HealthMonitorTcp(object):
     )
     tcp_half_open_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Configure TCP health monitor to use half-open TCP connections to monitor the health of backend servers thereby avoiding consumption of a full fledged server side connection and the overhead and logs associated with it.  This method is light-weight as it makes use of listener in server's kernel layer to measure the health and a child socket or user thread is not created on the server side."),
+        _("Configure TCP health monitor to use half-open TCP connections to monitor the health of backend servers thereby avoiding consumption of a full fledged server side connection and the overhead and logs associated with it.  This method is light-weight as it makes use of listener in server's kernel layer to measure the health and a child socket or user thread is not created on the server side. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -113,7 +157,7 @@ class HealthMonitorHttp(object):
     )
     http_response_code_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("List of HTTP response codes to match as successful.  Default is 2xx."),
         required=True,
         update_allowed=False,
         constraints=[
@@ -135,7 +179,7 @@ class HealthMonitorHttp(object):
     )
     maintenance_code_item_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Match or look for this HTTP response code indicating server maintenance.  A successful match results in the server being marked down."),
         required=True,
         update_allowed=False,
     )
@@ -152,6 +196,13 @@ class HealthMonitorHttp(object):
         required=False,
         update_allowed=True,
     )
+    ssl_attributes_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("SSL attributes for HTTPS health monitor."),
+        schema=HealthMonitorSSLAttributes.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -160,6 +211,7 @@ class HealthMonitorHttp(object):
         'http_response',
         'maintenance_code',
         'maintenance_response',
+        'ssl_attributes',
     )
 
     # mapping of properties to their schemas
@@ -169,8 +221,13 @@ class HealthMonitorHttp(object):
         'http_response': http_response_schema,
         'maintenance_code': maintenance_code_schema,
         'maintenance_response': maintenance_response_schema,
+        'ssl_attributes': ssl_attributes_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ssl_attributes': getattr(HealthMonitorSSLAttributes, 'field_references', {}),
+    }
 
 
 
@@ -222,7 +279,7 @@ class HealthMonitorDNS(object):
     )
     qtype_schema = properties.Schema(
         properties.Schema.STRING,
-        _("  Query_Type: Response has atleast one answer of which      the resource record type matches the query type   Any_Type: Response should contain atleast one answer  AnyThing: An empty answer is enough"),
+        _("  Query_Type: Response has atleast one answer of which      the resource record type matches the query type   Any_Type: Response should contain atleast one answer  AnyThing: An empty answer is enough (Default: DNS_QUERY_TYPE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -231,7 +288,7 @@ class HealthMonitorDNS(object):
     )
     rcode_schema = properties.Schema(
         properties.Schema.STRING,
-        _("When No Error is selected, a DNS query will be marked failed is any error code is returned by the server.  With Any selected, the monitor ignores error code in the responses."),
+        _("When No Error is selected, a DNS query will be marked failed is any error code is returned by the server.  With Any selected, the monitor ignores error code in the responses. (Default: RCODE_NO_ERROR)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -275,25 +332,25 @@ class HealthMonitor(AviResource):
     )
     send_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Frequency, in seconds, that monitors are sent to a server."),
+        _("Frequency, in seconds, that monitors are sent to a server. (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     receive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value."),
+        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value. (Units: SEC) (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     successful_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of continuous successful health checks before server is marked up."),
+        _("Number of continuous successful health checks before server is marked up. (Default: 2)"),
         required=False,
         update_allowed=True,
     )
     failed_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of continuous failed health checks before the server is marked down."),
+        _("Number of continuous failed health checks before the server is marked down. (Default: 2)"),
         required=False,
         update_allowed=True,
     )

@@ -61,31 +61,31 @@ class SeRuntimeCompressionProperties(object):
     # all schemas
     min_length_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Minimum response content length to enable compression (Default: 128)"),
         required=False,
         update_allowed=True,
     )
     max_low_rtt_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("If client RTT is higher than this threshold, enable normal compression on the response. (Units: MILLISECONDS) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     min_high_rtt_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("If client RTT is higher than this threshold, enable aggressive compression on the response. (Units: MILLISECONDS) (Default: 200)"),
         required=False,
         update_allowed=True,
     )
     mobile_str_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Values that identify mobile browsers in order to enable aggressive compression."),
         required=True,
         update_allowed=False,
     )
     mobile_str_schema = properties.Schema(
         properties.Schema.LIST,
-        _("String value(s) mobile"),
+        _("Values that identify mobile browsers in order to enable aggressive compression."),
         schema=mobile_str_item_schema,
         required=False,
         update_allowed=True,
@@ -114,37 +114,37 @@ class SeBootupCompressionProperties(object):
     # all schemas
     buf_num_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of buffers to use for compression output. (Default: 128)"),
         required=False,
         update_allowed=True,
     )
     buf_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Size of each buffer used for compression output, this should ideally be a multiple of pagesize. (Default: 4096)"),
         required=False,
         update_allowed=True,
     )
     level_normal_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Level of compression to apply on content selected for normal compression. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     level_aggressive_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Level of compression to apply on content selected for aggressive compression. (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     window_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("window size used by compression, rounded to the last power of 2. (Default: 4096)"),
         required=False,
         update_allowed=True,
     )
     hash_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("hash size used by compression, rounded to the last power of 2. (Default: 16384)"),
         required=False,
         update_allowed=True,
     )
@@ -176,37 +176,37 @@ class SeRateLimiters(object):
     # all schemas
     icmp_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limiter for ICMP requests in pps."),
+        _("Rate limiter for ICMP requests in pps. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     icmp_rsp_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limiter for ICMP response in pps."),
+        _("Rate limiter for ICMP response in pps. (Default: 500)"),
         required=False,
         update_allowed=True,
     )
     arp_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limiter for ARP packets in pps."),
+        _("Rate limiter for ARP packets in pps. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     rst_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limiter for number RST pkts sent in pps."),
+        _("Rate limiter for number RST pkts sent in pps. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     flow_probe_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limiter for number of flow probes in pps."),
+        _("Rate limiter for number of flow probes in pps. (Default: 250)"),
         required=False,
         update_allowed=True,
     )
     default_rl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Default Rate limiter in pps."),
+        _("Default Rate limiter in pps. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
@@ -238,223 +238,223 @@ class SeRuntimeProperties(object):
     # all schemas
     persistence_mem_max_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum memory in bytes allocated for persistence entries"),
+        _("Maximum memory in bytes allocated for persistence entries (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     persistence_entries_low_watermark_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Deprecated (Default: 20000)"),
         required=False,
         update_allowed=True,
     )
     upstream_keepalive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     flow_table_max_entries_deprecated_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Deprecated (Default: 100000000)"),
         required=False,
         update_allowed=True,
     )
     flow_table_new_syn_max_entries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum number of flow table entries that have not completed TCP three-way handshake yet (Default: 40000)"),
         required=False,
         update_allowed=True,
     )
     tcp_syn_cache_max_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum size of the SYN cache table. After this limit is reached, SYN cookies are used. This is per core of the serviceengine. (Default: 32768)"),
         required=False,
         update_allowed=True,
     )
     se_packet_buffer_max_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal use only. Used to artificially reduce the available number of packet buffers. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_malloc_thresh_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Deprecated (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     tcp_syncache_max_retransmit_default_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Default value for max number of retransmissions for a SYN packet. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     log_agent_file_sz_debug_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum debug log file size before rollover. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     log_agent_file_sz_conn_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum connection log file size before rollover. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     log_agent_file_sz_appl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum application log file size before rollover. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     log_agent_file_sz_event_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum event log file size before rollover. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     log_agent_min_storage_per_vs_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Minimum storage allocated to any given VirtualService on the Service Engine. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     log_agent_max_storage_ignore_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum storage on the disk not allocated for logs on the Service Engine. (Default: 10.0)"),
         required=False,
         update_allowed=True,
     )
     log_agent_max_storage_excess_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Excess percentage threshold of disk size to trigger cleanup of logs on the Service Engine. (Default: 110)"),
         required=False,
         update_allowed=True,
     )
     se_random_tcp_drops_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Internal use only. If enabled, randomly packets are dropped. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     log_agent_max_active_adf_files_per_vs_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum number of Virtual Service log files maintained for significant logs on the Service Engine. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     log_agent_max_logmessage_proto_sz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum size of serialized log message on the Service Engine. (Default: 65536)"),
         required=False,
         update_allowed=True,
     )
     se_dp_log_nf_enqueue_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal buffer full indicator on the Service Engine beyond which the unfiltered logs are abandoned. (Default: 70)"),
         required=False,
         update_allowed=True,
     )
     se_dp_log_udf_enqueue_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal buffer full indicator on the Service Engine beyond which the user filtered logs are abandoned. (Default: 90)"),
         required=False,
         update_allowed=True,
     )
     log_agent_compress_logs_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Flag to indicate if log files are compressed upon full on the Service Engine. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_strategy_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_server_max_cache_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_conn_max_reuse_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_conn_idle_tmo_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_core_max_cache_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_cache_thresh_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_conn_idle_thresh_tmo_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     upstream_connpool_conn_life_tmo_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: -1)"),
         required=False,
         update_allowed=True,
     )
     lb_fail_max_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Deprecated (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     log_agent_sleep_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal timer to stall log-agent and prevent it from hogging CPU cycles on the Service Engine. (Units: MILLISECONDS) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     ngx_free_connection_stack_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_mac_error_threshold_to_disable_promiscious_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of packets with wrong mac after which SE attempts to disable promiscious mode. (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     se_metrics_rt_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal use only. Frequency (ms) of realtime metrics updates from SE to controller. (Units: MILLISECONDS) (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     se_metrics_rt_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Internal use only. Enable or disable real time metrics irrespective of virtualservice or SE group configuration. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -474,25 +474,25 @@ class SeRuntimeProperties(object):
     )
     connections_lossy_log_rate_limiter_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limit on maximum adf lossy log to pushper second"),
+        _("Rate limit on maximum adf lossy log to pushper second (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     connections_udfnf_log_rate_limiter_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rate limit on maximum adf udf or nf log to pushper second"),
+        _("Rate limit on maximum adf udf or nf log to pushper second (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     http_rum_console_log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Enable Javascript console logs on the client browser when collecting client insights. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     http_rum_min_content_length_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Minimum response size content length to sample for client insights. (Default: 64)"),
         required=False,
         update_allowed=True,
     )
@@ -505,13 +505,13 @@ class SeRuntimeProperties(object):
     )
     se_dp_hm_drops_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal only. Used to simulate SE - SE HB failure. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     spdy_fwd_proxy_parse_enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -559,139 +559,139 @@ class SeRuntimeProperties(object):
     )
     mcache_store_se_max_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     upstream_connect_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 3600000)"),
         required=False,
         update_allowed=True,
     )
     upstream_send_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 3600000)"),
         required=False,
         update_allowed=True,
     )
     upstream_read_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 3600000)"),
         required=False,
         update_allowed=True,
     )
     dp_hb_frequency_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Frequency of SE - SE HB messages when aggressive failure mode detection is not enabled. (Units: MILLISECONDS) (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     dp_hb_timeout_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Consecutive HB failures after which failure is reported to controller, when aggressive failure mode detection is not enabled. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     dupip_frequency_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Frequency of ARP requests sent by SE for each VIP to detect duplicate IP when it loses conectivity to controller. (Units: MILLISECONDS) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     dupip_timeout_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of ARP responses received for the VIP after which SE decides that the VIP has been moved and disables the VIP. (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     se_hb_persist_fudge_bits_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal use only. (Default: 3)"),
         required=False,
         update_allowed=True,
     )
     log_agent_unknown_vs_timer_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Timeout to purge unknown Virtual Service logs from the Service Engine. (Units: SEC) (Default: 1800)"),
         required=False,
         update_allowed=True,
     )
     global_mtu_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Overrides the MTU value received via DHCP or some other means. Use this when the infrastructure advertises an MTU that is not supported by all devices in the network. For example, in AWS or when an overlay is used. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     log_agent_export_wait_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Time log-agent waits before sending data to the Controller. (Units: MILLISECONDS) (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     log_agent_export_msg_buffer_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum size of data sent by log-agent to Controller over the TCP connection (Units: BYTES) (Default: 524288)"),
         required=False,
         update_allowed=True,
     )
     log_agent_conn_send_buffer_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Log-agent test property used to simulate slow TCP connections (Units: BYTES) (Default: 16384)"),
         required=False,
         update_allowed=True,
     )
     log_agent_pause_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Time interval log-agent pauses between logs obtained from the dataplane. (Units: MILLISECONDS) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     log_agent_max_concurrent_rsync_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Maximum concurrent rsync requests initiated from log-agent to the Controller (Default: 1024)"),
         required=False,
         update_allowed=True,
     )
     downstream_send_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 3600000)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_cache_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Size of LDAP basicauth credentials cache used on the dataplane. (Units: BYTES) (Default: 100000)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_conns_per_server_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of concurrent connections to LDAP server by a single basic auth LDAP process. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_connect_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("LDAP basicauth default connection timeout enforced on connections to LDAP server. (Units: MILLISECONDS) (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_reconnect_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("LDAP basicauth default reconnect timeout enforced on connections to LDAP server. (Units: MILLISECONDS) (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_bind_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("LDAP basicauth default bind timeout enforced on connections to LDAP server. (Units: MILLISECONDS) (Default: 5000)"),
         required=False,
         update_allowed=True,
     )
     se_auth_ldap_request_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("LDAP basicauth default login or group search request timeout enforced on connections to LDAP server. (Units: MILLISECONDS) (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
@@ -704,25 +704,25 @@ class SeRuntimeProperties(object):
     )
     se_auth_ldap_servers_failover_only_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("enables ldap servers into failover mode"),
+        _("LDAP basicauth uses multiple ldap servers in the event of a failover only. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_memory_poison_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("enables poisoning of freed memory blocks"),
+        _("Internal use only. Enables poisoning of freed memory blocks (Default: True)"),
         required=False,
         update_allowed=True,
     )
     dp_aggressive_hb_frequency_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Heartbeat check interval between ServiceEngines"),
+        _("Frequency of SE - SE HB messages when aggressive failure mode detection is enabled. (Units: MILLISECONDS) (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     dp_aggressive_hb_timeout_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of failed heartbeats before reporting an error"),
+        _("Consecutive HB failures after which failure is reported to controller,when aggressive failure mode detection is enabled. (Default: 5)"),
         required=False,
         update_allowed=True,
     )
@@ -735,69 +735,69 @@ class SeRuntimeProperties(object):
     )
     se_metrics_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal use only. Frequency (ms) of metrics updates from SE to controller. (Units: MILLISECONDS) (Default: 60000)"),
         required=False,
         update_allowed=True,
     )
     service_port_ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Port ranges on which there may be virtual services (for configuring iptables). Applicable in container ecosystems like Mesos."),
         schema=PortRange.properties_schema,
         required=True,
         update_allowed=False,
     )
     service_port_ranges_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Port ranges on which there may be virtual services (for configuring iptables)"),
+        _("Port ranges on which there may be virtual services (for configuring iptables). Applicable in container ecosystems like Mesos."),
         schema=service_port_ranges_item_schema,
         required=False,
         update_allowed=True,
     )
     se_handle_interface_routes_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Accept/ignore interface routes (i.e, no next hop IP address) (Default: False)"),
         required=False,
         update_allowed=True,
     )
     services_accessible_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP"),
+        _("Make service ports accessible on all Host interfaces in addition to East-West VIP and/or bridge IP (Default: False)"),
         required=False,
         update_allowed=True,
     )
     feproxy_vips_enable_proxy_arp_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable proxy ARP from Host interface for Front End  proxies"),
+        _("Enable proxy ARP from Host interface for Front End  proxies (Default: True)"),
         required=False,
         update_allowed=True,
     )
     baremetal_dispatcher_handles_flows_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Control if dispatcher core also handles TCP flows in baremetal SE."),
+        _("Control if dispatcher core also handles TCP flows in baremetal SE. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     log_agent_log_storage_min_sz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Minimum storage allocated for logs irrespective of memory and cores."),
+        _("Minimum storage allocated for logs irrespective of memory and cores. (Units: MB) (Default: 1024)"),
         required=False,
         update_allowed=True,
     )
     lbaction_num_requests_to_dispatch_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of requests to dispatch from the request queue at a regular interval."),
+        _("Number of requests to dispatch from the request queue at a regular interval. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     lbaction_rq_per_request_max_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum retries per request in the request queue."),
+        _("Maximum retries per request in the request queue. (Default: 22)"),
         required=False,
         update_allowed=True,
     )
     service_ip_subnets_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("IP ranges on which there may be virtual services (for configuring iptables/routes)"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
@@ -811,19 +811,49 @@ class SeRuntimeProperties(object):
     )
     se_dp_if_state_poll_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of jiffies between polling interface state."),
+        _("Number of jiffies between polling interface state. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     log_message_max_file_list_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of file names in a log message"),
+        _("Maximum number of file names in a log message (Default: 64)"),
         required=False,
         update_allowed=True,
     )
     scaleout_udp_per_pkt_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable punting of UDP packets from primary to other Service Engines. This applies to Virtual Services with Per-Packet Loadbalancing enabled"),
+        _("Enable punting of UDP packets from primary to other Service Engines. This applies to Virtual Services with Per-Packet Loadbalancing enabled (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    flow_table_batch_push_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("How often to push the flow table IPC messages in the main loop. The value is the number of times through the loop before pushing the batch. i.e, a value of 1 means every time through the loop. (Default: 5)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_dp_vnic_queue_stall_event_sleep_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Time (in seconds) service engine waits for after generating a Vnic transmit queue stall event before asserting totrigger a failover. (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_dp_vnic_queue_stall_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Time (in milliseconds) to wait for network/NIC recovery on detecting a transmit queue stall after which service engine asserts triggering a failover (Default: 10000)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_dp_vnic_queue_stall_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 2000)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_flow_probes_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable Flow Probes for Scaled out VS'es (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -924,6 +954,11 @@ class SeRuntimeProperties(object):
         'se_dp_if_state_poll_interval',
         'log_message_max_file_list_size',
         'scaleout_udp_per_pkt',
+        'flow_table_batch_push_frequency',
+        'se_dp_vnic_queue_stall_event_sleep',
+        'se_dp_vnic_queue_stall_timeout',
+        'se_dp_vnic_queue_stall_threshold',
+        'disable_flow_probes',
     )
 
     # mapping of properties to their schemas
@@ -1022,6 +1057,11 @@ class SeRuntimeProperties(object):
         'se_dp_if_state_poll_interval': se_dp_if_state_poll_interval_schema,
         'log_message_max_file_list_size': log_message_max_file_list_size_schema,
         'scaleout_udp_per_pkt': scaleout_udp_per_pkt_schema,
+        'flow_table_batch_push_frequency': flow_table_batch_push_frequency_schema,
+        'se_dp_vnic_queue_stall_event_sleep': se_dp_vnic_queue_stall_event_sleep_schema,
+        'se_dp_vnic_queue_stall_timeout': se_dp_vnic_queue_stall_timeout_schema,
+        'se_dp_vnic_queue_stall_threshold': se_dp_vnic_queue_stall_threshold_schema,
+        'disable_flow_probes': disable_flow_probes_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1040,163 +1080,163 @@ class SeAgentProperties(object):
     # all schemas
     debug_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     controller_registration_timeout_sec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     controller_heartbeat_timeout_sec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 12)"),
         required=False,
         update_allowed=True,
     )
     headless_timeout_sec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     controller_heartbeat_miss_limit_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 6)"),
         required=False,
         update_allowed=True,
     )
     dp_enq_interval_msec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 20)"),
         required=False,
         update_allowed=True,
     )
     dp_deq_interval_msec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 20)"),
         required=False,
         update_allowed=True,
     )
     dp_batch_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     dp_max_wait_rsp_time_sec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 12)"),
         required=False,
         update_allowed=True,
     )
     cpustats_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     controller_rpc_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     controller_echo_rpc_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Timeout used for se health check"),
+        _("Timeout used for se health check (Units: MILLISECONDS) (Default: 2000)"),
         required=False,
         update_allowed=True,
     )
     controller_echo_miss_limit_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Count of HB misses for se health check failure"),
+        _("Count of HB misses for se health check failure (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     vnic_probe_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Probe vnic interval"),
+        _("Probe vnic interval (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     vnic_ip_delete_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("wait interval before deleting IP"),
+        _("wait interval before deleting IP (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     ctrl_reg_pending_max_wait_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Max time to wait for ctrl registration before assert"),
+        _("Max time to wait for ctrl registration before assert (Units: SEC) (Default: 150)"),
         required=False,
         update_allowed=True,
     )
     dp_reg_pending_max_wait_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Max time to wait for dp registration before assert"),
+        _("Max time to wait for dp registration before assert (Units: SEC) (Default: 75)"),
         required=False,
         update_allowed=True,
     )
     vnic_dhcp_ip_check_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("DHCP ip check interval"),
+        _("DHCP ip check interval (Units: SEC) (Default: 6)"),
         required=False,
         update_allowed=True,
     )
     vnic_dhcp_ip_max_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("DHCP ip max retries"),
+        _("DHCP ip max retries (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     dp_aggressive_enq_interval_msec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     dp_aggressive_deq_interval_msec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MILLISECONDS) (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     sdb_scan_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("SDB scan count"),
+        _("SDB scan count (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     sdb_pipeline_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("SDB pipeline size"),
+        _("SDB pipeline size (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     sdb_flush_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("SDB pipeline flush interval"),
+        _("SDB pipeline flush interval (Units: MILLISECONDS) (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     controller_echo_rpc_aggressive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Aggressive Timeout used for se health check"),
+        _("Aggressive Timeout used for se health check (Units: MILLISECONDS) (Default: 500)"),
         required=False,
         update_allowed=True,
     )
     controller_echo_miss_aggressive_limit_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Aggressive Count of HB misses for se health check failure"),
+        _("Aggressive Count of HB misses for se health check failure (Default: 2)"),
         required=False,
         update_allowed=True,
     )
     ignore_docker_mac_change_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -1270,85 +1310,85 @@ class SeBootupProperties(object):
     # all schemas
     tcp_syncache_hashsize_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Size of the TCP SYN cache hash table. (Default: 8192)"),
         required=False,
         update_allowed=True,
     )
     log_agent_trace_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Enable trace logs by default on Service Engine. Configuration operations are logged along with other important logs by Service Engine. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     log_agent_debug_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Enable debug logs by default on Service Engine. This includes all other debugging logs. Debug logs can also be explcitly enabled from the CLI shell. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_emulated_cores_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Use this to emulate more/less cpus than is actually available. One datapath process is started for each core. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_tx_batch_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of packets to batch for transmit to the nic. (Default: 64)"),
         required=False,
         update_allowed=True,
     )
     l7_conns_per_core_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 16384)"),
         required=False,
         update_allowed=True,
     )
     ssl_sess_cache_per_vs_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 4096)"),
         required=False,
         update_allowed=True,
     )
     l7_resvd_listen_conns_per_core_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 256)"),
         required=False,
         update_allowed=True,
     )
     ssl_sess_cache_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 86400)"),
         required=False,
         update_allowed=True,
     )
     se_lro_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Enable or disable Large Receive Optimization for vnics. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     se_rum_sampling_nav_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("percentage of navigation timing data to sample from the end user client for client insights. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     se_rum_sampling_res_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("percentage of resource timing data to sample from the end user client for client insights. (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     se_rum_sampling_nav_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("when sampling for navigation timing data from the end user client. minimum time to wait on server between samples. (Units: SEC) (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     se_rum_sampling_res_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("when sampling for resource timing data from the end user client. minimum time to wait on server between samples. (Units: SEC) (Default: 2)"),
         required=False,
         update_allowed=True,
     )
@@ -1361,103 +1401,121 @@ class SeBootupProperties(object):
     )
     se_dpdk_pmd_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Controls the use of DPDK poll mode driver:     0      : Automatically determine based on hypervisor/NIC type    1      : Unconditionally use DPDK poll mode driver    ~[0,1] : Don't use DPDK poll mode driver (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_use_dpdk_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Determines if DPDK library should be used or not :     0      : Automatically determine based on hypervisor type    1      : Use DPDK unconditionally    ~[0,1] : Don't use DPDK (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_chunk_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of internal buffer chunks to use on Service Engine. Can be fine tuned for better performance of data plane in specific environments. (Units: BYTES) (Default: 1024)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_applog_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal application log buffer size to use on Service Engine. Can be fine tuned for better performance of data plane in specific environments. (Units: WORD) (Default: 4096)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_connlog_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal connection log buffer size to use on Service Engine. Can be fine tuned for better performance of data plane in specific environments. (Units: WORD) (Default: 1024)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_events_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Internal events buffer size to use on Service Engine. Can be fine tuned for better performance of data plane in specific environments. (Units: WORD) (Default: 512)"),
         required=False,
         update_allowed=True,
     )
     se_ip_encap_ipc_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Determines if SE-SE IPC messages are encapsulated in an IP header :     0      : Automatically determine based on hypervisor type    1      : Use IP encap unconditionally    ~[0,1] : Don't use IP encap (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_app_blocking_dequeue_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Internal flag that blocks dataplane until all application logs are flushed to log-agent process. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_conn_blocking_dequeue_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Internal flag that blocks dataplane until all connection logs are flushed to log-agent process. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_log_buffer_events_blocking_dequeue_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Internal flag that blocks dataplane until all outstanding events are flushed to log-agent process. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     se_pcap_pkt_sz_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Max size of each packet in the pcap interface. (Default: 65536)"),
         required=False,
         update_allowed=True,
     )
     se_pcap_pkt_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Max number of packets the pcap interface can hold. (Default: 256)"),
         required=False,
         update_allowed=True,
     )
     fair_queueing_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Enable or disable fair queueing for packet transmission among virtualservices on an SE. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     docker_backend_portstart_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Start of the Local TCP port range used by SE for backend connections in docker environment. (Default: 20480)"),
         required=False,
         update_allowed=True,
     )
     docker_backend_portend_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("End of the Local TCP port range used by SE for backend connections in docker environment. (Default: 30720)"),
         required=False,
         update_allowed=True,
     )
     distribute_vnics_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Distributes vnic ownership among cores so multiple cores handle dispatcher duties."),
+        _("Distributes vnic ownership among cores so multiple cores handle dispatcher duties. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_l3_encap_ipc_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Determines if SE-SE IPC messages use SE interface IP instead of VIP  :     0      : Automatically determine based on hypervisor type    1      : Use SE interface IP unconditionally    ~[0,1] : Don't use SE interface IP (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    distribute_queues_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Distributes queue ownership among cores so multiple cores handle dispatcher duties. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    geo_db_granularity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Granularity or Resolution of co-ordinates used. When the value is 1 the co-ordinates provided in the geo-db are used as is (highest resolution.This value provides a 'zoom-out' value so that coarser co-ordinates are used. With higher resolution, logs can contain finer location information. But, lower resolution provides significant memory and cpu benefits on the service engine. Besides, given a smaller number of members that are separated geographically, a lower resolution is sufficient for correct load-balancing. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
@@ -1496,6 +1554,9 @@ class SeBootupProperties(object):
         'docker_backend_portstart',
         'docker_backend_portend',
         'distribute_vnics',
+        'se_l3_encap_ipc',
+        'distribute_queues',
+        'geo_db_granularity',
     )
 
     # mapping of properties to their schemas
@@ -1532,6 +1593,9 @@ class SeBootupProperties(object):
         'docker_backend_portstart': docker_backend_portstart_schema,
         'docker_backend_portend': docker_backend_portend_schema,
         'distribute_vnics': distribute_vnics_schema,
+        'se_l3_encap_ipc': se_l3_encap_ipc_schema,
+        'distribute_queues': distribute_queues_schema,
+        'geo_db_granularity': geo_db_granularity_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

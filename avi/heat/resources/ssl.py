@@ -16,7 +16,7 @@ class SSLKeyRSAParams(object):
     # all schemas
     key_size_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_2048_BITS)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -25,7 +25,7 @@ class SSLKeyRSAParams(object):
     )
     exponent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 65537)"),
         required=False,
         update_allowed=True,
     )
@@ -49,7 +49,7 @@ class SSLVersion(object):
     # all schemas
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_VERSION_TLS1_1)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -108,7 +108,7 @@ class SSLKeyECParams(object):
     # all schemas
     curve_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_EC_CURVE_SECP256R1)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -330,7 +330,7 @@ class CRL(object):
     )
     update_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Interval in minutes to check for CRL update. If not specified, interval will be 1 day"),
+        _("Interval in minutes to check for CRL update. If not specified, interval will be 1 day (Units: MIN)"),
         required=False,
         update_allowed=True,
     )
@@ -400,7 +400,7 @@ class SSLKeyParams(object):
     # all schemas
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_ALGORITHM_RSA)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -455,7 +455,7 @@ class SSLProfile(AviResource):
     )
     accepted_versions_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Set of versions accepted by the server"),
         schema=SSLVersion.properties_schema,
         required=True,
         update_allowed=False,
@@ -469,7 +469,7 @@ class SSLProfile(AviResource):
     )
     accepted_ciphers_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ciphers suites represented as defined by http://www.openssl.org/docs/apps/ciphers.html"),
+        _("Ciphers suites represented as defined by U(http://www.openssl.org/docs/apps/ciphers.html)"),
         required=False,
         update_allowed=True,
     )
@@ -512,25 +512,25 @@ class SSLProfile(AviResource):
     )
     send_close_notify_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Send 'close notify' alert message for a clean shutdown of the SSL connection."),
+        _("Send 'close notify' alert message for a clean shutdown of the SSL connection. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     prefer_client_cipher_ordering_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will prefer the SSL cipher ordering presented by the client during the SSL handshake rather than the one specified in the SSL Profile."),
+        _("Prefer the SSL cipher ordering presented by the client during the SSL handshake over the one specified in the SSL Profile. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     enable_ssl_session_reuse_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable SSL session re-use."),
+        _("Enable SSL session re-use. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     ssl_session_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The amount of time before an SSL session expires."),
+        _("The amount of time before an SSL session expires. (Units: SEC) (Default: 86400)"),
         required=False,
         update_allowed=True,
     )
@@ -677,7 +677,7 @@ class SSLCertificate(object):
     )
     expiry_status_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_GOOD)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -692,7 +692,7 @@ class SSLCertificate(object):
     )
     subject_alt_names_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("subjectAltName that provides additional subject identities"),
         required=True,
         update_allowed=False,
     )
@@ -705,7 +705,7 @@ class SSLCertificate(object):
     )
     days_until_expire_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 365)"),
         required=False,
         update_allowed=True,
     )
@@ -776,7 +776,7 @@ class PKIProfile(AviResource):
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of Certificate Authorities (Root and Intermediate) trusted that is used for certificate validation"),
         schema=SSLCertificate.properties_schema,
         required=True,
         update_allowed=False,
@@ -790,7 +790,7 @@ class PKIProfile(AviResource):
     )
     crls_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Certificate Revocation Lists"),
         schema=CRL.properties_schema,
         required=True,
         update_allowed=False,
@@ -804,19 +804,19 @@ class PKIProfile(AviResource):
     )
     ignore_peer_chain_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will not trust Intermediate and Root certs presented by a client.  Instead, only the chain certs configured in the Certificate Authority section will be used to verify trust of the client's cert."),
+        _("When enabled, Avi will not trust Intermediate and Root certs presented by a client.  Instead, only the chain certs configured in the Certificate Authority section will be used to verify trust of the client's cert. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     crl_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked."),
+        _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     validate_only_leaf_crl_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will only validate the revocation status of the leaf certificate using CRL. To enable validation for the entire chain, disable this option and provide all the relevant CRLs"),
+        _("When enabled, Avi will only validate the revocation status of the leaf certificate using CRL. To enable validation for the entire chain, disable this option and provide all the relevant CRLs (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -868,7 +868,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_TYPE_VIRTUALSERVICE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -897,7 +897,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_FINISHED)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -906,7 +906,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("CA certificates in certificate chain"),
         schema=CertificateAuthority.properties_schema,
         required=True,
         update_allowed=False,
@@ -944,7 +944,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     dynamic_params_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Dynamic parameters needed for certificate management profile"),
         schema=CustomParams.properties_schema,
         required=True,
         update_allowed=False,

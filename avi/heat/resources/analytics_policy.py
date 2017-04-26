@@ -16,19 +16,19 @@ class FullClientLogs(object):
     # all schemas
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Capture all client logs including connections and requests.  When disabled, only errors will be logged."),
+        _("Capture all client logs including connections and requests.  When disabled, only errors will be logged. (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("How long should the system capture all logs, measured in minutes. Set to 0 for infinite."),
+        _("How long should the system capture all logs, measured in minutes. Set to 0 for infinite. (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Log all headers."),
+        _("Log all headers. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -54,13 +54,13 @@ class MetricsRealTimeUpdate(object):
     # all schemas
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enables real time metrics collection.  When disabled, 6 hour view is the most granular the system will track."),
+        _("Enables real time metrics collection.  When disabled, 6 hour view is the most granular the system will track. (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Real time metrics collection duration in minutes. 0 for infinite."),
+        _("Real time metrics collection duration in minutes. 0 for infinite. (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -103,7 +103,7 @@ class ClientLogFilter(object):
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -116,13 +116,13 @@ class ClientLogFilter(object):
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -229,7 +229,7 @@ class AnalyticsPolicy(object):
     )
     client_insights_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Gain insights from sampled client to server HTTP requests and responses."),
+        _("Gain insights from sampled client to server HTTP requests and responses. (Default: ACTIVE)"),
         required=False,
         update_allowed=True,
         constraints=[

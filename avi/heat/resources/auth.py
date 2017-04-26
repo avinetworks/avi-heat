@@ -34,7 +34,7 @@ class LdapDirectorySettings(object):
     )
     user_search_scope_schema = properties.Schema(
         properties.Schema.STRING,
-        _("LDAP user search scope defines how deep to search for the user starting from user search DN."),
+        _("LDAP user search scope defines how deep to search for the user starting from user search DN. (Default: AUTH_LDAP_SCOPE_ONE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -49,7 +49,7 @@ class LdapDirectorySettings(object):
     )
     user_attributes_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("LDAP user attributes to fetch on a successful user bind."),
         required=True,
         update_allowed=False,
     )
@@ -74,7 +74,7 @@ class LdapDirectorySettings(object):
     )
     group_search_scope_schema = properties.Schema(
         properties.Schema.STRING,
-        _("LDAP group search scope defines how deep to search for the group starting from the group search DN."),
+        _("LDAP group search scope defines how deep to search for the group starting from the group search DN. (Default: AUTH_LDAP_SCOPE_SUBTREE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -83,7 +83,7 @@ class LdapDirectorySettings(object):
     )
     group_member_is_full_dn_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Group member entries contain full DNs instead of just user id attribute values"),
+        _("Group member entries contain full DNs instead of just user id attribute values (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -95,7 +95,7 @@ class LdapDirectorySettings(object):
     )
     ignore_referrals_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("During user or group search, ignore searching referrals."),
+        _("During user or group search, ignore searching referrals. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -157,7 +157,7 @@ class LdapUserBindSettings(object):
     )
     user_attributes_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("LDAP user attributes to fetch on a successful user bind."),
         required=True,
         update_allowed=False,
     )
@@ -339,13 +339,13 @@ class AuthProfileHTTPClientParams(object):
     )
     cache_expiration_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The max allowed length of time a clients authentication is cached"),
+        _("The max allowed length of time a clients authentication is cached (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     require_user_groups_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("A user should be a member of these groups.  Each group is defined by the DN.  For example, CN=testgroup,OU=groups,dc=example,dc=avinetworks,DC=com"),
         required=True,
         update_allowed=False,
     )
@@ -358,7 +358,7 @@ class AuthProfileHTTPClientParams(object):
     )
     group_member_is_full_dn_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Group member entries contain full DNs instead of just user id attribute values"),
+        _("Group member entries contain full DNs instead of just user id attribute values (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -549,7 +549,7 @@ class TacacsPlusAuthSettings(object):
     # all schemas
     server_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("TACACS+ server IP address"),
         required=True,
         update_allowed=False,
     )
@@ -562,7 +562,7 @@ class TacacsPlusAuthSettings(object):
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("TACACS+ server listening port"),
+        _("TACACS+ server listening port (Default: 49)"),
         required=False,
         update_allowed=True,
     )
@@ -574,7 +574,7 @@ class TacacsPlusAuthSettings(object):
     )
     service_schema = properties.Schema(
         properties.Schema.STRING,
-        _("TACACS+ service"),
+        _("TACACS+ service (Default: AUTH_TACACS_PLUS_SERVICE_LOGIN)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -583,7 +583,7 @@ class TacacsPlusAuthSettings(object):
     )
     authorization_attrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("TACACS+ authorization attribute value pairs"),
         schema=AuthTacacsPlusAttributeValuePair.properties_schema,
         required=True,
         update_allowed=False,
@@ -625,7 +625,7 @@ class LdapAuthSettings(object):
     # all schemas
     server_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("LDAP server IP address"),
         required=True,
         update_allowed=False,
     )
@@ -638,7 +638,7 @@ class LdapAuthSettings(object):
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Query the LDAP servers on this port."),
+        _("Query the LDAP servers on this port. (Default: 389)"),
         required=False,
         update_allowed=True,
     )
@@ -659,7 +659,7 @@ class LdapAuthSettings(object):
     )
     bind_as_administrator_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("LDAP administrator credentials are used to search for users and group memberships."),
+        _("LDAP administrator credentials are used to search for users and group memberships. (Default: True)"),
         required=False,
         update_allowed=True,
     )

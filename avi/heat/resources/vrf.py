@@ -15,7 +15,7 @@ class BgpPeer(object):
     # all schemas
     remote_as_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Peer Autonomous System ID"),
+        _("Peer Autonomous System ID (Default: 1)"),
         required=False,
         update_allowed=True,
     )
@@ -41,7 +41,7 @@ class BgpPeer(object):
     )
     bfd_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable Bi-Directional Forward Detection. Only async mode supported."),
+        _("Enable Bi-Directional Forward Detection. Only async mode supported. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -53,25 +53,37 @@ class BgpPeer(object):
     )
     advertise_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Advertise VIP to this Peer"),
+        _("Advertise VIP to this Peer (Default: True)"),
         required=False,
         update_allowed=True,
     )
     advertise_snat_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Advertise SNAT IP to this Peer"),
+        _("Advertise SNAT IP to this Peer (Default: True)"),
         required=False,
         update_allowed=True,
     )
     advertisement_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Advertisement interval for this Peer"),
+        _("Advertisement interval for this Peer (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     connect_timer_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Connect timer for this Peer"),
+        _("Connect timer for this Peer (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    keepalive_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Keepalive interval for this Peer (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    hold_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Hold time for this Peer (Default: 180)"),
         required=False,
         update_allowed=True,
     )
@@ -88,6 +100,8 @@ class BgpPeer(object):
         'advertise_snat_ip',
         'advertisement_interval',
         'connect_timer',
+        'keepalive_interval',
+        'hold_time',
     )
 
     # mapping of properties to their schemas
@@ -102,6 +116,8 @@ class BgpPeer(object):
         'advertise_snat_ip': advertise_snat_ip_schema,
         'advertisement_interval': advertisement_interval_schema,
         'connect_timer': connect_timer_schema,
+        'keepalive_interval': keepalive_interval_schema,
+        'hold_time': hold_time_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -112,53 +128,49 @@ class BgpPeer(object):
 
 
 
-class BgpProfile(object):
+class InternalGatewayMonitor(object):
     # all schemas
-    local_as_schema = properties.Schema(
+    gateway_monitor_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Local Autonomous System ID"),
-        required=True,
+        _("The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
+        required=False,
         update_allowed=True,
     )
-    ibgp_schema = properties.Schema(
+    gateway_monitor_failure_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_success_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_gateway_monitor_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("BGP peer type"),
-        required=True,
-        update_allowed=True,
-    )
-    peers_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=BgpPeer.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    peers_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("BGP Peers"),
-        schema=peers_item_schema,
+        _("Disable the gateway monitor for default gateway. They are monitored by default. (Default: False)"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'local_as',
-        'ibgp',
-        'peers',
+        'gateway_monitor_interval',
+        'gateway_monitor_failure_threshold',
+        'gateway_monitor_success_threshold',
+        'disable_gateway_monitor',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'local_as': local_as_schema,
-        'ibgp': ibgp_schema,
-        'peers': peers_schema,
+        'gateway_monitor_interval': gateway_monitor_interval_schema,
+        'gateway_monitor_failure_threshold': gateway_monitor_failure_threshold_schema,
+        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
+        'disable_gateway_monitor': disable_gateway_monitor_schema,
     }
 
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'peers': getattr(BgpPeer, 'field_references', {}),
-    }
 
 
 
@@ -173,19 +185,19 @@ class GatewayMonitor(object):
     )
     gateway_monitor_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The interval between two ping requests sent by the gateway monitor.  If a value is not specified, requests are sent every second (1000 milliseconds)."),
+        _("The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     gateway_monitor_fail_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of consecutive failed gateway health checks before a gateway is marked down."),
+        _("The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     gateway_monitor_success_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up."),
+        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
         required=False,
         update_allowed=True,
     )
@@ -241,6 +253,12 @@ class StaticRoute(object):
         required=True,
         update_allowed=True,
     )
+    disable_gateway_monitor_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable the gateway monitor for default gateway. They are monitored by default."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -248,6 +266,7 @@ class StaticRoute(object):
         'next_hop',
         'if_name',
         'route_id',
+        'disable_gateway_monitor',
     )
 
     # mapping of properties to their schemas
@@ -256,12 +275,79 @@ class StaticRoute(object):
         'next_hop': next_hop_schema,
         'if_name': if_name_schema,
         'route_id': route_id_schema,
+        'disable_gateway_monitor': disable_gateway_monitor_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'prefix': getattr(IpAddrPrefix, 'field_references', {}),
         'next_hop': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
+class BgpProfile(object):
+    # all schemas
+    local_as_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Local Autonomous System ID"),
+        required=True,
+        update_allowed=True,
+    )
+    ibgp_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("BGP peer type (Default: True)"),
+        required=True,
+        update_allowed=True,
+    )
+    peers_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("BGP Peers"),
+        schema=BgpPeer.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    peers_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("BGP Peers"),
+        schema=peers_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    keepalive_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Keepalive interval for Peers (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    hold_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Hold time for Peers (Default: 180)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'local_as',
+        'ibgp',
+        'peers',
+        'keepalive_interval',
+        'hold_time',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'local_as': local_as_schema,
+        'ibgp': ibgp_schema,
+        'peers': peers_schema,
+        'keepalive_interval': keepalive_interval_schema,
+        'hold_time': hold_time_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'peers': getattr(BgpPeer, 'field_references', {}),
     }
 
 
@@ -298,15 +384,22 @@ class VrfContext(AviResource):
     )
     gateway_mon_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure ping based heartbeat check for gateway in service engines of vrf."),
         schema=GatewayMonitor.properties_schema,
         required=True,
         update_allowed=False,
     )
     gateway_mon_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Enable ping based heartbeat check to gateway on the Service Engines for this Virtual Routing Context"),
+        _("Configure ping based heartbeat check for gateway in service engines of vrf."),
         schema=gateway_mon_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    internal_gateway_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Configure ping based heartbeat check for all default gateways in service engines of vrf."),
+        schema=InternalGatewayMonitor.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -329,6 +422,7 @@ class VrfContext(AviResource):
         'static_routes',
         'bgp_profile',
         'gateway_mon',
+        'internal_gateway_monitor',
         'description',
         'cloud_uuid',
     )
@@ -339,6 +433,7 @@ class VrfContext(AviResource):
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,
         'gateway_mon': gateway_mon_schema,
+        'internal_gateway_monitor': internal_gateway_monitor_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
     }
@@ -348,6 +443,7 @@ class VrfContext(AviResource):
         'gateway_mon': getattr(GatewayMonitor, 'field_references', {}),
         'bgp_profile': getattr(BgpProfile, 'field_references', {}),
         'static_routes': getattr(StaticRoute, 'field_references', {}),
+        'internal_gateway_monitor': getattr(InternalGatewayMonitor, 'field_references', {}),
     }
 
 

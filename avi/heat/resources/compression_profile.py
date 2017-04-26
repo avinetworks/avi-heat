@@ -28,7 +28,7 @@ class CompressionFilter(object):
     )
     match_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Whether to apply Filter when group criteria is matched or not"),
+        _("Whether to apply Filter when group criteria is matched or not (Default: IS_IN)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -104,7 +104,7 @@ class CompressionFilter(object):
     )
     level_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: NORMAL_COMPRESSION)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -155,25 +155,25 @@ class CompressionProfile(object):
     # all schemas
     compression_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Compress HTTP response content if it wasn't already compressed."),
+        _("Compress HTTP response content if it wasn't already compressed. (Default: False)"),
         required=True,
         update_allowed=True,
     )
     remove_accept_encoding_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Offload compression from the servers to AVI. Saves compute cycles on the servers."),
+        _("Offload compression from the servers to AVI. Saves compute cycles on the servers. (Default: True)"),
         required=True,
         update_allowed=True,
     )
     compressible_content_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Compress only content types listed in this string group. Content types not present in this list are not compressed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Compress only content types listed in this string group. Content types not present in this list are not compressed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'. (Default: System-Compressible-Content-Types)"),
         required=False,
         update_allowed=True,
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Compress content automatically or add custom filters to define compressible content and compression levels."),
+        _("Compress content automatically or add custom filters to define compressible content and compression levels. (Default: AUTO_COMPRESSION)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -182,7 +182,7 @@ class CompressionProfile(object):
     )
     filter_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Custom filters used when auto compression is not selected."),
         schema=CompressionFilter.properties_schema,
         required=True,
         update_allowed=False,

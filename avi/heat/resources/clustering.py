@@ -111,7 +111,7 @@ class Cluster(AviResource):
     )
     rejoin_nodes_automatically_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Re-join cluster nodes automatically in the event one of the node is reset to factory."),
+        _("Re-join cluster nodes automatically in the event one of the node is reset to factory. (Default: True)"),
         required=False,
         update_allowed=True,
     )

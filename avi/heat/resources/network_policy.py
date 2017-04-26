@@ -69,7 +69,7 @@ class NetworkSecurityPolicyActionRLParam(object):
     )
     burst_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of connections or requests or packets to be rate limited instantaneously."),
+        _("Maximum number of connections or requests or packets to be rate limited instantaneously. (Default: 0)"),
         required=True,
         update_allowed=True,
     )
@@ -127,7 +127,7 @@ class NetworkSecurityRule(object):
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -140,7 +140,13 @@ class NetworkSecurityRule(object):
     )
     age_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time in minutes after which rule will be deleted."),
+        _("Time in minutes after which rule will be deleted. (Units: MIN) (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
         required=False,
         update_allowed=True,
     )
@@ -155,6 +161,7 @@ class NetworkSecurityRule(object):
         'log',
         'rl_param',
         'age',
+        'created_by',
     )
 
     # mapping of properties to their schemas
@@ -167,6 +174,7 @@ class NetworkSecurityRule(object):
         'log': log_schema,
         'rl_param': rl_param_schema,
         'age': age_schema,
+        'created_by': created_by_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -206,6 +214,12 @@ class NetworkSecurityPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Checksum of cloud configuration for Network Sec Policy. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -218,6 +232,7 @@ class NetworkSecurityPolicy(AviResource):
         'name',
         'rules',
         'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
@@ -226,6 +241,7 @@ class NetworkSecurityPolicy(AviResource):
         'name': name_schema,
         'rules': rules_schema,
         'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 

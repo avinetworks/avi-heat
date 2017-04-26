@@ -76,7 +76,7 @@ class HSMThalesRFS(object):
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Port at which the RFS server accepts the sync request from clients for Thales encrypted private key"),
+        _("Port at which the RFS server accepts the sync request from clients for Thales encrypted private key (Default: 9004)"),
         required=False,
         update_allowed=True,
     )
@@ -111,7 +111,7 @@ class HSMThalesNetHsm(object):
     )
     remote_port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Port at which the netHSM device accepts the connection"),
+        _("Port at which the netHSM device accepts the connection (Default: 9004)"),
         required=False,
         update_allowed=True,
     )
@@ -123,7 +123,7 @@ class HSMThalesNetHsm(object):
     )
     module_id_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Local module id of the netHSM device"),
+        _("Local module id of the netHSM device (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -135,7 +135,7 @@ class HSMThalesNetHsm(object):
     )
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority class of the nethsm in an high availability setup. 1 is the highest priority and 100 is the lowest priority"),
+        _("Priority class of the nethsm in an high availability setup. 1 is the highest priority and 100 is the lowest priority (Default: 100)"),
         required=True,
         update_allowed=True,
     )
@@ -209,7 +209,7 @@ class HSMSafenetLuna(object):
     # all schemas
     server_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("SafeNet/Gemalto HSM Servers used for crypto operations"),
         schema=HSMSafenetLunaServer.properties_schema,
         required=True,
         update_allowed=False,
@@ -223,13 +223,13 @@ class HSMSafenetLuna(object):
     )
     is_ha_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Set to indicate HA across more than one servers"),
+        _("Set to indicate HA across more than one servers (Default: False)"),
         required=True,
         update_allowed=True,
     )
     node_info_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Node specific information"),
         schema=HSMSafenetClientInfo.properties_schema,
         required=True,
         update_allowed=False,
@@ -241,12 +241,19 @@ class HSMSafenetLuna(object):
         required=False,
         update_allowed=True,
     )
+    use_dedicated_network_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If enabled, dedicated network is used to communicate with HSM,else, the management network is used. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'server',
         'is_ha',
         'node_info',
+        'use_dedicated_network',
     )
 
     # mapping of properties to their schemas
@@ -254,6 +261,7 @@ class HSMSafenetLuna(object):
         'server': server_schema,
         'is_ha': is_ha_schema,
         'node_info': node_info_schema,
+        'use_dedicated_network': use_dedicated_network_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -284,7 +292,7 @@ class HardwareSecurityModule(object):
     )
     nethsm_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Thales netHSM specific configuration"),
         schema=HSMThalesNetHsm.properties_schema,
         required=True,
         update_allowed=False,

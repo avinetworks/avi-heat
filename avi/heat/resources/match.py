@@ -59,7 +59,7 @@ class MicroServiceGroup(AviResource):
     )
     service_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Configure MicroService(es)"),
         required=True,
         update_allowed=False,
     )
@@ -119,7 +119,7 @@ class MethodMatch(object):
     )
     methods_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Configure HTTP method(s)"),
         required=True,
         update_allowed=False,
         constraints=[
@@ -162,7 +162,7 @@ class IpAddrMatch(object):
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("IP address(es)"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -176,7 +176,7 @@ class IpAddrMatch(object):
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("IP address range(s)"),
         schema=IpAddrRange.properties_schema,
         required=True,
         update_allowed=False,
@@ -190,7 +190,7 @@ class IpAddrMatch(object):
     )
     prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("IP address prefix(es)"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
@@ -204,7 +204,7 @@ class IpAddrMatch(object):
     )
     group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of IP address group(s)"),
         required=True,
         update_allowed=False,
     )
@@ -263,7 +263,7 @@ class HdrMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
+        _("Case sensitivity to use for the match (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -272,7 +272,7 @@ class HdrMatch(object):
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String values to match in the HTTP header"),
         required=True,
         update_allowed=False,
     )
@@ -347,7 +347,7 @@ class MicroServiceMatch(object):
     group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of Micro Service group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=False,
+        required=True,
         update_allowed=True,
     )
 
@@ -383,13 +383,13 @@ class PortMatch(object):
     )
     ports_item_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Listening TCP port(s)"),
         required=True,
         update_allowed=False,
     )
     ports_schema = properties.Schema(
         properties.Schema.LIST,
-        _("TCP port(s) listening for HTTP/HTTPS"),
+        _("Listening TCP port(s)"),
         schema=ports_item_schema,
         required=False,
         update_allowed=True,
@@ -429,7 +429,7 @@ class CookieMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
+        _("Case sensitivity to use for the match (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -475,7 +475,7 @@ class StringMatch(object):
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String value(s)"),
         required=True,
         update_allowed=False,
     )
@@ -488,7 +488,7 @@ class StringMatch(object):
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of the string group(s)"),
         required=True,
         update_allowed=False,
     )
@@ -532,7 +532,7 @@ class IpAddrGroup(AviResource):
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure IP address(es)"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -546,35 +546,35 @@ class IpAddrGroup(AviResource):
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure IP address range(s)"),
         schema=IpAddrRange.properties_schema,
         required=True,
         update_allowed=False,
     )
     ranges_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Configure IP adress range(s)"),
+        _("Configure IP address range(s)"),
         schema=ranges_item_schema,
         required=False,
         update_allowed=True,
     )
     prefixes_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure IP address prefix(es)"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
     )
     prefixes_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Configure IP adress prefix(es)"),
+        _("Configure IP address prefix(es)"),
         schema=prefixes_item_schema,
         required=False,
         update_allowed=True,
     )
     country_codes_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Populate the IP address ranges from the geo database for this country"),
         required=True,
         update_allowed=False,
     )
@@ -593,7 +593,7 @@ class IpAddrGroup(AviResource):
     )
     ip_ports_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure (IP address, port) tuple(s)"),
         schema=IpAddrPort.properties_schema,
         required=True,
         update_allowed=False,
@@ -677,7 +677,7 @@ class IpAddrGroupAddrs(AviNestedResource):
     )
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure IP address(es)"),
         required=True,
         update_allowed=False,
     )
@@ -713,7 +713,7 @@ class HTTPStatusMatch(object):
     )
     status_codes_item_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("HTTP response status code(s)"),
         required=True,
         update_allowed=False,
     )
@@ -726,7 +726,7 @@ class HTTPStatusMatch(object):
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP response status code range(s)"),
         schema=HTTPStatusRange.properties_schema,
         required=True,
         update_allowed=False,
@@ -773,7 +773,7 @@ class HostHdrMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
+        _("Case sensitivity to use for the match (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -782,7 +782,7 @@ class HostHdrMatch(object):
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String value(s) in the host header"),
         required=True,
         update_allowed=False,
     )
@@ -854,7 +854,7 @@ class QueryMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
+        _("Case sensitivity to use for the match (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -863,7 +863,7 @@ class QueryMatch(object):
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String value(s)"),
         required=True,
         update_allowed=False,
     )
@@ -876,7 +876,7 @@ class QueryMatch(object):
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of the string group(s)"),
         required=True,
         update_allowed=False,
     )
@@ -924,7 +924,7 @@ class HTTPVersionMatch(object):
     )
     versions_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("HTTP protocol version"),
         required=True,
         update_allowed=False,
         constraints=[
@@ -967,7 +967,7 @@ class PathMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the matching"),
+        _("Case sensitivity to use for the matching (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -976,7 +976,7 @@ class PathMatch(object):
     )
     match_str_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String values"),
         required=True,
         update_allowed=False,
     )
@@ -989,7 +989,7 @@ class PathMatch(object):
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of the string group(s)"),
         required=True,
         update_allowed=False,
     )
@@ -1035,7 +1035,7 @@ class StringGroup(AviResource):
     )
     kv_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure Key:Value in the string group"),
         schema=KeyValue.properties_schema,
         required=True,
         update_allowed=False,
@@ -1049,7 +1049,7 @@ class StringGroup(AviResource):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Type of StringGroup."),
+        _("Type of StringGroup. (Default: SG_TYPE_STRING)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -1099,7 +1099,7 @@ class LocationHdrMatch(object):
     )
     match_case_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Case sensitivity to use for the match"),
+        _("Case sensitivity to use for the match (Default: INSENSITIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -1108,7 +1108,7 @@ class LocationHdrMatch(object):
     )
     value_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("String value(s) in the location header"),
         required=True,
         update_allowed=False,
     )
@@ -1190,7 +1190,7 @@ class MatchTarget(object):
     )
     hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure HTTP header(s)"),
         schema=HdrMatch.properties_schema,
         required=True,
         update_allowed=False,
@@ -1314,7 +1314,7 @@ class ResponseMatchTarget(object):
     )
     hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure HTTP headers"),
         schema=HdrMatch.properties_schema,
         required=True,
         update_allowed=False,
@@ -1356,7 +1356,7 @@ class ResponseMatchTarget(object):
     )
     rsp_hdrs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Configure the HTTP headers in response"),
         schema=HdrMatch.properties_schema,
         required=True,
         update_allowed=False,

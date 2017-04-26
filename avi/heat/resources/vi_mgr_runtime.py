@@ -154,7 +154,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     apic_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -178,7 +178,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     vcenter_connected_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -387,13 +387,13 @@ class VIMgrHostRuntime(AviResource):
     )
     quarantined_periods_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     cntlr_accessible_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )

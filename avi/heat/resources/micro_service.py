@@ -99,7 +99,7 @@ class MicroService(AviResource):
     )
     containers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("The list of containers for this microservice"),
         schema=MicroServiceContainer.properties_schema,
         required=True,
         update_allowed=False,

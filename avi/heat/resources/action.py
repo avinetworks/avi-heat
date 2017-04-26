@@ -138,7 +138,7 @@ class URIParamQuery(object):
     # all schemas
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use or drop the query of the incoming request URI in the request URI to the backend server"),
+        _("Use or drop the query of the incoming request URI in the request URI to the backend server (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -287,7 +287,7 @@ class URIParam(object):
     )
     tokens_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Token config either for the URI components or a constant string"),
         schema=URIParamToken.properties_schema,
         required=True,
         update_allowed=False,
@@ -387,13 +387,13 @@ class HTTPRedirectAction(object):
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Keep or drop the query of the incoming request URI in the redirected URI"),
+        _("Keep or drop the query of the incoming request URI in the redirected URI (Default: True)"),
         required=False,
         update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
-        _("HTTP redirect status code"),
+        _("HTTP redirect status code (Default: HTTP_REDIRECT_STATUS_CODE_302)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -509,7 +509,7 @@ class HTTPRewriteLocHdrAction(object):
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Keep or drop the query from the server side redirect URI"),
+        _("Keep or drop the query from the server side redirect URI (Default: True)"),
         required=False,
         update_allowed=True,
     )

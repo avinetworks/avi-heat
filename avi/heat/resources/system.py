@@ -19,7 +19,7 @@ class DNSConfiguration(object):
     # all schemas
     server_list_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of DNS Server IP addresses"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -67,7 +67,7 @@ class NTPAuthenticationKey(object):
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Message Digest Algorithm used for NTP authentication. Default is NTP_AUTH_ALGORITHM_MD5"),
+        _("Message Digest Algorithm used for NTP authentication. Default is NTP_AUTH_ALGORITHM_MD5 (Default: NTP_AUTH_ALGORITHM_MD5)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -108,7 +108,7 @@ class AdminAuthConfiguration(object):
     )
     mapping_rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Rules list for tenant or role mapping"),
         schema=AuthMappingRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -120,17 +120,25 @@ class AdminAuthConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    allow_local_user_login_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow any user created locally to login with local credentials (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'auth_profile_uuid',
         'mapping_rules',
+        'allow_local_user_login',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'auth_profile_uuid': auth_profile_uuid_schema,
         'mapping_rules': mapping_rules_schema,
+        'allow_local_user_login': allow_local_user_login_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -180,7 +188,7 @@ class TechSupportUploaderConfiguration(object):
     # all schemas
     auto_upload_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -202,7 +210,7 @@ class EmailConfiguration(object):
     # all schemas
     smtp_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Type of SMTP Mail Service"),
+        _("Type of SMTP Mail Service (Default: SMTP_LOCAL_HOST)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -223,7 +231,7 @@ class EmailConfiguration(object):
     )
     mail_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Mail server port"),
+        _("Mail server port (Default: 25)"),
         required=False,
         update_allowed=True,
     )
@@ -343,25 +351,25 @@ class PortalConfiguration(object):
     # all schemas
     enable_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     redirect_to_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     enable_http_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     sslkeyandcertificate_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs"),
         required=True,
         update_allowed=False,
     )
@@ -374,25 +382,25 @@ class PortalConfiguration(object):
     )
     use_uuid_from_input_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use UUID in POST object data as UUID of the new object, instead of a generated UUID."),
+        _("Use UUID in POST object data as UUID of the new object, instead of a generated UUID. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'. (Default: System-Standard)"),
         required=False,
         update_allowed=True,
     )
     enable_clickjacking_protection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable/Disable Clickjacking protection"),
+        _("Enable/Disable Clickjacking protection (Default: True)"),
         required=False,
         update_allowed=True,
     )
     allow_basic_authentication_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable/Disable HTTP basic authentication"),
+        _("Enable/Disable HTTP basic authentication (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -410,13 +418,13 @@ class PortalConfiguration(object):
     )
     password_strength_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Strict checking of password strength for user accounts"),
+        _("Strict checking of password strength for user accounts (Default: False)"),
         required=False,
         update_allowed=True,
     )
     disable_remote_cli_shell_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable Remote CLI Shell Client access"),
+        _("Disable Remote CLI Shell Client access (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -465,7 +473,7 @@ class NTPConfiguration(object):
     # all schemas
     ntp_server_list_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of NTP server hostnames or IP addresses"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -479,7 +487,7 @@ class NTPConfiguration(object):
     )
     ntp_authentication_keys_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("NTP Authentication keys"),
         schema=NTPAuthenticationKey.properties_schema,
         required=True,
         update_allowed=False,
@@ -493,7 +501,7 @@ class NTPConfiguration(object):
     )
     ntp_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of NTP Servers"),
         schema=NTPServer.properties_schema,
         required=True,
         update_allowed=False,
@@ -668,7 +676,7 @@ class SystemConfiguration(AviResource):
     )
     ssh_ciphers_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Allowed Ciphers list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default ciphers are allowed. ssh -Q cipher provides the list of default ciphers supported."),
         required=True,
         update_allowed=False,
     )
@@ -681,7 +689,7 @@ class SystemConfiguration(AviResource):
     )
     ssh_hmacs_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Allowed HMAC list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default HMACs are allowed. ssh -Q mac provides the list of default HMACs supported."),
         required=True,
         update_allowed=False,
     )
@@ -694,7 +702,7 @@ class SystemConfiguration(AviResource):
     )
     dns_virtualservice_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("DNS virtualservices hosting FQDN records for applications across Avi Vantage. If no virtualservices are provided, Avi Vantage will provide DNS services for configured applications. Switching back to Avi Vantage from DNS virtualservices is not allowed."),
         required=True,
         update_allowed=False,
     )

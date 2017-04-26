@@ -132,7 +132,7 @@ class HTTPRequestRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -152,7 +152,7 @@ class HTTPRequestRule(object):
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP header rewrite action"),
         schema=HTTPHdrAction.properties_schema,
         required=True,
         update_allowed=False,
@@ -246,7 +246,7 @@ class HTTPResponseRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -259,7 +259,7 @@ class HTTPResponseRule(object):
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP header rewrite action"),
         schema=HTTPHdrAction.properties_schema,
         required=True,
         update_allowed=False,
@@ -340,7 +340,7 @@ class HTTPSecurityRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -397,7 +397,7 @@ class HTTPRequestPolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP request policy"),
         schema=HTTPRequestRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -431,7 +431,7 @@ class HTTPSecurityPolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP security policy"),
         schema=HTTPSecurityRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -465,7 +465,7 @@ class HTTPResponsePolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP response policy"),
         schema=HTTPResponseRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -539,7 +539,7 @@ class HTTPPolicySet(AviResource):
     )
     is_internal_policy_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )

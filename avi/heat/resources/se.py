@@ -151,7 +151,7 @@ class MemberInterface(object):
     )
     active_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -188,7 +188,7 @@ class ServiceEngine(AviResource):
     )
     enable_state_schema = properties.Schema(
         properties.Schema.STRING,
-        _("inorder to disable SE set this field appropriately"),
+        _("inorder to disable SE set this field appropriately (Default: SE_STATE_ENABLED)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -287,13 +287,13 @@ class vNICNetwork(object):
     )
     ctlr_alloc_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     mode_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: DHCP)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -384,13 +384,13 @@ class VlanInterface(object):
     )
     vlan_id_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -410,7 +410,7 @@ class VlanInterface(object):
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'. (Default: )"),
         required=False,
         update_allowed=True,
     )
@@ -445,13 +445,13 @@ class vNIC(object):
     # all schemas
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )

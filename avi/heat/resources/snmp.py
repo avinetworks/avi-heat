@@ -51,18 +51,34 @@ class SnmpConfiguration(object):
     community_schema = properties.Schema(
         properties.Schema.STRING,
         _("Community string for SNMP v2c"),
-        required=True,
+        required=False,
+        update_allowed=True,
+    )
+    sys_location_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Sets the sysLocation in system MIB"),
+        required=False,
+        update_allowed=True,
+    )
+    sys_contact_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Sets the sysContact in system MIB"),
+        required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
         'community',
+        'sys_location',
+        'sys_contact',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'community': community_schema,
+        'sys_location': sys_location_schema,
+        'sys_contact': sys_contact_schema,
     }
 
 
@@ -79,7 +95,7 @@ class SnmpTrapProfile(AviResource):
     )
     trap_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("The IP address or hostname of the SNMP trap destination server."),
         schema=SnmpTrapServer.properties_schema,
         required=True,
         update_allowed=False,

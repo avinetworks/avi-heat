@@ -19,7 +19,7 @@ class VSDataScript(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VS_DATASCRIPT_EVT_HTTP_RESP', 'VS_DATASCRIPT_EVT_HTTP_REQ', 'VS_DATASCRIPT_EVT_HTTP_LB_FAILED', 'VS_DATASCRIPT_EVT_HTTP_RESP_DATA', 'VS_DATASCRIPT_EVT_MAX']),
+            constraints.AllowedValues(['VS_DATASCRIPT_EVT_HTTP_RESP', 'VS_DATASCRIPT_EVT_HTTP_REQ', 'VS_DATASCRIPT_EVT_HTTP_REQ_DATA', 'VS_DATASCRIPT_EVT_MAX', 'VS_DATASCRIPT_EVT_HTTP_RESP_DATA', 'VS_DATASCRIPT_EVT_HTTP_LB_FAILED']),
         ],
     )
     script_schema = properties.Schema(
@@ -89,7 +89,7 @@ class VSDataScriptSet(AviResource):
     )
     datascript_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("DataScripts to execute"),
         schema=VSDataScript.properties_schema,
         required=True,
         update_allowed=False,
@@ -103,7 +103,7 @@ class VSDataScriptSet(AviResource):
     )
     pool_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of pools that could be referred by VSDataScriptSet objects."),
         required=True,
         update_allowed=False,
     )
@@ -116,7 +116,7 @@ class VSDataScriptSet(AviResource):
     )
     pool_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of pool groups that could be referred by VSDataScriptSet objects."),
         required=True,
         update_allowed=False,
     )
@@ -129,7 +129,7 @@ class VSDataScriptSet(AviResource):
     )
     ipgroup_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of IP Groups that could be referred by VSDataScriptSet objects."),
         required=True,
         update_allowed=False,
     )
@@ -142,7 +142,7 @@ class VSDataScriptSet(AviResource):
     )
     string_group_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("UUID of String Groups that could be referred by VSDataScriptSet objects."),
         required=True,
         update_allowed=False,
     )

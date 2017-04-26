@@ -60,19 +60,19 @@ class DnsServiceApplicationProfile(object):
     # all schemas
     num_dns_ip_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Specifies the number of IP addresses returned by the DNS Service. Enter 0 to return all IP addresses"),
+        _("Specifies the number of IP addresses returned by the DNS Service. Enter 0 to return all IP addresses (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Specifies the TTL value (in seconds) for records served by DNS Service"),
+        _("Specifies the TTL value (in seconds) for records served by DNS Service (Units: SEC) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
     error_response_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Error response to the client when the DNS service encounters an error processing the client query"),
+        _("Drop or respond to client when the DNS service encounters an error processing a client query. By default, such a request is dropped without any response, or passed through to a passthrough pool, if configured. When set to respond, an appropriate response is sent to client, e.g. NXDOMAIN response for non-existent records, empty NOERROR response for unsupported queries, etc. (Default: DNS_ERROR_RESPONSE_NONE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -81,7 +81,7 @@ class DnsServiceApplicationProfile(object):
     )
     domain_names_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Subdomain names serviced by this Virtual Service. These are configured as Ends-With semantics"),
         required=True,
         update_allowed=False,
     )
@@ -94,7 +94,19 @@ class DnsServiceApplicationProfile(object):
     )
     edns_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable DNS service to be aware of EDNS (Extension mechanism for DNS)"),
+        _("Enable DNS service to be aware of EDNS (Extension mechanism for DNS). EDNS extensions are parsed and shown in logs. For GSLB services, the EDNS subnet option can be used to influence Load Balancing. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    dns_over_tcp_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable DNS query/response over TCP. This enables analytics for pass-through queries as well. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    aaaa_empty_response_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Respond to AAAA queries with empty response when there are only IPV4 records (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -106,6 +118,8 @@ class DnsServiceApplicationProfile(object):
         'error_response',
         'domain_names',
         'edns',
+        'dns_over_tcp_enabled',
+        'aaaa_empty_response',
     )
 
     # mapping of properties to their schemas
@@ -115,6 +129,8 @@ class DnsServiceApplicationProfile(object):
         'error_response': error_response_schema,
         'domain_names': domain_names_schema,
         'edns': edns_schema,
+        'dns_over_tcp_enabled': dns_over_tcp_enabled_schema,
+        'aaaa_empty_response': aaaa_empty_response_schema,
     }
 
 
@@ -124,13 +140,13 @@ class TCPApplicationProfile(object):
     # all schemas
     proxy_protocol_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable/Disable the usage of proxy protocol to convey client connection information to the back-end servers.  Valid only for L4 application profiles and TCP proxy."),
+        _("Enable/Disable the usage of proxy protocol to convey client connection information to the back-end servers.  Valid only for L4 application profiles and TCP proxy. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     proxy_protocol_version_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Version of proxy protocol to be used to convey client connection information to the back-end servers."),
+        _("Version of proxy protocol to be used to convey client connection information to the back-end servers. (Default: PROXY_PROTOCOL_VERSION_1)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -204,7 +220,7 @@ class SSLClientCertificateAction(object):
     )
     close_connection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -232,13 +248,13 @@ class HTTPApplicationProfile(object):
     # all schemas
     connection_multiplexing_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance. Not compatible with Preserve Client IP."),
+        _("Allows HTTP requests, not just TCP connections, to be load balanced across servers.  Proxied TCP connections to servers may be reused by multiple clients to improve performance. Not compatible with Preserve Client IP. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     xff_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("The client's original IP address is inserted into an HTTP request header sent to the server.  Servers may use this address for logging or other purposes, rather than Avi's source NAT address used in the Avi to server IP connection."),
+        _("The client's original IP address is inserted into an HTTP request header sent to the server.  Servers may use this address for logging or other purposes, rather than Avi's source NAT address used in the Avi to server IP connection. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -250,49 +266,49 @@ class HTTPApplicationProfile(object):
     )
     ssl_everywhere_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable common settings to increase the level of security for  virtual services running HTTP and HTTPS.  For sites that are  HTTP only, these settings will have no effect."),
+        _("Enable common settings to increase the level of security for  virtual services running HTTP and HTTPS.  For sites that are  HTTP only, these settings will have no effect. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     hsts_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Inserts HTTP Strict-Transport-Security header in the HTTPS response.  HSTS can help mitigate man-in-the-middle attacks by telling browsers that support HSTS that they should only access this site via HTTPS."),
+        _("Inserts HTTP Strict-Transport-Security header in the HTTPS response.  HSTS can help mitigate man-in-the-middle attacks by telling browsers that support HSTS that they should only access this site via HTTPS. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     hsts_max_age_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of days for which the client should regard this virtual service as a known HSTS host."),
+        _("Number of days for which the client should regard this virtual service as a known HSTS host. (Default: 365)"),
         required=False,
         update_allowed=True,
     )
     secure_cookie_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Mark server cookies with the 'Secure' attribute.  Client browsers will not send a cookie marked as secure over an unencrypted connection.  If Avi is terminating SSL from clients and passing it as HTTP to the server, the server may return cookies without the secure flag set."),
+        _("Mark server cookies with the 'Secure' attribute.  Client browsers will not send a cookie marked as secure over an unencrypted connection.  If Avi is terminating SSL from clients and passing it as HTTP to the server, the server may return cookies without the secure flag set. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     httponly_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Mark HTTP cookies as HTTPonly.  This helps mitigate cross site scripting attacks as browsers will not allow these cookies to be read by third parties, such as javascript."),
+        _("Mark HTTP cookies as HTTPonly.  This helps mitigate cross site scripting attacks as browsers will not allow these cookies to be read by third parties, such as javascript. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     http_to_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Client requests received via HTTP will be redirected to HTTPS."),
+        _("Client requests received via HTTP will be redirected to HTTPS. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     server_side_redirect_to_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When terminating client SSL sessions at Avi, servers may incorrectly send redirect to clients as HTTP.  This option will rewrite the server's redirect responses for this virtual service from HTTP to HTTPS."),
+        _("When terminating client SSL sessions at Avi, servers may incorrectly send redirect to clients as HTTP.  This option will rewrite the server's redirect responses for this virtual service from HTTP to HTTPS. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     x_forwarded_proto_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Insert an X-Forwarded-Proto header in the request sent to the server.  When the client connects via SSL, Avi terminates the SSL, and then forwards the requests to the servers via HTTP, so the servers can determine the original protocol via this header.  In this example, the value will be 'https'."),
+        _("Insert an X-Forwarded-Proto header in the request sent to the server.  When the client connects via SSL, Avi terminates the SSL, and then forwards the requests to the servers via HTTP, so the servers can determine the original protocol via this header.  In this example, the value will be 'https'. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -305,55 +321,55 @@ class HTTPApplicationProfile(object):
     )
     spdy_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable SPDY proxy for traffic from clients to the virtual service.  SPDY requires SSL from the clients to Avi.  Avi ADC will proxy the SPDY protocol, and forward requests to servers as HTTP 1.1. "),
+        _("Enable SPDY proxy for traffic from clients to the virtual service.  SPDY requires SSL from the clients to Avi.  Avi ADC will proxy the SPDY protocol, and forward requests to servers as HTTP 1.1.  (Default: False)"),
         required=False,
         update_allowed=True,
     )
     spdy_fwd_proxy_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable fwd proxy mode with SPDY. This makes the Proxy combine the :host and :uri spdy headers to create a fwd-proxy style request URI"),
+        _("Enable fwd proxy mode with SPDY. This makes the Proxy combine the :host and :uri spdy headers to create a fwd-proxy style request URI (Default: False)"),
         required=False,
         update_allowed=True,
     )
     post_accept_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The max allowed length of time between a client establishing a TCP connection until Avi receives the first byte of the client's HTTP request."),
+        _("The max allowed length of time between a client establishing a TCP connection until Avi receives the first byte of the client's HTTP request. (Units: MILLISECONDS) (Default: 30000)"),
         required=False,
         update_allowed=True,
     )
     client_header_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The maximum length of time allowed for a client to transmit an entire request header. This helps mitigate various forms of SlowLoris attacks."),
+        _("The maximum length of time allowed for a client to transmit an entire request header. This helps mitigate various forms of SlowLoris attacks. (Units: MILLISECONDS) (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     client_body_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The maximum length of time allowed between consecutive read operations for a client request body. The value '0' specifies no timeout. This setting generally impacts the length of time allowed for a client to send a POST."),
+        _("The maximum length of time allowed between consecutive read operations for a client request body. The value '0' specifies no timeout. This setting generally impacts the length of time allowed for a client to send a POST. (Units: MILLISECONDS) (Default: 30000)"),
         required=False,
         update_allowed=True,
     )
     keepalive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The max idle time allowed between HTTP requests over a Keep-alive connection."),
+        _("The max idle time allowed between HTTP requests over a Keep-alive connection. (Units: MILLISECONDS) (Default: 30000)"),
         required=False,
         update_allowed=True,
     )
     client_max_header_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum size in Kbytes of a single HTTP header in the client request."),
+        _("Maximum size in Kbytes of a single HTTP header in the client request. (Units: KB) (Default: 12)"),
         required=False,
         update_allowed=True,
     )
     client_max_request_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum size in Kbytes of all the client HTTP request headers."),
+        _("Maximum size in Kbytes of all the client HTTP request headers. (Units: KB) (Default: 48)"),
         required=False,
         update_allowed=True,
     )
     client_max_body_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum size for the client request body.  This limits the size of the client data that can be uploaded/posted as part of a single HTTP Request.  Default 0 => Unlimited."),
+        _("Maximum size for the client request body.  This limits the size of the client data that can be uploaded/posted as part of a single HTTP Request.  Default 0 => Unlimited. (Units: KB) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -366,25 +382,25 @@ class HTTPApplicationProfile(object):
     )
     max_rps_unknown_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum unknown URIs per second."),
+        _("Maximum unknown URIs per second. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_rps_cip_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum requests per second per client IP."),
+        _("Maximum requests per second per client IP. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_rps_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum requests per second per URI."),
+        _("Maximum requests per second per URI. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_rps_cip_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum requests per second per client IP and URI."),
+        _("Maximum requests per second per client IP and URI. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -397,7 +413,7 @@ class HTTPApplicationProfile(object):
     )
     ssl_client_certificate_mode_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies whether the client side verification is set to none, request or require."),
+        _("Specifies whether the client side verification is set to none, request or require. (Default: SSL_CLIENT_CERTIFICATE_NONE)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -412,43 +428,61 @@ class HTTPApplicationProfile(object):
     )
     websockets_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable Websockets proxy for traffic from clients to the virtual service. Connections to this VS start in HTTP mode. If the client requests an Upgrade to Websockets, and the server responds back with success, then the connection is upgraded to WebSockets mode. "),
+        _("Enable Websockets proxy for traffic from clients to the virtual service. Connections to this VS start in HTTP mode. If the client requests an Upgrade to Websockets, and the server responds back with success, then the connection is upgraded to WebSockets mode.  (Default: True)"),
         required=False,
         update_allowed=True,
     )
     max_rps_unknown_cip_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum unknown client IPs per second."),
+        _("Maximum unknown client IPs per second. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_bad_rps_cip_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum bad requests per second per client IP."),
+        _("Maximum bad requests per second per client IP. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_bad_rps_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum bad requests per second per URI."),
+        _("Maximum bad requests per second per URI. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     max_bad_rps_cip_uri_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum bad requests per second per client IP and URI."),
+        _("Maximum bad requests per second per client IP and URI. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     keepalive_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Send HTTP 'Keep-Alive' header to the client. By default, the timeout specified in the 'Keep-Alive Timeout' field will be used unless the 'Use App Keepalive Timeout' flag is set, in which case the timeout sent by the application will be honored."),
+        _("Send HTTP 'Keep-Alive' header to the client. By default, the timeout specified in the 'Keep-Alive Timeout' field will be used unless the 'Use App Keepalive Timeout' flag is set, in which case the timeout sent by the application will be honored. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     use_app_keepalive_timeout_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use 'Keep-Alive' header timeout sent by application instead of sending the HTTP Keep-Alive Timeout."),
+        _("Use 'Keep-Alive' header timeout sent by application instead of sending the HTTP Keep-Alive Timeout. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    allow_dots_in_header_name_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow use of dot (.) in HTTP header names, for instance Header.app.special: PickAppVersionX. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_keepalive_posts_msie6_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable keep-alive client side connections for older browsers based off MS Internet Explorer 6.0 (MSIE6). For some applications, this might break NTLM authentication for older clients based off MSIE6. For such applications, set this option to false to allow keep-alive connections. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    enable_request_body_buffering_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable request body buffering for POST requests. If enabled, max buffer size is set to lower of 32M or the value (non-zero) configured in client_max_body_size. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -491,6 +525,9 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip_uri',
         'keepalive_header',
         'use_app_keepalive_timeout',
+        'allow_dots_in_header_name',
+        'disable_keepalive_posts_msie6',
+        'enable_request_body_buffering',
     )
 
     # mapping of properties to their schemas
@@ -531,6 +568,9 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip_uri': max_bad_rps_cip_uri_schema,
         'keepalive_header': keepalive_header_schema,
         'use_app_keepalive_timeout': use_app_keepalive_timeout_schema,
+        'allow_dots_in_header_name': allow_dots_in_header_name_schema,
+        'disable_keepalive_posts_msie6': disable_keepalive_posts_msie6_schema,
+        'enable_request_body_buffering': enable_request_body_buffering_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -591,7 +631,7 @@ class ApplicationProfile(AviResource):
     )
     preserve_client_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Specifies if client IP needs to be preserved for backend connection. Not compatible with Connection Multiplexing."),
+        _("Specifies if client IP needs to be preserved for backend connection. Not compatible with Connection Multiplexing. (Default: False)"),
         required=False,
         update_allowed=True,
     )

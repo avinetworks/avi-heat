@@ -11,6 +11,52 @@ from options import *
 from options import *
 
 
+class GeoLocation(object):
+    # all schemas
+    latitude_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Latitude of the location."),
+        required=False,
+        update_allowed=True,
+    )
+    longitude_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Longitude of the location."),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Location name in the format Country/State/City."),
+        required=False,
+        update_allowed=True,
+    )
+    tag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Location tag string - example: USEast."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'latitude',
+        'longitude',
+        'name',
+        'tag',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'latitude': latitude_schema,
+        'longitude': longitude_schema,
+        'name': name_schema,
+        'tag': tag_schema,
+    }
+
+
+
+
 class IpAddrRange(object):
     # all schemas
     begin_schema = properties.Schema(
@@ -64,13 +110,13 @@ class CustomParams(object):
     )
     is_sensitive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     is_dynamic_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -128,19 +174,19 @@ class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain."),
+        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_in_provider_context_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Controls the ownership of ServiceEngines. Service Engines can either be exclusively owned by each tenant or owned by the administrator and shared by all tenants. When ServiceEngines are owned by the administrator, each tenant can have either read access or no access to their Service Engines."),
+        _("Controls the ownership of ServiceEngines. Service Engines can either be exclusively owned by each tenant or owned by the administrator and shared by all tenants. When ServiceEngines are owned by the administrator, each tenant can have either read access or no access to their Service Engines. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     tenant_access_to_provider_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -172,7 +218,7 @@ class Tag(object):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: USER_DEFINED)"),
         required=False,
         update_allowed=True,
         constraints=[

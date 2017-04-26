@@ -22,7 +22,7 @@ class Scheduler(AviResource):
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -76,7 +76,7 @@ class Scheduler(AviResource):
     )
     scheduler_action_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Define Scheduler Action"),
+        _("Define Scheduler Action (Default: SCHEDULER_ACTION_BACKUP)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -137,7 +137,7 @@ class BackupConfiguration(AviResource):
     )
     maximum_backups_stored_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Rotate the backup files based on this count."),
+        _("Rotate the backup files based on this count. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
@@ -171,6 +171,12 @@ class BackupConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    backup_file_prefix_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Prefix of the exported configuration file"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -182,6 +188,7 @@ class BackupConfiguration(AviResource):
         'remote_directory',
         'remote_hostname',
         'backup_passphrase',
+        'backup_file_prefix',
     )
 
     # mapping of properties to their schemas
@@ -194,6 +201,7 @@ class BackupConfiguration(AviResource):
         'remote_directory': remote_directory_schema,
         'remote_hostname': remote_hostname_schema,
         'backup_passphrase': backup_passphrase_schema,
+        'backup_file_prefix': backup_file_prefix_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

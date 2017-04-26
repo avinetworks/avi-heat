@@ -55,17 +55,25 @@ class AutoScaleMgrDebugFilter(object):
         required=False,
         update_allowed=True,
     )
+    enable_aws_autoscale_integration_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable aws autoscale integration. This is an alpha feature. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'pool_uuid',
         'intelligent_autoscale_period',
+        'enable_aws_autoscale_integration',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'pool_uuid': pool_uuid_schema,
         'intelligent_autoscale_period': intelligent_autoscale_period_schema,
+        'enable_aws_autoscale_integration': enable_aws_autoscale_integration_schema,
     }
 
 
@@ -259,7 +267,7 @@ class MesosMetricsDebugFilter(object):
     )
     metrics_collection_frq_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -407,7 +415,7 @@ class DebugFilterUnion(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['RPC_INFRA_DEBUG', 'TRANSACTION_DEBUG', 'NSX_AGENT_DEBUG', 'ALERT_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'HS_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'RES_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'TASK_QUEUE_DEBUG', 'VI_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'APIC_AGENT_DEBUG', 'METRICS_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
         ],
     )
     se_mgr_debug_filter_schema = properties.Schema(
@@ -532,7 +540,7 @@ class DebugController(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['RPC_INFRA_DEBUG', 'TRANSACTION_DEBUG', 'NSX_AGENT_DEBUG', 'ALERT_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'HS_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'RES_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'TASK_QUEUE_DEBUG', 'VI_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'APIC_AGENT_DEBUG', 'METRICS_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(

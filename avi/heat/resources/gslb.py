@@ -9,14 +9,49 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
+from common import *
 from health_monitor import *
+from application_persistence_profile import *
+
+
+class GslbHealthMonitorProxy(object):
+    # all schemas
+    proxy_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("This field identifies the health monitor proxy behavior. The designated site for health monitor proxy can monitor public or private or all the members of a given site.  (Default: GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS']),
+        ],
+    )
+    site_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("This field identifies the site that will health monitor on behalf of the current site. i.e. it will be a health monitor proxy and monitor members of the current site. "),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'proxy_type',
+        'site_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'proxy_type': proxy_type_schema,
+        'site_uuid': site_uuid_schema,
+    }
+
+
 
 
 class DNSConfig(object):
     # all schemas
     domain_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Gslb Subdomain used for GslbService FQDN match and placement. "),
+        _("GSLB subdomain used for GSLB service FQDN match and placement. "),
         required=True,
         update_allowed=True,
     )
@@ -34,70 +69,67 @@ class DNSConfig(object):
 
 
 
-class GslbPoolMember(object):
+class GslbApplicationPersistenceProfile(AviResource):
+    resource_name = "gslbapplicationpersistenceprofile"
     # all schemas
-    cluster_uuid_schema = properties.Schema(
+    name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The Cluster UUID of the Site Controller Cluster."),
-        required=False,
+        _("A user-friendly name for the persistence profile."),
+        required=True,
         update_allowed=True,
     )
-    vs_uuid_schema = properties.Schema(
+    description_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select local virtual service in the specified controller cluster belonging to this GslbService."),
-        required=False,
-        update_allowed=True,
-    )
-    fqdn_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The member is a fully qualified domain name. The fqdn is resolved to an IP address by the controller. DNS service shall health monitor the resolved IP address while it will  return the fqdn in the DNS response."),
-        required=False,
-        update_allowed=True,
-    )
-    ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IP Address of the Local Virtual Service."),
-        schema=IpAddr.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    ratio_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Overrides the default ratio of 1.  Reduces the percentage the LB algorithm would pick the server in relation to its peers.  Range is 1-20."),
-        required=False,
-        update_allowed=True,
-    )
-    enabled_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable or Disable member to decide if this address should be provided in DNS responses."),
+        _(""),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'cluster_uuid',
-        'vs_uuid',
-        'fqdn',
-        'ip',
-        'ratio',
-        'enabled',
+        'name',
+        'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'cluster_uuid': cluster_uuid_schema,
-        'vs_uuid': vs_uuid_schema,
-        'fqdn': fqdn_schema,
-        'ip': ip_schema,
-        'ratio': ratio_schema,
-        'enabled': enabled_schema,
+        'name': name_schema,
+        'description': description_schema,
     }
 
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'ip': getattr(IpAddr, 'field_references', {}),
+
+
+
+class GslbGeoDbFile(object):
+    # all schemas
+    filename_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Geodb Filename in the Avi supported formats."),
+        required=False,
+        update_allowed=True,
+    )
+    format_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("This field indicates the file format. (Default: GSLB_GEODB_FILE_FORMAT_AVI)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_GEODB_FILE_FORMAT_MAXMIND_CITY', 'GSLB_GEODB_FILE_FORMAT_AVI']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'filename',
+        'format',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'filename': filename_schema,
+        'format': format_schema,
     }
+
 
 
 
@@ -112,25 +144,25 @@ class GslbHealthMonitor(AviResource):
     )
     send_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Frequency, in seconds, that monitors are sent to a server."),
+        _("Frequency, in seconds, that monitors are sent to a server. (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     receive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value."),
+        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value. (Units: SEC) (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     successful_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of continuous successful health checks before server is marked up."),
+        _("Number of continuous successful health checks before server is marked up. (Default: 2)"),
         required=False,
         update_allowed=True,
     )
     failed_checks_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of continuous failed health checks before the server is marked down."),
+        _("Number of continuous failed health checks before the server is marked down. (Default: 2)"),
         required=False,
         update_allowed=True,
     )
@@ -246,127 +278,11 @@ class GslbHealthMonitor(AviResource):
 
 
 
-class GslbSite(object):
-    # all schemas
-    cluster_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("UUID of the 'Cluster' object of the Controller Cluster in this site."),
-        required=True,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Name for the Site Controller Cluster."),
-        required=True,
-        update_allowed=True,
-    )
-    address_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("IP Address or a DNS resolvable, fully qualified domain name of the Site Controller Cluster."),
-        required=False,
-        update_allowed=True,
-    )
-    ip_addresses_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    ip_addresses_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("IP Address(es) of the Site's Cluster. For a 3-node cluster, either the cluster vIP is provided, or the list of controller IPs in the cluster are provided."),
-        schema=ip_addresses_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The Site Controller Cluster's REST API port number."),
-        required=False,
-        update_allowed=True,
-    )
-    username_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The username used when authenticating with the Site. "),
-        required=False,
-        update_allowed=True,
-    )
-    password_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The password used when authenticating with the Site."),
-        required=False,
-        update_allowed=True,
-    )
-    dns_vs_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    dns_vs_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("The list of DNS-VSes on which the GSes shall be placed. The site has to be an ACTIVE member."),
-        schema=dns_vs_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    member_type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The site's member type: A leader is set to ACTIVE while allmembers are set to passive. "),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['GSLB_PASSIVE_MEMBER', 'GSLB_ACTIVE_MEMBER']),
-        ],
-    )
-    enabled_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Enable or disable the Site.  This is useful in maintenance scenarios such as upgrade and routine maintenance.  A disabled site's configuration shall be retained but it will not get any new configuration updates.  It shall not participate in Health-Status monitoring.  VIPs of the Virtual Services on the disabled site shall not be sent in DNS response.  When a site transitions from disabled to enabled, it is treated similar to the addition of a new site."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'cluster_uuid',
-        'name',
-        'address',
-        'ip_addresses',
-        'port',
-        'username',
-        'password',
-        'dns_vs_uuids',
-        'member_type',
-        'enabled',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'cluster_uuid': cluster_uuid_schema,
-        'name': name_schema,
-        'address': address_schema,
-        'ip_addresses': ip_addresses_schema,
-        'port': port_schema,
-        'username': username_schema,
-        'password': password_schema,
-        'dns_vs_uuids': dns_vs_uuids_schema,
-        'member_type': member_type_schema,
-        'enabled': enabled_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'ip_addresses': getattr(IpAddr, 'field_references', {}),
-    }
-
-
-
 class GslbServiceDownResponse(object):
     # all schemas
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Response from DNS service towards the client when the Gslb Service is DOWN."),
+        _("Response from DNS service towards the client when the GSLB service is DOWN. (Default: GSLB_SERVICE_DOWN_RESPONSE_NONE)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -375,7 +291,7 @@ class GslbServiceDownResponse(object):
     )
     fallback_ip_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Fallback IP address to use in response to the client query when the Gslb Service is DOWN."),
+        _("Fallback IP address to use in response to the client query when the GSLB service is DOWN."),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
@@ -400,58 +316,492 @@ class GslbServiceDownResponse(object):
 
 
 
+class GslbGeoLocation(object):
+    # all schemas
+    source_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("This field describes the source of the GeoLocation. "),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_LOCATION_SRC_FROM_GEODB', 'GSLB_LOCATION_SRC_USER_CONFIGURED', 'GSLB_LOCATION_SRC_INHERIT_FROM_SITE']),
+        ],
+    )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Geographic location of the site."),
+        schema=GeoLocation.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'source',
+        'location',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'source': source_schema,
+        'location': location_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'location': getattr(GeoLocation, 'field_references', {}),
+    }
+
+
+
+class GslbGeoDbEntry(object):
+    # all schemas
+    priority_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Priority of this geodb entry. This value should be unique in a repeated list of geodb entries.  Higher the value, then greater is the priority.   (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    file_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("This field describes the GeoDb file."),
+        schema=GslbGeoDbFile.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'priority',
+        'file',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'priority': priority_schema,
+        'file': file_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'file': getattr(GslbGeoDbFile, 'field_references', {}),
+    }
+
+
+
+class GslbPoolMember(object):
+    # all schemas
+    cluster_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The Cluster UUID of the Site ."),
+        required=False,
+        update_allowed=True,
+    )
+    vs_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Select local virtual service in the specified controller cluster belonging to this GSLB service. The virtual service may have multiple IP addresses and FQDNs.  User will have to choose IP address or FQDN and configure it in the respective field. "),
+        required=False,
+        update_allowed=True,
+    )
+    fqdn_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The pool member is configured with a fully qualified domain name.  The FQDN is resolved to an IP address by the controller. DNS service shall health monitor the resolved IP address while it will return the fqdn(cname) in the DNS response.If the user has configured an IP address (in addition to the FQDN), then the IP address will get overwritten whenever periodic FQDN refresh is done by the controller. "),
+        required=False,
+        update_allowed=True,
+    )
+    ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP address of the pool member. If this IP address is hosted via an AVI virtual service, then the user should configure the cluster uuid and virtual service uuid. If this IP address is hosted on a third-party device and the device is tagged/tethered to a third-party site, then user can configure the third-party site uuid.  User may configure the IP address without the cluster uuid or the virtual service uuid.  In this option, some advanced site related features cannot be enabled. If the user has configured a fqdn for the pool member, then it takes precedence and will overwrite the configured IP address. "),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ratio_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Overrides the default ratio of 1.  Reduces the percentage the LB algorithm would pick the server in relation to its peers.  Range is 1-20. (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable or Disable member to decide if this address should be provided in DNS responses. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Geographic location of the pool member"),
+        schema=GslbGeoLocation.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'cluster_uuid',
+        'vs_uuid',
+        'fqdn',
+        'ip',
+        'ratio',
+        'enabled',
+        'location',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cluster_uuid': cluster_uuid_schema,
+        'vs_uuid': vs_uuid_schema,
+        'fqdn': fqdn_schema,
+        'ip': ip_schema,
+        'ratio': ratio_schema,
+        'enabled': enabled_schema,
+        'location': location_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+        'location': getattr(GslbGeoLocation, 'field_references', {}),
+    }
+
+
+
+class GslbGeoDbProfile(AviResource):
+    resource_name = "gslbgeodbprofile"
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("A user-friendly name for the geodb profile."),
+        required=True,
+        update_allowed=True,
+    )
+    entries_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
+        schema=GslbGeoDbEntry.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    entries_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
+        schema=entries_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'entries',
+        'description',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'entries': entries_schema,
+        'description': description_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'entries': getattr(GslbGeoDbEntry, 'field_references', {}),
+    }
+
+
+
+class GslbSite(object):
+    # all schemas
+    cluster_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("UUID of the 'Cluster' object of the Controller Cluster in this site."),
+        required=True,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name for the Site Controller Cluster."),
+        required=True,
+        update_allowed=True,
+    )
+    address_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("IP Address or a DNS resolvable, fully qualified domain name of the Site Controller Cluster."),
+        required=False,
+        update_allowed=True,
+    )
+    ip_addresses_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP Address(es) of the Site's Cluster. For a 3-node cluster, either the cluster vIP is provided, or the list of controller IPs in the cluster are provided."),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip_addresses_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("IP Address(es) of the Site's Cluster. For a 3-node cluster, either the cluster vIP is provided, or the list of controller IPs in the cluster are provided."),
+        schema=ip_addresses_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The Site Controller Cluster's REST API port number. (Default: 443)"),
+        required=False,
+        update_allowed=True,
+    )
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The username used when authenticating with the Site. "),
+        required=True,
+        update_allowed=True,
+    )
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The password used when authenticating with the Site."),
+        required=True,
+        update_allowed=True,
+    )
+    dns_vs_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The list of DNS-VSes on which the GSes shall be placed. The site has to be an ACTIVE member."),
+        required=True,
+        update_allowed=False,
+    )
+    dns_vs_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("The list of DNS-VSes on which the GSes shall be placed. The site has to be an ACTIVE member."),
+        schema=dns_vs_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    member_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The site's member type: A leader is set to ACTIVE while allmembers are set to passive.  (Default: GSLB_PASSIVE_MEMBER)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_PASSIVE_MEMBER', 'GSLB_ACTIVE_MEMBER']),
+        ],
+    )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable or disable the Site.  This is useful in maintenance scenarios such as upgrade and routine maintenance.  A disabled site's configuration shall be retained but it will not get any new configuration updates.  It shall not participate in Health-Status monitoring.  VIPs of the Virtual Services on the disabled site shall not be sent in DNS response.  When a site transitions from disabled to enabled, it is treated similar to the addition of a new site. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Geographic location of the site."),
+        schema=GslbGeoLocation.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    hm_proxies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        schema=GslbHealthMonitorProxy.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    hm_proxies_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        schema=hm_proxies_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ratio_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("User can overide the individual GslbPoolMember ratio for all the VIPs/VS(es) of this site. If this field is not  configured then the GslbPoolMember ratio gets applied. "),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'cluster_uuid',
+        'name',
+        'address',
+        'ip_addresses',
+        'port',
+        'username',
+        'password',
+        'dns_vs_uuids',
+        'member_type',
+        'enabled',
+        'location',
+        'hm_proxies',
+        'ratio',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cluster_uuid': cluster_uuid_schema,
+        'name': name_schema,
+        'address': address_schema,
+        'ip_addresses': ip_addresses_schema,
+        'port': port_schema,
+        'username': username_schema,
+        'password': password_schema,
+        'dns_vs_uuids': dns_vs_uuids_schema,
+        'member_type': member_type_schema,
+        'enabled': enabled_schema,
+        'location': location_schema,
+        'hm_proxies': hm_proxies_schema,
+        'ratio': ratio_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_addresses': getattr(IpAddr, 'field_references', {}),
+        'location': getattr(GslbGeoLocation, 'field_references', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
+    }
+
+
+
+class GslbThirdPartySite(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Name of the third-party Site."),
+        required=True,
+        update_allowed=True,
+    )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable or disable the third-party Site.  This is useful in maintenance scenarios such as upgrade and routine maintenance. A disabled site's configuration shall be retained  but it will not get any new configuration updates.   VIPs associated with the disabled site shall not be sent in DNS response.  (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Geographic location of the site."),
+        schema=GslbGeoLocation.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    hm_proxies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        schema=GslbHealthMonitorProxy.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    hm_proxies_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        schema=hm_proxies_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ratio_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("User can overide the individual GslbPoolMember ratio for all the VIPs of this site. If this field is not configured, then the GslbPoolMember ratio gets applied. "),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'enabled',
+        'location',
+        'hm_proxies',
+        'ratio',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'enabled': enabled_schema,
+        'location': location_schema,
+        'hm_proxies': hm_proxies_schema,
+        'ratio': ratio_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'location': getattr(GslbGeoLocation, 'field_references', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
+    }
+
+
+
 class Gslb(AviResource):
     resource_name = "gslb"
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name for the Gslb."),
+        _("Name for the GSLB object."),
         required=True,
         update_allowed=True,
     )
     dns_configs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Sub domain configuration for the GSLB.  GSLB service's FQDN must be a match one of these subdomains. "),
         schema=DNSConfig.properties_schema,
         required=True,
         update_allowed=False,
     )
     dns_configs_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Sub domain configuration for this Gslb. GslbService FQDN must be a match one of these subdomains. "),
+        _("Sub domain configuration for the GSLB.  GSLB service's FQDN must be a match one of these subdomains. "),
         schema=dns_configs_item_schema,
         required=False,
         update_allowed=True,
     )
     sites_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Select Avi site member belonging to this Gslb."),
         schema=GslbSite.properties_schema,
         required=True,
         update_allowed=False,
     )
     sites_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Select Site belonging to this Gslb."),
+        _("Select Avi site member belonging to this Gslb."),
         schema=sites_item_schema,
         required=False,
         update_allowed=True,
     )
     leader_cluster_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Mark this Site as leader of Gslb configuration.  This is the one among the sites."),
+        _("Mark this Site as leader of GSLB configuration. This site is the one among the Avi sites."),
         required=True,
         update_allowed=True,
     )
     send_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Frequency with which group members communicate."),
+        _("Frequency with which group members communicate. (Units: SEC) (Default: 15)"),
         required=False,
         update_allowed=True,
     )
     clear_on_max_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Max retries after which the remote site is treatedas a fresh start. In fresh start all the configsare downloaded."),
+        _("Max retries after which the remote site is treatedas a fresh start. In fresh start all the configsare downloaded. (Default: 20)"),
+        required=False,
+        update_allowed=True,
+    )
+    third_party_sites_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Third party site member belonging to this Gslb."),
+        schema=GslbThirdPartySite.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    third_party_sites_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Third party site member belonging to this Gslb."),
+        schema=third_party_sites_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -470,6 +820,7 @@ class Gslb(AviResource):
         'leader_cluster_uuid',
         'send_interval',
         'clear_on_max_retries',
+        'third_party_sites',
         'description',
     )
 
@@ -481,11 +832,13 @@ class Gslb(AviResource):
         'leader_cluster_uuid': leader_cluster_uuid_schema,
         'send_interval': send_interval_schema,
         'clear_on_max_retries': clear_on_max_retries_schema,
+        'third_party_sites': third_party_sites_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'third_party_sites': getattr(GslbThirdPartySite, 'field_references', {}),
         'sites': getattr(GslbSite, 'field_references', {}),
         'dns_configs': getattr(DNSConfig, 'field_references', {}),
     }
@@ -496,23 +849,23 @@ class GslbPool(object):
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of the Gslb Service Pool."),
+        _("Name of the GSLB service pool."),
         required=True,
         update_allowed=True,
     )
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority of this pool of Members. If the priority of this is the highest in the group, DNS service picks up only this member for DNS responses."),
+        _("Priority of this pool of Members. If the priority of this is the highest in the group, DNS service picks up only this member for DNS responses. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The load balancing algorithm will pick a local member within the Gslb Service list of available Members."),
+        _("The load balancing algorithm will pick a local member within the GSLB service list of available Members. (Default: GSLB_ALGORITHM_ROUND_ROBIN)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_ALGORITHM_CONSISTENT_HASH', 'GSLB_ALGORITHM_ROUND_ROBIN']),
+            constraints.AllowedValues(['GSLB_ALGORITHM_CONSISTENT_HASH', 'GSLB_ALGORITHM_ROUND_ROBIN', 'GSLB_ALGORITHM_GEO']),
         ],
     )
     consistent_hash_mask_schema = properties.Schema(
@@ -523,14 +876,14 @@ class GslbPool(object):
     )
     members_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Select list of VIPs belonging to this GSLB service."),
         schema=GslbPoolMember.properties_schema,
         required=True,
         update_allowed=False,
     )
     members_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Select list of Virtual Services belonging to this Gslb."),
+        _("Select list of VIPs belonging to this GSLB service."),
         schema=members_item_schema,
         required=False,
         update_allowed=True,
@@ -566,59 +919,59 @@ class GslbService(AviResource):
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name for the Gslb Service."),
+        _("Name for the GSLB service."),
         required=True,
         update_allowed=True,
     )
     domain_names_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Fully qualified domain name of the GSLB service."),
         required=True,
         update_allowed=False,
     )
     domain_names_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Fully qualified domain name of the Gslb Service."),
+        _("Fully qualified domain name of the GSLB service."),
         schema=domain_names_item_schema,
         required=False,
         update_allowed=True,
     )
     groups_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Select list of pools belonging to this GSLB service."),
         schema=GslbPool.properties_schema,
         required=True,
         update_allowed=False,
     )
     groups_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Select list of pools belonging to this Gslb Service."),
+        _("Select list of pools belonging to this GSLB service."),
         schema=groups_item_schema,
         required=False,
         update_allowed=True,
     )
     num_dns_ip_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of IP addresses of this Gslb Service to be returned by the DNS Service. Enter 0 to return all IP addresses."),
+        _("Number of IP addresses of this GSLB service to be returned by the DNS Service. Enter 0 to return all IP addresses."),
         required=False,
         update_allowed=True,
     )
     ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("TTL value (in seconds) for records served for this Gslb Service by the DNS Service."),
+        _("TTL value (in seconds) for records served for this GSLB service by the DNS Service. (Units: SEC)"),
         required=False,
         update_allowed=True,
     )
     down_response_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Response to the client query when the Gslb Service is DOWN."),
+        _("Response to the client query when the GSLB service is DOWN."),
         schema=GslbServiceDownResponse.properties_schema,
         required=False,
         update_allowed=True,
     )
     health_monitor_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Verify VS health by applying one or more health monitors.  Active monitors generate synthetic traffic from DNS Service Engine and to mark a VS up or down based on the response. "),
         required=True,
         update_allowed=False,
     )
@@ -631,13 +984,13 @@ class GslbService(AviResource):
     )
     controller_health_status_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("GS member's overall health status is derived based on a combination of controller and datapath health-status inputs. Datapath status is determined by the association of health monitor profiles, while the controller provided status is determined through this configuration. "),
+        _("GS member's overall health status is derived based on a combination of controller and datapath health-status inputs. Note that the datapath status is determined by the association of health monitor profiles. Only the controller provided status is determined through this configuration.  (Default: True)"),
         required=False,
         update_allowed=True,
     )
     health_monitor_scope_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Health monitor probe can be executed for all the members or it can be executed only for Non-Avi members. This operational mode is useful to reduce the number of health monitor probes in case of a hybrid scenario where Avi members can have controller derived status while Non-Avi members can be probed by via health monitor probes in dataplane."),
+        _("Health monitor probe can be executed for all the members or it can be executed only for third-party members. This operational mode is useful to reduce the number of health monitor probes in case of a hybrid scenario. In such a case, Avi members can have controller derived status while Non-Avi members can be probed by via health monitor probes in dataplane. (Default: GSLB_SERVICE_HEALTH_MONITOR_ALL_MEMBERS)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -646,7 +999,19 @@ class GslbService(AviResource):
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the Gslb Service. If the Gslb Service is enabled, then the VIPs are sent in the DNS responses based on reachability and configured algorithm. If the Gslb Service is disabled, then the VIPs are no longer available in the DNS response."),
+        _("Enable or disable the GSLB service. If the GSLB service is enabled, then the VIPs are sent in the DNS responses based on reachability and configured algorithm. If the GSLB service is disabled, then the VIPs are no longer available in the DNS response. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_edns_client_subnet_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use the client ip subnet from the EDNS option as source IPaddress for client geo-location and consistent hash algorithm. Default is true. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    wildcard_match_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -669,6 +1034,8 @@ class GslbService(AviResource):
         'controller_health_status_enabled',
         'health_monitor_scope',
         'enabled',
+        'use_edns_client_subnet',
+        'wildcard_match',
         'description',
     )
 
@@ -684,6 +1051,8 @@ class GslbService(AviResource):
         'controller_health_status_enabled': controller_health_status_enabled_schema,
         'health_monitor_scope': health_monitor_scope_schema,
         'enabled': enabled_schema,
+        'use_edns_client_subnet': use_edns_client_subnet_schema,
+        'wildcard_match': wildcard_match_schema,
         'description': description_schema,
     }
 
@@ -700,6 +1069,8 @@ def resource_mapping():
     return {
         'Avi::LBaaS::GslbHealthMonitor': GslbHealthMonitor,
         'Avi::LBaaS::GslbService': GslbService,
+        'Avi::LBaaS::GslbApplicationPersistenceProfile': GslbApplicationPersistenceProfile,
         'Avi::LBaaS::Gslb': Gslb,
+        'Avi::LBaaS::GslbGeoDbProfile': GslbGeoDbProfile,
     }
 

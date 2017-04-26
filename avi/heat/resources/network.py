@@ -23,7 +23,7 @@ class Subnet(object):
     )
     static_ips_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Specify a pool of IP addresses for use in Service Engines"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -84,7 +84,7 @@ class Network(AviResource):
     )
     vcenter_dvs_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -96,13 +96,13 @@ class Network(AviResource):
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Select the IP address management scheme for this Network"),
+        _("Select the IP address management scheme for this Network (Default: True)"),
         required=False,
         update_allowed=True,
     )
     exclude_discovered_subnets_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When selected, excludes all discovered subnets in this network from consideration for virtual service placement."),
+        _("When selected, excludes all discovered subnets in this network from consideration for virtual service placement. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -128,7 +128,7 @@ class Network(AviResource):
     )
     synced_from_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )

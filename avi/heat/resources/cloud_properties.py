@@ -17,43 +17,43 @@ class CC_AgentProperties(object):
     # all schemas
     poll_duration_target_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Discovery poll target duration; a scale factor of 1+ is computed with the actual discovery (actual/target) and used to tweak slow and fast poll intervals"),
+        _("Discovery poll target duration; a scale factor of 1+ is computed with the actual discovery (actual/target) and used to tweak slow and fast poll intervals (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     poll_slow_target_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Slow poll interval"),
+        _("Slow poll interval (Units: SEC) (Default: 240)"),
         required=False,
         update_allowed=True,
     )
     poll_fast_target_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Fast poll interval"),
+        _("Fast poll interval (Units: SEC) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     async_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum polls to check for async jobs to finish"),
+        _("Maximum polls to check for async jobs to finish (Default: 5)"),
         required=False,
         update_allowed=True,
     )
     async_retries_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Delay between each async job status poll check"),
+        _("Delay between each async job status poll check (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     vnic_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum polls to check for vnics to be attached to VM"),
+        _("Maximum polls to check for vnics to be attached to VM (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     vnic_retries_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Delay between each vnic status poll check"),
+        _("Delay between each vnic status poll check (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
@@ -91,7 +91,7 @@ class Hypervisor_Properties(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'XEN', 'VMWARE_ESX', 'KVM']),
         ],
     )
     max_nics_schema = properties.Schema(
@@ -128,13 +128,13 @@ class CC_Properties(object):
     # all schemas
     rpc_poll_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     rpc_queue_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 100)"),
         required=False,
         update_allowed=True,
     )
@@ -218,7 +218,7 @@ class CloudFlavor(object):
     )
     public_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -311,11 +311,11 @@ class CloudInfo(object):
     )
     htypes_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Supported hypervisors"),
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'VMWARE_ESX', 'KVM']),
+            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'XEN', 'VMWARE_ESX', 'KVM']),
         ],
     )
     htypes_schema = properties.Schema(
@@ -333,7 +333,7 @@ class CloudInfo(object):
     )
     flavor_props_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Flavor properties specific to this cloud type"),
         schema=CloudFlavor.properties_schema,
         required=True,
         update_allowed=False,
@@ -394,7 +394,7 @@ class CloudProperties(AviResource):
     # all schemas
     cc_vtypes_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Cloud types supported by CloudConnector"),
         required=True,
         update_allowed=False,
         constraints=[
@@ -410,7 +410,7 @@ class CloudProperties(AviResource):
     )
     hyp_props_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Hypervisor properties"),
         schema=Hypervisor_Properties.properties_schema,
         required=True,
         update_allowed=False,
@@ -431,7 +431,7 @@ class CloudProperties(AviResource):
     )
     info_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Properties specific to a cloud type"),
         schema=CloudInfo.properties_schema,
         required=True,
         update_allowed=False,

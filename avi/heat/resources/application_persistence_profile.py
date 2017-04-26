@@ -37,7 +37,7 @@ class IPPersistenceProfile(object):
     # all schemas
     ip_persistent_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. (Units: MIN) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
@@ -123,13 +123,13 @@ class HttpCookiePersistenceProfile(object):
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout. (Units: MIN)"),
         required=False,
         update_allowed=True,
     )
     always_send_cookie_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If no persistence cookie was received from the client, always send it."),
+        _("If no persistence cookie was received from the client, always send it. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -169,7 +169,7 @@ class AppCookiePersistenceProfile(object):
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. (Units: MIN) (Default: 20)"),
         required=False,
         update_allowed=True,
     )
@@ -208,7 +208,7 @@ class ApplicationPersistenceProfile(AviResource):
     )
     server_hm_down_recovery_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies behavior when a persistent server has been marked down by a health monitor."),
+        _("Specifies behavior when a persistent server has been marked down by a health monitor. (Default: HM_DOWN_PICK_NEW_SERVER)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -217,11 +217,11 @@ class ApplicationPersistenceProfile(AviResource):
     )
     persistence_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Method used to persist clients to the same server for a duration of time or a session."),
+        _("Method used to persist clients to the same server for a duration of time or a session. (Default: PERSISTENCE_TYPE_CLIENT_IP_ADDRESS)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_TLS']),
+            constraints.AllowedValues(['PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_GSLB_SITE', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_TLS']),
         ],
     )
     ip_persistence_profile_schema = properties.Schema(
