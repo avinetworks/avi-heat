@@ -19,6 +19,9 @@ LOG = logging.getLogger(__name__)
 class AviResource(resource.Resource):
     resource_name = ""  # should be set by derived resource classes
 
+    def get_version(self):
+        return dict(self.properties).get("version", None)
+
     def get_project_name(self):
         if not self.context.auth_token_info:
             return self.context.tenant
@@ -110,8 +113,10 @@ class AviResource(resource.Resource):
             client=client
         )
         LOG.debug("Resource def for create: %s", res_def)
+        res_def.pop("version", None)
         try:
             obj = client.post(self.resource_name,
+                              api_version=self.get_version(),
                               data=res_def,
                               tenant_uuid=self.get_avi_tenant_uuid()
                               ).json()
@@ -131,6 +136,7 @@ class AviResource(resource.Resource):
         if self.resource_name in ["virtualservice", "pool"]:
             url += "?join_subresources=runtime"
         obj = client.get(url,
+                         api_version=self.get_version(),
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
         return fix_dict_refs(obj)
@@ -190,9 +196,11 @@ class AviResource(resource.Resource):
             field_refs=getattr(self, "field_references", {}),
             client=client
         )
+        res_def.pop("version", None)
         try:
             client.put(
                 "%s/%s" % (self.resource_name, self.resource_id),
+                api_version=self.get_version(),
                 data=res_def,
                 tenant_uuid=self.get_avi_tenant_uuid()
                 ).json()
@@ -240,10 +248,12 @@ class AviNestedResource(AviResource):
         parent_uuid_prop = self.resource_name + "_uuid"
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
+        res_def.pop("version", None)
         data = {"update": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
                                     parent_uuid),
+                         api_version=self.get_version(),
                          data=data,
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
@@ -258,6 +268,7 @@ class AviNestedResource(AviResource):
             client = self.get_avi_client()
         obj = client.get("%s/%s" % (self.resource_name,
                                     self.get_parent_uuid()),
+                         api_version=self.get_version(),
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
         return obj
@@ -284,10 +295,12 @@ class AviNestedResource(AviResource):
             LOG.info("Parent already deleted!")
             return True
         res_def.pop(parent_uuid_prop)
+        res_def.pop("version", None)
         data = {"delete": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
                                     parent_uuid),
+                         api_version=self.get_version(),
                          data=data,
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
