@@ -63,13 +63,13 @@ class DnsInfo(object):
     )
     num_records_in_response_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Specifies the number of records returned for this FQDN. Enter 0 to return all records. Default is 0 (Default: 0)"),
+        _("(Introduced in: 17.1.1) Specifies the number of records returned for this FQDN. Enter 0 to return all records. Default is 0 (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -102,13 +102,13 @@ class DnsNsRdata(object):
     # all schemas
     nsname_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name Server name"),
+        _("(Introduced in: 17.1.1) Name Server name"),
         required=True,
         update_allowed=True,
     )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
-        _("IP address for Name Server"),
+        _("(Introduced in: 17.1.1) IP address for Name Server"),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
@@ -268,27 +268,27 @@ class DnsRecord(object):
     )
     ns_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Name Server information in NS record"),
+        _("(Introduced in: 17.1.1) Name Server information in NS record"),
         schema=DnsNsRdata.properties_schema,
         required=True,
         update_allowed=False,
     )
     ns_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Name Server information in NS record"),
+        _("(Introduced in: 17.1.1) Name Server information in NS record"),
         schema=ns_item_schema,
         required=False,
         update_allowed=True,
     )
     num_records_in_response_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Specifies the number of records returned by the DNS service. Enter 0 to return all records. Default is 0 (Default: 0)"),
+        _("(Introduced in: 17.1.1) Specifies the number of records returned by the DNS service. Enter 0 to return all records. Default is 0 (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -297,7 +297,7 @@ class DnsRecord(object):
     )
     wildcard_match_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
+        _("(Introduced in: 17.1.1) Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
         required=False,
         update_allowed=True,
     )

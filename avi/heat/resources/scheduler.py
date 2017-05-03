@@ -14,6 +14,12 @@ from options import *
 class Scheduler(AviResource):
     resource_name = "scheduler"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of scheduler"),
@@ -86,6 +92,7 @@ class Scheduler(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'enabled',
         'run_mode',
@@ -100,6 +107,7 @@ class Scheduler(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'enabled': enabled_schema,
         'run_mode': run_mode_schema,
@@ -123,6 +131,12 @@ class Scheduler(AviResource):
 class BackupConfiguration(AviResource):
     resource_name = "backupconfiguration"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of backup configuration."),
@@ -173,13 +187,14 @@ class BackupConfiguration(AviResource):
     )
     backup_file_prefix_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Prefix of the exported configuration file"),
+        _("(Introduced in: 17.1.1) Prefix of the exported configuration file"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'save_local',
         'maximum_backups_stored',
@@ -193,6 +208,7 @@ class BackupConfiguration(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'save_local': save_local_schema,
         'maximum_backups_stored': maximum_backups_stored_schema,

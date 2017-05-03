@@ -392,6 +392,12 @@ class CloudInfo(object):
 class CloudProperties(AviResource):
     resource_name = "cloudproperties"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     cc_vtypes_item_schema = properties.Schema(
         properties.Schema.STRING,
         _("Cloud types supported by CloudConnector"),
@@ -446,6 +452,7 @@ class CloudProperties(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'cc_vtypes',
         'hyp_props',
         'cc_props',
@@ -454,6 +461,7 @@ class CloudProperties(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'cc_vtypes': cc_vtypes_schema,
         'hyp_props': hyp_props_schema,
         'cc_props': cc_props_schema,

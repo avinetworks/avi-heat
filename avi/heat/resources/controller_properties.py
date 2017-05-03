@@ -14,6 +14,12 @@ from options import *
 class ControllerProperties(AviResource):
     resource_name = "controllerproperties"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     dummy_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
@@ -251,25 +257,26 @@ class ControllerProperties(AviResource):
     )
     allow_ip_forwarding_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(" (Default: False)"),
+        _("(Introduced in: 17.1.1)  (Default: False)"),
         required=False,
         update_allowed=True,
     )
     appviewx_compat_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Export configuration in appviewx compatibility mode (Default: False)"),
+        _("(Introduced in: 17.1.1) Export configuration in appviewx compatibility mode (Default: False)"),
         required=False,
         update_allowed=True,
     )
     upgrade_dns_ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time to account for DNS TTL during upgrade. This is in addition to vs_scalein_timeout_for_upgrade in se_group. (Units: SEC) (Default: 5)"),
+        _("(Introduced in: 17.1.1) Time to account for DNS TTL during upgrade. This is in addition to vs_scalein_timeout_for_upgrade in se_group. (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'dummy',
         'unresponsive_se_reboot',
         'crashed_se_reboot',
@@ -315,6 +322,7 @@ class ControllerProperties(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'dummy': dummy_schema,
         'unresponsive_se_reboot': unresponsive_se_reboot_schema,
         'crashed_se_reboot': crashed_se_reboot_schema,

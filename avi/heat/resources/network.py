@@ -76,6 +76,12 @@ class Subnet(object):
 class Network(AviResource):
     resource_name = "network"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -141,6 +147,7 @@ class Network(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'vcenter_dvs',
         'vimgrnw_uuid',
@@ -154,6 +161,7 @@ class Network(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'vcenter_dvs': vcenter_dvs_schema,
         'vimgrnw_uuid': vimgrnw_uuid_schema,

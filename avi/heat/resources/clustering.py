@@ -82,6 +82,12 @@ class ClusterNode(object):
 class Cluster(AviResource):
     resource_name = "cluster"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -118,6 +124,7 @@ class Cluster(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'virtual_ip',
         'nodes',
@@ -126,6 +133,7 @@ class Cluster(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'virtual_ip': virtual_ip_schema,
         'nodes': nodes_schema,

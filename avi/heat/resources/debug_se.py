@@ -118,6 +118,12 @@ class DebugSeCpuShares(object):
 class DebugServiceEngine(AviResource):
     resource_name = "debugserviceengine"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -169,6 +175,7 @@ class DebugServiceEngine(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'seagent_debug',
         'flags',
@@ -177,6 +184,7 @@ class DebugServiceEngine(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'seagent_debug': seagent_debug_schema,
         'flags': flags_schema,
@@ -355,6 +363,12 @@ class DebugVsDataplane(object):
 class DebugVirtualService(AviResource):
     resource_name = "debugvirtualservice"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -414,6 +428,7 @@ class DebugVirtualService(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'flags',
         'debug_ip',
@@ -425,6 +440,7 @@ class DebugVirtualService(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'flags': flags_schema,
         'debug_ip': debug_ip_schema,

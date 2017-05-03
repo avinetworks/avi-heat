@@ -45,6 +45,12 @@ class AlertFilter(object):
 class AlertScriptConfig(AviResource):
     resource_name = "alertscriptconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user-friendly name of the Script"),
@@ -60,12 +66,14 @@ class AlertScriptConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'action_script',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'action_script': action_script_schema,
     }
@@ -76,6 +84,12 @@ class AlertScriptConfig(AviResource):
 class ActionGroupConfig(AviResource):
     resource_name = "actiongroupconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -136,6 +150,7 @@ class ActionGroupConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'email_config_uuid',
         'syslog_config_uuid',
@@ -149,6 +164,7 @@ class ActionGroupConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'email_config_uuid': email_config_uuid_schema,
         'syslog_config_uuid': syslog_config_uuid_schema,
@@ -173,6 +189,12 @@ class ActionGroupConfig(AviResource):
 class AlertEmailConfig(AviResource):
     resource_name = "alertemailconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user-friendly name of the email notification service"),
@@ -200,6 +222,7 @@ class AlertEmailConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'to_emails',
         'cc_emails',
@@ -208,6 +231,7 @@ class AlertEmailConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'to_emails': to_emails_schema,
         'cc_emails': cc_emails_schema,
@@ -332,6 +356,12 @@ class EventDetailsFilter(object):
 class AlertObjectList(AviResource):
     resource_name = "alertobjectlist"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -366,6 +396,7 @@ class AlertObjectList(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'objects',
         'source',
@@ -373,6 +404,7 @@ class AlertObjectList(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'objects': objects_schema,
         'source': source_schema,
@@ -437,6 +469,12 @@ class AlertRuleEvent(object):
 class AlertSyslogConfig(AviResource):
     resource_name = "alertsyslogconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user-friendly name of the syslog notification"),
@@ -466,6 +504,7 @@ class AlertSyslogConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'syslog_servers',
         'description',
@@ -473,6 +512,7 @@ class AlertSyslogConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'syslog_servers': syslog_servers_schema,
         'description': description_schema,
@@ -611,6 +651,12 @@ class AlertRule(object):
 class AlertConfig(AviResource):
     resource_name = "alertconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the alert configuration"),
@@ -720,6 +766,7 @@ class AlertConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'summary',
         'description',
@@ -740,6 +787,7 @@ class AlertConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'summary': summary_schema,
         'description': description_schema,

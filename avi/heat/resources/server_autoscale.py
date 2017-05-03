@@ -15,6 +15,12 @@ from common import *
 class ServerAutoScalePolicy(AviResource):
     resource_name = "serverautoscalepolicy"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -116,6 +122,7 @@ class ServerAutoScalePolicy(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'intelligent_autoscale',
         'intelligent_scaleout_margin',
@@ -134,6 +141,7 @@ class ServerAutoScalePolicy(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'intelligent_autoscale': intelligent_autoscale_schema,
         'intelligent_scaleout_margin': intelligent_scaleout_margin_schema,
@@ -184,13 +192,13 @@ class AutoScaleOpenStackSettings(object):
     # all schemas
     heat_scale_up_url_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi Controller will use this URL to scale upthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
+        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale upthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
         required=False,
         update_allowed=True,
     )
     heat_scale_down_url_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi Controller will use this URL to scale downthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
+        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale downthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
         required=False,
         update_allowed=True,
     )
@@ -214,7 +222,7 @@ class AutoScaleAWSSettings(object):
     # all schemas
     autoscaling_group_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of the AWS autoscaling group. The AWS autoscaling group should not be set up with scaling policies as it would result in unpredictable behavior when used together with Avi autoscaling policies."),
+        _("(Introduced in: 17.1.1) Name of the AWS autoscaling group. The AWS autoscaling group should not be set up with scaling policies as it would result in unpredictable behavior when used together with Avi autoscaling policies."),
         required=False,
         update_allowed=True,
     )
@@ -235,6 +243,12 @@ class AutoScaleAWSSettings(object):
 class AutoScaleLaunchConfig(AviResource):
     resource_name = "autoscalelaunchconfig"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -277,6 +291,7 @@ class AutoScaleLaunchConfig(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'image_id',
         'openstack',
@@ -287,6 +302,7 @@ class AutoScaleLaunchConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'image_id': image_id_schema,
         'openstack': openstack_schema,

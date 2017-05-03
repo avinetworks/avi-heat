@@ -293,6 +293,12 @@ class IptableRuleSet(object):
 class ServiceEngineGroup(AviResource):
     resource_name = "serviceenginegroup"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -434,7 +440,7 @@ class ServiceEngineGroup(AviResource):
     )
     openstack_availability_zone_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Deprecated in: 17.1.1) "),
         required=False,
         update_allowed=True,
     )
@@ -713,52 +719,52 @@ class ServiceEngineGroup(AviResource):
     )
     extra_shared_config_memory_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Extra config memory to support large Geo DB configuration. (Units: MB) (Default: 0)"),
+        _("(Introduced in: 17.1.1) Extra config memory to support large Geo DB configuration. (Units: MB) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
+        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     openstack_availability_zones_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         required=True,
         update_allowed=False,
     )
     openstack_availability_zones_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         schema=openstack_availability_zones_item_schema,
         required=False,
         update_allowed=True,
     )
     service_ip_subnets_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Subnets assigned to the SE group. Required for VS group placement."),
+        _("(Introduced in: 17.1.1) Subnets assigned to the SE group. Required for VS group placement."),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
     )
     service_ip_subnets_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Subnets assigned to the SE group. Required for VS group placement."),
+        _("(Introduced in: 17.1.1) Subnets assigned to the SE group. Required for VS group placement."),
         schema=service_ip_subnets_item_schema,
         required=False,
         update_allowed=True,
     )
     se_vs_hb_max_vs_in_pkt_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of virtualservices for which heartbeat messages are aggregated in one packet. (Default: 256)"),
+        _("(Introduced in: 17.1.1) Maximum number of virtualservices for which heartbeat messages are aggregated in one packet. (Default: 256)"),
         required=False,
         update_allowed=True,
     )
     se_vs_hb_max_pkts_in_batch_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of aggregated vs heartbeat packets to send in a batch. (Default: 8)"),
+        _("(Introduced in: 17.1.1) Maximum number of aggregated vs heartbeat packets to send in a batch. (Default: 8)"),
         required=False,
         update_allowed=True,
     )
@@ -790,7 +796,7 @@ class ServiceEngineGroup(AviResource):
     )
     enable_vip_on_all_interfaces_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable VIP on all interfaces of SE. (Default: True)"),
+        _("(Introduced in: 17.1.1) Enable VIP on all interfaces of SE. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -803,6 +809,7 @@ class ServiceEngineGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'description',
         'max_vs_per_se',
@@ -879,6 +886,7 @@ class ServiceEngineGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'description': description_schema,
         'max_vs_per_se': max_vs_per_se_schema,

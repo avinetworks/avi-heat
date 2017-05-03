@@ -15,33 +15,40 @@ from common import *
 class Webhook(AviResource):
     resource_name = "webhook"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The name of the webhook profile"),
+        _("(Introduced in: 17.1.1) The name of the webhook profile"),
         required=True,
         update_allowed=True,
     )
     callback_url_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Callback URL for the Webhook"),
+        _("(Introduced in: 17.1.1) Callback URL for the Webhook"),
         required=False,
         update_allowed=True,
     )
     verification_token_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Verification token sent back with the callback asquery parameters"),
+        _("(Introduced in: 17.1.1) Verification token sent back with the callback asquery parameters"),
         required=False,
         update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'callback_url',
         'verification_token',
@@ -50,6 +57,7 @@ class Webhook(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'callback_url': callback_url_schema,
         'verification_token': verification_token_schema,

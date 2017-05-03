@@ -15,27 +15,27 @@ class CloneServer(object):
     # all schemas
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
-        _("IP Address of the Clone Server."),
+        _("(Introduced in: 17.1.1) IP Address of the Clone Server."),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
     )
     mac_schema = properties.Schema(
         properties.Schema.STRING,
-        _("MAC Address of the Clone Server."),
+        _("(Introduced in: 17.1.1) MAC Address of the Clone Server."),
         required=False,
         update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Subnet of the network to clone the traffic to"),
+        _("(Introduced in: 17.1.1) Subnet of the network to clone the traffic to"),
         schema=IpAddrPrefix.properties_schema,
         required=False,
         update_allowed=True,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Network to clone the traffic to You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Network to clone the traffic to You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -68,35 +68,42 @@ class CloneServer(object):
 class TrafficCloneProfile(AviResource):
     resource_name = "trafficcloneprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name for the Traffic Clone Profile."),
+        _("(Introduced in: 17.1.1) Name for the Traffic Clone Profile."),
         required=True,
         update_allowed=True,
     )
     clone_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         schema=CloneServer.properties_schema,
         required=True,
         update_allowed=False,
     )
     clone_servers_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         schema=clone_servers_item_schema,
         required=False,
         update_allowed=True,
     )
     preserve_client_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Specifies if client IP needs to be preserved to clone destination (Default: False)"),
+        _("(Introduced in: 17.1.1) Specifies if client IP needs to be preserved to clone destination (Default: False)"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'clone_servers',
         'preserve_client_ip',
@@ -104,6 +111,7 @@ class TrafficCloneProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'clone_servers': clone_servers_schema,
         'preserve_client_ip': preserve_client_ip_schema,

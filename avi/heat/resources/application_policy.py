@@ -498,6 +498,12 @@ class HTTPResponsePolicy(object):
 class HTTPPolicySet(AviResource):
     resource_name = "httppolicyset"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the HTTP Policy Set"),
@@ -552,6 +558,7 @@ class HTTPPolicySet(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'http_security_policy',
         'http_request_policy',
@@ -564,6 +571,7 @@ class HTTPPolicySet(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'http_security_policy': http_security_policy_schema,
         'http_request_policy': http_request_policy_schema,

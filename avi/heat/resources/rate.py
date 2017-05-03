@@ -142,13 +142,13 @@ class RateProfile(object):
     )
     http_header_schema = properties.Schema(
         properties.Schema.STRING,
-        _("HTTP header name."),
+        _("(Introduced in: 17.1.1) HTTP header name."),
         required=False,
         update_allowed=True,
     )
     http_cookie_schema = properties.Schema(
         properties.Schema.STRING,
-        _("HTTP cookie name."),
+        _("(Introduced in: 17.1.1) HTTP cookie name."),
         required=False,
         update_allowed=True,
     )
@@ -251,14 +251,14 @@ class RateLimiterProfile(object):
     )
     http_header_rate_limits_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
+        _("(Introduced in: 17.1.1) Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
         schema=RateProfile.properties_schema,
         required=True,
         update_allowed=False,
     )
     http_header_rate_limits_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
+        _("(Introduced in: 17.1.1) Rate Limit all HTTP requests from all client IP addresses that contain any single HTTP header value."),
         schema=http_header_rate_limits_item_schema,
         required=False,
         update_allowed=True,

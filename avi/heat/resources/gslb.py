@@ -18,7 +18,7 @@ class GslbHealthMonitorProxy(object):
     # all schemas
     proxy_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This field identifies the health monitor proxy behavior. The designated site for health monitor proxy can monitor public or private or all the members of a given site.  (Default: GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS)"),
+        _("(Introduced in: 17.1.1) This field identifies the health monitor proxy behavior. The designated site for health monitor proxy can monitor public or private or all the members of a given site.  (Default: GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -27,7 +27,7 @@ class GslbHealthMonitorProxy(object):
     )
     site_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This field identifies the site that will health monitor on behalf of the current site. i.e. it will be a health monitor proxy and monitor members of the current site. "),
+        _("(Introduced in: 17.1.1) This field identifies the site that will health monitor on behalf of the current site. i.e. it will be a health monitor proxy and monitor members of the current site. "),
         required=False,
         update_allowed=True,
     )
@@ -72,27 +72,35 @@ class DNSConfig(object):
 class GslbApplicationPersistenceProfile(AviResource):
     resource_name = "gslbapplicationpersistenceprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("A user-friendly name for the persistence profile."),
+        _("(Introduced in: 17.1.1) A user-friendly name for the persistence profile."),
         required=True,
         update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'description': description_schema,
     }
@@ -104,13 +112,13 @@ class GslbGeoDbFile(object):
     # all schemas
     filename_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Geodb Filename in the Avi supported formats."),
+        _("(Introduced in: 17.1.1) Geodb Filename in the Avi supported formats."),
         required=False,
         update_allowed=True,
     )
     format_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This field indicates the file format. (Default: GSLB_GEODB_FILE_FORMAT_AVI)"),
+        _("(Introduced in: 17.1.1) This field indicates the file format. (Default: GSLB_GEODB_FILE_FORMAT_AVI)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -136,6 +144,12 @@ class GslbGeoDbFile(object):
 class GslbHealthMonitor(AviResource):
     resource_name = "gslbhealthmonitor"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user friendly name for this health monitor."),
@@ -232,6 +246,7 @@ class GslbHealthMonitor(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'send_interval',
         'receive_timeout',
@@ -250,6 +265,7 @@ class GslbHealthMonitor(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'send_interval': send_interval_schema,
         'receive_timeout': receive_timeout_schema,
@@ -320,7 +336,7 @@ class GslbGeoLocation(object):
     # all schemas
     source_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This field describes the source of the GeoLocation. "),
+        _("(Introduced in: 17.1.1) This field describes the source of the GeoLocation. "),
         required=True,
         update_allowed=True,
         constraints=[
@@ -329,7 +345,7 @@ class GslbGeoLocation(object):
     )
     location_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Geographic location of the site."),
+        _("(Introduced in: 17.1.1) Geographic location of the site."),
         schema=GeoLocation.properties_schema,
         required=False,
         update_allowed=True,
@@ -358,13 +374,13 @@ class GslbGeoDbEntry(object):
     # all schemas
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority of this geodb entry. This value should be unique in a repeated list of geodb entries.  Higher the value, then greater is the priority.   (Default: 10)"),
+        _("(Introduced in: 17.1.1) Priority of this geodb entry. This value should be unique in a repeated list of geodb entries.  Higher the value, then greater is the priority.   (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     file_schema = properties.Schema(
         properties.Schema.MAP,
-        _("This field describes the GeoDb file."),
+        _("(Introduced in: 17.1.1) This field describes the GeoDb file."),
         schema=GslbGeoDbFile.properties_schema,
         required=True,
         update_allowed=True,
@@ -430,7 +446,7 @@ class GslbPoolMember(object):
     )
     location_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Geographic location of the pool member"),
+        _("(Introduced in: 17.1.1) Geographic location of the pool member"),
         schema=GslbGeoLocation.properties_schema,
         required=False,
         update_allowed=True,
@@ -469,35 +485,42 @@ class GslbPoolMember(object):
 class GslbGeoDbProfile(AviResource):
     resource_name = "gslbgeodbprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("A user-friendly name for the geodb profile."),
+        _("(Introduced in: 17.1.1) A user-friendly name for the geodb profile."),
         required=True,
         update_allowed=True,
     )
     entries_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
+        _("(Introduced in: 17.1.1) List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
         schema=GslbGeoDbEntry.properties_schema,
         required=True,
         update_allowed=False,
     )
     entries_schema = properties.Schema(
         properties.Schema.LIST,
-        _("List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
+        _("(Introduced in: 17.1.1) List of Geodb entries. An entry can either be a geodb file or an ip address group with geo properties. "),
         schema=entries_item_schema,
         required=False,
         update_allowed=True,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'entries',
         'description',
@@ -505,6 +528,7 @@ class GslbGeoDbProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'entries': entries_schema,
         'description': description_schema,
@@ -599,28 +623,28 @@ class GslbSite(object):
     )
     location_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Geographic location of the site."),
+        _("(Introduced in: 17.1.1) Geographic location of the site."),
         schema=GslbGeoLocation.properties_schema,
         required=False,
         update_allowed=True,
     )
     hm_proxies_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        _("(Introduced in: 17.1.1) User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
         schema=GslbHealthMonitorProxy.properties_schema,
         required=True,
         update_allowed=False,
     )
     hm_proxies_schema = properties.Schema(
         properties.Schema.LIST,
-        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        _("(Introduced in: 17.1.1) User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
         schema=hm_proxies_item_schema,
         required=False,
         update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("User can overide the individual GslbPoolMember ratio for all the VIPs/VS(es) of this site. If this field is not  configured then the GslbPoolMember ratio gets applied. "),
+        _("(Introduced in: 17.1.1) User can overide the individual GslbPoolMember ratio for all the VIPs/VS(es) of this site. If this field is not  configured then the GslbPoolMember ratio gets applied. "),
         required=False,
         update_allowed=True,
     )
@@ -672,40 +696,40 @@ class GslbThirdPartySite(object):
     # all schemas
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of the third-party Site."),
+        _("(Introduced in: 17.1.1) Name of the third-party Site."),
         required=True,
         update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the third-party Site.  This is useful in maintenance scenarios such as upgrade and routine maintenance. A disabled site's configuration shall be retained  but it will not get any new configuration updates.   VIPs associated with the disabled site shall not be sent in DNS response.  (Default: True)"),
+        _("(Introduced in: 17.1.1) Enable or disable the third-party Site.  This is useful in maintenance scenarios such as upgrade and routine maintenance. A disabled site's configuration shall be retained  but it will not get any new configuration updates.   VIPs associated with the disabled site shall not be sent in DNS response.  (Default: True)"),
         required=False,
         update_allowed=True,
     )
     location_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Geographic location of the site."),
+        _("(Introduced in: 17.1.1) Geographic location of the site."),
         schema=GslbGeoLocation.properties_schema,
         required=False,
         update_allowed=True,
     )
     hm_proxies_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        _("(Introduced in: 17.1.1) User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
         schema=GslbHealthMonitorProxy.properties_schema,
         required=True,
         update_allowed=False,
     )
     hm_proxies_schema = properties.Schema(
         properties.Schema.LIST,
-        _("User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
+        _("(Introduced in: 17.1.1) User can designate certain Avi sites to run health monitor probes for VIPs/VS(es) for this site. This is useful in network deployments where the VIPs/VS(es) are reachable only from certain sites. A typical scenario is a firewall between two GSLB sites. User may want to run health monitor probes from sites on either side of the firewall so that each designated site can derive a datapath view of the reachable members. If the health monitor proxies are not configured, then the default behavior is to run health monitor probes from all the active sites."),
         schema=hm_proxies_item_schema,
         required=False,
         update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("User can overide the individual GslbPoolMember ratio for all the VIPs of this site. If this field is not configured, then the GslbPoolMember ratio gets applied. "),
+        _("(Introduced in: 17.1.1) User can overide the individual GslbPoolMember ratio for all the VIPs of this site. If this field is not configured, then the GslbPoolMember ratio gets applied. "),
         required=False,
         update_allowed=True,
     )
@@ -739,6 +763,12 @@ class GslbThirdPartySite(object):
 class Gslb(AviResource):
     resource_name = "gslb"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name for the GSLB object."),
@@ -793,14 +823,14 @@ class Gslb(AviResource):
     )
     third_party_sites_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Third party site member belonging to this Gslb."),
+        _("(Introduced in: 17.1.1) Third party site member belonging to this Gslb."),
         schema=GslbThirdPartySite.properties_schema,
         required=True,
         update_allowed=False,
     )
     third_party_sites_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Third party site member belonging to this Gslb."),
+        _("(Introduced in: 17.1.1) Third party site member belonging to this Gslb."),
         schema=third_party_sites_item_schema,
         required=False,
         update_allowed=True,
@@ -814,6 +844,7 @@ class Gslb(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'dns_configs',
         'sites',
@@ -826,6 +857,7 @@ class Gslb(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'dns_configs': dns_configs_schema,
         'sites': sites_schema,
@@ -917,6 +949,12 @@ class GslbPool(object):
 class GslbService(AviResource):
     resource_name = "gslbservice"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name for the GSLB service."),
@@ -1005,13 +1043,13 @@ class GslbService(AviResource):
     )
     use_edns_client_subnet_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use the client ip subnet from the EDNS option as source IPaddress for client geo-location and consistent hash algorithm. Default is true. (Default: True)"),
+        _("(Introduced in: 17.1.1) Use the client ip subnet from the EDNS option as source IPaddress for client geo-location and consistent hash algorithm. Default is true. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     wildcard_match_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
+        _("(Introduced in: 17.1.1) Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1024,6 +1062,7 @@ class GslbService(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'domain_names',
         'groups',
@@ -1041,6 +1080,7 @@ class GslbService(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'domain_names': domain_names_schema,
         'groups': groups_schema,

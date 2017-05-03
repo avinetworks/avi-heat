@@ -55,6 +55,12 @@ class FailActionHTTPLocalResponse(object):
 class PriorityLabels(AviResource):
     resource_name = "prioritylabels"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the priority labels."),
@@ -84,6 +90,7 @@ class PriorityLabels(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'equivalent_labels',
         'description',
@@ -91,6 +98,7 @@ class PriorityLabels(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'equivalent_labels': equivalent_labels_schema,
         'description': description_schema,
@@ -414,6 +422,12 @@ class FailAction(object):
 class PoolGroupDeploymentPolicy(AviResource):
     resource_name = "poolgroupdeploymentpolicy"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool group deployment policy"),
@@ -451,7 +465,7 @@ class PoolGroupDeploymentPolicy(AviResource):
     )
     webhook_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Webhook configured with URL that Avi controller will pass back information about pool group, old and new pool information and current deployment rule results"),
+        _("(Introduced in: 17.1.1) Webhook configured with URL that Avi controller will pass back information about pool group, old and new pool information and current deployment rule results"),
         required=False,
         update_allowed=True,
     )
@@ -482,6 +496,7 @@ class PoolGroupDeploymentPolicy(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'scheme',
         'test_traffic_ratio_rampup',
@@ -495,6 +510,7 @@ class PoolGroupDeploymentPolicy(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'scheme': scheme_schema,
         'test_traffic_ratio_rampup': test_traffic_ratio_rampup_schema,
@@ -660,6 +676,12 @@ class DiscoveredNetwork(object):
 class PoolGroup(AviResource):
     resource_name = "poolgroup"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool group."),
@@ -726,6 +748,7 @@ class PoolGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'members',
         'priority_labels_uuid',
@@ -739,6 +762,7 @@ class PoolGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'members': members_schema,
         'priority_labels_uuid': priority_labels_uuid_schema,
@@ -857,13 +881,13 @@ class Server(object):
     )
     discovered_network_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(internal-use) Discovered network for this server. This field is deprecated."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered network for this server. This field is deprecated."),
         required=True,
         update_allowed=False,
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -876,14 +900,14 @@ class Server(object):
     )
     discovered_subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(internal-use) Discovered subnet for this server. This field is deprecated."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered subnet for this server. This field is deprecated."),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
     )
     discovered_subnet_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered subnet for this server. This field is deprecated."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered subnet for this server. This field is deprecated."),
         schema=discovered_subnet_item_schema,
         required=False,
         update_allowed=True,
@@ -1028,6 +1052,12 @@ class Server(object):
 class Pool(AviResource):
     resource_name = "pool"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool."),
@@ -1367,13 +1397,13 @@ class Pool(AviResource):
     )
     nsx_securitygroup_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("A list of NSX Service Groups where the Servers for the Pool are created "),
+        _("(Introduced in: 17.1.1) A list of NSX Service Groups where the Servers for the Pool are created "),
         required=True,
         update_allowed=False,
     )
     nsx_securitygroup_schema = properties.Schema(
         properties.Schema.LIST,
-        _("A list of NSX Service Groups where the Servers for the Pool are created "),
+        _("(Introduced in: 17.1.1) A list of NSX Service Groups where the Servers for the Pool are created "),
         schema=nsx_securitygroup_item_schema,
         required=False,
         update_allowed=True,
@@ -1387,6 +1417,7 @@ class Pool(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'default_server_port',
         'graceful_disable_timeout',
@@ -1440,6 +1471,7 @@ class Pool(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'default_server_port': default_server_port_schema,
         'graceful_disable_timeout': graceful_disable_timeout_schema,
@@ -1525,12 +1557,20 @@ class PoolServers(AviNestedResource, Server):
         required=True,
         update_allowed=False,
     )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+
 
     # properties list
-    PROPERTIES = Server.PROPERTIES + ('pool_uuid',)
+    PROPERTIES = Server.PROPERTIES + ('pool_uuid','version')
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'pool_uuid': parent_uuid_schema,
     }
     properties_schema.update(Server.properties_schema)

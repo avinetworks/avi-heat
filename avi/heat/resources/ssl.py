@@ -210,6 +210,12 @@ class SSLCertificateDescription(object):
 class CertificateManagementProfile(AviResource):
     resource_name = "certificatemanagementprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
@@ -239,6 +245,7 @@ class CertificateManagementProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'script_params',
         'script_path',
@@ -246,6 +253,7 @@ class CertificateManagementProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'script_params': script_params_schema,
         'script_path': script_path_schema,
@@ -447,6 +455,12 @@ class SSLKeyParams(object):
 class SSLProfile(AviResource):
     resource_name = "sslprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -543,6 +557,7 @@ class SSLProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'accepted_versions',
         'accepted_ciphers',
@@ -558,6 +573,7 @@ class SSLProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'accepted_versions': accepted_versions_schema,
         'accepted_ciphers': accepted_ciphers_schema,
@@ -768,6 +784,12 @@ class SSLCertificate(object):
 class PKIProfile(AviResource):
     resource_name = "pkiprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
@@ -829,6 +851,7 @@ class PKIProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'ca_certs',
         'crls',
@@ -840,6 +863,7 @@ class PKIProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'ca_certs': ca_certs_schema,
         'crls': crls_schema,
@@ -860,6 +884,12 @@ class PKIProfile(AviResource):
 class SSLKeyAndCertificate(AviResource):
     resource_name = "sslkeyandcertificate"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -965,6 +995,7 @@ class SSLKeyAndCertificate(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'type',
         'certificate',
@@ -982,6 +1013,7 @@ class SSLKeyAndCertificate(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'type': type_schema,
         'certificate': certificate_schema,

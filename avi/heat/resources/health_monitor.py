@@ -15,19 +15,19 @@ class HealthMonitorSSLAttributes(object):
     # all schemas
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("SSL profile defines ciphers and SSL versions to be used for healthmonitor traffic to the back-end servers. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) SSL profile defines ciphers and SSL versions to be used for healthmonitor traffic to the back-end servers. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("PKI profile used to validate the SSL certificate presented by a server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) PKI profile used to validate the SSL certificate presented by a server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Service engines will present this SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Service engines will present this SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -198,7 +198,7 @@ class HealthMonitorHttp(object):
     )
     ssl_attributes_schema = properties.Schema(
         properties.Schema.MAP,
-        _("SSL attributes for HTTPS health monitor."),
+        _("(Introduced in: 17.1.1) SSL attributes for HTTPS health monitor."),
         schema=HealthMonitorSSLAttributes.properties_schema,
         required=False,
         update_allowed=True,
@@ -324,6 +324,12 @@ class HealthMonitorDNS(object):
 class HealthMonitor(AviResource):
     resource_name = "healthmonitor"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user friendly name for this health monitor."),
@@ -420,6 +426,7 @@ class HealthMonitor(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'send_interval',
         'receive_timeout',
@@ -438,6 +445,7 @@ class HealthMonitor(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'send_interval': send_interval_schema,
         'receive_timeout': receive_timeout_schema,

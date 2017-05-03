@@ -15,25 +15,25 @@ class GeoLocation(object):
     # all schemas
     latitude_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Latitude of the location."),
+        _("(Introduced in: 17.1.1) Latitude of the location."),
         required=False,
         update_allowed=True,
     )
     longitude_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Longitude of the location."),
+        _("(Introduced in: 17.1.1) Longitude of the location."),
         required=False,
         update_allowed=True,
     )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Location name in the format Country/State/City."),
+        _("(Introduced in: 17.1.1) Location name in the format Country/State/City."),
         required=False,
         update_allowed=True,
     )
     tag_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Location tag string - example: USEast."),
+        _("(Introduced in: 17.1.1) Location tag string - example: USEast."),
         required=False,
         update_allowed=True,
     )

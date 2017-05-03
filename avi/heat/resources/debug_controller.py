@@ -57,7 +57,7 @@ class AutoScaleMgrDebugFilter(object):
     )
     enable_aws_autoscale_integration_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable aws autoscale integration. This is an alpha feature. (Default: False)"),
+        _("(Introduced in: 17.1.1) Enable aws autoscale integration. This is an alpha feature. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -528,6 +528,12 @@ class DebugFilterUnion(object):
 class DebugController(AviResource):
     resource_name = "debugcontroller"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -571,6 +577,7 @@ class DebugController(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'sub_module',
         'trace_level',
@@ -580,6 +587,7 @@ class DebugController(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'sub_module': sub_module_schema,
         'trace_level': trace_level_schema,

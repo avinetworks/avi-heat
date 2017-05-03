@@ -244,7 +244,7 @@ class SeRuntimeProperties(object):
     )
     persistence_entries_low_watermark_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Deprecated (Default: 20000)"),
+        _("(Deprecated in: 17.1.1) Deprecated (Default: 20000)"),
         required=False,
         update_allowed=True,
     )
@@ -256,7 +256,7 @@ class SeRuntimeProperties(object):
     )
     flow_table_max_entries_deprecated_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Deprecated (Default: 100000000)"),
+        _("(Deprecated in: 17.1.1) Deprecated (Default: 100000000)"),
         required=False,
         update_allowed=True,
     )
@@ -280,7 +280,7 @@ class SeRuntimeProperties(object):
     )
     se_malloc_thresh_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Deprecated (Default: 0)"),
+        _("(Deprecated in: 17.1.1) Deprecated (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -424,7 +424,7 @@ class SeRuntimeProperties(object):
     )
     lb_fail_max_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Deprecated (Units: SEC) (Default: 5)"),
+        _("(Deprecated in: 17.1.1) Deprecated (Units: SEC) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
@@ -835,25 +835,25 @@ class SeRuntimeProperties(object):
     )
     se_dp_vnic_queue_stall_event_sleep_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time (in seconds) service engine waits for after generating a Vnic transmit queue stall event before asserting totrigger a failover. (Default: 10)"),
+        _("(Introduced in: 17.1.1) Time (in seconds) service engine waits for after generating a Vnic transmit queue stall event before asserting totrigger a failover. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     se_dp_vnic_queue_stall_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time (in milliseconds) to wait for network/NIC recovery on detecting a transmit queue stall after which service engine asserts triggering a failover (Default: 10000)"),
+        _("(Introduced in: 17.1.1) Time (in milliseconds) to wait for network/NIC recovery on detecting a transmit queue stall after which service engine asserts triggering a failover (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     se_dp_vnic_queue_stall_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 2000)"),
+        _("(Introduced in: 17.1.1) Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 2000)"),
         required=False,
         update_allowed=True,
     )
     disable_flow_probes_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable Flow Probes for Scaled out VS'es (Default: False)"),
+        _("(Introduced in: 17.1.1) Disable Flow Probes for Scaled out VS'es (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1407,7 +1407,7 @@ class SeBootupProperties(object):
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
+        _("(Deprecated in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -1509,13 +1509,13 @@ class SeBootupProperties(object):
     )
     distribute_queues_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Distributes queue ownership among cores so multiple cores handle dispatcher duties. (Default: True)"),
+        _("(Introduced in: 17.1.1) Distributes queue ownership among cores so multiple cores handle dispatcher duties. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     geo_db_granularity_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Granularity or Resolution of co-ordinates used. When the value is 1 the co-ordinates provided in the geo-db are used as is (highest resolution.This value provides a 'zoom-out' value so that coarser co-ordinates are used. With higher resolution, logs can contain finer location information. But, lower resolution provides significant memory and cpu benefits on the service engine. Besides, given a smaller number of members that are separated geographically, a lower resolution is sufficient for correct load-balancing. (Default: 1)"),
+        _("(Introduced in: 17.1.1) Granularity or Resolution of co-ordinates used. When the value is 1 the co-ordinates provided in the geo-db are used as is (highest resolution.This value provides a 'zoom-out' value so that coarser co-ordinates are used. With higher resolution, logs can contain finer location information. But, lower resolution provides significant memory and cpu benefits on the service engine. Besides, given a smaller number of members that are separated geographically, a lower resolution is sufficient for correct load-balancing. (Default: 1)"),
         required=False,
         update_allowed=True,
     )
@@ -1608,6 +1608,12 @@ class SeBootupProperties(object):
 class SeProperties(AviResource):
     resource_name = "seproperties"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     se_bootup_properties_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -1632,6 +1638,7 @@ class SeProperties(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'se_bootup_properties',
         'se_runtime_properties',
         'se_agent_properties',
@@ -1639,6 +1646,7 @@ class SeProperties(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'se_bootup_properties': se_bootup_properties_schema,
         'se_runtime_properties': se_runtime_properties_schema,
         'se_agent_properties': se_agent_properties_schema,

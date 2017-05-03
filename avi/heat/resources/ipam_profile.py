@@ -199,33 +199,33 @@ class IpamDnsAwsProfile(object):
     )
     usable_network_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        _("(Introduced in: 17.1.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
         required=True,
         update_allowed=False,
     )
     usable_network_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        _("(Introduced in: 17.1.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
         schema=usable_network_uuids_item_schema,
         required=False,
         update_allowed=True,
     )
     usable_domains_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Usable domains to pick from Amazon Route 53"),
+        _("(Introduced in: 17.1.1) Usable domains to pick from Amazon Route 53"),
         required=True,
         update_allowed=False,
     )
     usable_domains_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Usable domains to pick from Amazon Route 53"),
+        _("(Introduced in: 17.1.1) Usable domains to pick from Amazon Route 53"),
         schema=usable_domains_item_schema,
         required=False,
         update_allowed=True,
     )
     iam_assume_role_schema = properties.Schema(
         properties.Schema.STRING,
-        _("IAM assume role for cross-account access."),
+        _("(Introduced in: 17.1.1) IAM assume role for cross-account access."),
         required=False,
         update_allowed=True,
     )
@@ -262,28 +262,34 @@ class IpamDnsAwsProfile(object):
 class CustomIpamDnsProfile(AviResource):
     resource_name = "customipamdnsprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of the Custom IPAM DNS Profile."),
+        _("(Introduced in: 17.1.1) Name of the Custom IPAM DNS Profile."),
         required=True,
         update_allowed=True,
     )
     script_path_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Script path."),
+        _("(Introduced in: 17.1.1) Script path."),
         required=True,
         update_allowed=True,
     )
     script_params_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters that are always passed to the IPAM or DNS script. These specifically do not include credentials and or API version."),
+        _("(Introduced in: 17.1.1) Parameters that are always passed to the IPAM or DNS script. These specifically do not include credentials and or API version."),
         schema=CustomParams.properties_schema,
         required=True,
         update_allowed=False,
     )
     script_params_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Parameters that are always passed to the IPAM or DNS script. These specifically do not include credentials and or API version."),
+        _("(Introduced in: 17.1.1) Parameters that are always passed to the IPAM or DNS script. These specifically do not include credentials and or API version."),
         schema=script_params_item_schema,
         required=False,
         update_allowed=True,
@@ -291,6 +297,7 @@ class CustomIpamDnsProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'script_path',
         'script_params',
@@ -298,6 +305,7 @@ class CustomIpamDnsProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'script_path': script_path_schema,
         'script_params': script_params_schema,
@@ -327,7 +335,7 @@ class IpamDnsGCPProfile(object):
     )
     match_se_group_subnet_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Match SE group subnets for VIP placement. Default is to not match SE group subnets. (Default: False)"),
+        _("(Introduced in: 17.1.1) Match SE group subnets for VIP placement. Default is to not match SE group subnets. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -416,20 +424,20 @@ class IpamDnsCustomProfile(object):
     # all schemas
     custom_ipam_dns_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1)  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     custom_ipam_dns_params_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Custom parameters that will passed for the IPAM/DNS provider including but not limited to provider credentials and API version."),
+        _("(Introduced in: 17.1.1) Custom parameters that will passed for the IPAM/DNS provider including but not limited to provider credentials and API version."),
         schema=CustomParams.properties_schema,
         required=True,
         update_allowed=False,
     )
     custom_ipam_dns_params_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Custom parameters that will passed for the IPAM/DNS provider including but not limited to provider credentials and API version."),
+        _("(Introduced in: 17.1.1) Custom parameters that will passed for the IPAM/DNS provider including but not limited to provider credentials and API version."),
         schema=custom_ipam_dns_params_item_schema,
         required=False,
         update_allowed=True,
@@ -520,6 +528,12 @@ class IpamDnsOpenstackProfile(object):
 class IpamDnsProviderProfile(AviResource):
     resource_name = "ipamdnsproviderprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name for the IPAM/DNS Provider profile"),
@@ -572,14 +586,14 @@ class IpamDnsProviderProfile(AviResource):
     )
     custom_profile_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Provider details if type is Custom"),
+        _("(Introduced in: 17.1.1) Provider details if type is Custom"),
         schema=IpamDnsCustomProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
     proxy_configuration_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(Introduced in: 17.1.1) "),
         schema=ProxyConfiguration.properties_schema,
         required=False,
         update_allowed=True,
@@ -587,6 +601,7 @@ class IpamDnsProviderProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'type',
         'infoblox_profile',
@@ -600,6 +615,7 @@ class IpamDnsProviderProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'type': type_schema,
         'infoblox_profile': infoblox_profile_schema,

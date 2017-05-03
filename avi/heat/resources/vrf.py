@@ -132,25 +132,25 @@ class InternalGatewayMonitor(object):
     # all schemas
     gateway_monitor_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
+        _("(Introduced in: 17.1.1) The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
         required=False,
         update_allowed=True,
     )
     gateway_monitor_failure_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
+        _("(Introduced in: 17.1.1) The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     gateway_monitor_success_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
+        _("(Introduced in: 17.1.1) The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
         required=False,
         update_allowed=True,
     )
     disable_gateway_monitor_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable the gateway monitor for default gateway. They are monitored by default. (Default: False)"),
+        _("(Introduced in: 17.1.1) Disable the gateway monitor for default gateway. They are monitored by default. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -255,7 +255,7 @@ class StaticRoute(object):
     )
     disable_gateway_monitor_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable the gateway monitor for default gateway. They are monitored by default."),
+        _("(Introduced in: 17.1.1) Disable the gateway monitor for default gateway. They are monitored by default."),
         required=False,
         update_allowed=True,
     )
@@ -283,6 +283,31 @@ class StaticRoute(object):
         'prefix': getattr(IpAddrPrefix, 'field_references', {}),
         'next_hop': getattr(IpAddr, 'field_references', {}),
     }
+
+
+
+class DebugVrf(object):
+    # all schemas
+    flag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) "),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEBUG_VRF_ALL', 'DEBUG_VRF_BGP', 'DEBUG_VRF_NONE']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'flag',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'flag': flag_schema,
+    }
+
 
 
 
@@ -352,9 +377,49 @@ class BgpProfile(object):
 
 
 
+class DebugVrfContext(object):
+    # all schemas
+    flags_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) "),
+        schema=DebugVrf.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    flags_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) "),
+        schema=flags_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'flags',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'flags': flags_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'flags': getattr(DebugVrf, 'field_references', {}),
+    }
+
+
+
 class VrfContext(AviResource):
     resource_name = "vrfcontext"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -398,8 +463,15 @@ class VrfContext(AviResource):
     )
     internal_gateway_monitor_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure ping based heartbeat check for all default gateways in service engines of vrf."),
+        _("(Introduced in: 17.1.1) Configure ping based heartbeat check for all default gateways in service engines of vrf."),
         schema=InternalGatewayMonitor.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    debugvrfcontext_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Configure debug flags for VRF"),
+        schema=DebugVrfContext.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -418,22 +490,26 @@ class VrfContext(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'static_routes',
         'bgp_profile',
         'gateway_mon',
         'internal_gateway_monitor',
+        'debugvrfcontext',
         'description',
         'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,
         'gateway_mon': gateway_mon_schema,
         'internal_gateway_monitor': internal_gateway_monitor_schema,
+        'debugvrfcontext': debugvrfcontext_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
     }
@@ -441,6 +517,7 @@ class VrfContext(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'gateway_mon': getattr(GatewayMonitor, 'field_references', {}),
+        'debugvrfcontext': getattr(DebugVrfContext, 'field_references', {}),
         'bgp_profile': getattr(BgpProfile, 'field_references', {}),
         'static_routes': getattr(StaticRoute, 'field_references', {}),
         'internal_gateway_monitor': getattr(InternalGatewayMonitor, 'field_references', {}),

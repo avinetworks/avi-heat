@@ -51,6 +51,12 @@ class ProtocolMatch(object):
 class MicroServiceGroup(AviResource):
     resource_name = "microservicegroup"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the MicroService group"),
@@ -85,6 +91,7 @@ class MicroServiceGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'service_uuids',
         'created_by',
@@ -93,6 +100,7 @@ class MicroServiceGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'service_uuids': service_uuids_schema,
         'created_by': created_by_schema,
@@ -524,6 +532,12 @@ class StringMatch(object):
 class IpAddrGroup(AviResource):
     resource_name = "ipaddrgroup"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the IP address group"),
@@ -626,6 +640,7 @@ class IpAddrGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'addrs',
         'ranges',
@@ -640,6 +655,7 @@ class IpAddrGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'addrs': addrs_schema,
         'ranges': ranges_schema,
@@ -675,6 +691,13 @@ class IpAddrGroupAddrs(AviNestedResource):
         required=True,
         update_allowed=False,
     )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+
     addrs_item_schema = properties.Schema(
         properties.Schema.MAP,
         _("Configure IP address(es)"),
@@ -1027,6 +1050,12 @@ class PathMatch(object):
 class StringGroup(AviResource):
     resource_name = "stringgroup"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the string group"),
@@ -1065,6 +1094,7 @@ class StringGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'kv',
         'type',
@@ -1073,6 +1103,7 @@ class StringGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'kv': kv_schema,
         'type': type_schema,

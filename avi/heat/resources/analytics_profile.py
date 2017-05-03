@@ -12,6 +12,55 @@ from options import *
 from match import *
 
 
+class ClientLogStreamingConfig(object):
+    # all schemas
+    external_server_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) The destination server IP address or hostname. If a name is provided, this should be resolvable on Avi Service Engines."),
+        required=True,
+        update_allowed=True,
+    )
+    external_server_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) The destination server's service port. (Default: 514)"),
+        required=False,
+        update_allowed=True,
+    )
+    log_types_to_send_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Type of logs to stream to the external server. Default is LOGS_ALL, i.e., send all logs. (Default: LOGS_ALL)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT', 'LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY']),
+        ],
+    )
+    max_logs_per_second_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Maximum number of logs per second streamed to the remote server. By default, 100 logs per second are streamed. Set this to zero(0) to not enforce any limit. (Default: 100)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'external_server',
+        'external_server_port',
+        'log_types_to_send',
+        'max_logs_per_second',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'external_server': external_server_schema,
+        'external_server_port': external_server_port_schema,
+        'log_types_to_send': log_types_to_send_schema,
+        'max_logs_per_second': max_logs_per_second_schema,
+    }
+
+
+
+
 class ClientLogConfiguration(object):
     # all schemas
     enable_significant_log_collection_schema = properties.Schema(
@@ -22,7 +71,7 @@ class ClientLogConfiguration(object):
     )
     significant_log_processing_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Significant logs are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
+        _("(Introduced in: 17.1.1) Significant logs are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -31,7 +80,7 @@ class ClientLogConfiguration(object):
     )
     filtered_log_processing_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Note: Only sync_and_index_on_demand is implemented at this time) Filtered logs are logs that match any client log filters or rules with logging enabled. Such logs are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
+        _("(Introduced in: 17.1.1) (Note: Only sync_and_index_on_demand is implemented at this time) Filtered logs are logs that match any client log filters or rules with logging enabled. Such logs are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -40,7 +89,7 @@ class ClientLogConfiguration(object):
     )
     non_significant_log_processing_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Note: Only sync_and_index_on_demand is implemented at this time) Logs that are neither significant nor filtered, are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
+        _("(Introduced in: 17.1.1) (Note: Only sync_and_index_on_demand is implemented at this time) Logs that are neither significant nor filtered, are processed by the Logs Analytics system according to this setting. (Default: LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -67,58 +116,15 @@ class ClientLogConfiguration(object):
 
 
 
-class ClientLogSyslogConfig(object):
-    # all schemas
-    syslog_server_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The destination Syslog server IP address or hostname. If a name is provided, this should be resolvable on Avi Service Engines."),
-        required=True,
-        update_allowed=True,
-    )
-    syslog_server_port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The destination Syslog server's service port. (Default: 514)"),
-        required=False,
-        update_allowed=True,
-    )
-    log_types_to_send_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Type of logs to send to the syslog server. Default is LOGS_ALL, i.e., send all logs. (Default: LOGS_ALL)"),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT', 'LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY']),
-        ],
-    )
-    max_logs_per_second_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Maximum number of logs per second sent to the remote syslog server. By default, 100 logs per second are sent. Set this to zero(0) to not enforce any limit. (Default: 100)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'syslog_server',
-        'syslog_server_port',
-        'log_types_to_send',
-        'max_logs_per_second',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'syslog_server': syslog_server_schema,
-        'syslog_server_port': syslog_server_port_schema,
-        'log_types_to_send': log_types_to_send_schema,
-        'max_logs_per_second': max_logs_per_second_schema,
-    }
-
-
-
-
 class AnalyticsProfile(AviResource):
     resource_name = "analyticsprofile"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the analytics profile."),
@@ -480,10 +486,10 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
-    client_log_syslog_config_schema = properties.Schema(
+    client_log_streaming_config_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configure to send logs to a remote syslog server."),
-        schema=ClientLogSyslogConfig.properties_schema,
+        _("(Introduced in: 17.1.1) Configure to stream logs to an external server."),
+        schema=ClientLogStreamingConfig.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -539,6 +545,7 @@ class AnalyticsProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'description',
         'apdex_response_threshold',
@@ -599,7 +606,7 @@ class AnalyticsProfile(AviResource):
         'exclude_gs_down_as_error',
         'exclude_no_valid_gs_member_as_error',
         'client_log_config',
-        'client_log_syslog_config',
+        'client_log_streaming_config',
         'exclude_http_error_codes',
         'ranges',
         'resp_code_block',
@@ -608,6 +615,7 @@ class AnalyticsProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'description': description_schema,
         'apdex_response_threshold': apdex_response_threshold_schema,
@@ -668,7 +676,7 @@ class AnalyticsProfile(AviResource):
         'exclude_gs_down_as_error': exclude_gs_down_as_error_schema,
         'exclude_no_valid_gs_member_as_error': exclude_no_valid_gs_member_as_error_schema,
         'client_log_config': client_log_config_schema,
-        'client_log_syslog_config': client_log_syslog_config_schema,
+        'client_log_streaming_config': client_log_streaming_config_schema,
         'exclude_http_error_codes': exclude_http_error_codes_schema,
         'ranges': ranges_schema,
         'resp_code_block': resp_code_block_schema,
@@ -678,8 +686,8 @@ class AnalyticsProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
-        'client_log_syslog_config': getattr(ClientLogSyslogConfig, 'field_references', {}),
         'client_log_config': getattr(ClientLogConfiguration, 'field_references', {}),
+        'client_log_streaming_config': getattr(ClientLogStreamingConfig, 'field_references', {}),
     }
 
 

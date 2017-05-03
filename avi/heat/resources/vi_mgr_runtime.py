@@ -16,6 +16,12 @@ from vi_mgr_common import *
 class VIMgrVcenterRuntime(AviResource):
     resource_name = "vimgrvcenterruntime"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -191,6 +197,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'type',
         'name',
         'vcenter_url',
@@ -221,6 +228,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'type': type_schema,
         'name': name_schema,
         'vcenter_url': vcenter_url_schema,
@@ -259,6 +267,12 @@ class VIMgrVcenterRuntime(AviResource):
 class VIMgrHostRuntime(AviResource):
     resource_name = "vimgrhostruntime"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -431,6 +445,7 @@ class VIMgrHostRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'type',
         'name',
         'managed_object_id',
@@ -459,6 +474,7 @@ class VIMgrHostRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'type': type_schema,
         'name': name_schema,
         'managed_object_id': managed_object_id_schema,

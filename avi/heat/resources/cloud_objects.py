@@ -422,6 +422,12 @@ class vCenterConfiguration(object):
 class CloudConnectorUser(AviResource):
     resource_name = "cloudconnectoruser"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -449,6 +455,7 @@ class CloudConnectorUser(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'private_key',
         'public_key',
@@ -457,6 +464,7 @@ class CloudConnectorUser(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'private_key': private_key_schema,
         'public_key': public_key_schema,
@@ -558,7 +566,7 @@ class APICConfiguration(object):
     )
     managed_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use Managed Mode for APIC Service Insertion (Default: True)"),
+        _("(Introduced in: 17.1.1) Use Managed Mode for APIC Service Insertion (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -708,25 +716,25 @@ class SSHSeDeployment(object):
     # all schemas
     ssh_user_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Username for SSH access to hosts"),
+        _("(Deprecated in: 17.1.1) Username for SSH access to hosts"),
         required=False,
         update_allowed=True,
     )
     sudo_user_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Username for sudo"),
+        _("(Deprecated in: 17.1.1) Username for sudo"),
         required=False,
         update_allowed=True,
     )
     password_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Password for ssh and/or sudo"),
+        _("(Deprecated in: 17.1.1) Password for ssh and/or sudo"),
         required=False,
         update_allowed=True,
     )
     host_os_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Host OS distribution e.g. COREOS, UBUNTU, REDHAT"),
+        _("(Deprecated in: 17.1.1) Host OS distribution e.g. COREOS, UBUNTU, REDHAT"),
         required=False,
         update_allowed=True,
     )
@@ -937,7 +945,7 @@ class OshiftSharedVirtualService(object):
     # all schemas
     virtualservice_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of shared virtualservice. VirtualService will be created automatically by Cloud Connector"),
+        _("(Introduced in: 17.1.1) Name of shared virtualservice. VirtualService will be created automatically by Cloud Connector"),
         required=True,
         update_allowed=True,
     )
@@ -1002,31 +1010,31 @@ class NsxConfiguration(object):
     # all schemas
     nsx_manager_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The hostname or IP address of the NSX MGr."),
+        _("(Introduced in: 17.1.1) The hostname or IP address of the NSX MGr."),
         required=True,
         update_allowed=True,
     )
     nsx_manager_username_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The username Avi Vantage will use when authenticating with NSX Mgr."),
+        _("(Introduced in: 17.1.1) The username Avi Vantage will use when authenticating with NSX Mgr."),
         required=True,
         update_allowed=True,
     )
     nsx_manager_password_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The password Avi Vantage will use when authenticating with NSX Mgr."),
+        _("(Introduced in: 17.1.1) The password Avi Vantage will use when authenticating with NSX Mgr."),
         required=True,
         update_allowed=True,
     )
     avi_nsx_prefix_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This prefix will be added to the names of all NSX objects created by Avi Controller. It should be unique across all the Avi Controller clusters"),
+        _("(Introduced in: 17.1.1) This prefix will be added to the names of all NSX objects created by Avi Controller. It should be unique across all the Avi Controller clusters"),
         required=True,
         update_allowed=True,
     )
     nsx_poll_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The interval (in secs) with which Avi Controller polls the NSX Manager for updates (Units: SECONDS) (Default: 300)"),
+        _("(Introduced in: 17.1.1) The interval (in secs) with which Avi Controller polls the NSX Manager for updates (Units: SECONDS) (Default: 300)"),
         required=True,
         update_allowed=True,
     )
@@ -1308,7 +1316,7 @@ class LinuxServerConfiguration(object):
     # all schemas
     ssh_attr_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters for SSH to hosts"),
+        _("(Deprecated in: 17.1.1) Parameters for SSH to hosts"),
         schema=SSHSeDeployment.properties_schema,
         required=False,
         update_allowed=True,
@@ -1366,7 +1374,7 @@ class LinuxServerConfiguration(object):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1580,7 +1588,7 @@ class MesosConfiguration(object):
     )
     ssh_se_deployment_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
+        _("(Deprecated in: 17.1.1) Parameters for SSH SE deployment"),
         schema=SSHSeDeployment.properties_schema,
         required=False,
         update_allowed=True,
@@ -1652,7 +1660,7 @@ class MesosConfiguration(object):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1882,7 +1890,7 @@ class DockerConfiguration(object):
     )
     ssh_se_deployment_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
+        _("(Deprecated in: 17.1.1) Parameters for SSH SE deployment"),
         schema=SSHSeDeployment.properties_schema,
         required=False,
         update_allowed=True,
@@ -1947,7 +1955,7 @@ class DockerConfiguration(object):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -2152,7 +2160,7 @@ class OShiftK8SConfiguration(object):
     )
     ssh_se_deployment_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
+        _("(Deprecated in: 17.1.1) Parameters for SSH SE deployment"),
         schema=SSHSeDeployment.properties_schema,
         required=False,
         update_allowed=True,
@@ -2248,19 +2256,19 @@ class OShiftK8SConfiguration(object):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     routes_share_virtualservice_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Routes use shared virtualservices. If configured, all OpenShift Routes will be created under a parent VirtualService. OpenShift Services will not trigger a VirtualService creation (Default: False)"),
+        _("(Introduced in: 17.1.1) Routes use shared virtualservices. If configured, all OpenShift Routes will be created under a parent VirtualService. OpenShift Services will not trigger a VirtualService creation (Default: False)"),
         required=False,
         update_allowed=True,
     )
     default_shared_virtualservice_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Default shared virtualservice that acts as the parent for all OpenShift Routes"),
+        _("(Introduced in: 17.1.1) Default shared virtualservice that acts as the parent for all OpenShift Routes"),
         schema=OshiftSharedVirtualService.properties_schema,
         required=False,
         update_allowed=True,
@@ -2273,7 +2281,7 @@ class OShiftK8SConfiguration(object):
     )
     secure_egress_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allow Avi Vantage to create Security Context Constraints and Service Accounts which allow Egress Pods to run in privileged mode in an Openshift environment. Assumption is that credentials provided have cluster-admin role when this mode is enabled. (Default: False)"),
+        _("(Introduced in: 17.1.1) Allow Avi Vantage to create Security Context Constraints and Service Accounts which allow Egress Pods to run in privileged mode in an Openshift environment. Assumption is that credentials provided have cluster-admin role when this mode is enabled. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -2581,13 +2589,13 @@ class OpenStackConfiguration(object):
     )
     usable_network_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("A tenant can normally use its own networks and any networks shared with it. In addition, this field provides extra networks that are usable by all tenants. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation. "),
+        _("(Introduced in: 17.1.1) A tenant can normally use its own networks and any networks shared with it. In addition, this field provides extra networks that are usable by all tenants. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation. "),
         required=True,
         update_allowed=False,
     )
     usable_network_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("A tenant can normally use its own networks and any networks shared with it. In addition, this field provides extra networks that are usable by all tenants. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation. "),
+        _("(Introduced in: 17.1.1) A tenant can normally use its own networks and any networks shared with it. In addition, this field provides extra networks that are usable by all tenants. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation. "),
         schema=usable_network_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -2867,7 +2875,7 @@ class RancherConfiguration(object):
     )
     ssh_se_deployment_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Parameters for SSH SE deployment"),
+        _("(Deprecated in: 17.1.1) Parameters for SSH SE deployment"),
         schema=SSHSeDeployment.properties_schema,
         required=False,
         update_allowed=True,
@@ -2939,7 +2947,7 @@ class RancherConfiguration(object):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Cloud connector user uuid for SSH to hosts You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -3022,6 +3030,12 @@ class RancherConfiguration(object):
 class Cloud(AviResource):
     resource_name = "cloud"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -3192,7 +3206,7 @@ class Cloud(AviResource):
     )
     nsx_configuration_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Configuration parameters for NSX Manager"),
+        _("(Introduced in: 17.1.1) Configuration parameters for NSX Manager"),
         schema=NsxConfiguration.properties_schema,
         required=False,
         update_allowed=True,
@@ -3200,6 +3214,7 @@ class Cloud(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'name',
         'vtype',
         'vcenter_configuration',
@@ -3230,6 +3245,7 @@ class Cloud(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'name': name_schema,
         'vtype': vtype_schema,
         'vcenter_configuration': vcenter_configuration_schema,

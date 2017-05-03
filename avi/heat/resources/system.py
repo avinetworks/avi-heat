@@ -122,7 +122,7 @@ class AdminAuthConfiguration(object):
     )
     allow_local_user_login_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allow any user created locally to login with local credentials (Default: True)"),
+        _("(Introduced in: 17.1.1) Allow any user created locally to login with local credentials (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -597,6 +597,12 @@ class MgmtIpAccessControl(object):
 class SystemConfiguration(AviResource):
     resource_name = "systemconfiguration"
     # all schemas
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     dns_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -716,6 +722,7 @@ class SystemConfiguration(AviResource):
 
     # properties list
     PROPERTIES = (
+        'version',
         'dns_configuration',
         'ntp_configuration',
         'tech_support_uploader_configuration',
@@ -734,6 +741,7 @@ class SystemConfiguration(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'version': version_schema,
         'dns_configuration': dns_configuration_schema,
         'ntp_configuration': ntp_configuration_schema,
         'tech_support_uploader_configuration': tech_support_uploader_configuration_schema,
