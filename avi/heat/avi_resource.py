@@ -190,17 +190,18 @@ class AviResource(resource.Resource):
         # from IPython.core.debugger import Pdb
         # pdb = Pdb()
         # pdb.set_trace()
-        self._update_obj(obj, tmpl_diff["Properties"], prop_diff)
+        self._update_obj(obj, dict(self.properties), prop_diff)
         res_def = self.create_clean_properties(
             obj,
             field_refs=getattr(self, "field_references", {}),
             client=client
         )
-        res_def.pop("version", None)
+        # we should use version from the updated description
+        api_version = res_def.pop("version", None)
         try:
             client.put(
                 "%s/%s" % (self.resource_name, self.resource_id),
-                api_version=self.get_version(),
+                api_version=api_version,
                 data=res_def,
                 tenant_uuid=self.get_avi_tenant_uuid()
                 ).json()
