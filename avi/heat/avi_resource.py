@@ -137,6 +137,8 @@ class AviResource(resource.Resource):
 
     def _update_obj(self, obj, old_diffs, new_diffs):
         for p in new_diffs.keys():
+            if p.endswith("_uuid"):
+                obj.pop(p[:-4] + "ref", None)
             prev_val = old_diffs[p]
             new_val = new_diffs[p]
             if isinstance(new_val, dict) or isinstance(prev_val, dict):
@@ -153,28 +155,13 @@ class AviResource(resource.Resource):
                         prev_val[k] = None
                 self._update_obj(obj[p], prev_val, new_val)
             elif isinstance(new_val, list) or isinstance(prev_val, list):
-                # figure out which entries match from old and remove them
-                # from obj;
-                # then add objects from new_val
-                if prev_val and obj[p]:
-                    for pitem in prev_val:
-                        pitem = self.create_clean_properties(pitem)
-                        newobjs = []
-                        found = False
-                        for oitem in obj[p]:
-                            if found:
-                                newobjs.append(oitem)
-                            elif cmp_a_in_b(pitem, oitem):
-                                found = True
-                            else:
-                                newobjs.append(oitem)
-                        obj[p] = newobjs
-
                 if new_val:
                     # obj[p].extend(self.create_clean_properties(new_val))
                     obj[p] = self.create_clean_properties(new_val)
                 else:
                     obj.pop(p, None)
+                if p.endswith("_uuids"):
+                    obj.pop(p[:-5] + "refs", None)
             else:
                 if new_diffs[p]:
                     obj[p] = new_diffs[p]
