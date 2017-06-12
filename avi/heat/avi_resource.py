@@ -164,13 +164,17 @@ class AviResource(resource.Resource):
                         for oitem in obj[p]:
                             if found:
                                 newobjs.append(oitem)
-                            elif not cmp_a_in_b(pitem, oitem):
-                                newobjs.append(oitem)
+                            elif cmp_a_in_b(pitem, oitem):
                                 found = True
+                            else:
+                                newobjs.append(oitem)
                         obj[p] = newobjs
 
                 if new_val:
-                    obj[p].extend(self.create_clean_properties(new_val))
+                    # obj[p].extend(self.create_clean_properties(new_val))
+                    obj[p] = self.create_clean_properties(new_val)
+                else:
+                    obj.pop(p, None)
             else:
                 if new_diffs[p]:
                     obj[p] = new_diffs[p]
@@ -184,7 +188,7 @@ class AviResource(resource.Resource):
         # from IPython.core.debugger import Pdb
         # pdb = Pdb()
         # pdb.set_trace()
-        self._update_obj(obj, tmpl_diff["Properties"], prop_diff)
+        self._update_obj(obj, dict(self.properties), prop_diff)
         res_def = self.create_clean_properties(
             obj,
             field_refs=getattr(self, "field_references", {}),
