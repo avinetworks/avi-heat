@@ -15,7 +15,7 @@ from common import *
 class ServerAutoScalePolicy(AviResource):
     resource_name = "serverautoscalepolicy"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -122,7 +122,7 @@ class ServerAutoScalePolicy(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'intelligent_autoscale',
         'intelligent_scaleout_margin',
@@ -141,7 +141,7 @@ class ServerAutoScalePolicy(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'intelligent_autoscale': intelligent_autoscale_schema,
         'intelligent_scaleout_margin': intelligent_scaleout_margin_schema,
@@ -243,7 +243,7 @@ class AutoScaleAWSSettings(object):
 class AutoScaleLaunchConfig(AviResource):
     resource_name = "autoscalelaunchconfig"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -291,7 +291,7 @@ class AutoScaleLaunchConfig(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'image_id',
         'openstack',
@@ -302,7 +302,7 @@ class AutoScaleLaunchConfig(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'image_id': image_id_schema,
         'openstack': openstack_schema,

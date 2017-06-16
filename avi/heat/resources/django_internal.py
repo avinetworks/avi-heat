@@ -15,7 +15,7 @@ from common import *
 class UserAccountProfile(AviResource):
     resource_name = "useraccountprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -60,7 +60,7 @@ class UserAccountProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'max_password_history_count',
         'max_login_failure_count',
@@ -71,7 +71,7 @@ class UserAccountProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'max_password_history_count': max_password_history_count_schema,
         'max_login_failure_count': max_login_failure_count_schema,
@@ -122,7 +122,7 @@ class Permission(object):
 class Role(AviResource):
     resource_name = "role"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -151,14 +151,14 @@ class Role(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'privileges',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'privileges': privileges_schema,
     }

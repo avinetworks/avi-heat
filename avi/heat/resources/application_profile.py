@@ -586,7 +586,7 @@ class HTTPApplicationProfile(object):
 class ApplicationProfile(AviResource):
     resource_name = "applicationprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -650,7 +650,7 @@ class ApplicationProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'type',
         'http_profile',
@@ -663,7 +663,7 @@ class ApplicationProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'type': type_schema,
         'http_profile': http_profile_schema,

@@ -262,7 +262,7 @@ class IpamDnsAwsProfile(object):
 class CustomIpamDnsProfile(AviResource):
     resource_name = "customipamdnsprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -297,7 +297,7 @@ class CustomIpamDnsProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'script_path',
         'script_params',
@@ -305,7 +305,7 @@ class CustomIpamDnsProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'script_path': script_path_schema,
         'script_params': script_params_schema,
@@ -373,7 +373,7 @@ class IpamDnsInternalProfile(object):
     )
     ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Default TTL for all records, overridden by TTL value for each service domain configured in DnsServiceDomain. (Units: SEC) (Default: 300)"),
+        _("Default TTL for all records, overridden by TTL value for each service domain configured in DnsServiceDomain. (Units: SEC) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -528,7 +528,7 @@ class IpamDnsOpenstackProfile(object):
 class IpamDnsProviderProfile(AviResource):
     resource_name = "ipamdnsproviderprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -601,7 +601,7 @@ class IpamDnsProviderProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'type',
         'infoblox_profile',
@@ -615,7 +615,7 @@ class IpamDnsProviderProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'type': type_schema,
         'infoblox_profile': infoblox_profile_schema,

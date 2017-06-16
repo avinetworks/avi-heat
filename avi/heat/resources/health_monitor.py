@@ -324,7 +324,7 @@ class HealthMonitorDNS(object):
 class HealthMonitor(AviResource):
     resource_name = "healthmonitor"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -426,7 +426,7 @@ class HealthMonitor(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'send_interval',
         'receive_timeout',
@@ -445,7 +445,7 @@ class HealthMonitor(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'send_interval': send_interval_schema,
         'receive_timeout': receive_timeout_schema,

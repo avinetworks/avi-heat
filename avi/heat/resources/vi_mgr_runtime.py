@@ -16,7 +16,7 @@ from vi_mgr_common import *
 class VIMgrVcenterRuntime(AviResource):
     resource_name = "vimgrvcenterruntime"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -83,7 +83,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
+            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_RESYNC_FAILED', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
         ],
     )
     discovered_datacenter_schema = properties.Schema(
@@ -197,7 +197,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'type',
         'name',
         'vcenter_url',
@@ -228,7 +228,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'type': type_schema,
         'name': name_schema,
         'vcenter_url': vcenter_url_schema,
@@ -267,7 +267,7 @@ class VIMgrVcenterRuntime(AviResource):
 class VIMgrHostRuntime(AviResource):
     resource_name = "vimgrhostruntime"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -445,7 +445,7 @@ class VIMgrHostRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'type',
         'name',
         'managed_object_id',
@@ -474,7 +474,7 @@ class VIMgrHostRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'type': type_schema,
         'name': name_schema,
         'managed_object_id': managed_object_id_schema,

@@ -184,28 +184,6 @@ class NTPServer(object):
 
 
 
-class TechSupportUploaderConfiguration(object):
-    # all schemas
-    auto_upload_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(" (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'auto_upload',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'auto_upload': auto_upload_schema,
-    }
-
-
-
-
 class EmailConfiguration(object):
     # all schemas
     smtp_type_schema = properties.Schema(
@@ -597,7 +575,7 @@ class MgmtIpAccessControl(object):
 class SystemConfiguration(AviResource):
     resource_name = "systemconfiguration"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -614,13 +592,6 @@ class SystemConfiguration(AviResource):
         properties.Schema.MAP,
         _(""),
         schema=NTPConfiguration.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    tech_support_uploader_configuration_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=TechSupportUploaderConfiguration.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -722,10 +693,9 @@ class SystemConfiguration(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'dns_configuration',
         'ntp_configuration',
-        'tech_support_uploader_configuration',
         'portal_configuration',
         'global_tenant_config',
         'email_configuration',
@@ -741,10 +711,9 @@ class SystemConfiguration(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'dns_configuration': dns_configuration_schema,
         'ntp_configuration': ntp_configuration_schema,
-        'tech_support_uploader_configuration': tech_support_uploader_configuration_schema,
         'portal_configuration': portal_configuration_schema,
         'global_tenant_config': global_tenant_config_schema,
         'email_configuration': email_configuration_schema,
@@ -764,7 +733,6 @@ class SystemConfiguration(AviResource):
         'global_tenant_config': getattr(TenantConfiguration, 'field_references', {}),
         'dns_configuration': getattr(DNSConfiguration, 'field_references', {}),
         'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
-        'tech_support_uploader_configuration': getattr(TechSupportUploaderConfiguration, 'field_references', {}),
         'snmp_configuration': getattr(SnmpConfiguration, 'field_references', {}),
         'linux_configuration': getattr(LinuxConfiguration, 'field_references', {}),
         'portal_configuration': getattr(PortalConfiguration, 'field_references', {}),

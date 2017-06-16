@@ -14,7 +14,7 @@ from options import *
 class ControllerProperties(AviResource):
     resource_name = "controllerproperties"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -273,10 +273,16 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    portal_token_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Token used for uploading tech-support to portal"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'dummy',
         'unresponsive_se_reboot',
         'crashed_se_reboot',
@@ -318,11 +324,12 @@ class ControllerProperties(AviResource):
         'allow_ip_forwarding',
         'appviewx_compat_mode',
         'upgrade_dns_ttl',
+        'portal_token',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'dummy': dummy_schema,
         'unresponsive_se_reboot': unresponsive_se_reboot_schema,
         'crashed_se_reboot': crashed_se_reboot_schema,
@@ -364,6 +371,7 @@ class ControllerProperties(AviResource):
         'allow_ip_forwarding': allow_ip_forwarding_schema,
         'appviewx_compat_mode': appviewx_compat_mode_schema,
         'upgrade_dns_ttl': upgrade_dns_ttl_schema,
+        'portal_token': portal_token_schema,
     }
 
 

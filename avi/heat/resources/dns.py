@@ -69,7 +69,7 @@ class DnsInfo(object):
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is consistent hash. (Default: DNS_RECORD_RESPONSE_CONSISTENT_HASH)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -301,6 +301,12 @@ class DnsRecord(object):
         required=False,
         update_allowed=True,
     )
+    delegated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.2) Configured FQDNs are delegated domains (i.e. they represent a zone cut). (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("Details of DNS record"),
@@ -320,6 +326,7 @@ class DnsRecord(object):
         'num_records_in_response',
         'algorithm',
         'wildcard_match',
+        'delegated',
         'description',
     )
 
@@ -335,6 +342,7 @@ class DnsRecord(object):
         'num_records_in_response': num_records_in_response_schema,
         'algorithm': algorithm_schema,
         'wildcard_match': wildcard_match_schema,
+        'delegated': delegated_schema,
         'description': description_schema,
     }
 

@@ -51,7 +51,7 @@ class ProtocolMatch(object):
 class MicroServiceGroup(AviResource):
     resource_name = "microservicegroup"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -91,7 +91,7 @@ class MicroServiceGroup(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'service_uuids',
         'created_by',
@@ -100,7 +100,7 @@ class MicroServiceGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'service_uuids': service_uuids_schema,
         'created_by': created_by_schema,
@@ -532,7 +532,7 @@ class StringMatch(object):
 class IpAddrGroup(AviResource):
     resource_name = "ipaddrgroup"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -640,7 +640,7 @@ class IpAddrGroup(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'addrs',
         'ranges',
@@ -655,7 +655,7 @@ class IpAddrGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'addrs': addrs_schema,
         'ranges': ranges_schema,
@@ -1050,7 +1050,7 @@ class PathMatch(object):
 class StringGroup(AviResource):
     resource_name = "stringgroup"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -1094,7 +1094,7 @@ class StringGroup(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'kv',
         'type',
@@ -1103,7 +1103,7 @@ class StringGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'kv': kv_schema,
         'type': type_schema,

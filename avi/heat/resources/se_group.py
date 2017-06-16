@@ -293,7 +293,7 @@ class IptableRuleSet(object):
 class ServiceEngineGroup(AviResource):
     resource_name = "serviceenginegroup"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -725,7 +725,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
+        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not. 0: Automatically determine based on hypervisor type. 1: Disable DSR unconditionally. ~[0,1]: Enable DSR unconditionally (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -806,10 +806,40 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    async_ssl_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("SSL handshakes will be handled by dedicated SSL Threads (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    async_ssl_threads_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of Async SSL threads per se_dp (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_udp_encap_ipc_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.2) Determines if SE-SE IPC messages are encapsulated in an UDP header. 0: Automatically determine based on hypervisor type. 1: Use UDP encap unconditionally. ~[0,1]: Don't use UDP encap. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_ipc_udp_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.2) UDP Port for SE_DP IPC in Docker bridge mode. (Default: 1500)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_remote_punt_udp_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.2) UDP Port for punted packets in Docker bridge mode. (Default: 1501)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'description',
         'max_vs_per_se',
@@ -882,11 +912,16 @@ class ServiceEngineGroup(AviResource):
         'advertise_backend_networks',
         'enable_vip_on_all_interfaces',
         'se_thread_multiplier',
+        'async_ssl',
+        'async_ssl_threads',
+        'se_udp_encap_ipc',
+        'se_ipc_udp_port',
+        'se_remote_punt_udp_port',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'description': description_schema,
         'max_vs_per_se': max_vs_per_se_schema,
@@ -959,6 +994,11 @@ class ServiceEngineGroup(AviResource):
         'advertise_backend_networks': advertise_backend_networks_schema,
         'enable_vip_on_all_interfaces': enable_vip_on_all_interfaces_schema,
         'se_thread_multiplier': se_thread_multiplier_schema,
+        'async_ssl': async_ssl_schema,
+        'async_ssl_threads': async_ssl_threads_schema,
+        'se_udp_encap_ipc': se_udp_encap_ipc_schema,
+        'se_ipc_udp_port': se_ipc_udp_port_schema,
+        'se_remote_punt_udp_port': se_remote_punt_udp_port_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

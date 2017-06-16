@@ -18,11 +18,11 @@ class GslbHealthMonitorProxy(object):
     # all schemas
     proxy_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) This field identifies the health monitor proxy behavior. The designated site for health monitor proxy can monitor public or private or all the members of a given site.  (Default: GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS)"),
+        _("(Introduced in: 17.1.1) This field identifies the health monitor proxy behavior. The designated site for health monitor proxy can monitor public or private or all the members of a given site.  (Default: GSLB_HEALTH_MONITOR_PROXY_PRIVATE_MEMBERS)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS']),
+            constraints.AllowedValues(['GSLB_HEALTH_MONITOR_PROXY_PRIVATE_MEMBERS', 'GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS']),
         ],
     )
     site_uuid_schema = properties.Schema(
@@ -69,10 +69,89 @@ class DNSConfig(object):
 
 
 
+class GslbClientIpAddrGroup(object):
+    # all schemas
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Specify whether this client IP address range is public or private. (Default: GSLB_IP_PUBLIC)"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_IP_PUBLIC', 'GSLB_IP_PRIVATE']),
+        ],
+    )
+    addrs_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Configure IP address(es)"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    addrs_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Configure IP address(es)"),
+        schema=addrs_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ranges_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Configure IP address range(s)"),
+        schema=IpAddrRange.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ranges_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Configure IP address range(s)"),
+        schema=ranges_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    prefixes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Configure IP address prefix(es)"),
+        schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    prefixes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Configure IP address prefix(es)"),
+        schema=prefixes_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'type',
+        'addrs',
+        'ranges',
+        'prefixes',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'type': type_schema,
+        'addrs': addrs_schema,
+        'ranges': ranges_schema,
+        'prefixes': prefixes_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ranges': getattr(IpAddrRange, 'field_references', {}),
+        'prefixes': getattr(IpAddrPrefix, 'field_references', {}),
+        'addrs': getattr(IpAddr, 'field_references', {}),
+    }
+
+
+
 class GslbApplicationPersistenceProfile(AviResource):
     resource_name = "gslbapplicationpersistenceprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -93,14 +172,14 @@ class GslbApplicationPersistenceProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'description': description_schema,
     }
@@ -144,7 +223,7 @@ class GslbGeoDbFile(object):
 class GslbHealthMonitor(AviResource):
     resource_name = "gslbhealthmonitor"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -246,7 +325,7 @@ class GslbHealthMonitor(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'send_interval',
         'receive_timeout',
@@ -265,7 +344,7 @@ class GslbHealthMonitor(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'send_interval': send_interval_schema,
         'receive_timeout': receive_timeout_schema,
@@ -290,6 +369,33 @@ class GslbHealthMonitor(AviResource):
         'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
         'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
         'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
+    }
+
+
+
+class GslbIpAddr(object):
+    # all schemas
+    ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Public IP address of the pool member."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip': ip_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
     }
 
 
@@ -409,7 +515,7 @@ class GslbPoolMember(object):
     # all schemas
     cluster_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The Cluster UUID of the Site ."),
+        _("The Cluster UUID of the Site."),
         required=False,
         update_allowed=True,
     )
@@ -451,6 +557,19 @@ class GslbPoolMember(object):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) The Cloud UUID of the Site."),
+        required=False,
+        update_allowed=True,
+    )
+    public_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Alternate IP addresses of the pool member. In usual deployments, the VIP in the virtual service is a private IP address. This gets configured in the 'ip' field of the GSLB service. This field is used to host the public IP address for the VIP, which gets NATed to the private IP by a firewall. Client DNS requests coming in from within the intranet should have the private IP served in the A record, and requests from outside this should be served the public IP address."),
+        schema=GslbIpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -461,6 +580,8 @@ class GslbPoolMember(object):
         'ratio',
         'enabled',
         'location',
+        'cloud_uuid',
+        'public_ip',
     )
 
     # mapping of properties to their schemas
@@ -472,10 +593,13 @@ class GslbPoolMember(object):
         'ratio': ratio_schema,
         'enabled': enabled_schema,
         'location': location_schema,
+        'cloud_uuid': cloud_uuid_schema,
+        'public_ip': public_ip_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'public_ip': getattr(GslbIpAddr, 'field_references', {}),
         'ip': getattr(IpAddr, 'field_references', {}),
         'location': getattr(GslbGeoLocation, 'field_references', {}),
     }
@@ -485,7 +609,7 @@ class GslbPoolMember(object):
 class GslbGeoDbProfile(AviResource):
     resource_name = "gslbgeodbprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -520,7 +644,7 @@ class GslbGeoDbProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'entries',
         'description',
@@ -528,7 +652,7 @@ class GslbGeoDbProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'entries': entries_schema,
         'description': description_schema,
@@ -763,7 +887,7 @@ class GslbThirdPartySite(object):
 class Gslb(AviResource):
     resource_name = "gslb"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -835,6 +959,13 @@ class Gslb(AviResource):
         required=False,
         update_allowed=True,
     )
+    client_ip_addr_group_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.2) Group to specify if the client ip addresses are public or private."),
+        schema=GslbClientIpAddrGroup.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -844,7 +975,7 @@ class Gslb(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'dns_configs',
         'sites',
@@ -852,12 +983,13 @@ class Gslb(AviResource):
         'send_interval',
         'clear_on_max_retries',
         'third_party_sites',
+        'client_ip_addr_group',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'dns_configs': dns_configs_schema,
         'sites': sites_schema,
@@ -865,12 +997,14 @@ class Gslb(AviResource):
         'send_interval': send_interval_schema,
         'clear_on_max_retries': clear_on_max_retries_schema,
         'third_party_sites': third_party_sites_schema,
+        'client_ip_addr_group': client_ip_addr_group_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'third_party_sites': getattr(GslbThirdPartySite, 'field_references', {}),
+        'client_ip_addr_group': getattr(GslbClientIpAddrGroup, 'field_references', {}),
         'sites': getattr(GslbSite, 'field_references', {}),
         'dns_configs': getattr(DNSConfig, 'field_references', {}),
     }
@@ -949,7 +1083,7 @@ class GslbPool(object):
 class GslbService(AviResource):
     resource_name = "gslbservice"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -1053,6 +1187,12 @@ class GslbService(AviResource):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Creator name"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -1062,7 +1202,7 @@ class GslbService(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'domain_names',
         'groups',
@@ -1075,12 +1215,13 @@ class GslbService(AviResource):
         'enabled',
         'use_edns_client_subnet',
         'wildcard_match',
+        'created_by',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'domain_names': domain_names_schema,
         'groups': groups_schema,
@@ -1093,6 +1234,7 @@ class GslbService(AviResource):
         'enabled': enabled_schema,
         'use_edns_client_subnet': use_edns_client_subnet_schema,
         'wildcard_match': wildcard_match_schema,
+        'created_by': created_by_schema,
         'description': description_schema,
     }
 

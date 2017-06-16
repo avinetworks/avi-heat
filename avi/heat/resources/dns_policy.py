@@ -154,7 +154,7 @@ class DnsRuleActionResponse(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RCODE_NOERROR', 'DNS_RCODE_RRSET', 'DNS_RCODE_NXDOMAIN', 'DNS_RCODE_YXDOMAIN', 'DNS_RCODE_REFUSED', 'DNS_RCODE_FORMERR', 'DNS_RCODE_NOTIMP', 'DNS_RCODE_NOTZONE', 'DNS_RCODE_SERVFAIL', 'DNS_RCODE_NOTAUTH']),
+            constraints.AllowedValues(['DNS_RCODE_NOERROR', 'DNS_RCODE_NXDOMAIN', 'DNS_RCODE_YXDOMAIN', 'DNS_RCODE_REFUSED', 'DNS_RCODE_FORMERR', 'DNS_RCODE_YXRRSET', 'DNS_RCODE_NOTIMP', 'DNS_RCODE_NOTZONE', 'DNS_RCODE_SERVFAIL', 'DNS_RCODE_NOTAUTH', 'DNS_RCODE_NXRRSET']),
         ],
     )
     truncation_schema = properties.Schema(
@@ -423,7 +423,7 @@ class DnsRule(object):
 class DnsPolicy(AviResource):
     resource_name = "dnspolicy"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -464,7 +464,7 @@ class DnsPolicy(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'rule',
         'created_by',
@@ -473,7 +473,7 @@ class DnsPolicy(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'rule': rule_schema,
         'created_by': created_by_schema,

@@ -1608,7 +1608,7 @@ class SeBootupProperties(object):
 class SeProperties(AviResource):
     resource_name = "seproperties"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -1638,7 +1638,7 @@ class SeProperties(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'se_bootup_properties',
         'se_runtime_properties',
         'se_agent_properties',
@@ -1646,7 +1646,7 @@ class SeProperties(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'se_bootup_properties': se_bootup_properties_schema,
         'se_runtime_properties': se_runtime_properties_schema,
         'se_agent_properties': se_agent_properties_schema,

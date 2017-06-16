@@ -55,7 +55,7 @@ class FailActionHTTPLocalResponse(object):
 class PriorityLabels(AviResource):
     resource_name = "prioritylabels"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -90,7 +90,7 @@ class PriorityLabels(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'equivalent_labels',
         'description',
@@ -98,7 +98,7 @@ class PriorityLabels(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'equivalent_labels': equivalent_labels_schema,
         'description': description_schema,
@@ -422,7 +422,7 @@ class FailAction(object):
 class PoolGroupDeploymentPolicy(AviResource):
     resource_name = "poolgroupdeploymentpolicy"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -496,7 +496,7 @@ class PoolGroupDeploymentPolicy(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'scheme',
         'test_traffic_ratio_rampup',
@@ -510,7 +510,7 @@ class PoolGroupDeploymentPolicy(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'scheme': scheme_schema,
         'test_traffic_ratio_rampup': test_traffic_ratio_rampup_schema,
@@ -676,7 +676,7 @@ class DiscoveredNetwork(object):
 class PoolGroup(AviResource):
     resource_name = "poolgroup"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -748,7 +748,7 @@ class PoolGroup(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'members',
         'priority_labels_uuid',
@@ -762,7 +762,7 @@ class PoolGroup(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'members': members_schema,
         'priority_labels_uuid': priority_labels_uuid_schema,
@@ -1052,7 +1052,7 @@ class Server(object):
 class Pool(AviResource):
     resource_name = "pool"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -1084,7 +1084,7 @@ class Pool(AviResource):
     )
     max_concurrent_connections_per_server_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The maximum number of concurrent connections allowed to each server within the pool. (Default: 0)"),
+        _("The maximum number of concurrent connections allowed to each server within the pool. NOTE: applied value will be no less than the number of service engines that the pool is placed on. If set to 0, no limit is applied. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -1408,6 +1408,19 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    external_autoscale_groups_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS"),
+        required=True,
+        update_allowed=False,
+    )
+    external_autoscale_groups_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS"),
+        schema=external_autoscale_groups_item_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
@@ -1417,7 +1430,7 @@ class Pool(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'default_server_port',
         'graceful_disable_timeout',
@@ -1466,12 +1479,13 @@ class Pool(AviResource):
         'rewrite_host_header_to_sni',
         'rewrite_host_header_to_server_name',
         'nsx_securitygroup',
+        'external_autoscale_groups',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'default_server_port': default_server_port_schema,
         'graceful_disable_timeout': graceful_disable_timeout_schema,
@@ -1520,6 +1534,7 @@ class Pool(AviResource):
         'rewrite_host_header_to_sni': rewrite_host_header_to_sni_schema,
         'rewrite_host_header_to_server_name': rewrite_host_header_to_server_name_schema,
         'nsx_securitygroup': nsx_securitygroup_schema,
+        'external_autoscale_groups': external_autoscale_groups_schema,
         'description': description_schema,
     }
 

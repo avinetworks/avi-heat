@@ -351,6 +351,25 @@ class BgpProfile(object):
         required=False,
         update_allowed=True,
     )
+    send_community_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.2) Send community attribute to all peers (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    community_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Set the community attribute - 'internet', 'local-AS', 'no-advertise', 'no-export', <AS>:<Val> One or more of these can be configured with 1 <= AS,Val <= 65535"),
+        required=True,
+        update_allowed=False,
+    )
+    community_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Set the community attribute - 'internet', 'local-AS', 'no-advertise', 'no-export', <AS>:<Val> One or more of these can be configured with 1 <= AS,Val <= 65535"),
+        schema=community_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -359,6 +378,8 @@ class BgpProfile(object):
         'peers',
         'keepalive_interval',
         'hold_time',
+        'send_community',
+        'community',
     )
 
     # mapping of properties to their schemas
@@ -368,6 +389,8 @@ class BgpProfile(object):
         'peers': peers_schema,
         'keepalive_interval': keepalive_interval_schema,
         'hold_time': hold_time_schema,
+        'send_community': send_community_schema,
+        'community': community_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -414,7 +437,7 @@ class DebugVrfContext(object):
 class VrfContext(AviResource):
     resource_name = "vrfcontext"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -490,7 +513,7 @@ class VrfContext(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'static_routes',
         'bgp_profile',
@@ -503,7 +526,7 @@ class VrfContext(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,

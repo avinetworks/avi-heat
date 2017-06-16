@@ -422,7 +422,7 @@ class vCenterConfiguration(object):
 class CloudConnectorUser(AviResource):
     resource_name = "cloudconnectoruser"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -455,7 +455,7 @@ class CloudConnectorUser(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'private_key',
         'public_key',
@@ -464,7 +464,7 @@ class CloudConnectorUser(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'private_key': private_key_schema,
         'public_key': public_key_schema,
@@ -1323,7 +1323,7 @@ class LinuxServerConfiguration(object):
     )
     docker_registry_se_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Private docker registry for SE image storage"),
+        _("(Deprecated in: 17.1.2) Private docker registry for SE image storage"),
         schema=DockerRegistry.properties_schema,
         required=False,
         update_allowed=True,
@@ -1446,7 +1446,7 @@ class MesosConfiguration(object):
     )
     use_bridge_ip_as_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use Bridge IP on each Host as VIP (Default: True)"),
+        _("Use Bridge IP on each Host as VIP (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1670,6 +1670,18 @@ class MesosConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    disable_auto_gs_sync_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.2) Disable auto sync for GSLB services (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_vips_for_east_west_services_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use unique virtual IP address for every east west service in Mesos/Marathon. 'use_bridge_ip_as_vip' and 'vip' fields , if set, will not be used if this field is set. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1707,6 +1719,8 @@ class MesosConfiguration(object):
         'se_include_attributes',
         'ssh_user_uuid',
         'node_availability_zone_label',
+        'disable_auto_gs_sync',
+        'use_vips_for_east_west_services',
     )
 
     # mapping of properties to their schemas
@@ -1745,6 +1759,8 @@ class MesosConfiguration(object):
         'se_include_attributes': se_include_attributes_schema,
         'ssh_user_uuid': ssh_user_uuid_schema,
         'node_availability_zone_label': node_availability_zone_label_schema,
+        'disable_auto_gs_sync': disable_auto_gs_sync_schema,
+        'use_vips_for_east_west_services': use_vips_for_east_west_services_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1824,7 +1840,7 @@ class DockerConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -2096,11 +2112,11 @@ class OShiftK8SConfiguration(object):
     )
     se_deployment_method_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Use Fleet/SSH for SE deployment (Default: SE_CREATE_SSH)"),
+        _("Use SSH/Pod for SE deployment (Default: SE_CREATE_SSH)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -2809,7 +2825,7 @@ class RancherConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -3030,7 +3046,7 @@ class RancherConfiguration(object):
 class Cloud(AviResource):
     resource_name = "cloud"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -3214,7 +3230,7 @@ class Cloud(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'vtype',
         'vcenter_configuration',
@@ -3245,7 +3261,7 @@ class Cloud(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'vtype': vtype_schema,
         'vcenter_configuration': vcenter_configuration_schema,

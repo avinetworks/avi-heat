@@ -200,7 +200,7 @@ class AppCookiePersistenceProfile(object):
 class ApplicationPersistenceProfile(AviResource):
     resource_name = "applicationpersistenceprofile"
     # all schemas
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -267,7 +267,7 @@ class ApplicationPersistenceProfile(AviResource):
 
     # properties list
     PROPERTIES = (
-        'version',
+        'avi_version',
         'name',
         'server_hm_down_recovery',
         'persistence_type',
@@ -280,7 +280,7 @@ class ApplicationPersistenceProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'server_hm_down_recovery': server_hm_down_recovery_schema,
         'persistence_type': persistence_type_schema,
