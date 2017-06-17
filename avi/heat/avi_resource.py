@@ -20,7 +20,7 @@ class AviResource(resource.Resource):
     resource_name = ""  # should be set by derived resource classes
 
     def get_version(self):
-        return dict(self.properties).get("version", None)
+        return dict(self.properties).get("avi_version", None)
 
     def get_project_name(self):
         if not self.context.auth_token_info:
@@ -113,7 +113,7 @@ class AviResource(resource.Resource):
             client=client
         )
         LOG.debug("Resource def for create: %s", res_def)
-        res_def.pop("version", None)
+        res_def.pop("avi_version", None)
         try:
             obj = client.post(self.resource_name,
                               api_version=self.get_version(),
@@ -205,7 +205,7 @@ class AviResource(resource.Resource):
             client=client
         )
         # we should use version from the updated description
-        api_version = res_def.pop("version", None)
+        api_version = res_def.pop("avi_version", None)
         try:
             client.put(
                 "%s/%s" % (self.resource_name, self.resource_id),
@@ -257,7 +257,7 @@ class AviNestedResource(AviResource):
         parent_uuid_prop = self.resource_name + "_uuid"
         parent_uuid = res_def[parent_uuid_prop]
         res_def.pop(parent_uuid_prop)
-        res_def.pop("version", None)
+        res_def.pop("avi_version", None)
         data = {"update": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
@@ -304,7 +304,7 @@ class AviNestedResource(AviResource):
             LOG.info("Parent already deleted!")
             return True
         res_def.pop(parent_uuid_prop)
-        res_def.pop("version", None)
+        res_def.pop("avi_version", None)
         data = {"delete": {self.nested_property_name: [res_def]}}
         try:
             client.patch("%s/%s" % (self.resource_name,
