@@ -12,18 +12,6 @@ def os2avi_uuid(obj_type, eid):
     return obj_type + "-" + uid
 
 
-def fix_dict_refs(obj):
-    for k in obj.keys():
-        if k.endswith("_refs") or k.endswith("_ref"):
-            newval = fix_non_dict_refs(obj[k])
-            obj.pop(k)
-            new_key = "uuid".join(k.rsplit("ref", 1))
-            obj[new_key] = newval
-        elif isinstance(obj[k], dict):
-            obj[k] = fix_dict_refs(obj[k])
-    return obj
-
-
 def fix_non_dict_refs(obj):
     if isinstance(obj, list):
         nlist = []
@@ -33,6 +21,25 @@ def fix_non_dict_refs(obj):
     elif isinstance(obj, basestring):
         return obj.split("/")[-1].split("#")[0]
     return obj
+
+
+def replace_refs_with_uuids(a):
+    if isinstance(a, dict):
+        for k in a.keys():
+            nk = None
+            if k.endswith("_refs"):
+                nk = k[:-4] + "uuids"
+            elif k.endswith("_ref"):
+                nk = k[:-3] + "uuid"
+            if nk:
+                a[nk] = fix_non_dict_refs(a[k])
+                a.pop(k)
+            else:
+                replace_refs_with_uuids(a[k])
+    elif isinstance(a, list):
+        for elem in a:
+            replace_refs_with_uuids(elem)
+    return a
 
 
 def cmp_a_in_b(a, b):

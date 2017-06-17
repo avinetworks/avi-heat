@@ -5,7 +5,7 @@ from heat.engine import resource
 from heat.common import exception as HeatException
 from avi_api import ApiSession
 from avi_api import ObjectNotFound
-from avi_utils import os2avi_uuid, cmp_a_in_b, fix_dict_refs
+import avi_utils
 
 # for python 2/3 compatibility
 try:
@@ -45,8 +45,8 @@ class AviResource(resource.Resource):
     def get_avi_tenant_uuid(self):
         if self.get_project_name() == 'admin':
             return "admin"
-        return os2avi_uuid("tenant",
-                           self.context.tenant_id)
+        return avi_utils.os2avi_uuid("tenant",
+                                     self.context.tenant_id)
 
     def get_avi_client(self):
         try:
@@ -133,13 +133,11 @@ class AviResource(resource.Resource):
         obj = client.get(url,
                          tenant_uuid=self.get_avi_tenant_uuid()
                          ).json()
-        return fix_dict_refs(obj)
+        return avi_utils.replace_refs_with_uuids(obj)
 
     def _update_obj(self, obj, old_diffs, new_diffs):
         for p in new_diffs.keys():
-            if p.endswith("_uuid"):
-                obj.pop(p[:-4] + "ref", None)
-            prev_val = old_diffs[p]
+            prev_val = old_diffs.get(p, None)
             new_val = new_diffs[p]
             if isinstance(new_val, dict) or isinstance(prev_val, dict):
                 if not new_diffs[p]:
@@ -155,13 +153,27 @@ class AviResource(resource.Resource):
                         prev_val[k] = None
                 self._update_obj(obj[p], prev_val, new_val)
             elif isinstance(new_val, list) or isinstance(prev_val, list):
+                # figure out which entries match from old and remove them
+                # from obj;
+                # then add objects from new_val
+                if prev_val and obj.get(p, None):
+                    for pitem in prev_val:
+                        pitem = self.create_clean_properties(pitem)
+                        newobjs = []
+                        found = False
+                        for oitem in obj[p]:
+                            if found:
+                                newobjs.append(oitem)
+                            elif avi_utils.cmp_a_in_b(pitem, oitem):
+                                found = True
+                            else:
+                                newobjs.append(oitem)
+                        obj[p] = newobjs
+
                 if new_val:
-                    # obj[p].extend(self.create_clean_properties(new_val))
-                    obj[p] = self.create_clean_properties(new_val)
+                    obj[p].extend(self.create_clean_properties(new_val))
                 else:
                     obj.pop(p, None)
-                if p.endswith("_uuids"):
-                    obj.pop(p[:-5] + "refs", None)
             else:
                 if new_diffs[p]:
                     obj[p] = new_diffs[p]
@@ -172,10 +184,15 @@ class AviResource(resource.Resource):
     def handle_update(self, json_snippet, tmpl_diff, prop_diff):
         client = self.get_avi_client()
         obj = self._show_resource(client)
+        prev_def = self.create_clean_properties(
+            dict(self.properties),
+            field_refs=getattr(self, "field_references", {}),
+            client=client
+        )
         # from IPython.core.debugger import Pdb
         # pdb = Pdb()
         # pdb.set_trace()
-        self._update_obj(obj, dict(self.properties), prop_diff)
+        self._update_obj(obj, prev_def, prop_diff)
         res_def = self.create_clean_properties(
             obj,
             field_refs=getattr(self, "field_references", {}),
