@@ -20,4 +20,6 @@ do
 done
 rm -rf VERSION
 git checkout master
-/root/bin/hub release edit $assets -F ReleaseNote latest
+# hub command compiled from the code at https://github.com/ypraveen/hub
+/root/utils/hub release delete latest
+/root/utils/hub release create $assets -F ReleaseNote latest
