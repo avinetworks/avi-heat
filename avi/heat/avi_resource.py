@@ -198,6 +198,8 @@ class AviResource(resource.Resource):
         # from IPython.core.debugger import Pdb
         # pdb = Pdb()
         # pdb.set_trace()
+        if "avi_version" in prev_def:
+            obj["avi_version"] = prev_def["avi_version"]
         self._update_obj(obj, prev_def, prop_diff)
         res_def = self.create_clean_properties(
             obj,
