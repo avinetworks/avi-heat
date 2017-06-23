@@ -181,7 +181,7 @@ class AviResource(resource.Resource):
                 else:
                     obj.pop(p, None)
             else:
-                if new_diffs[p]:
+                if new_diffs[p] is not None:
                     obj[p] = new_diffs[p]
                 else:
                     obj.pop(p, None)
