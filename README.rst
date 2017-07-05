@@ -3,20 +3,12 @@ Avi Heat Resources
 
 Heat resources for Avi Objects
 
-Pre-requisites
---------------
-
-Make sure to have "avi-lbaas" service defined in your keystone catalog.
-Please refer to Avi Knowledge Brief at https://kb.avinetworks.com/installing-the-lbaas-driver-cli-shell-openstack/ for details on how to
-define this service and an endpoint for it in your keystone catalog.
-
-
 Installation Steps
 ------------------
 
 1. Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
 
-2. Update your /etc/heat/heat.conf and add the following in [Default] section:
+2. Update your /etc/heat/heat.conf and add the following in the [Default] section:
 
    Ubuntu::
 
@@ -26,11 +18,25 @@ Installation Steps
 
     plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
 
-3. Restart heat-engine after adding this. For example::
+3. Provide the IP address or FQDN for the Avi Controller. Use one of the following options:
+
+   OPTION 1: In heat.conf
+     Update your /etc/heat/heat.conf and add the following in the [Default] section:
+
+   ::
+
+       avi_controller = '10.10.25.200'
+
+   OPTION 2: Via avi-lbaas service in keystone catalog
+     Please refer to Avi Knowledge Brief at https://kb.avinetworks.com/installing-the-lbaas-driver-cli-shell-openstack/ for details on how to define avi-lbaas service and an endpoint for it in your keystone catalog.
+
+
+4. Restart heat-engine after adding this. For example::
 
     $> service heat-engine restart
 
-4. For AutoScalingGroup to work, you need to allow the stack_domain_admin configured
+
+5. For AutoScalingGroup to work, you need to allow the stack_domain_admin configured
 in your /etc/heat.conf to be able to access Avi Controller with Tenant-Admin privileges.
 
 For example, consider the following settings in /etc/heat.conf::
