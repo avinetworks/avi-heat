@@ -13,6 +13,11 @@ try:
 except:
     basestring = str
 
+from oslo_config import cfg
+controller_opt = cfg.StrOpt("avi_controller", default="",
+                            help="Avi Controller IP or FQDN")
+cfg.CONF.register_opt(controller_opt)
+
 LOG = logging.getLogger(__name__)
 
 
@@ -48,7 +53,10 @@ class AviResource(resource.Resource):
         return avi_utils.os2avi_uuid("tenant",
                                      self.context.tenant_id)
 
-    def get_avi_client(self):
+    def get_avi_address(self):
+        address = cfg.CONF.avi_controller
+        if address:
+            return address
         try:
             endpoint = self.client("keystone").url_for(
                 service_type="avi-lbaas",
@@ -56,6 +64,12 @@ class AviResource(resource.Resource):
             address = endpoint.split("//")[1].split("/")[0]
         except Exception as e:
             LOG.exception("Error during finding avi address: %s", e)
+            return None
+        return address
+
+    def get_avi_client(self):
+        address = self.get_avi_address()
+        if not address:
             return None
         username = self.get_user_name()
         password = None
