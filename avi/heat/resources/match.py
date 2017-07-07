@@ -691,7 +691,7 @@ class IpAddrGroupAddrs(AviNestedResource):
         required=True,
         update_allowed=False,
     )
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -708,12 +708,14 @@ class IpAddrGroupAddrs(AviNestedResource):
     # properties list
     PROPERTIES = ('ipaddrgroup_uuid',
                   'addrs',
+                  'avi_version'
                  )
 
     # mapping of properties to their schemas
     properties_schema = {
         'ipaddrgroup_uuid': parent_uuid_schema,
         'addrs': addrs_item_schema,
+        'avi_version': avi_version_schema,
     }
 
     # field references

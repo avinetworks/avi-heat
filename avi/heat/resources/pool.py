@@ -1572,7 +1572,7 @@ class PoolServers(AviNestedResource, Server):
         required=True,
         update_allowed=False,
     )
-    version_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
         _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
         required=False,
@@ -1581,11 +1581,12 @@ class PoolServers(AviNestedResource, Server):
 
 
     # properties list
-    PROPERTIES = Server.PROPERTIES + ('pool_uuid','version')
+    PROPERTIES = Server.PROPERTIES + (
+        'pool_uuid','avi_version')
 
     # mapping of properties to their schemas
     properties_schema = {
-        'version': version_schema,
+        'avi_version': avi_version_schema,
         'pool_uuid': parent_uuid_schema,
     }
     properties_schema.update(Server.properties_schema)
