@@ -7,7 +7,7 @@ git tag -d latest
 git tag latest
 git push -f origin latest
 set -e
-for BRANCH in master 16.3 17.1
+for BRANCH in 16.3 17.1
 do
     rm -rf VERSION
     git checkout $BRANCH
