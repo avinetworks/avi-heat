@@ -31,6 +31,19 @@ class TestAviResource(unittest.TestCase):
         a["C"] = "C"
         self.assertFalse(cmp_a_in_b(a, b))
 
+        a = {"ind": 2, "type": "t"}
+        b = {"ind": 2, "type": "d"}
+        self.assertTrue(cmp_a_in_b(a, b, uniq_key_dict={"my_key": "ind"}))
+        b = {"ind": 3, "type": "t"}
+        self.assertFalse(cmp_a_in_b(a, b, uniq_key_dict={"my_key": "ind"}))
+
+        a = {"ind": 2, "type": "t", "ind2": "5"}
+        b = {"ind": 2, "type": "d", "ind2": "5"}
+        self.assertTrue(cmp_a_in_b(a, b, uniq_key_dict={"my_key": "ind,ind2"}))
+        b = {"ind": 2, "type": "d", "ind2": "7"}
+        self.assertFalse(cmp_a_in_b(a, b, uniq_key_dict={"my_key": "ind,ind2"}))
+
+
     def check_replace_refs_with_uuids(self, obj):
         print "Before: %s" % obj
         replace_refs_with_uuids(obj)

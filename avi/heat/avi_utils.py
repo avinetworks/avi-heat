@@ -42,16 +42,22 @@ def replace_refs_with_uuids(a):
     return a
 
 
-def cmp_a_in_b(a, b):
+def cmp_a_in_b(a, b, uniq_key_dict={}):
     if isinstance(a, dict):
-        for k in a.keys():
-            if k not in b or not cmp_a_in_b(a[k], b[k]):
+        cmp_keys = uniq_key_dict.get("my_key")
+        if cmp_keys:
+            cmp_keys = cmp_keys.split(",")
+        else:
+            cmp_keys = a.keys()
+        for k in cmp_keys:
+            if(k not in b or
+               not cmp_a_in_b(a[k], b[k], uniq_key_dict.get(k, {}))):
                 return False
         return True
 
     if isinstance(a, list):
         return all(
-            any(cmp_a_in_b(aitem, bitem) for bitem in b)
+            any(cmp_a_in_b(aitem, bitem, uniq_key_dict) for bitem in b)
             for aitem in a)
 
     return a == b
