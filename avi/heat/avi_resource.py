@@ -149,7 +149,7 @@ class AviResource(resource.Resource):
                          ).json()
         return avi_utils.replace_refs_with_uuids(obj)
 
-    def _update_obj(self, obj, old_diffs, new_diffs):
+    def _update_obj(self, obj, old_diffs, new_diffs, uniq_keys={}):
         for p in new_diffs.keys():
             prev_val = old_diffs.get(p, None)
             new_val = new_diffs[p]
@@ -165,7 +165,8 @@ class AviResource(resource.Resource):
                 for k in new_val.keys():
                     if k not in prev_val:
                         prev_val[k] = None
-                self._update_obj(obj[p], prev_val, new_val)
+                self._update_obj(obj[p], prev_val, new_val,
+                                 uniq_keys=uniq_keys.get(p, {}))
             elif isinstance(new_val, list) or isinstance(prev_val, list):
                 # figure out which entries match from old and remove them
                 # from obj;
@@ -178,7 +179,8 @@ class AviResource(resource.Resource):
                         for oitem in obj[p]:
                             if found:
                                 newobjs.append(oitem)
-                            elif avi_utils.cmp_a_in_b(pitem, oitem):
+                            elif avi_utils.cmp_a_in_b(pitem, oitem,
+                                                      uniq_keys.get(p, {})):
                                 found = True
                             else:
                                 newobjs.append(oitem)
@@ -206,7 +208,8 @@ class AviResource(resource.Resource):
         # from IPython.core.debugger import Pdb
         # pdb = Pdb()
         # pdb.set_trace()
-        self._update_obj(obj, prev_def, prop_diff)
+        self._update_obj(obj, prev_def, prop_diff,
+                         uniq_keys=getattr(self, "unique_keys", {}))
         res_def = self.create_clean_properties(
             obj,
             field_refs=getattr(self, "field_references", {}),
