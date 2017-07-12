@@ -60,7 +60,6 @@ class URIParamToken(object):
 
 
 
-
 class PoolServer(object):
     # all schemas
     ip_schema = properties.Schema(
@@ -102,6 +101,10 @@ class PoolServer(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HTTPCookieData(object):
@@ -130,7 +133,6 @@ class HTTPCookieData(object):
         'name': name_schema,
         'value': value_schema,
     }
-
 
 
 
@@ -163,7 +165,6 @@ class URIParamQuery(object):
 
 
 
-
 class HTTPHdrValue(object):
     # all schemas
     var_schema = properties.Schema(
@@ -193,7 +194,6 @@ class HTTPHdrValue(object):
         'var': var_schema,
         'val': val_schema,
     }
-
 
 
 
@@ -272,6 +272,11 @@ class HTTPSwitchingAction(object):
         'server': getattr(PoolServer, 'field_references', {}),
     }
 
+    unique_keys = {
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+        'server': getattr(PoolServer, 'unique_keys', {}),
+    }
+
 
 
 class URIParam(object):
@@ -317,6 +322,10 @@ class URIParam(object):
         'tokens': getattr(URIParamToken, 'field_references', {}),
     }
 
+    unique_keys = {
+        'tokens': getattr(URIParamToken, 'unique_keys', {}),
+    }
+
 
 
 class HTTPHdrData(object):
@@ -350,6 +359,10 @@ class HTTPHdrData(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'value': getattr(HTTPHdrValue, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'value': getattr(HTTPHdrValue, 'unique_keys', {}),
     }
 
 
@@ -427,6 +440,11 @@ class HTTPRedirectAction(object):
         'host': getattr(URIParam, 'field_references', {}),
     }
 
+    unique_keys = {
+        'path': getattr(URIParam, 'unique_keys', {}),
+        'host': getattr(URIParam, 'unique_keys', {}),
+    }
+
 
 
 class HTTPRewriteURLAction(object):
@@ -472,6 +490,12 @@ class HTTPRewriteURLAction(object):
         'host_hdr': getattr(URIParam, 'field_references', {}),
         'query': getattr(URIParamQuery, 'field_references', {}),
         'path': getattr(URIParam, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'host_hdr': getattr(URIParam, 'unique_keys', {}),
+        'query': getattr(URIParamQuery, 'unique_keys', {}),
+        'path': getattr(URIParam, 'unique_keys', {}),
     }
 
 
@@ -538,6 +562,11 @@ class HTTPRewriteLocHdrAction(object):
         'host': getattr(URIParam, 'field_references', {}),
     }
 
+    unique_keys = {
+        'path': getattr(URIParam, 'unique_keys', {}),
+        'host': getattr(URIParam, 'unique_keys', {}),
+    }
+
 
 
 class HTTPHdrAction(object):
@@ -584,5 +613,10 @@ class HTTPHdrAction(object):
     field_references = {
         'cookie': getattr(HTTPCookieData, 'field_references', {}),
         'hdr': getattr(HTTPHdrData, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'cookie': getattr(HTTPCookieData, 'unique_keys', {}),
+        'hdr': getattr(HTTPHdrData, 'unique_keys', {}),
     }
 

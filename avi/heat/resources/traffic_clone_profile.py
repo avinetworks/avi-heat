@@ -63,6 +63,11 @@ class CloneServer(object):
         'network_uuid': 'network',
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class TrafficCloneProfile(AviResource):
@@ -120,6 +125,10 @@ class TrafficCloneProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'clone_servers': getattr(CloneServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'clone_servers': getattr(CloneServer, 'unique_keys', {}),
     }
 
 

@@ -73,7 +73,6 @@ class SeResources(object):
 
 
 
-
 class ConServer(object):
     # all schemas
     server_ip_schema = properties.Schema(
@@ -139,6 +138,11 @@ class ConServer(object):
         'server_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'server_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class MemberInterface(object):
@@ -168,6 +172,9 @@ class MemberInterface(object):
         'active': active_schema,
     }
 
+    unique_keys = {
+        'my_key': 'if_name',
+    }
 
 
 
@@ -282,6 +289,11 @@ class ConVip(object):
         'vip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'vip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class vNICNetwork(object):
@@ -326,6 +338,11 @@ class vNICNetwork(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'my_key': 'ip',
     }
 
 
@@ -378,6 +395,11 @@ class ConInfo(object):
     field_references = {
         'vip': getattr(ConVip, 'field_references', {}),
         'servers': getattr(ConServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vip': getattr(ConVip, 'unique_keys', {}),
+        'servers': getattr(ConServer, 'unique_keys', {}),
     }
 
 
@@ -445,6 +467,11 @@ class VlanInterface(object):
     field_references = {
         'vrf_uuid': 'vrfcontext',
         'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'my_key': 'if_name',
+        'vnic_networks': getattr(vNICNetwork, 'unique_keys', {}),
     }
 
 
@@ -521,6 +548,12 @@ class vNIC(object):
         'vlan_interfaces': getattr(VlanInterface, 'field_references', {}),
         'vrf_uuid': 'vrfcontext',
         'vnic_networks': getattr(vNICNetwork, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vlan_interfaces': getattr(VlanInterface, 'unique_keys', {}),
+        'my_key': 'if_name',
+        'vnic_networks': getattr(vNICNetwork, 'unique_keys', {}),
     }
 
 

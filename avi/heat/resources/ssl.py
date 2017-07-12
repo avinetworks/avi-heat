@@ -44,7 +44,6 @@ class SSLKeyRSAParams(object):
 
 
 
-
 class SSLVersion(object):
     # all schemas
     type_schema = properties.Schema(
@@ -67,6 +66,9 @@ class SSLVersion(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'type',
+    }
 
 
 
@@ -125,7 +127,6 @@ class SSLKeyECParams(object):
     properties_schema = {
         'curve': curve_schema,
     }
-
 
 
 
@@ -206,7 +207,6 @@ class SSLCertificateDescription(object):
 
 
 
-
 class CertificateManagementProfile(AviResource):
     resource_name = "certificatemanagementprofile"
     # all schemas
@@ -264,6 +264,10 @@ class CertificateManagementProfile(AviResource):
         'script_params': getattr(CustomParams, 'field_references', {}),
     }
 
+    unique_keys = {
+        'script_params': getattr(CustomParams, 'unique_keys', {}),
+    }
+
 
 
 class SSLRating(object):
@@ -306,7 +310,6 @@ class SSLRating(object):
         'performance_rating': performance_rating_schema,
         'compatibility_rating': compatibility_rating_schema,
     }
-
 
 
 
@@ -403,7 +406,6 @@ class CRL(object):
 
 
 
-
 class SSLKeyParams(object):
     # all schemas
     algorithm_schema = properties.Schema(
@@ -448,6 +450,11 @@ class SSLKeyParams(object):
     field_references = {
         'ec_params': getattr(SSLKeyECParams, 'field_references', {}),
         'rsa_params': getattr(SSLKeyRSAParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ec_params': getattr(SSLKeyECParams, 'unique_keys', {}),
+        'rsa_params': getattr(SSLKeyRSAParams, 'unique_keys', {}),
     }
 
 
@@ -592,6 +599,12 @@ class SSLProfile(AviResource):
         'ssl_rating': getattr(SSLRating, 'field_references', {}),
         'accepted_versions': getattr(SSLVersion, 'field_references', {}),
         'tags': getattr(Tag, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ssl_rating': getattr(SSLRating, 'unique_keys', {}),
+        'accepted_versions': getattr(SSLVersion, 'unique_keys', {}),
+        'tags': getattr(Tag, 'unique_keys', {}),
     }
 
 
@@ -779,6 +792,12 @@ class SSLCertificate(object):
         'issuer': getattr(SSLCertificateDescription, 'field_references', {}),
     }
 
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'subject': getattr(SSLCertificateDescription, 'unique_keys', {}),
+        'issuer': getattr(SSLCertificateDescription, 'unique_keys', {}),
+    }
+
 
 
 class PKIProfile(AviResource):
@@ -877,6 +896,11 @@ class PKIProfile(AviResource):
     field_references = {
         'ca_certs': getattr(SSLCertificate, 'field_references', {}),
         'crls': getattr(CRL, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ca_certs': getattr(SSLCertificate, 'unique_keys', {}),
+        'crls': getattr(CRL, 'unique_keys', {}),
     }
 
 
@@ -1037,6 +1061,13 @@ class SSLKeyAndCertificate(AviResource):
         'ca_certs': getattr(CertificateAuthority, 'field_references', {}),
         'certificate_management_profile_uuid': 'certificatemanagementprofile',
         'key_params': getattr(SSLKeyParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'ca_certs': getattr(CertificateAuthority, 'unique_keys', {}),
+        'dynamic_params': getattr(CustomParams, 'unique_keys', {}),
+        'certificate': getattr(SSLCertificate, 'unique_keys', {}),
     }
 
 

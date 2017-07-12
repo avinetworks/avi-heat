@@ -111,6 +111,11 @@ class IpamDnsInfobloxProfile(object):
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'usable_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class DnsServiceDomain(object):
@@ -156,6 +161,9 @@ class DnsServiceDomain(object):
         'pass_through': pass_through_schema,
     }
 
+    unique_keys = {
+        'my_key': 'domain_name',
+    }
 
 
 
@@ -258,7 +266,6 @@ class IpamDnsAwsProfile(object):
 
 
 
-
 class CustomIpamDnsProfile(AviResource):
     resource_name = "customipamdnsprofile"
     # all schemas
@@ -316,6 +323,10 @@ class CustomIpamDnsProfile(AviResource):
         'script_params': getattr(CustomParams, 'field_references', {}),
     }
 
+    unique_keys = {
+        'script_params': getattr(CustomParams, 'unique_keys', {}),
+    }
+
 
 
 class IpamDnsGCPProfile(object):
@@ -351,7 +362,6 @@ class IpamDnsGCPProfile(object):
         'usable_network_uuids': usable_network_uuids_schema,
         'match_se_group_subnet': match_se_group_subnet_schema,
     }
-
 
 
 
@@ -418,6 +428,10 @@ class IpamDnsInternalProfile(object):
         'dns_service_domain': getattr(DnsServiceDomain, 'field_references', {}),
     }
 
+    unique_keys = {
+        'dns_service_domain': getattr(DnsServiceDomain, 'unique_keys', {}),
+    }
+
 
 
 class IpamDnsCustomProfile(object):
@@ -459,6 +473,10 @@ class IpamDnsCustomProfile(object):
     field_references = {
         'custom_ipam_dns_params': getattr(CustomParams, 'field_references', {}),
         'custom_ipam_dns_profile_uuid': 'customipamdnsprofile',
+    }
+
+    unique_keys = {
+        'custom_ipam_dns_params': getattr(CustomParams, 'unique_keys', {}),
     }
 
 
@@ -521,7 +539,6 @@ class IpamDnsOpenstackProfile(object):
         'vip_network_name': vip_network_name_schema,
         'region': region_schema,
     }
-
 
 
 
@@ -636,6 +653,16 @@ class IpamDnsProviderProfile(AviResource):
         'custom_profile': getattr(IpamDnsCustomProfile, 'field_references', {}),
         'internal_profile': getattr(IpamDnsInternalProfile, 'field_references', {}),
         'aws_profile': getattr(IpamDnsAwsProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'openstack_profile': getattr(IpamDnsOpenstackProfile, 'unique_keys', {}),
+        'gcp_profile': getattr(IpamDnsGCPProfile, 'unique_keys', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'infoblox_profile': getattr(IpamDnsInfobloxProfile, 'unique_keys', {}),
+        'custom_profile': getattr(IpamDnsCustomProfile, 'unique_keys', {}),
+        'internal_profile': getattr(IpamDnsInternalProfile, 'unique_keys', {}),
+        'aws_profile': getattr(IpamDnsAwsProfile, 'unique_keys', {}),
     }
 
 

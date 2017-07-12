@@ -43,7 +43,6 @@ class ReplaceStringVar(object):
 
 
 
-
 class MatchReplacePair(object):
     # all schemas
     match_string_schema = properties.Schema(
@@ -75,6 +74,10 @@ class MatchReplacePair(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'replacement_string': getattr(ReplaceStringVar, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'replacement_string': getattr(ReplaceStringVar, 'unique_keys', {}),
     }
 
 
@@ -151,5 +154,10 @@ class ContentRewriteProfile(object):
         'req_match_replace_pair': getattr(MatchReplacePair, 'field_references', {}),
         'rsp_match_replace_pair': getattr(MatchReplacePair, 'field_references', {}),
         'rewritable_content_uuid': 'stringgroup',
+    }
+
+    unique_keys = {
+        'req_match_replace_pair': getattr(MatchReplacePair, 'unique_keys', {}),
+        'rsp_match_replace_pair': getattr(MatchReplacePair, 'unique_keys', {}),
     }
 

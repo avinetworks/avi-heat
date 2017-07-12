@@ -76,6 +76,10 @@ class ServicePoolSelector(object):
         'service_pool_group_uuid': 'poolgroup',
     }
 
+    unique_keys = {
+        'my_key': 'service_port,service_protocol',
+    }
+
 
 
 class VirtualServiceResource(object):
@@ -144,7 +148,6 @@ class VirtualServiceResource(object):
         'scalein_se_uuid': scalein_se_uuid_schema,
         'num_standby_se': num_standby_se_schema,
     }
-
 
 
 
@@ -227,7 +230,6 @@ class PerformanceLimits(object):
 
 
 
-
 class SidebandProfile(object):
     # all schemas
     ip_item_schema = properties.Schema(
@@ -268,6 +270,10 @@ class SidebandProfile(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class TLSTicket(object):
@@ -304,7 +310,6 @@ class TLSTicket(object):
         'aes_key': aes_key_schema,
         'hmac_key': hmac_key_schema,
     }
-
 
 
 
@@ -350,6 +355,10 @@ class IPNetworkSubnet(object):
         'network_uuid': 'network',
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class VsSeVnic(object):
@@ -389,7 +398,6 @@ class VsSeVnic(object):
         'type': type_schema,
         'lif': lif_schema,
     }
-
 
 
 
@@ -441,6 +449,10 @@ class VsApicExtension(object):
         'vnic': getattr(VsSeVnic, 'field_references', {}),
     }
 
+    unique_keys = {
+        'vnic': getattr(VsSeVnic, 'unique_keys', {}),
+    }
+
 
 
 class SeVipInterfaceList(object):
@@ -490,6 +502,10 @@ class SeVipInterfaceList(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vip_intf_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -749,6 +765,14 @@ class SeList(object):
         'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'vnic': getattr(VsSeVnic, 'unique_keys', {}),
+        'vip_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'snat_ip': getattr(IpAddr, 'unique_keys', {}),
+        'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'vip_intf_list': getattr(SeVipInterfaceList, 'unique_keys', {}),
+    }
+
 
 
 class VipDbExtension(object):
@@ -817,6 +841,12 @@ class VipDbExtension(object):
         'se_list': getattr(SeList, 'field_references', {}),
         'first_se_assigned_time': getattr(TimeStamp, 'field_references', {}),
         'requested_resource': getattr(VirtualServiceResource, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_list': getattr(SeList, 'unique_keys', {}),
+        'first_se_assigned_time': getattr(TimeStamp, 'unique_keys', {}),
+        'requested_resource': getattr(VirtualServiceResource, 'unique_keys', {}),
     }
 
 
@@ -980,6 +1010,15 @@ class Vip(object):
         'floating_ip': getattr(IpAddr, 'field_references', {}),
         'ipam_network_subnet': getattr(IPNetworkSubnet, 'field_references', {}),
         'ip_address': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'my_key': 'vip_id',
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'floating_ip': getattr(IpAddr, 'unique_keys', {}),
+        'ipam_network_subnet': getattr(IPNetworkSubnet, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -1788,6 +1827,31 @@ class VirtualService(AviResource):
         'pool_uuid': 'pool',
     }
 
+    unique_keys = {
+        'client_auth': getattr(HTTPClientAuthenticationParams, 'unique_keys', {}),
+        'vs_datascripts': getattr(VSDataScripts, 'unique_keys', {}),
+        'content_rewrite': getattr(ContentRewriteProfile, 'unique_keys', {}),
+        'vip': getattr(Vip, 'unique_keys', {}),
+        'static_dns_records': getattr(DnsRecord, 'unique_keys', {}),
+        'sideband_profile': getattr(SidebandProfile, 'unique_keys', {}),
+        'requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'performance_limits': getattr(PerformanceLimits, 'unique_keys', {}),
+        'http_policies': getattr(HTTPPolicies, 'unique_keys', {}),
+        'floating_ip': getattr(IpAddr, 'unique_keys', {}),
+        'services': getattr(Service, 'unique_keys', {}),
+        'connections_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+        'service_pool_select': getattr(ServicePoolSelector, 'unique_keys', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'dns_info': getattr(DnsInfo, 'unique_keys', {}),
+        'ipam_network_subnet': getattr(IPNetworkSubnet, 'unique_keys', {}),
+        'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'dns_policies': getattr(DnsPolicies, 'unique_keys', {}),
+        'snat_ip': getattr(IpAddr, 'unique_keys', {}),
+        'analytics_policy': getattr(AnalyticsPolicy, 'unique_keys', {}),
+    }
+
 
 
 class VsVip(AviResource):
@@ -1871,6 +1935,11 @@ class VsVip(AviResource):
         'vrf_context_uuid': 'vrfcontext',
         'vip': getattr(Vip, 'field_references', {}),
         'dns_info': getattr(DnsInfo, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vip': getattr(Vip, 'unique_keys', {}),
+        'dns_info': getattr(DnsInfo, 'unique_keys', {}),
     }
 
 

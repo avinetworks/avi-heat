@@ -187,7 +187,6 @@ class AutoScaleMesosSettings(object):
 
 
 
-
 class AutoScaleOpenStackSettings(object):
     # all schemas
     heat_scale_up_url_schema = properties.Schema(
@@ -217,7 +216,6 @@ class AutoScaleOpenStackSettings(object):
 
 
 
-
 class AutoScaleAWSSettings(object):
     # all schemas
     autoscaling_group_name_schema = properties.Schema(
@@ -236,7 +234,6 @@ class AutoScaleAWSSettings(object):
     properties_schema = {
         'autoscaling_group_name': autoscaling_group_name_schema,
     }
-
 
 
 
@@ -316,6 +313,12 @@ class AutoScaleLaunchConfig(AviResource):
         'openstack': getattr(AutoScaleOpenStackSettings, 'field_references', {}),
         'aws': getattr(AutoScaleAWSSettings, 'field_references', {}),
         'mesos': getattr(AutoScaleMesosSettings, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'openstack': getattr(AutoScaleOpenStackSettings, 'unique_keys', {}),
+        'aws': getattr(AutoScaleAWSSettings, 'unique_keys', {}),
+        'mesos': getattr(AutoScaleMesosSettings, 'unique_keys', {}),
     }
 
 

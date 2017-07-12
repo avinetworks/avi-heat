@@ -134,7 +134,6 @@ class LdapDirectorySettings(object):
 
 
 
-
 class LdapUserBindSettings(object):
     # all schemas
     dn_template_schema = properties.Schema(
@@ -184,7 +183,6 @@ class LdapUserBindSettings(object):
         'user_id_attribute': user_id_attribute_schema,
         'user_attributes': user_attributes_schema,
     }
-
 
 
 
@@ -241,6 +239,10 @@ class HTTPClientAuthenticationParams(object):
         'request_uri_path': getattr(StringMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'request_uri_path': getattr(StringMatch, 'unique_keys', {}),
+    }
+
 
 
 class AuthMatchAttribute(object):
@@ -290,7 +292,6 @@ class AuthMatchAttribute(object):
 
 
 
-
 class AuthTacacsPlusAttributeValuePair(object):
     # all schemas
     name_schema = properties.Schema(
@@ -325,7 +326,6 @@ class AuthTacacsPlusAttributeValuePair(object):
         'value': value_schema,
         'mandatory': mandatory_schema,
     }
-
 
 
 
@@ -381,7 +381,6 @@ class AuthProfileHTTPClientParams(object):
 
 
 
-
 class AuthMatchGroupMembership(object):
     # all schemas
     criteria_schema = properties.Schema(
@@ -418,7 +417,6 @@ class AuthMatchGroupMembership(object):
         'criteria': criteria_schema,
         'groups': groups_schema,
     }
-
 
 
 
@@ -543,6 +541,12 @@ class AuthMappingRule(object):
         'tenant_uuids': 'tenant',
     }
 
+    unique_keys = {
+        'group_match': getattr(AuthMatchGroupMembership, 'unique_keys', {}),
+        'my_key': 'index',
+        'attribute_match': getattr(AuthMatchAttribute, 'unique_keys', {}),
+    }
+
 
 
 class TacacsPlusAuthSettings(object):
@@ -617,6 +621,10 @@ class TacacsPlusAuthSettings(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'authorization_attrs': getattr(AuthTacacsPlusAttributeValuePair, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'authorization_attrs': getattr(AuthTacacsPlusAttributeValuePair, 'unique_keys', {}),
     }
 
 
@@ -722,6 +730,11 @@ class LdapAuthSettings(object):
         'settings': getattr(LdapDirectorySettings, 'field_references', {}),
     }
 
+    unique_keys = {
+        'user_bind': getattr(LdapUserBindSettings, 'unique_keys', {}),
+        'settings': getattr(LdapDirectorySettings, 'unique_keys', {}),
+    }
+
 
 
 class AuthProfile(AviResource):
@@ -803,6 +816,12 @@ class AuthProfile(AviResource):
         'http': getattr(AuthProfileHTTPClientParams, 'field_references', {}),
         'tacacs_plus': getattr(TacacsPlusAuthSettings, 'field_references', {}),
         'ldap': getattr(LdapAuthSettings, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'http': getattr(AuthProfileHTTPClientParams, 'unique_keys', {}),
+        'tacacs_plus': getattr(TacacsPlusAuthSettings, 'unique_keys', {}),
+        'ldap': getattr(LdapAuthSettings, 'unique_keys', {}),
     }
 
 

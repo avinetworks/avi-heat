@@ -56,7 +56,6 @@ class GeoLocation(object):
 
 
 
-
 class IpAddrRange(object):
     # all schemas
     begin_schema = properties.Schema(
@@ -90,6 +89,12 @@ class IpAddrRange(object):
     field_references = {
         'begin': getattr(IpAddr, 'field_references', {}),
         'end': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'end': getattr(IpAddr, 'unique_keys', {}),
+        'begin': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'begin,end',
     }
 
 
@@ -139,7 +144,6 @@ class CustomParams(object):
 
 
 
-
 class PortRange(object):
     # all schemas
     start_schema = properties.Schema(
@@ -166,7 +170,6 @@ class PortRange(object):
         'start': start_schema,
         'end': end_schema,
     }
-
 
 
 
@@ -207,7 +210,6 @@ class TenantConfiguration(object):
 
 
 
-
 class Tag(object):
     # all schemas
     value_schema = properties.Schema(
@@ -238,6 +240,9 @@ class Tag(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'value',
+    }
 
 
 
@@ -251,7 +256,6 @@ class GcpInfo(object):
     # mapping of properties to their schemas
     properties_schema = {
     }
-
 
 
 
@@ -281,7 +285,6 @@ class TimeStamp(object):
         'secs': secs_schema,
         'usecs': usecs_schema,
     }
-
 
 
 
@@ -334,6 +337,10 @@ class IpAddrPort(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HTTPLocalFile(object):
@@ -362,5 +369,4 @@ class HTTPLocalFile(object):
         'content_type': content_type_schema,
         'file_content': file_content_schema,
     }
-
 

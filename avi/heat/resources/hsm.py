@@ -62,6 +62,9 @@ class HSMSafenetClientInfo(object):
         'session_minor_number': session_minor_number_schema,
     }
 
+    unique_keys = {
+        'my_key': 'client_ip',
+    }
 
 
 
@@ -96,6 +99,10 @@ class HSMThalesRFS(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -165,6 +172,10 @@ class HSMThalesNetHsm(object):
         'remote_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'remote_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HSMSafenetLunaServer(object):
@@ -202,6 +213,9 @@ class HSMSafenetLunaServer(object):
         'partition_passwd': partition_passwd_schema,
     }
 
+    unique_keys = {
+        'my_key': 'remote_ip',
+    }
 
 
 
@@ -270,6 +284,11 @@ class HSMSafenetLuna(object):
         'server': getattr(HSMSafenetLunaServer, 'field_references', {}),
     }
 
+    unique_keys = {
+        'node_info': getattr(HSMSafenetClientInfo, 'unique_keys', {}),
+        'server': getattr(HSMSafenetLunaServer, 'unique_keys', {}),
+    }
+
 
 
 class HardwareSecurityModule(object):
@@ -335,6 +354,12 @@ class HardwareSecurityModule(object):
         'nethsm': getattr(HSMThalesNetHsm, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rfs': getattr(HSMThalesRFS, 'unique_keys', {}),
+        'sluna': getattr(HSMSafenetLuna, 'unique_keys', {}),
+        'nethsm': getattr(HSMThalesNetHsm, 'unique_keys', {}),
+    }
+
 
 
 class HardwareSecurityModuleGroup(AviResource):
@@ -377,6 +402,10 @@ class HardwareSecurityModuleGroup(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'hsm': getattr(HardwareSecurityModule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'hsm': getattr(HardwareSecurityModule, 'unique_keys', {}),
     }
 
 

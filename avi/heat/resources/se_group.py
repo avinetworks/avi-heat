@@ -44,7 +44,6 @@ class CustomTag(object):
 
 
 
-
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -238,6 +237,14 @@ class IptableRule(object):
         'dnat_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'src_ip': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'dst_ip': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'src_port': getattr(PortRange, 'unique_keys', {}),
+        'dst_port': getattr(PortRange, 'unique_keys', {}),
+        'dnat_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class IptableRuleSet(object):
@@ -286,6 +293,10 @@ class IptableRuleSet(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(IptableRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(IptableRule, 'unique_keys', {}),
     }
 
 
@@ -1016,6 +1027,20 @@ class ServiceEngineGroup(AviResource):
         'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
         'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'iptables': getattr(IptableRuleSet, 'unique_keys', {}),
+        'floating_intf_ip_se_2': getattr(IpAddr, 'unique_keys', {}),
+        'vcenter_hosts': getattr(VcenterHosts, 'unique_keys', {}),
+        'custom_tag': getattr(CustomTag, 'unique_keys', {}),
+        'service_ip_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'unique_keys', {}),
+        'vcenter_datastores': getattr(VcenterDatastore, 'unique_keys', {}),
+        'mgmt_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'vcenter_clusters': getattr(VcenterClusters, 'unique_keys', {}),
+        'se_dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
     }
 
 

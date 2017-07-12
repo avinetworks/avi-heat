@@ -57,6 +57,9 @@ class DebugSeAgent(object):
         'log_level': log_level_schema,
     }
 
+    unique_keys = {
+        'my_key': 'sub_module',
+    }
 
 
 
@@ -82,6 +85,9 @@ class DebugSeDataplane(object):
         'flag': flag_schema,
     }
 
+    unique_keys = {
+        'my_key': 'flag',
+    }
 
 
 
@@ -112,6 +118,9 @@ class DebugSeCpuShares(object):
         'shares': shares_schema,
     }
 
+    unique_keys = {
+        'my_key': 'cpu',
+    }
 
 
 
@@ -198,6 +207,12 @@ class DebugServiceEngine(AviResource):
         'cpu_shares': getattr(DebugSeCpuShares, 'field_references', {}),
     }
 
+    unique_keys = {
+        'flags': getattr(DebugSeDataplane, 'unique_keys', {}),
+        'seagent_debug': getattr(DebugSeAgent, 'unique_keys', {}),
+        'cpu_shares': getattr(DebugSeCpuShares, 'unique_keys', {}),
+    }
+
 
 
 class DebugIpAddr(object):
@@ -266,6 +281,12 @@ class DebugIpAddr(object):
         'addrs': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'addrs': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class DebugVirtualServiceSeParams(object):
@@ -293,7 +314,6 @@ class DebugVirtualServiceSeParams(object):
     properties_schema = {
         'se_uuids': se_uuids_schema,
     }
-
 
 
 
@@ -334,7 +354,6 @@ class DebugVirtualServiceCapture(object):
 
 
 
-
 class DebugVsDataplane(object):
     # all schemas
     flag_schema = properties.Schema(
@@ -357,6 +376,9 @@ class DebugVsDataplane(object):
         'flag': flag_schema,
     }
 
+    unique_keys = {
+        'my_key': 'flag',
+    }
 
 
 
@@ -456,6 +478,13 @@ class DebugVirtualService(AviResource):
         'debug_ip': getattr(DebugIpAddr, 'field_references', {}),
         'flags': getattr(DebugVsDataplane, 'field_references', {}),
         'se_params': getattr(DebugVirtualServiceSeParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'capture_params': getattr(DebugVirtualServiceCapture, 'unique_keys', {}),
+        'debug_ip': getattr(DebugIpAddr, 'unique_keys', {}),
+        'flags': getattr(DebugVsDataplane, 'unique_keys', {}),
+        'se_params': getattr(DebugVirtualServiceSeParams, 'unique_keys', {}),
     }
 
 

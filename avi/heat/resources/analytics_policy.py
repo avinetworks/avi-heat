@@ -49,7 +49,6 @@ class FullClientLogs(object):
 
 
 
-
 class MetricsRealTimeUpdate(object):
     # all schemas
     enabled_schema = properties.Schema(
@@ -76,7 +75,6 @@ class MetricsRealTimeUpdate(object):
         'enabled': enabled_schema,
         'duration': duration_schema,
     }
-
 
 
 
@@ -155,6 +153,11 @@ class ClientLogFilter(object):
         'uri': getattr(StringMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'uri': getattr(StringMatch, 'unique_keys', {}),
+    }
+
 
 
 class ClientInsightsSampling(object):
@@ -200,6 +203,12 @@ class ClientInsightsSampling(object):
         'skip_uris': getattr(StringMatch, 'field_references', {}),
         'client_ip': getattr(IpAddrMatch, 'field_references', {}),
         'sample_uris': getattr(StringMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'skip_uris': getattr(StringMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'sample_uris': getattr(StringMatch, 'unique_keys', {}),
     }
 
 
@@ -275,5 +284,12 @@ class AnalyticsPolicy(object):
         'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'field_references', {}),
         'client_insights_sampling': getattr(ClientInsightsSampling, 'field_references', {}),
         'full_client_logs': getattr(FullClientLogs, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_log_filters': getattr(ClientLogFilter, 'unique_keys', {}),
+        'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'unique_keys', {}),
+        'client_insights_sampling': getattr(ClientInsightsSampling, 'unique_keys', {}),
+        'full_client_logs': getattr(FullClientLogs, 'unique_keys', {}),
     }
 

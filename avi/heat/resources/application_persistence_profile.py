@@ -32,7 +32,6 @@ class HdrPersistenceProfile(object):
 
 
 
-
 class IPPersistenceProfile(object):
     # all schemas
     ip_persistent_timeout_schema = properties.Schema(
@@ -51,7 +50,6 @@ class IPPersistenceProfile(object):
     properties_schema = {
         'ip_persistent_timeout': ip_persistent_timeout_schema,
     }
-
 
 
 
@@ -89,7 +87,6 @@ class HttpCookiePersistenceKey(object):
         'aes_key': aes_key_schema,
         'hmac_key': hmac_key_schema,
     }
-
 
 
 
@@ -157,6 +154,10 @@ class HttpCookiePersistenceProfile(object):
         'key': getattr(HttpCookiePersistenceKey, 'field_references', {}),
     }
 
+    unique_keys = {
+        'key': getattr(HttpCookiePersistenceKey, 'unique_keys', {}),
+    }
+
 
 
 class AppCookiePersistenceProfile(object):
@@ -193,7 +194,6 @@ class AppCookiePersistenceProfile(object):
         'timeout': timeout_schema,
         'encryption_key': encryption_key_schema,
     }
-
 
 
 
@@ -297,6 +297,13 @@ class ApplicationPersistenceProfile(AviResource):
         'ip_persistence_profile': getattr(IPPersistenceProfile, 'field_references', {}),
         'app_cookie_persistence_profile': getattr(AppCookiePersistenceProfile, 'field_references', {}),
         'hdr_persistence_profile': getattr(HdrPersistenceProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'http_cookie_persistence_profile': getattr(HttpCookiePersistenceProfile, 'unique_keys', {}),
+        'ip_persistence_profile': getattr(IPPersistenceProfile, 'unique_keys', {}),
+        'app_cookie_persistence_profile': getattr(AppCookiePersistenceProfile, 'unique_keys', {}),
+        'hdr_persistence_profile': getattr(HdrPersistenceProfile, 'unique_keys', {}),
     }
 
 

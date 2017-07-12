@@ -44,6 +44,10 @@ class SnmpTrapServer(object):
         'ip_addr': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_addr': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class SnmpConfiguration(object):
@@ -80,7 +84,6 @@ class SnmpConfiguration(object):
         'sys_location': sys_location_schema,
         'sys_contact': sys_contact_schema,
     }
-
 
 
 
@@ -131,6 +134,10 @@ class SnmpTrapProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'trap_servers': getattr(SnmpTrapServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'trap_servers': getattr(SnmpTrapServer, 'unique_keys', {}),
     }
 
 

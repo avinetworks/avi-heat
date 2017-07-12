@@ -41,7 +41,6 @@ class AlertFilter(object):
 
 
 
-
 class AlertScriptConfig(AviResource):
     resource_name = "alertscriptconfig"
     # all schemas
@@ -77,7 +76,6 @@ class AlertScriptConfig(AviResource):
         'name': name_schema,
         'action_script': action_script_schema,
     }
-
 
 
 
@@ -240,7 +238,6 @@ class AlertEmailConfig(AviResource):
 
 
 
-
 class AlertMetricThreshold(object):
     # all schemas
     threshold_schema = properties.Schema(
@@ -270,7 +267,6 @@ class AlertMetricThreshold(object):
         'threshold': threshold_schema,
         'comparator': comparator_schema,
     }
-
 
 
 
@@ -311,7 +307,6 @@ class AlertSyslogServer(object):
 
 
 
-
 class EventDetailsFilter(object):
     # all schemas
     event_details_key_schema = properties.Schema(
@@ -349,7 +344,6 @@ class EventDetailsFilter(object):
         'event_details_value': event_details_value_schema,
         'comparator': comparator_schema,
     }
-
 
 
 
@@ -412,7 +406,6 @@ class AlertObjectList(AviResource):
 
 
 
-
 class AlertRuleEvent(object):
     # all schemas
     event_id_schema = properties.Schema(
@@ -462,6 +455,10 @@ class AlertRuleEvent(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'event_details': getattr(EventDetailsFilter, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'event_details': getattr(EventDetailsFilter, 'unique_keys', {}),
     }
 
 
@@ -523,6 +520,10 @@ class AlertSyslogConfig(AviResource):
         'syslog_servers': getattr(AlertSyslogServer, 'field_references', {}),
     }
 
+    unique_keys = {
+        'syslog_servers': getattr(AlertSyslogServer, 'unique_keys', {}),
+    }
+
 
 
 class AlertRuleMetric(object):
@@ -564,6 +565,10 @@ class AlertRuleMetric(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'metric_threshold': getattr(AlertMetricThreshold, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'metric_threshold': getattr(AlertMetricThreshold, 'unique_keys', {}),
     }
 
 
@@ -644,6 +649,12 @@ class AlertRule(object):
         'sys_event_rule': getattr(AlertRuleEvent, 'field_references', {}),
         'metrics_rule': getattr(AlertRuleMetric, 'field_references', {}),
         'conn_app_log_rule': getattr(AlertFilter, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'sys_event_rule': getattr(AlertRuleEvent, 'unique_keys', {}),
+        'metrics_rule': getattr(AlertRuleMetric, 'unique_keys', {}),
+        'conn_app_log_rule': getattr(AlertFilter, 'unique_keys', {}),
     }
 
 
@@ -810,6 +821,10 @@ class AlertConfig(AviResource):
     field_references = {
         'action_group_uuid': 'actiongroupconfig',
         'alert_rule': getattr(AlertRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'alert_rule': getattr(AlertRule, 'unique_keys', {}),
     }
 
 

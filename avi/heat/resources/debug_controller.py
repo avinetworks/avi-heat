@@ -40,7 +40,6 @@ class VsDebugFilter(object):
 
 
 
-
 class AutoScaleMgrDebugFilter(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -78,7 +77,6 @@ class AutoScaleMgrDebugFilter(object):
 
 
 
-
 class CloudConnectorDebugFilter(object):
     # all schemas
     se_id_schema = properties.Schema(
@@ -113,7 +111,6 @@ class CloudConnectorDebugFilter(object):
         'app_id': app_id_schema,
         'disable_se_reboot': disable_se_reboot_schema,
     }
-
 
 
 
@@ -181,7 +178,6 @@ class HSMgrDebugFilter(object):
 
 
 
-
 class SeMgrDebugFilter(object):
     # all schemas
     name_schema = properties.Schema(
@@ -200,7 +196,6 @@ class SeMgrDebugFilter(object):
     properties_schema = {
         'name': name_schema,
     }
-
 
 
 
@@ -238,7 +233,6 @@ class AlertMgrDebugFilter(object):
         'alert_objid': alert_objid_schema,
         'cfg_uuid': cfg_uuid_schema,
     }
-
 
 
 
@@ -287,7 +281,6 @@ class MesosMetricsDebugFilter(object):
         'mesos_slave': mesos_slave_schema,
         'metrics_collection_frq': metrics_collection_frq_schema,
     }
-
 
 
 
@@ -376,7 +369,6 @@ class MetricsMgrDebugFilter(object):
 
 
 
-
 class StateCacheMgrDebugFilter(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -403,7 +395,6 @@ class StateCacheMgrDebugFilter(object):
         'vs_uuid': vs_uuid_schema,
         'pool_uuid': pool_uuid_schema,
     }
-
 
 
 
@@ -523,6 +514,18 @@ class DebugFilterUnion(object):
         'hs_debug_filter': getattr(HSMgrDebugFilter, 'field_references', {}),
     }
 
+    unique_keys = {
+        'mesos_metrics_debug_filter': getattr(MesosMetricsDebugFilter, 'unique_keys', {}),
+        'cloud_connector_debug_filter': getattr(CloudConnectorDebugFilter, 'unique_keys', {}),
+        'metrics_debug_filter': getattr(MetricsMgrDebugFilter, 'unique_keys', {}),
+        'alert_debug_filter': getattr(AlertMgrDebugFilter, 'unique_keys', {}),
+        'se_mgr_debug_filter': getattr(SeMgrDebugFilter, 'unique_keys', {}),
+        'state_cache_mgr_debug_filter': getattr(StateCacheMgrDebugFilter, 'unique_keys', {}),
+        'autoscale_mgr_debug_filter': getattr(AutoScaleMgrDebugFilter, 'unique_keys', {}),
+        'vs_debug_filter': getattr(VsDebugFilter, 'unique_keys', {}),
+        'hs_debug_filter': getattr(HSMgrDebugFilter, 'unique_keys', {}),
+    }
+
 
 
 class DebugController(AviResource):
@@ -598,6 +601,10 @@ class DebugController(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'filters': getattr(DebugFilterUnion, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'filters': getattr(DebugFilterUnion, 'unique_keys', {}),
     }
 
 

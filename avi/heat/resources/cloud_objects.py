@@ -93,7 +93,6 @@ class vCloudAirConfiguration(object):
 
 
 
-
 class AwsZoneConfig(object):
     # all schemas
     availability_zone_schema = properties.Schema(
@@ -128,7 +127,6 @@ class AwsZoneConfig(object):
         'mgmt_network_name': mgmt_network_name_schema,
         'mgmt_network_uuid': mgmt_network_uuid_schema,
     }
-
 
 
 
@@ -204,7 +202,6 @@ class CloudStackConfiguration(object):
 
 
 
-
 class MesosSeResources(object):
     # all schemas
     attribute_key_schema = properties.Schema(
@@ -248,6 +245,9 @@ class MesosSeResources(object):
         'memory': memory_schema,
     }
 
+    unique_keys = {
+        'my_key': 'attribute_key',
+    }
 
 
 
@@ -277,7 +277,6 @@ class HostAttributes(object):
         'attr_key': attr_key_schema,
         'attr_val': attr_val_schema,
     }
-
 
 
 
@@ -329,6 +328,12 @@ class LinuxServerHost(object):
     field_references = {
         'host_attr': getattr(HostAttributes, 'field_references', {}),
         'host_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'host_attr': getattr(HostAttributes, 'unique_keys', {}),
+        'my_key': 'host_ip',
+        'host_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -417,6 +422,10 @@ class vCenterConfiguration(object):
         'management_ip_subnet': getattr(IpAddrPrefix, 'field_references', {}),
     }
 
+    unique_keys = {
+        'management_ip_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class CloudConnectorUser(AviResource):
@@ -470,7 +479,6 @@ class CloudConnectorUser(AviResource):
         'public_key': public_key_schema,
         'password': password_schema,
     }
-
 
 
 
@@ -609,7 +617,6 @@ class APICConfiguration(object):
 
 
 
-
 class NuageSDNController(object):
     # all schemas
     nuage_vsd_host_schema = properties.Schema(
@@ -711,7 +718,6 @@ class NuageSDNController(object):
 
 
 
-
 class SSHSeDeployment(object):
     # all schemas
     ssh_user_schema = properties.Schema(
@@ -754,7 +760,6 @@ class SSHSeDeployment(object):
         'password': password_schema,
         'host_os': host_os_schema,
     }
-
 
 
 
@@ -817,7 +822,6 @@ class MarathonSeDeployment(object):
 
 
 
-
 class MesosAttribute(object):
     # all schemas
     attribute_schema = properties.Schema(
@@ -845,6 +849,9 @@ class MesosAttribute(object):
         'value': value_schema,
     }
 
+    unique_keys = {
+        'my_key': 'attribute,value',
+    }
 
 
 
@@ -939,6 +946,12 @@ class MarathonConfiguration(object):
         'private_port_range': getattr(PortRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'public_port_range': getattr(PortRange, 'unique_keys', {}),
+        'my_key': 'marathon_url',
+        'private_port_range': getattr(PortRange, 'unique_keys', {}),
+    }
+
 
 
 class OshiftSharedVirtualService(object):
@@ -960,6 +973,9 @@ class OshiftSharedVirtualService(object):
         'virtualservice_name': virtualservice_name_schema,
     }
 
+    unique_keys = {
+        'my_key': 'virtualservice_name',
+    }
 
 
 
@@ -1002,6 +1018,10 @@ class OshiftDockerRegistryMetaData(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'registry_vip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'registry_vip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -1056,7 +1076,6 @@ class NsxConfiguration(object):
         'avi_nsx_prefix': avi_nsx_prefix_schema,
         'nsx_poll_time': nsx_poll_time_schema,
     }
-
 
 
 
@@ -1164,6 +1183,10 @@ class AwsConfiguration(object):
         'zones': getattr(AwsZoneConfig, 'field_references', {}),
     }
 
+    unique_keys = {
+        'zones': getattr(AwsZoneConfig, 'unique_keys', {}),
+    }
+
 
 
 class FeProxyRoutePublishConfig(object):
@@ -1214,7 +1237,6 @@ class FeProxyRoutePublishConfig(object):
 
 
 
-
 class OpenStackRoleMapping(object):
     # all schemas
     os_role_schema = properties.Schema(
@@ -1241,7 +1263,6 @@ class OpenStackRoleMapping(object):
         'os_role': os_role_schema,
         'avi_role': avi_role_schema,
     }
-
 
 
 
@@ -1308,6 +1329,10 @@ class DockerRegistry(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'oshift_registry': getattr(OshiftDockerRegistryMetaData, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'oshift_registry': getattr(OshiftDockerRegistryMetaData, 'unique_keys', {}),
     }
 
 
@@ -1411,6 +1436,12 @@ class LinuxServerConfiguration(object):
         'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
         'hosts': getattr(LinuxServerHost, 'field_references', {}),
         'ssh_user_uuid': 'cloudconnectoruser',
+    }
+
+    unique_keys = {
+        'ssh_attr': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
+        'hosts': getattr(LinuxServerHost, 'unique_keys', {}),
     }
 
 
@@ -1779,6 +1810,20 @@ class MesosConfiguration(object):
         'ssh_user_uuid': 'cloudconnectoruser',
     }
 
+    unique_keys = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'marathon_configurations': getattr(MarathonConfiguration, 'unique_keys', {}),
+        'marathon_se_deployment': getattr(MarathonSeDeployment, 'unique_keys', {}),
+        'nuage_controller': getattr(NuageSDNController, 'unique_keys', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'se_resources': getattr(MesosSeResources, 'unique_keys', {}),
+        'vip': getattr(IpAddr, 'unique_keys', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
+        'feproxy_route_publish': getattr(FeProxyRoutePublishConfig, 'unique_keys', {}),
+    }
+
 
 
 class DockerConfiguration(object):
@@ -2046,6 +2091,14 @@ class DockerConfiguration(object):
         'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
         'ca_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
         'ssh_user_uuid': 'cloudconnectoruser',
+    }
+
+    unique_keys = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
     }
 
 
@@ -2393,6 +2446,17 @@ class OShiftK8SConfiguration(object):
         'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
         'ca_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
         'ssh_user_uuid': 'cloudconnectoruser',
+    }
+
+    unique_keys = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'avi_bridge_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'nuage_controller': getattr(NuageSDNController, 'unique_keys', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'default_shared_virtualservice': getattr(OshiftSharedVirtualService, 'unique_keys', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
     }
 
 
@@ -2764,6 +2828,10 @@ class OpenStackConfiguration(object):
         'role_mapping': getattr(OpenStackRoleMapping, 'field_references', {}),
     }
 
+    unique_keys = {
+        'role_mapping': getattr(OpenStackRoleMapping, 'unique_keys', {}),
+    }
+
 
 
 class RancherConfiguration(object):
@@ -3041,6 +3109,15 @@ class RancherConfiguration(object):
         'ssh_user_uuid': 'cloudconnectoruser',
     }
 
+    unique_keys = {
+        'ssh_se_deployment': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'east_west_placement_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'nuage_controller': getattr(NuageSDNController, 'unique_keys', {}),
+        'se_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'se_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
+    }
+
 
 
 class Cloud(AviResource):
@@ -3309,6 +3386,22 @@ class Cloud(AviResource):
         'ipam_provider_uuid': 'ipamdnsproviderprofile',
         'cloudstack_configuration': getattr(CloudStackConfiguration, 'field_references', {}),
         'vcenter_configuration': getattr(vCenterConfiguration, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vca_configuration': getattr(vCloudAirConfiguration, 'unique_keys', {}),
+        'rancher_configuration': getattr(RancherConfiguration, 'unique_keys', {}),
+        'mesos_configuration': getattr(MesosConfiguration, 'unique_keys', {}),
+        'nsx_configuration': getattr(NsxConfiguration, 'unique_keys', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'docker_configuration': getattr(DockerConfiguration, 'unique_keys', {}),
+        'openstack_configuration': getattr(OpenStackConfiguration, 'unique_keys', {}),
+        'linuxserver_configuration': getattr(LinuxServerConfiguration, 'unique_keys', {}),
+        'apic_configuration': getattr(APICConfiguration, 'unique_keys', {}),
+        'oshiftk8s_configuration': getattr(OShiftK8SConfiguration, 'unique_keys', {}),
+        'aws_configuration': getattr(AwsConfiguration, 'unique_keys', {}),
+        'cloudstack_configuration': getattr(CloudStackConfiguration, 'unique_keys', {}),
+        'vcenter_configuration': getattr(vCenterConfiguration, 'unique_keys', {}),
     }
 
 

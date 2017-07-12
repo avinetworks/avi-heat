@@ -71,6 +71,13 @@ class Subnet(object):
         'static_ranges': getattr(IpAddrRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'prefix': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'static_ips': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'prefix',
+        'static_ranges': getattr(IpAddrRange, 'unique_keys', {}),
+    }
+
 
 
 class Network(AviResource):
@@ -178,6 +185,10 @@ class Network(AviResource):
         'vrf_context_uuid': 'vrfcontext',
         'configured_subnets': getattr(Subnet, 'field_references', {}),
         'vimgrnw_uuid': 'vimgrnwruntime',
+    }
+
+    unique_keys = {
+        'configured_subnets': getattr(Subnet, 'unique_keys', {}),
     }
 
 

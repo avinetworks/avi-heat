@@ -66,7 +66,6 @@ class Webhook(AviResource):
 
 
 
-
 def resource_mapping():
     return {
         'Avi::LBaaS::Webhook': Webhook,

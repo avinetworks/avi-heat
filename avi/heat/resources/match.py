@@ -47,7 +47,6 @@ class ProtocolMatch(object):
 
 
 
-
 class MicroServiceGroup(AviResource):
     resource_name = "microservicegroup"
     # all schemas
@@ -156,7 +155,6 @@ class MethodMatch(object):
 
 
 
-
 class IpAddrMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -250,6 +248,12 @@ class IpAddrMatch(object):
         'group_uuids': 'ipaddrgroup',
     }
 
+    unique_keys = {
+        'ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'addrs': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HdrMatch(object):
@@ -310,7 +314,6 @@ class HdrMatch(object):
 
 
 
-
 class HTTPStatusRange(object):
     # all schemas
     begin_schema = properties.Schema(
@@ -337,7 +340,6 @@ class HTTPStatusRange(object):
         'begin': begin_schema,
         'end': end_schema,
     }
-
 
 
 
@@ -417,7 +419,6 @@ class PortMatch(object):
 
 
 
-
 class CookieMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -466,7 +467,6 @@ class CookieMatch(object):
         'match_case': match_case_schema,
         'value': value_schema,
     }
-
 
 
 
@@ -676,6 +676,13 @@ class IpAddrGroup(AviResource):
         'ip_ports': getattr(IpAddrPort, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'addrs': getattr(IpAddr, 'unique_keys', {}),
+        'ip_ports': getattr(IpAddrPort, 'unique_keys', {}),
+    }
+
 
 
 class IpAddrGroupAddrs(AviNestedResource):
@@ -783,6 +790,10 @@ class HTTPStatusMatch(object):
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+    }
+
 
 
 class HostHdrMatch(object):
@@ -835,7 +846,6 @@ class HostHdrMatch(object):
 
 
 
-
 class KeyValue(object):
     # all schemas
     key_schema = properties.Schema(
@@ -863,6 +873,9 @@ class KeyValue(object):
         'value': value_schema,
     }
 
+    unique_keys = {
+        'my_key': 'key',
+    }
 
 
 
@@ -975,7 +988,6 @@ class HTTPVersionMatch(object):
         'match_criteria': match_criteria_schema,
         'versions': versions_schema,
     }
-
 
 
 
@@ -1117,6 +1129,10 @@ class StringGroup(AviResource):
         'kv': getattr(KeyValue, 'field_references', {}),
     }
 
+    unique_keys = {
+        'kv': getattr(KeyValue, 'unique_keys', {}),
+    }
+
 
 
 class LocationHdrMatch(object):
@@ -1166,7 +1182,6 @@ class LocationHdrMatch(object):
         'match_case': match_case_schema,
         'value': value_schema,
     }
-
 
 
 
@@ -1290,6 +1305,19 @@ class MatchTarget(object):
         'query': getattr(QueryMatch, 'field_references', {}),
         'path': getattr(PathMatch, 'field_references', {}),
         'method': getattr(MethodMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'protocol': getattr(ProtocolMatch, 'unique_keys', {}),
+        'hdrs': getattr(HdrMatch, 'unique_keys', {}),
+        'host_hdr': getattr(HostHdrMatch, 'unique_keys', {}),
+        'vs_port': getattr(PortMatch, 'unique_keys', {}),
+        'version': getattr(HTTPVersionMatch, 'unique_keys', {}),
+        'cookie': getattr(CookieMatch, 'unique_keys', {}),
+        'query': getattr(QueryMatch, 'unique_keys', {}),
+        'path': getattr(PathMatch, 'unique_keys', {}),
+        'method': getattr(MethodMatch, 'unique_keys', {}),
     }
 
 
@@ -1451,6 +1479,22 @@ class ResponseMatchTarget(object):
         'query': getattr(QueryMatch, 'field_references', {}),
         'path': getattr(PathMatch, 'field_references', {}),
         'method': getattr(MethodMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'status': getattr(HTTPStatusMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'protocol': getattr(ProtocolMatch, 'unique_keys', {}),
+        'hdrs': getattr(HdrMatch, 'unique_keys', {}),
+        'loc_hdr': getattr(LocationHdrMatch, 'unique_keys', {}),
+        'rsp_hdrs': getattr(HdrMatch, 'unique_keys', {}),
+        'host_hdr': getattr(HostHdrMatch, 'unique_keys', {}),
+        'vs_port': getattr(PortMatch, 'unique_keys', {}),
+        'version': getattr(HTTPVersionMatch, 'unique_keys', {}),
+        'cookie': getattr(CookieMatch, 'unique_keys', {}),
+        'query': getattr(QueryMatch, 'unique_keys', {}),
+        'path': getattr(PathMatch, 'unique_keys', {}),
+        'method': getattr(MethodMatch, 'unique_keys', {}),
     }
 
 

@@ -100,7 +100,6 @@ class HealthMonitorTcp(object):
 
 
 
-
 class HealthMonitorExternal(object):
     # all schemas
     command_path_schema = properties.Schema(
@@ -143,7 +142,6 @@ class HealthMonitorExternal(object):
         'command_code': command_code_schema,
         'command_variables': command_variables_schema,
     }
-
 
 
 
@@ -229,6 +227,10 @@ class HealthMonitorHttp(object):
         'ssl_attributes': getattr(HealthMonitorSSLAttributes, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ssl_attributes': getattr(HealthMonitorSSLAttributes, 'unique_keys', {}),
+    }
+
 
 
 class HealthMonitorUdp(object):
@@ -265,7 +267,6 @@ class HealthMonitorUdp(object):
         'udp_response': udp_response_schema,
         'maintenance_response': maintenance_response_schema,
     }
-
 
 
 
@@ -317,7 +318,6 @@ class HealthMonitorDNS(object):
         'rcode': rcode_schema,
         'response_string': response_string_schema,
     }
-
 
 
 
@@ -470,6 +470,15 @@ class HealthMonitor(AviResource):
         'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
         'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
         'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'https_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'dns_monitor': getattr(HealthMonitorDNS, 'unique_keys', {}),
+        'tcp_monitor': getattr(HealthMonitorTcp, 'unique_keys', {}),
+        'udp_monitor': getattr(HealthMonitorUdp, 'unique_keys', {}),
+        'http_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'external_monitor': getattr(HealthMonitorExternal, 'unique_keys', {}),
     }
 
 

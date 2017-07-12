@@ -82,7 +82,6 @@ class CC_AgentProperties(object):
 
 
 
-
 class Hypervisor_Properties(object):
     # all schemas
     htype_schema = properties.Schema(
@@ -123,7 +122,6 @@ class Hypervisor_Properties(object):
 
 
 
-
 class CC_Properties(object):
     # all schemas
     rpc_poll_interval_schema = properties.Schema(
@@ -153,7 +151,6 @@ class CC_Properties(object):
 
 
 
-
 class CloudMeta(object):
     # all schemas
     key_schema = properties.Schema(
@@ -180,7 +177,6 @@ class CloudMeta(object):
         'key': key_schema,
         'value': value_schema,
     }
-
 
 
 
@@ -296,6 +292,10 @@ class CloudFlavor(object):
         'meta': getattr(CloudMeta, 'field_references', {}),
     }
 
+    unique_keys = {
+        'meta': getattr(CloudMeta, 'unique_keys', {}),
+    }
+
 
 
 class CloudInfo(object):
@@ -387,6 +387,12 @@ class CloudInfo(object):
         'controller_props': getattr(ControllerProperties, 'field_references', {}),
     }
 
+    unique_keys = {
+        'flavor_props': getattr(CloudFlavor, 'unique_keys', {}),
+        'cca_props': getattr(CC_AgentProperties, 'unique_keys', {}),
+        'controller_props': getattr(ControllerProperties, 'unique_keys', {}),
+    }
+
 
 
 class CloudProperties(AviResource):
@@ -473,6 +479,12 @@ class CloudProperties(AviResource):
         'info': getattr(CloudInfo, 'field_references', {}),
         'hyp_props': getattr(Hypervisor_Properties, 'field_references', {}),
         'cc_props': getattr(CC_Properties, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'info': getattr(CloudInfo, 'unique_keys', {}),
+        'hyp_props': getattr(Hypervisor_Properties, 'unique_keys', {}),
+        'cc_props': getattr(CC_Properties, 'unique_keys', {}),
     }
 
 

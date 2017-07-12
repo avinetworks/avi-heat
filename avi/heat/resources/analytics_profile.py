@@ -60,7 +60,6 @@ class ClientLogStreamingConfig(object):
 
 
 
-
 class ClientLogConfiguration(object):
     # all schemas
     enable_significant_log_collection_schema = properties.Schema(
@@ -112,7 +111,6 @@ class ClientLogConfiguration(object):
         'filtered_log_processing': filtered_log_processing_schema,
         'non_significant_log_processing': non_significant_log_processing_schema,
     }
-
 
 
 
@@ -688,6 +686,12 @@ class AnalyticsProfile(AviResource):
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
         'client_log_config': getattr(ClientLogConfiguration, 'field_references', {}),
         'client_log_streaming_config': getattr(ClientLogStreamingConfig, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+        'client_log_config': getattr(ClientLogConfiguration, 'unique_keys', {}),
+        'client_log_streaming_config': getattr(ClientLogStreamingConfig, 'unique_keys', {}),
     }
 
 

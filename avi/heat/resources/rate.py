@@ -70,6 +70,11 @@ class RateLimiterAction(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'redirect': getattr(HTTPRedirectAction, 'unique_keys', {}),
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class EquivalentLabels(object):
@@ -97,7 +102,6 @@ class EquivalentLabels(object):
     properties_schema = {
         'labels': labels_schema,
     }
-
 
 
 
@@ -180,6 +184,10 @@ class RateProfile(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'action': getattr(RateLimiterAction, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'action': getattr(RateLimiterAction, 'unique_keys', {}),
     }
 
 
@@ -304,5 +312,18 @@ class RateLimiterProfile(object):
         'client_ip_failed_requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'client_ip_connections_rate_limit': getattr(RateProfile, 'field_references', {}),
         'http_header_rate_limits': getattr(RateProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'uri_failed_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_scanners_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_to_uri_failed_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_to_uri_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'uri_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'uri_scanners_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_failed_requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'client_ip_connections_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'http_header_rate_limits': getattr(RateProfile, 'unique_keys', {}),
     }
 

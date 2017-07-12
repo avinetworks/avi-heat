@@ -51,7 +51,6 @@ class DosThreshold(object):
 
 
 
-
 class DosThresholdProfile(object):
     # all schemas
     thresh_period_schema = properties.Schema(
@@ -90,5 +89,9 @@ class DosThresholdProfile(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'thresh_info': getattr(DosThreshold, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'thresh_info': getattr(DosThreshold, 'unique_keys', {}),
     }
 

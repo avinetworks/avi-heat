@@ -82,7 +82,6 @@ class UserAccountProfile(AviResource):
 
 
 
-
 class Permission(object):
     # all schemas
     type_schema = properties.Schema(
@@ -115,7 +114,6 @@ class Permission(object):
         'type': type_schema,
         'resource': resource_schema,
     }
-
 
 
 
@@ -166,6 +164,10 @@ class Role(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'privileges': getattr(Permission, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'privileges': getattr(Permission, 'unique_keys', {}),
     }
 
 

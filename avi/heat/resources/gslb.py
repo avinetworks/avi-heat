@@ -46,7 +46,6 @@ class GslbHealthMonitorProxy(object):
 
 
 
-
 class DNSConfig(object):
     # all schemas
     domain_name_schema = properties.Schema(
@@ -65,7 +64,6 @@ class DNSConfig(object):
     properties_schema = {
         'domain_name': domain_name_schema,
     }
-
 
 
 
@@ -146,6 +144,12 @@ class GslbClientIpAddrGroup(object):
         'addrs': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'addrs': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class GslbApplicationPersistenceProfile(AviResource):
@@ -186,7 +190,6 @@ class GslbApplicationPersistenceProfile(AviResource):
 
 
 
-
 class GslbGeoDbFile(object):
     # all schemas
     filename_schema = properties.Schema(
@@ -217,6 +220,9 @@ class GslbGeoDbFile(object):
         'format': format_schema,
     }
 
+    unique_keys = {
+        'my_key': 'filename',
+    }
 
 
 
@@ -371,6 +377,15 @@ class GslbHealthMonitor(AviResource):
         'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
     }
 
+    unique_keys = {
+        'https_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'dns_monitor': getattr(HealthMonitorDNS, 'unique_keys', {}),
+        'tcp_monitor': getattr(HealthMonitorTcp, 'unique_keys', {}),
+        'udp_monitor': getattr(HealthMonitorUdp, 'unique_keys', {}),
+        'http_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'external_monitor': getattr(HealthMonitorExternal, 'unique_keys', {}),
+    }
+
 
 
 class GslbIpAddr(object):
@@ -396,6 +411,10 @@ class GslbIpAddr(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -436,6 +455,10 @@ class GslbServiceDownResponse(object):
         'fallback_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'fallback_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class GslbGeoLocation(object):
@@ -474,6 +497,10 @@ class GslbGeoLocation(object):
         'location': getattr(GeoLocation, 'field_references', {}),
     }
 
+    unique_keys = {
+        'location': getattr(GeoLocation, 'unique_keys', {}),
+    }
+
 
 
 class GslbGeoDbEntry(object):
@@ -507,6 +534,11 @@ class GslbGeoDbEntry(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'file': getattr(GslbGeoDbFile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'my_key': 'priority',
+        'file': getattr(GslbGeoDbFile, 'unique_keys', {}),
     }
 
 
@@ -604,6 +636,13 @@ class GslbPoolMember(object):
         'location': getattr(GslbGeoLocation, 'field_references', {}),
     }
 
+    unique_keys = {
+        'public_ip': getattr(GslbIpAddr, 'unique_keys', {}),
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip',
+        'location': getattr(GslbGeoLocation, 'unique_keys', {}),
+    }
+
 
 
 class GslbGeoDbProfile(AviResource):
@@ -661,6 +700,10 @@ class GslbGeoDbProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'entries': getattr(GslbGeoDbEntry, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'entries': getattr(GslbGeoDbEntry, 'unique_keys', {}),
     }
 
 
@@ -814,6 +857,13 @@ class GslbSite(object):
         'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_addresses': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'cluster_uuid',
+        'location': getattr(GslbGeoLocation, 'unique_keys', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'unique_keys', {}),
+    }
+
 
 
 class GslbThirdPartySite(object):
@@ -880,6 +930,12 @@ class GslbThirdPartySite(object):
     field_references = {
         'location': getattr(GslbGeoLocation, 'field_references', {}),
         'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'my_key': 'name',
+        'location': getattr(GslbGeoLocation, 'unique_keys', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'unique_keys', {}),
     }
 
 
@@ -1009,6 +1065,13 @@ class Gslb(AviResource):
         'dns_configs': getattr(DNSConfig, 'field_references', {}),
     }
 
+    unique_keys = {
+        'third_party_sites': getattr(GslbThirdPartySite, 'unique_keys', {}),
+        'client_ip_addr_group': getattr(GslbClientIpAddrGroup, 'unique_keys', {}),
+        'sites': getattr(GslbSite, 'unique_keys', {}),
+        'dns_configs': getattr(DNSConfig, 'unique_keys', {}),
+    }
+
 
 
 class GslbPool(object):
@@ -1076,6 +1139,11 @@ class GslbPool(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'members': getattr(GslbPoolMember, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'my_key': 'priority',
+        'members': getattr(GslbPoolMember, 'unique_keys', {}),
     }
 
 
@@ -1243,6 +1311,11 @@ class GslbService(AviResource):
         'health_monitor_uuids': 'gslbhealthmonitor',
         'down_response': getattr(GslbServiceDownResponse, 'field_references', {}),
         'groups': getattr(GslbPool, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'down_response': getattr(GslbServiceDownResponse, 'unique_keys', {}),
+        'groups': getattr(GslbPool, 'unique_keys', {}),
     }
 
 

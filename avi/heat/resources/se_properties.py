@@ -56,7 +56,6 @@ class AppHdr(object):
 
 
 
-
 class SeRuntimeCompressionProperties(object):
     # all schemas
     min_length_schema = properties.Schema(
@@ -106,7 +105,6 @@ class SeRuntimeCompressionProperties(object):
         'min_high_rtt': min_high_rtt_schema,
         'mobile_str': mobile_str_schema,
     }
-
 
 
 
@@ -171,7 +169,6 @@ class SeBootupCompressionProperties(object):
 
 
 
-
 class SeRateLimiters(object):
     # all schemas
     icmp_rl_schema = properties.Schema(
@@ -230,7 +227,6 @@ class SeRateLimiters(object):
         'flow_probe_rl': flow_probe_rl_schema,
         'default_rl': default_rl_schema,
     }
-
 
 
 
@@ -1074,6 +1070,15 @@ class SeRuntimeProperties(object):
         'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'se_dp_compression': getattr(SeRuntimeCompressionProperties, 'unique_keys', {}),
+        'service_ip_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'app_headers': getattr(AppHdr, 'unique_keys', {}),
+        'service_port_ranges': getattr(PortRange, 'unique_keys', {}),
+        'se_rate_limiters': getattr(SeRateLimiters, 'unique_keys', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
+    }
+
 
 
 class SeAgentProperties(object):
@@ -1302,7 +1307,6 @@ class SeAgentProperties(object):
         'controller_echo_miss_aggressive_limit': controller_echo_miss_aggressive_limit_schema,
         'ignore_docker_mac_change': ignore_docker_mac_change_schema,
     }
-
 
 
 
@@ -1603,6 +1607,10 @@ class SeBootupProperties(object):
         'se_dp_compression': getattr(SeBootupCompressionProperties, 'field_references', {}),
     }
 
+    unique_keys = {
+        'se_dp_compression': getattr(SeBootupCompressionProperties, 'unique_keys', {}),
+    }
+
 
 
 class SeProperties(AviResource):
@@ -1657,6 +1665,12 @@ class SeProperties(AviResource):
         'se_agent_properties': getattr(SeAgentProperties, 'field_references', {}),
         'se_runtime_properties': getattr(SeRuntimeProperties, 'field_references', {}),
         'se_bootup_properties': getattr(SeBootupProperties, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_agent_properties': getattr(SeAgentProperties, 'unique_keys', {}),
+        'se_runtime_properties': getattr(SeRuntimeProperties, 'unique_keys', {}),
+        'se_bootup_properties': getattr(SeBootupProperties, 'unique_keys', {}),
     }
 
 

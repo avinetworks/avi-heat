@@ -126,6 +126,12 @@ class BgpPeer(object):
         'peer_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'my_key': 'peer_ip',
+        'peer_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class InternalGatewayMonitor(object):
@@ -170,7 +176,6 @@ class InternalGatewayMonitor(object):
         'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
         'disable_gateway_monitor': disable_gateway_monitor_schema,
     }
-
 
 
 
@@ -221,6 +226,10 @@ class GatewayMonitor(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'gateway_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'gateway_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -284,6 +293,12 @@ class StaticRoute(object):
         'next_hop': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'prefix': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'next_hop': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'route_id',
+    }
+
 
 
 class DebugVrf(object):
@@ -308,6 +323,9 @@ class DebugVrf(object):
         'flag': flag_schema,
     }
 
+    unique_keys = {
+        'my_key': 'flag',
+    }
 
 
 
@@ -398,6 +416,10 @@ class BgpProfile(object):
         'peers': getattr(BgpPeer, 'field_references', {}),
     }
 
+    unique_keys = {
+        'peers': getattr(BgpPeer, 'unique_keys', {}),
+    }
+
 
 
 class DebugVrfContext(object):
@@ -430,6 +452,10 @@ class DebugVrfContext(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'flags': getattr(DebugVrf, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'flags': getattr(DebugVrf, 'unique_keys', {}),
     }
 
 
@@ -544,6 +570,14 @@ class VrfContext(AviResource):
         'bgp_profile': getattr(BgpProfile, 'field_references', {}),
         'static_routes': getattr(StaticRoute, 'field_references', {}),
         'internal_gateway_monitor': getattr(InternalGatewayMonitor, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'gateway_mon': getattr(GatewayMonitor, 'unique_keys', {}),
+        'debugvrfcontext': getattr(DebugVrfContext, 'unique_keys', {}),
+        'bgp_profile': getattr(BgpProfile, 'unique_keys', {}),
+        'static_routes': getattr(StaticRoute, 'unique_keys', {}),
+        'internal_gateway_monitor': getattr(InternalGatewayMonitor, 'unique_keys', {}),
     }
 
 

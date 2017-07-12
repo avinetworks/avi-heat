@@ -57,6 +57,12 @@ class NetworkSecurityMatchTarget(object):
         'vs_port': getattr(PortMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'microservice': getattr(MicroServiceMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'vs_port': getattr(PortMatch, 'unique_keys', {}),
+    }
+
 
 
 class NetworkSecurityPolicyActionRLParam(object):
@@ -85,7 +91,6 @@ class NetworkSecurityPolicyActionRLParam(object):
         'max_rate': max_rate_schema,
         'burst_size': burst_size_schema,
     }
-
 
 
 
@@ -183,6 +188,12 @@ class NetworkSecurityRule(object):
         'match': getattr(NetworkSecurityMatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rl_param': getattr(NetworkSecurityPolicyActionRLParam, 'unique_keys', {}),
+        'my_key': 'index',
+        'match': getattr(NetworkSecurityMatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class NetworkSecurityPolicy(AviResource):
@@ -256,6 +267,10 @@ class NetworkSecurityPolicy(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(NetworkSecurityRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(NetworkSecurityRule, 'unique_keys', {}),
     }
 
 

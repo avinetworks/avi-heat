@@ -54,6 +54,11 @@ class DosRateLimitProfile(object):
         'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rl_profile': getattr(RateLimiterProfile, 'unique_keys', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
+    }
+
 
 
 class DnsServiceApplicationProfile(object):
@@ -135,7 +140,6 @@ class DnsServiceApplicationProfile(object):
 
 
 
-
 class TCPApplicationProfile(object):
     # all schemas
     proxy_protocol_enabled_schema = properties.Schema(
@@ -168,7 +172,6 @@ class TCPApplicationProfile(object):
 
 
 
-
 class SSLClientRequestHeader(object):
     # all schemas
     request_header_schema = properties.Schema(
@@ -198,7 +201,6 @@ class SSLClientRequestHeader(object):
         'request_header': request_header_schema,
         'request_header_value': request_header_value_schema,
     }
-
 
 
 
@@ -240,6 +242,10 @@ class SSLClientCertificateAction(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'headers': getattr(SSLClientRequestHeader, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'headers': getattr(SSLClientRequestHeader, 'unique_keys', {}),
     }
 
 
@@ -581,6 +587,12 @@ class HTTPApplicationProfile(object):
         'cache_config': getattr(HttpCacheConfig, 'field_references', {}),
     }
 
+    unique_keys = {
+        'compression_profile': getattr(CompressionProfile, 'unique_keys', {}),
+        'ssl_client_certificate_action': getattr(SSLClientCertificateAction, 'unique_keys', {}),
+        'cache_config': getattr(HttpCacheConfig, 'unique_keys', {}),
+    }
+
 
 
 class ApplicationProfile(AviResource):
@@ -680,6 +692,13 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile': getattr(TCPApplicationProfile, 'field_references', {}),
         'http_profile': getattr(HTTPApplicationProfile, 'field_references', {}),
         'dos_rl_profile': getattr(DosRateLimitProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'dns_service_profile': getattr(DnsServiceApplicationProfile, 'unique_keys', {}),
+        'tcp_app_profile': getattr(TCPApplicationProfile, 'unique_keys', {}),
+        'http_profile': getattr(HTTPApplicationProfile, 'unique_keys', {}),
+        'dos_rl_profile': getattr(DosRateLimitProfile, 'unique_keys', {}),
     }
 
 

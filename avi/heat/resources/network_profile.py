@@ -143,7 +143,6 @@ class TCPProxyProfile(object):
 
 
 
-
 class UDPFastPathProfile(object):
     # all schemas
     session_idle_timeout_schema = properties.Schema(
@@ -181,7 +180,6 @@ class UDPFastPathProfile(object):
 
 
 
-
 class TCPFastPathProfile(object):
     # all schemas
     session_idle_timeout_schema = properties.Schema(
@@ -208,7 +206,6 @@ class TCPFastPathProfile(object):
         'session_idle_timeout': session_idle_timeout_schema,
         'enable_syn_protection': enable_syn_protection_schema,
     }
-
 
 
 
@@ -268,6 +265,12 @@ class NetworkProfileUnion(object):
         'udp_fast_path_profile': getattr(UDPFastPathProfile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'tcp_proxy_profile': getattr(TCPProxyProfile, 'unique_keys', {}),
+        'tcp_fast_path_profile': getattr(TCPFastPathProfile, 'unique_keys', {}),
+        'udp_fast_path_profile': getattr(UDPFastPathProfile, 'unique_keys', {}),
+    }
+
 
 
 class NetworkProfile(AviResource):
@@ -318,6 +321,10 @@ class NetworkProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'profile': getattr(NetworkProfileUnion, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'profile': getattr(NetworkProfileUnion, 'unique_keys', {}),
     }
 
 

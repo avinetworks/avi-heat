@@ -39,7 +39,6 @@ class SeVersion(object):
 
 
 
-
 class ControllerVersion(object):
     # all schemas
     name_schema = properties.Schema(
@@ -66,5 +65,4 @@ class ControllerVersion(object):
         'name': name_schema,
         'version': version_schema,
     }
-
 

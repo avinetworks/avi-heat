@@ -50,6 +50,10 @@ class FailActionHTTPLocalResponse(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class PriorityLabels(AviResource):
@@ -107,6 +111,10 @@ class PriorityLabels(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'equivalent_labels': getattr(EquivalentLabels, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'equivalent_labels': getattr(EquivalentLabels, 'unique_keys', {}),
     }
 
 
@@ -283,7 +291,6 @@ class FailActionHTTPRedirect(object):
 
 
 
-
 class PGDeploymentRule(object):
     # all schemas
     metric_id_schema = properties.Schema(
@@ -324,7 +331,6 @@ class PGDeploymentRule(object):
 
 
 
-
 class PlacementNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -357,6 +363,10 @@ class PlacementNetwork(object):
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -415,6 +425,12 @@ class FailAction(object):
         'redirect': getattr(FailActionHTTPRedirect, 'field_references', {}),
         'backup_pool': getattr(FailActionBackupPool, 'field_references', {}),
         'local_rsp': getattr(FailActionHTTPLocalResponse, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'redirect': getattr(FailActionHTTPRedirect, 'unique_keys', {}),
+        'backup_pool': getattr(FailActionBackupPool, 'unique_keys', {}),
+        'local_rsp': getattr(FailActionHTTPLocalResponse, 'unique_keys', {}),
     }
 
 
@@ -527,6 +543,10 @@ class PoolGroupDeploymentPolicy(AviResource):
         'rules': getattr(PGDeploymentRule, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rules': getattr(PGDeploymentRule, 'unique_keys', {}),
+    }
+
 
 
 class NetworkFilter(object):
@@ -628,6 +648,10 @@ class HTTPReselectRespCode(object):
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+    }
+
 
 
 class DiscoveredNetwork(object):
@@ -669,6 +693,10 @@ class DiscoveredNetwork(object):
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -781,6 +809,11 @@ class PoolGroup(AviResource):
         'members': getattr(PoolGroupMember, 'field_references', {}),
     }
 
+    unique_keys = {
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'members': getattr(PoolGroupMember, 'unique_keys', {}),
+    }
+
 
 
 class HTTPServerReselect(object):
@@ -830,6 +863,10 @@ class HTTPServerReselect(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'svr_resp_code': getattr(HTTPReselectRespCode, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'svr_resp_code': getattr(HTTPReselectRespCode, 'unique_keys', {}),
     }
 
 
@@ -1045,6 +1082,13 @@ class Server(object):
         'vm_uuid': 'vimgrvmruntime',
         'discovered_network_uuid': 'network',
         'nw_uuid': 'vimgrnwruntime',
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'my_key': 'ip,port',
+        'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -1555,6 +1599,16 @@ class Pool(AviResource):
         'fail_action': getattr(FailAction, 'field_references', {}),
         'servers': getattr(Server, 'field_references', {}),
         'networks': getattr(NetworkFilter, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'server_reselect': getattr(HTTPServerReselect, 'unique_keys', {}),
+        'max_conn_rate_per_server': getattr(RateProfile, 'unique_keys', {}),
+        'placement_networks': getattr(PlacementNetwork, 'unique_keys', {}),
+        'ab_pool': getattr(AbPool, 'unique_keys', {}),
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'servers': getattr(Server, 'unique_keys', {}),
+        'networks': getattr(NetworkFilter, 'unique_keys', {}),
     }
 
 

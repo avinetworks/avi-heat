@@ -115,7 +115,6 @@ class DnsQueryTypeMatch(object):
 
 
 
-
 class DnsRuleActionAllowDrop(object):
     # all schemas
     allow_schema = properties.Schema(
@@ -142,7 +141,6 @@ class DnsRuleActionAllowDrop(object):
         'allow': allow_schema,
         'reset_conn': reset_conn_schema,
     }
-
 
 
 
@@ -186,7 +184,6 @@ class DnsRuleActionResponse(object):
 
 
 
-
 class DnsPolicies(object):
     # all schemas
     index_schema = properties.Schema(
@@ -217,6 +214,10 @@ class DnsPolicies(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'dns_policy_uuid': 'dnspolicy',
+    }
+
+    unique_keys = {
+        'my_key': 'index',
     }
 
 
@@ -253,7 +254,6 @@ class DnsTransportProtocolMatch(object):
         'match_criteria': match_criteria_schema,
         'protocol': protocol_schema,
     }
-
 
 
 
@@ -312,6 +312,13 @@ class DnsRuleMatchTarget(object):
         'query_type': getattr(DnsQueryTypeMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'query_name': getattr(DnsQueryNameMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'protocol': getattr(DnsTransportProtocolMatch, 'unique_keys', {}),
+        'query_type': getattr(DnsQueryTypeMatch, 'unique_keys', {}),
+    }
+
 
 
 class DnsRuleAction(object):
@@ -347,6 +354,11 @@ class DnsRuleAction(object):
     field_references = {
         'response': getattr(DnsRuleActionResponse, 'field_references', {}),
         'allow': getattr(DnsRuleActionAllowDrop, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'response': getattr(DnsRuleActionResponse, 'unique_keys', {}),
+        'allow': getattr(DnsRuleActionAllowDrop, 'unique_keys', {}),
     }
 
 
@@ -418,6 +430,12 @@ class DnsRule(object):
         'match': getattr(DnsRuleMatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'action': getattr(DnsRuleAction, 'unique_keys', {}),
+        'my_key': 'index',
+        'match': getattr(DnsRuleMatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class DnsPolicy(AviResource):
@@ -483,6 +501,10 @@ class DnsPolicy(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rule': getattr(DnsRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rule': getattr(DnsRule, 'unique_keys', {}),
     }
 
 

@@ -507,6 +507,10 @@ class VIMgrHostRuntime(AviResource):
         'vm_uuids': 'vimgrvmruntime',
     }
 
+    unique_keys = {
+        'pnics': getattr(CdpLldpInfo, 'unique_keys', {}),
+    }
+
 
 
 def resource_mapping():

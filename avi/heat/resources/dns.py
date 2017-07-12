@@ -36,6 +36,10 @@ class DnsARdata(object):
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class DnsInfo(object):
@@ -97,7 +101,6 @@ class DnsInfo(object):
 
 
 
-
 class DnsNsRdata(object):
     # all schemas
     nsname_schema = properties.Schema(
@@ -129,6 +132,10 @@ class DnsNsRdata(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip_address': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -178,7 +185,6 @@ class DnsSrvRdata(object):
 
 
 
-
 class DnsCnameRdata(object):
     # all schemas
     cname_schema = properties.Schema(
@@ -197,7 +203,6 @@ class DnsCnameRdata(object):
     properties_schema = {
         'cname': cname_schema,
     }
-
 
 
 
@@ -352,5 +357,12 @@ class DnsRecord(object):
         'cname': getattr(DnsCnameRdata, 'field_references', {}),
         'ip_address': getattr(DnsARdata, 'field_references', {}),
         'service_locator': getattr(DnsSrvRdata, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ns': getattr(DnsNsRdata, 'unique_keys', {}),
+        'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
+        'ip_address': getattr(DnsARdata, 'unique_keys', {}),
+        'service_locator': getattr(DnsSrvRdata, 'unique_keys', {}),
     }
 
