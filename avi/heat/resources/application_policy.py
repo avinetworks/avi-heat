@@ -80,6 +80,11 @@ class HTTPSecurityAction(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class HTTPPolicies(object):
@@ -112,6 +117,10 @@ class HTTPPolicies(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'http_policy_set_uuid': 'httppolicyset',
+    }
+
+    unique_keys = {
+        'my_key': 'index',
     }
 
 
@@ -228,6 +237,15 @@ class HTTPRequestRule(object):
         'switching_action': getattr(HTTPSwitchingAction, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rewrite_url_action': getattr(HTTPRewriteURLAction, 'unique_keys', {}),
+        'my_key': 'index',
+        'switching_action': getattr(HTTPSwitchingAction, 'unique_keys', {}),
+        'redirect_action': getattr(HTTPRedirectAction, 'unique_keys', {}),
+        'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
+        'match': getattr(MatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPResponseRule(object):
@@ -322,6 +340,13 @@ class HTTPResponseRule(object):
         'match': getattr(ResponseMatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'loc_hdr_action': getattr(HTTPRewriteLocHdrAction, 'unique_keys', {}),
+        'my_key': 'index',
+        'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
+        'match': getattr(ResponseMatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPSecurityRule(object):
@@ -391,6 +416,12 @@ class HTTPSecurityRule(object):
         'match': getattr(MatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'action': getattr(HTTPSecurityAction, 'unique_keys', {}),
+        'my_key': 'index',
+        'match': getattr(MatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPRequestPolicy(object):
@@ -423,6 +454,10 @@ class HTTPRequestPolicy(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(HTTPRequestRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(HTTPRequestRule, 'unique_keys', {}),
     }
 
 
@@ -459,6 +494,10 @@ class HTTPSecurityPolicy(object):
         'rules': getattr(HTTPSecurityRule, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rules': getattr(HTTPSecurityRule, 'unique_keys', {}),
+    }
+
 
 
 class HTTPResponsePolicy(object):
@@ -491,6 +530,10 @@ class HTTPResponsePolicy(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(HTTPResponseRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(HTTPResponseRule, 'unique_keys', {}),
     }
 
 
@@ -579,6 +622,12 @@ class HTTPPolicySet(AviResource):
         'http_request_policy': getattr(HTTPRequestPolicy, 'field_references', {}),
         'http_response_policy': getattr(HTTPResponsePolicy, 'field_references', {}),
         'http_security_policy': getattr(HTTPSecurityPolicy, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'http_request_policy': getattr(HTTPRequestPolicy, 'unique_keys', {}),
+        'http_response_policy': getattr(HTTPResponsePolicy, 'unique_keys', {}),
+        'http_security_policy': getattr(HTTPSecurityPolicy, 'unique_keys', {}),
     }
 
 

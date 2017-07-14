@@ -31,12 +31,26 @@ class HSMSafenetClientInfo(object):
         required=True,
         update_allowed=True,
     )
+    session_major_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Major number of the sesseion"),
+        required=False,
+        update_allowed=True,
+    )
+    session_minor_number_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Minor number of the sesseion"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'client_priv_key',
         'client_cert',
         'client_ip',
+        'session_major_number',
+        'session_minor_number',
     )
 
     # mapping of properties to their schemas
@@ -44,8 +58,13 @@ class HSMSafenetClientInfo(object):
         'client_priv_key': client_priv_key_schema,
         'client_cert': client_cert_schema,
         'client_ip': client_ip_schema,
+        'session_major_number': session_major_number_schema,
+        'session_minor_number': session_minor_number_schema,
     }
 
+    unique_keys = {
+        'my_key': 'client_ip',
+    }
 
 
 
@@ -80,6 +99,10 @@ class HSMThalesRFS(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -149,6 +172,10 @@ class HSMThalesNetHsm(object):
         'remote_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'remote_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HSMSafenetLunaServer(object):
@@ -186,6 +213,9 @@ class HSMSafenetLunaServer(object):
         'partition_passwd': partition_passwd_schema,
     }
 
+    unique_keys = {
+        'my_key': 'remote_ip',
+    }
 
 
 
@@ -225,12 +255,19 @@ class HSMSafenetLuna(object):
         required=False,
         update_allowed=True,
     )
+    use_dedicated_network_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If enabled, dedicated network is used to communicate with HSM,else, the management network is used."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'server',
         'is_ha',
         'node_info',
+        'use_dedicated_network',
     )
 
     # mapping of properties to their schemas
@@ -238,12 +275,18 @@ class HSMSafenetLuna(object):
         'server': server_schema,
         'is_ha': is_ha_schema,
         'node_info': node_info_schema,
+        'use_dedicated_network': use_dedicated_network_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'node_info': getattr(HSMSafenetClientInfo, 'field_references', {}),
         'server': getattr(HSMSafenetLunaServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'node_info': getattr(HSMSafenetClientInfo, 'unique_keys', {}),
+        'server': getattr(HSMSafenetLunaServer, 'unique_keys', {}),
     }
 
 
@@ -311,6 +354,12 @@ class HardwareSecurityModule(object):
         'nethsm': getattr(HSMThalesNetHsm, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rfs': getattr(HSMThalesRFS, 'unique_keys', {}),
+        'sluna': getattr(HSMSafenetLuna, 'unique_keys', {}),
+        'nethsm': getattr(HSMThalesNetHsm, 'unique_keys', {}),
+    }
+
 
 
 class HardwareSecurityModuleGroup(AviResource):
@@ -345,6 +394,10 @@ class HardwareSecurityModuleGroup(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'hsm': getattr(HardwareSecurityModule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'hsm': getattr(HardwareSecurityModule, 'unique_keys', {}),
     }
 
 

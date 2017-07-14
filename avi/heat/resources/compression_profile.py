@@ -149,6 +149,13 @@ class CompressionFilter(object):
         'ip_addr_prefixes': getattr(IpAddrPrefix, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_addrs': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'index',
+        'ip_addr_ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'ip_addr_prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class CompressionProfile(object):
@@ -217,5 +224,9 @@ class CompressionProfile(object):
     field_references = {
         'filter': getattr(CompressionFilter, 'field_references', {}),
         'compressible_content_uuid': 'stringgroup',
+    }
+
+    unique_keys = {
+        'filter': getattr(CompressionFilter, 'unique_keys', {}),
     }
 

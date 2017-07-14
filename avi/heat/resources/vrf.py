@@ -75,6 +75,18 @@ class BgpPeer(object):
         required=False,
         update_allowed=True,
     )
+    keepalive_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Keepalive interval for this Peer"),
+        required=False,
+        update_allowed=True,
+    )
+    hold_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Hold time for this Peer"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -88,6 +100,8 @@ class BgpPeer(object):
         'advertise_snat_ip',
         'advertisement_interval',
         'connect_timer',
+        'keepalive_interval',
+        'hold_time',
     )
 
     # mapping of properties to their schemas
@@ -102,12 +116,20 @@ class BgpPeer(object):
         'advertise_snat_ip': advertise_snat_ip_schema,
         'advertisement_interval': advertisement_interval_schema,
         'connect_timer': connect_timer_schema,
+        'keepalive_interval': keepalive_interval_schema,
+        'hold_time': hold_time_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'peer_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'my_key': 'peer_ip',
+        'peer_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -140,12 +162,26 @@ class BgpProfile(object):
         required=False,
         update_allowed=True,
     )
+    keepalive_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Keepalive interval for Peers"),
+        required=False,
+        update_allowed=True,
+    )
+    hold_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Hold time for Peers"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'local_as',
         'ibgp',
         'peers',
+        'keepalive_interval',
+        'hold_time',
     )
 
     # mapping of properties to their schemas
@@ -153,11 +189,17 @@ class BgpProfile(object):
         'local_as': local_as_schema,
         'ibgp': ibgp_schema,
         'peers': peers_schema,
+        'keepalive_interval': keepalive_interval_schema,
+        'hold_time': hold_time_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'peers': getattr(BgpPeer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'peers': getattr(BgpPeer, 'unique_keys', {}),
     }
 
 
@@ -211,6 +253,10 @@ class GatewayMonitor(object):
         'gateway_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'gateway_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class StaticRoute(object):
@@ -262,6 +308,12 @@ class StaticRoute(object):
     field_references = {
         'prefix': getattr(IpAddrPrefix, 'field_references', {}),
         'next_hop': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'prefix': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'next_hop': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'route_id',
     }
 
 
@@ -348,6 +400,12 @@ class VrfContext(AviResource):
         'gateway_mon': getattr(GatewayMonitor, 'field_references', {}),
         'bgp_profile': getattr(BgpProfile, 'field_references', {}),
         'static_routes': getattr(StaticRoute, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'gateway_mon': getattr(GatewayMonitor, 'unique_keys', {}),
+        'bgp_profile': getattr(BgpProfile, 'unique_keys', {}),
+        'static_routes': getattr(StaticRoute, 'unique_keys', {}),
     }
 
 

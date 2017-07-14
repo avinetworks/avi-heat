@@ -36,7 +36,7 @@ class AppHdr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'DOES_NOT_CONTAIN', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'ENDS_WITH', 'BEGINS_WITH']),
+            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
         ],
     )
 
@@ -53,7 +53,6 @@ class AppHdr(object):
         'hdr_match_case': hdr_match_case_schema,
         'hdr_string_op': hdr_string_op_schema,
     }
-
 
 
 
@@ -106,7 +105,6 @@ class SeRuntimeCompressionProperties(object):
         'min_high_rtt': min_high_rtt_schema,
         'mobile_str': mobile_str_schema,
     }
-
 
 
 
@@ -171,7 +169,6 @@ class SeBootupCompressionProperties(object):
 
 
 
-
 class SeRateLimiters(object):
     # all schemas
     icmp_rl_schema = properties.Schema(
@@ -230,7 +227,6 @@ class SeRateLimiters(object):
         'flow_probe_rl': flow_probe_rl_schema,
         'default_rl': default_rl_schema,
     }
-
 
 
 
@@ -827,6 +823,18 @@ class SeRuntimeProperties(object):
         required=False,
         update_allowed=True,
     )
+    flow_table_batch_push_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("How often to push the flow table IPC messages in the main loop. The value is the number of times through the loop before pushing the batch. i.e, a value of 1 means every time through the loop."),
+        required=False,
+        update_allowed=True,
+    )
+    disable_flow_probes_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable Flow Probes for Scaled out VS'es"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -924,6 +932,8 @@ class SeRuntimeProperties(object):
         'se_dp_if_state_poll_interval',
         'log_message_max_file_list_size',
         'scaleout_udp_per_pkt',
+        'flow_table_batch_push_frequency',
+        'disable_flow_probes',
     )
 
     # mapping of properties to their schemas
@@ -1022,6 +1032,8 @@ class SeRuntimeProperties(object):
         'se_dp_if_state_poll_interval': se_dp_if_state_poll_interval_schema,
         'log_message_max_file_list_size': log_message_max_file_list_size_schema,
         'scaleout_udp_per_pkt': scaleout_udp_per_pkt_schema,
+        'flow_table_batch_push_frequency': flow_table_batch_push_frequency_schema,
+        'disable_flow_probes': disable_flow_probes_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1032,6 +1044,15 @@ class SeRuntimeProperties(object):
         'service_port_ranges': getattr(PortRange, 'field_references', {}),
         'se_rate_limiters': getattr(SeRateLimiters, 'field_references', {}),
         'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_dp_compression': getattr(SeRuntimeCompressionProperties, 'unique_keys', {}),
+        'service_ip_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'app_headers': getattr(AppHdr, 'unique_keys', {}),
+        'service_port_ranges': getattr(PortRange, 'unique_keys', {}),
+        'se_rate_limiters': getattr(SeRateLimiters, 'unique_keys', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
     }
 
 
@@ -1265,7 +1286,6 @@ class SeAgentProperties(object):
 
 
 
-
 class SeBootupProperties(object):
     # all schemas
     tcp_syncache_hashsize_schema = properties.Schema(
@@ -1461,6 +1481,12 @@ class SeBootupProperties(object):
         required=False,
         update_allowed=True,
     )
+    se_l3_encap_ipc_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1496,6 +1522,7 @@ class SeBootupProperties(object):
         'docker_backend_portstart',
         'docker_backend_portend',
         'distribute_vnics',
+        'se_l3_encap_ipc',
     )
 
     # mapping of properties to their schemas
@@ -1532,11 +1559,16 @@ class SeBootupProperties(object):
         'docker_backend_portstart': docker_backend_portstart_schema,
         'docker_backend_portend': docker_backend_portend_schema,
         'distribute_vnics': distribute_vnics_schema,
+        'se_l3_encap_ipc': se_l3_encap_ipc_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'se_dp_compression': getattr(SeBootupCompressionProperties, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_dp_compression': getattr(SeBootupCompressionProperties, 'unique_keys', {}),
     }
 
 
@@ -1585,6 +1617,12 @@ class SeProperties(AviResource):
         'se_agent_properties': getattr(SeAgentProperties, 'field_references', {}),
         'se_runtime_properties': getattr(SeRuntimeProperties, 'field_references', {}),
         'se_bootup_properties': getattr(SeBootupProperties, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_agent_properties': getattr(SeAgentProperties, 'unique_keys', {}),
+        'se_runtime_properties': getattr(SeRuntimeProperties, 'unique_keys', {}),
+        'se_bootup_properties': getattr(SeBootupProperties, 'unique_keys', {}),
     }
 
 

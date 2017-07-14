@@ -57,6 +57,12 @@ class NetworkSecurityMatchTarget(object):
         'vs_port': getattr(PortMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'microservice': getattr(MicroServiceMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'vs_port': getattr(PortMatch, 'unique_keys', {}),
+    }
+
 
 
 class NetworkSecurityPolicyActionRLParam(object):
@@ -85,7 +91,6 @@ class NetworkSecurityPolicyActionRLParam(object):
         'max_rate': max_rate_schema,
         'burst_size': burst_size_schema,
     }
-
 
 
 
@@ -122,7 +127,7 @@ class NetworkSecurityRule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT']),
+            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW']),
         ],
     )
     log_schema = properties.Schema(
@@ -144,6 +149,12 @@ class NetworkSecurityRule(object):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -155,6 +166,7 @@ class NetworkSecurityRule(object):
         'log',
         'rl_param',
         'age',
+        'created_by',
     )
 
     # mapping of properties to their schemas
@@ -167,12 +179,19 @@ class NetworkSecurityRule(object):
         'log': log_schema,
         'rl_param': rl_param_schema,
         'age': age_schema,
+        'created_by': created_by_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rl_param': getattr(NetworkSecurityPolicyActionRLParam, 'field_references', {}),
         'match': getattr(NetworkSecurityMatchTarget, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rl_param': getattr(NetworkSecurityPolicyActionRLParam, 'unique_keys', {}),
+        'my_key': 'index',
+        'match': getattr(NetworkSecurityMatchTarget, 'unique_keys', {}),
     }
 
 
@@ -206,6 +225,12 @@ class NetworkSecurityPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Checksum of cloud configuration for Network Sec Policy. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -218,6 +243,7 @@ class NetworkSecurityPolicy(AviResource):
         'name',
         'rules',
         'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
@@ -226,12 +252,17 @@ class NetworkSecurityPolicy(AviResource):
         'name': name_schema,
         'rules': rules_schema,
         'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(NetworkSecurityRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(NetworkSecurityRule, 'unique_keys', {}),
     }
 
 

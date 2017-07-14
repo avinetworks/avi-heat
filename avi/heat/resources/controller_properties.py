@@ -249,6 +249,12 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    appviewx_compat_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Export configuration in appviewx compatibility mode"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -290,6 +296,7 @@ class ControllerProperties(AviResource):
         'ssl_certificate_expiry_warning_days',
         'seupgrade_fabric_pool_size',
         'seupgrade_segroup_min_dead_timeout',
+        'appviewx_compat_mode',
     )
 
     # mapping of properties to their schemas
@@ -332,8 +339,8 @@ class ControllerProperties(AviResource):
         'ssl_certificate_expiry_warning_days': ssl_certificate_expiry_warning_days_schema,
         'seupgrade_fabric_pool_size': seupgrade_fabric_pool_size_schema,
         'seupgrade_segroup_min_dead_timeout': seupgrade_segroup_min_dead_timeout_schema,
+        'appviewx_compat_mode': appviewx_compat_mode_schema,
     }
-
 
 
 

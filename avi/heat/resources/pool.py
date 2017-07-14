@@ -50,6 +50,10 @@ class FailActionHTTPLocalResponse(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class PriorityLabels(AviResource):
@@ -99,6 +103,10 @@ class PriorityLabels(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'equivalent_labels': getattr(EquivalentLabels, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'equivalent_labels': getattr(EquivalentLabels, 'unique_keys', {}),
     }
 
 
@@ -275,7 +283,6 @@ class FailActionHTTPRedirect(object):
 
 
 
-
 class PGDeploymentRule(object):
     # all schemas
     metric_id_schema = properties.Schema(
@@ -316,7 +323,6 @@ class PGDeploymentRule(object):
 
 
 
-
 class PlacementNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
@@ -349,6 +355,10 @@ class PlacementNetwork(object):
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -407,6 +417,12 @@ class FailAction(object):
         'redirect': getattr(FailActionHTTPRedirect, 'field_references', {}),
         'backup_pool': getattr(FailActionBackupPool, 'field_references', {}),
         'local_rsp': getattr(FailActionHTTPLocalResponse, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'redirect': getattr(FailActionHTTPRedirect, 'unique_keys', {}),
+        'backup_pool': getattr(FailActionBackupPool, 'unique_keys', {}),
+        'local_rsp': getattr(FailActionHTTPLocalResponse, 'unique_keys', {}),
     }
 
 
@@ -501,6 +517,10 @@ class PoolGroupDeploymentPolicy(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(PGDeploymentRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(PGDeploymentRule, 'unique_keys', {}),
     }
 
 
@@ -604,6 +624,10 @@ class HTTPReselectRespCode(object):
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+    }
+
 
 
 class DiscoveredNetwork(object):
@@ -647,6 +671,10 @@ class DiscoveredNetwork(object):
         'network_uuid': 'network',
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class PoolGroup(AviResource):
@@ -667,7 +695,7 @@ class PoolGroup(AviResource):
     )
     members_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Member details"),
+        _("List of pool group members object of type PoolGroupMember."),
         schema=members_item_schema,
         required=False,
         update_allowed=True,
@@ -699,7 +727,7 @@ class PoolGroup(AviResource):
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Creator name"),
+        _("Name of the user who created the object."),
         required=False,
         update_allowed=True,
     )
@@ -711,7 +739,7 @@ class PoolGroup(AviResource):
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Description of Pool Group."),
         required=False,
         update_allowed=True,
     )
@@ -747,6 +775,11 @@ class PoolGroup(AviResource):
         'priority_labels_uuid': 'prioritylabels',
         'fail_action': getattr(FailAction, 'field_references', {}),
         'members': getattr(PoolGroupMember, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'members': getattr(PoolGroupMember, 'unique_keys', {}),
     }
 
 
@@ -798,6 +831,10 @@ class HTTPServerReselect(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'svr_resp_code': getattr(HTTPReselectRespCode, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'svr_resp_code': getattr(HTTPReselectRespCode, 'unique_keys', {}),
     }
 
 
@@ -1015,6 +1052,13 @@ class Server(object):
         'nw_uuid': 'vimgrnwruntime',
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'my_key': 'ip,port',
+        'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class Pool(AviResource):
@@ -1058,7 +1102,7 @@ class Pool(AviResource):
     )
     health_monitor_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens to client to server communication and raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens only to client to server communication. It raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
         schema=health_monitor_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -1089,7 +1133,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_LEAST_CONNECTIONS', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_CONSISTENT_HASH']),
+            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_LEAST_CONNECTIONS']),
         ],
     )
     lb_algorithm_hash_schema = properties.Schema(
@@ -1130,7 +1174,7 @@ class Pool(AviResource):
     )
     placement_networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10.1.1.0/24. If the Pool Servers are not directly connected, but routable from the ServiceEngine, please also provide the appropriate static routes to reach the Servers in the VRF configuration."),
+        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10-1-1-0/24. Use static routes in VRF configuration when pool servers are not directly connected butroutable from the service engine."),
         schema=placement_networks_item_schema,
         required=False,
         update_allowed=True,
@@ -1155,7 +1199,7 @@ class Pool(AviResource):
     )
     use_service_port_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Do not translate the client's destination port when sending the connection to the server.  The pool or servers specified service port will still be used for health monitoring.  This feature is only applicable for a Virtual Service configured with the application type set to L4."),
+        _("Do not translate the client's destination port when sending the connection to the server.  The pool or servers specified service port will still be used for health monitoring."),
         required=False,
         update_allowed=True,
     )
@@ -1328,7 +1372,7 @@ class Pool(AviResource):
     )
     domain_name_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates if common name check (host_check_enabled) is enabled."),
+        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates. It is performed only when common name check host_check_enabled is enabled."),
         schema=domain_name_item_schema,
         required=False,
         update_allowed=True,
@@ -1485,6 +1529,16 @@ class Pool(AviResource):
         'fail_action': getattr(FailAction, 'field_references', {}),
         'servers': getattr(Server, 'field_references', {}),
         'networks': getattr(NetworkFilter, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'server_reselect': getattr(HTTPServerReselect, 'unique_keys', {}),
+        'max_conn_rate_per_server': getattr(RateProfile, 'unique_keys', {}),
+        'placement_networks': getattr(PlacementNetwork, 'unique_keys', {}),
+        'ab_pool': getattr(AbPool, 'unique_keys', {}),
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'servers': getattr(Server, 'unique_keys', {}),
+        'networks': getattr(NetworkFilter, 'unique_keys', {}),
     }
 
 

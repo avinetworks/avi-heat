@@ -55,6 +55,10 @@ class DNSConfiguration(object):
         'server_list': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'server_list': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class NTPAuthenticationKey(object):
@@ -95,6 +99,9 @@ class NTPAuthenticationKey(object):
         'key': key_schema,
     }
 
+    unique_keys = {
+        'my_key': 'key_number',
+    }
 
 
 
@@ -139,6 +146,10 @@ class AdminAuthConfiguration(object):
         'auth_profile_uuid': 'authprofile',
     }
 
+    unique_keys = {
+        'mapping_rules': getattr(AuthMappingRule, 'unique_keys', {}),
+    }
+
 
 
 class NTPServer(object):
@@ -174,6 +185,10 @@ class NTPServer(object):
         'server': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'server': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class TechSupportUploaderConfiguration(object):
@@ -194,7 +209,6 @@ class TechSupportUploaderConfiguration(object):
     properties_schema = {
         'auto_upload': auto_upload_schema,
     }
-
 
 
 
@@ -262,7 +276,6 @@ class EmailConfiguration(object):
 
 
 
-
 class ProxyConfiguration(object):
     # all schemas
     host_schema = properties.Schema(
@@ -308,7 +321,6 @@ class ProxyConfiguration(object):
 
 
 
-
 class LinuxConfiguration(object):
     # all schemas
     motd_schema = properties.Schema(
@@ -335,7 +347,6 @@ class LinuxConfiguration(object):
         'motd': motd_schema,
         'banner': banner_schema,
     }
-
 
 
 
@@ -527,6 +538,12 @@ class NTPConfiguration(object):
         'ntp_server_list': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ntp_servers': getattr(NTPServer, 'unique_keys', {}),
+        'ntp_authentication_keys': getattr(NTPAuthenticationKey, 'unique_keys', {}),
+        'ntp_server_list': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class MgmtIpAccessControl(object):
@@ -582,6 +599,13 @@ class MgmtIpAccessControl(object):
         'api_access': getattr(IpAddrMatch, 'field_references', {}),
         'ssh_access': getattr(IpAddrMatch, 'field_references', {}),
         'shell_server_access': getattr(IpAddrMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'snmp_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'api_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'ssh_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'shell_server_access': getattr(IpAddrMatch, 'unique_keys', {}),
     }
 
 
@@ -755,6 +779,20 @@ class SystemConfiguration(AviResource):
         'ntp_configuration': getattr(NTPConfiguration, 'field_references', {}),
         'admin_auth_configuration': getattr(AdminAuthConfiguration, 'field_references', {}),
         'mgmt_ip_access_control': getattr(MgmtIpAccessControl, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'email_configuration': getattr(EmailConfiguration, 'unique_keys', {}),
+        'global_tenant_config': getattr(TenantConfiguration, 'unique_keys', {}),
+        'dns_configuration': getattr(DNSConfiguration, 'unique_keys', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'tech_support_uploader_configuration': getattr(TechSupportUploaderConfiguration, 'unique_keys', {}),
+        'snmp_configuration': getattr(SnmpConfiguration, 'unique_keys', {}),
+        'linux_configuration': getattr(LinuxConfiguration, 'unique_keys', {}),
+        'portal_configuration': getattr(PortalConfiguration, 'unique_keys', {}),
+        'ntp_configuration': getattr(NTPConfiguration, 'unique_keys', {}),
+        'admin_auth_configuration': getattr(AdminAuthConfiguration, 'unique_keys', {}),
+        'mgmt_ip_access_control': getattr(MgmtIpAccessControl, 'unique_keys', {}),
     }
 
 

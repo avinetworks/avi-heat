@@ -19,6 +19,7 @@ from auth import *
 from rate import *
 from gslb import *
 from dns import *
+from content_rewrite_profile import *
 
 
 class ServicePoolSelector(object):
@@ -71,6 +72,10 @@ class ServicePoolSelector(object):
     field_references = {
         'service_pool_uuid': 'pool',
         'service_pool_group_uuid': 'poolgroup',
+    }
+
+    unique_keys = {
+        'my_key': 'service_port,service_protocol',
     }
 
 
@@ -141,7 +146,6 @@ class VirtualServiceResource(object):
         'scalein_se_uuid': scalein_se_uuid_schema,
         'num_standby_se': num_standby_se_schema,
     }
-
 
 
 
@@ -224,6 +228,51 @@ class PerformanceLimits(object):
 
 
 
+class SidebandProfile(object):
+    # all schemas
+    ip_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("IP Address of the sideband server."),
+        schema=ip_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    sideband_max_request_body_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Maximum size of the request body that will be sent on the sideband."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip',
+        'sideband_max_request_body_size',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip': ip_schema,
+        'sideband_max_request_body_size': sideband_max_request_body_size_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
 
 class TLSTicket(object):
     # all schemas
@@ -259,7 +308,6 @@ class TLSTicket(object):
         'aes_key': aes_key_schema,
         'hmac_key': hmac_key_schema,
     }
-
 
 
 
@@ -305,6 +353,10 @@ class IPNetworkSubnet(object):
         'network_uuid': 'network',
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class VsSeVnic(object):
@@ -344,7 +396,6 @@ class VsSeVnic(object):
         'type': type_schema,
         'lif': lif_schema,
     }
-
 
 
 
@@ -396,6 +447,10 @@ class VsApicExtension(object):
         'vnic': getattr(VsSeVnic, 'field_references', {}),
     }
 
+    unique_keys = {
+        'vnic': getattr(VsSeVnic, 'unique_keys', {}),
+    }
+
 
 
 class SeVipInterfaceList(object):
@@ -445,6 +500,10 @@ class SeVipInterfaceList(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'vip_intf_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'vip_intf_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -680,6 +739,14 @@ class SeList(object):
         'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'vnic': getattr(VsSeVnic, 'unique_keys', {}),
+        'vip_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'snat_ip': getattr(IpAddr, 'unique_keys', {}),
+        'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'vip_intf_list': getattr(SeVipInterfaceList, 'unique_keys', {}),
+    }
+
 
 
 class VirtualService(AviResource):
@@ -693,7 +760,7 @@ class VirtualService(AviResource):
     )
     fqdn_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS resolvable, fully qualified domain name of the virtualservice. [Note] Only one of 'fqdn' and 'dns_info' configuration is allowed."),
+        _("DNS resolvable, fully qualified domain name of the virtualservice. Only one of 'fqdn' and 'dns_info' configuration is allowed."),
         required=False,
         update_allowed=True,
     )
@@ -719,7 +786,7 @@ class VirtualService(AviResource):
     )
     services_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _("List of Services defined for this Virtual Service."),
         schema=services_item_schema,
         required=False,
         update_allowed=True,
@@ -795,14 +862,14 @@ class VirtualService(AviResource):
     )
     performance_limits_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Optional settings that determine performance limits like max connections or bandwdith etc."),
         schema=PerformanceLimits.properties_schema,
         required=False,
         update_allowed=True,
     )
     analytics_policy_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Determines analytics settings for the application."),
         schema=AnalyticsPolicy.properties_schema,
         required=False,
         update_allowed=True,
@@ -833,7 +900,7 @@ class VirtualService(AviResource):
     )
     subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If auto_allocate_ip is True, then the subnet for the Virtual Service IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
+        _("It represents subnet for the Virtual Service IP address allocation when auto_allocate_ip is True.It is only applicable in OpenStack or AWS cloud. This field is required if auto_allocate_ip is True."),
         required=False,
         update_allowed=True,
     )
@@ -920,7 +987,7 @@ class VirtualService(AviResource):
     )
     weight_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The Quality of Service weight to assign to traffic transmitted from this Virtual Service.  A higher weight will prioritize traffic versus other Virtual Services sharing the same Service Engines. (1-2-4-8)"),
+        _("The Quality of Service weight to assign to traffic transmitted from this Virtual Service.  A higher weight will prioritize traffic versus other Virtual Services sharing the same Service Engines."),
         required=False,
         update_allowed=True,
     )
@@ -997,7 +1064,7 @@ class VirtualService(AviResource):
     )
     floating_subnet_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud, in which case it is mandatory, if auto_allocate_floating_ip is selected."),
+        _("If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IP address allocation. This field is applicable only if the VirtualService belongs to an OpenStack or AWS cloud. In OpenStack or AWS cloud it is required when auto_allocate_floating_ip is selected."),
         required=False,
         update_allowed=True,
     )
@@ -1007,7 +1074,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
         ],
     )
     avi_allocated_vip_schema = properties.Schema(
@@ -1147,7 +1214,7 @@ class VirtualService(AviResource):
     )
     active_standby_se_tag_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This configuration only applies if the VirtualService is in Legacy Active Standby HA mode and Load Distribution among Active Standby is enabled. This field is used to tag the VirtualService so that VirtualServices with the same tag will share the same Active ServiceEngine and VirtualServices with different tags will have different Active ServiceEngines. If one of the ServiceEngine's in the ServiceEngineGroup fails, all VirtualServices will end up using the same Active ServiceEngine. Redistribution of the VirtualServices, once the failed ServiceEngine recovers can either be manual or automated, based on the auto redistribute property of the ServiceEngineGroup"),
+        _("This configuration only applies if the VirtualService is in Legacy Active Standby HA mode and Load Distribution among Active Standby is enabled. This field is used to tag the VirtualService so that VirtualServices with the same tag will share the same Active ServiceEngine. VirtualServices with different tags will have different Active ServiceEngines. If one of the ServiceEngine's in the ServiceEngineGroup fails, all VirtualServices will end up using the same Active ServiceEngine. Redistribution of the VirtualServices can be either manual or automated when the failed ServiceEngine recovers. Redistribution is based on the auto redistribute property of the ServiceEngineGroup."),
         required=False,
         update_allowed=True,
         constraints=[
@@ -1199,8 +1266,28 @@ class VirtualService(AviResource):
     )
     dns_info_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Service discovery specific data including fully qualified domain name, type and Time-To-Live of the DNS record. [Note] Only one of 'fqdn' and 'dns_info' configuration is allowed."),
+        _("Service discovery specific data including fully qualified domain name, type and Time-To-Live of the DNS record. Note that only one of fqdn and dns_info setting is allowed."),
         schema=dns_info_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    service_metadata_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Metadata pertaining to the Service provided by this virtual service. In Openshift/Kubernetes environments, egress pod info is stored. Any user input to this field will be overwritten by Avi Vantage."),
+        required=False,
+        update_allowed=True,
+    )
+    content_rewrite_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Profile used to match and rewrite strings in request and/or response body."),
+        schema=ContentRewriteProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    sideband_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("Sideband configuration to be used for this virtualservice.It can be used for sending traffic to sideband VIPs for external inspection etc."),
+        schema=SidebandProfile.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -1274,6 +1361,9 @@ class VirtualService(AviResource):
         'static_dns_records',
         'ipam_network_subnet',
         'dns_info',
+        'service_metadata',
+        'content_rewrite',
+        'sideband_profile',
     )
 
     # mapping of properties to their schemas
@@ -1345,6 +1435,9 @@ class VirtualService(AviResource):
         'static_dns_records': static_dns_records_schema,
         'ipam_network_subnet': ipam_network_subnet_schema,
         'dns_info': dns_info_schema,
+        'service_metadata': service_metadata_schema,
+        'content_rewrite': content_rewrite_schema,
+        'sideband_profile': sideband_profile_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1354,8 +1447,10 @@ class VirtualService(AviResource):
         'network_profile_uuid': 'networkprofile',
         'dns_info': getattr(DnsInfo, 'field_references', {}),
         'vs_datascripts': getattr(VSDataScripts, 'field_references', {}),
+        'content_rewrite': getattr(ContentRewriteProfile, 'field_references', {}),
         'snat_ip': getattr(IpAddr, 'field_references', {}),
         'discovered_network_uuid': 'network',
+        'sideband_profile': getattr(SidebandProfile, 'field_references', {}),
         'vrf_context_uuid': 'vrfcontext',
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'se_group_uuid': 'serviceenginegroup',
@@ -1381,6 +1476,29 @@ class VirtualService(AviResource):
         'static_dns_records': getattr(DnsRecord, 'field_references', {}),
         'analytics_policy': getattr(AnalyticsPolicy, 'field_references', {}),
         'pool_uuid': 'pool',
+    }
+
+    unique_keys = {
+        'requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'static_dns_records': getattr(DnsRecord, 'unique_keys', {}),
+        'service_pool_select': getattr(ServicePoolSelector, 'unique_keys', {}),
+        'performance_limits': getattr(PerformanceLimits, 'unique_keys', {}),
+        'http_policies': getattr(HTTPPolicies, 'unique_keys', {}),
+        'vs_datascripts': getattr(VSDataScripts, 'unique_keys', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'dns_info': getattr(DnsInfo, 'unique_keys', {}),
+        'floating_ip': getattr(IpAddr, 'unique_keys', {}),
+        'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'client_auth': getattr(HTTPClientAuthenticationParams, 'unique_keys', {}),
+        'snat_ip': getattr(IpAddr, 'unique_keys', {}),
+        'analytics_policy': getattr(AnalyticsPolicy, 'unique_keys', {}),
+        'ipam_network_subnet': getattr(IPNetworkSubnet, 'unique_keys', {}),
+        'services': getattr(Service, 'unique_keys', {}),
+        'connections_rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+        'sideband_profile': getattr(SidebandProfile, 'unique_keys', {}),
+        'content_rewrite': getattr(ContentRewriteProfile, 'unique_keys', {}),
     }
 
 

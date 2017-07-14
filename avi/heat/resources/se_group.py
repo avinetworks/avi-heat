@@ -44,7 +44,6 @@ class CustomTag(object):
 
 
 
-
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -163,7 +162,7 @@ class IptableRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PROTO_TCP', 'PROTO_UDP', 'PROTO_ICMP', 'PROTO_ALL']),
+            constraints.AllowedValues(['PROTO_UDP', 'PROTO_TCP', 'PROTO_ICMP', 'PROTO_ALL']),
         ],
     )
     input_interface_schema = properties.Schema(
@@ -238,6 +237,14 @@ class IptableRule(object):
         'dnat_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'src_ip': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'dst_ip': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'src_port': getattr(PortRange, 'unique_keys', {}),
+        'dst_port': getattr(PortRange, 'unique_keys', {}),
+        'dnat_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class IptableRuleSet(object):
@@ -286,6 +293,10 @@ class IptableRuleSet(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(IptableRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(IptableRule, 'unique_keys', {}),
     }
 
 
@@ -349,25 +360,25 @@ class ServiceEngineGroup(AviResource):
     )
     max_cpu_usage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("When CPU utilization exceeds this maximum threshold, Virtual Services hosted on this Service Engine may be rebalanced to other Service Engines to lighten the load. A new Service Engine may be created as part of this process."),
+        _("When CPU usage on an SE exceeds this threshold, Virtual Services hosted on this SE may be rebalanced to other SEs to reduce load. A new SE may be created as part of this process."),
         required=False,
         update_allowed=True,
     )
     min_cpu_usage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("When CPU utilization falls below the minimum threshold, Virtual Services hosted on this Service Engine may be consolidated onto other underutilized Service Engines.  After consolidation, unused Service Engines may then be eligible for deletion. When CPU utilization exceeds the maximum threshold, Virtual Services hosted on this Service Engine may be migrated to other Service Engines to lighten the load. A new Service Engine may be created as part of this process."),
+        _("When CPU usage on an SE falls below the minimum threshold, Virtual Services hosted on the SE may be consolidated onto other underutilized SEs. After consolidation, unused Service Engines may then be eligible for deletion. "),
         required=False,
         update_allowed=True,
     )
     se_deprovision_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Duration to preserve unused Service Engine virtual machines before deleting them. If traffic to a Virtual Service were to spike up abruptly, this Service Engine would still be available to be utilized again rather than creating a new Service Engine. If this value is set to 0, Controller will never delete any Service Engines, administrator has to manually cleanup unused Service Engines."),
+        _("Duration to preserve unused Service Engine virtual machines before deleting them. If traffic to a Virtual Service were to spike up abruptly, this SE would still be available to be utilized again rather than creating a new SE. If this value is set to 0, Controller will never delete any SEs and administrator has to manually cleanup unused SEs."),
         required=False,
         update_allowed=True,
     )
     auto_rebalance_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If 'Auto Rebalance' is selected, Virtual Services will be automatically migrated when the load on Service Engines falls below the minimum threshold or goes above the maximum threshold. Otherwise, an Alert is generated instead of automatically performing the migration."),
+        _("If set, Virtual Services will be automatically migrated when load on an SE is less than minimum or more than maximum thresholds. Only Alerts are generated when the auto_rebalance is not set."),
         required=False,
         update_allowed=True,
     )
@@ -474,7 +485,7 @@ class ServiceEngineGroup(AviResource):
     )
     algo_schema = properties.Schema(
         properties.Schema.STRING,
-        _("If 'compact' placement algorithm is used, Virtual Services are placed on existing Service Engines until they all have the maximum number of Virtual Services. Otherwise, Virtual Services are distributed to as many Service Engines as possible."),
+        _("In compact placement, Virtual Services are placed on existing SEs until max_vs_per_se limit is reached."),
         required=False,
         update_allowed=True,
         constraints=[
@@ -593,13 +604,13 @@ class ServiceEngineGroup(AviResource):
     )
     host_attribute_key_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Key of a Key,Value pair identifying a set of hosts. Currently used to separate North-South and East-West ServiceEngine sizing requirements, specifically in Container ecosystems, where ServiceEngines on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
+        _("Key of a (Key, Value) pair identifying a set of hosts. Currently used to separate North-South and East-West SE sizing requirements. This is useful in Container ecosystems where SEs on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
         required=False,
         update_allowed=True,
     )
     host_attribute_value_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Value of a Key,Value pair identifying a set of hosts. Currently used to separate North-South and East-West ServiceEngine sizing requirements, specifically in Container ecosystems, where ServiceEngines on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
+        _("Value of a (Key, Value) pair identifying a set of hosts. Currently used to separate North-South and East-West SE sizing requirements. This is useful in Container ecosystems where SEs on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
         required=False,
         update_allowed=True,
     )
@@ -624,7 +635,7 @@ class ServiceEngineGroup(AviResource):
     )
     floating_intf_ip_schema = properties.Schema(
         properties.Schema.LIST,
-        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect. If manual load distribution among the Active Standby ServiceEngines is enabled, Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 1 Tag."),
+        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect. Only active SE hosting VS tagged with Active Standby SE 1 Tag will advertise this floating IP when manual load distribution is enabled."),
         schema=floating_intf_ip_item_schema,
         required=False,
         update_allowed=True,
@@ -638,6 +649,12 @@ class ServiceEngineGroup(AviResource):
     per_app_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Per-app SE mode is designed for deploying dedicated load balancers per app (VS). In this mode, each SE is limited to a max of 2 VSs. vCPUs in per-app SEs count towards licensing usage at 25% rate."),
+        required=False,
+        update_allowed=True,
+    )
+    enable_vmac_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use Virtual MAC address for interfaces on which floating interface IPs are placed"),
         required=False,
         update_allowed=True,
     )
@@ -662,7 +679,7 @@ class ServiceEngineGroup(AviResource):
     )
     floating_intf_ip_se_2_schema = properties.Schema(
         properties.Schema.LIST,
-        _("This field is applicable only if the ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, with manual load distribution among the Active Standby ServiceEngines enabled. Floating IP's provided here will be advertised only by the Active ServiceEngine hosting all the VirtualServices tagged with Active Standby SE 2 Tag."),
+        _("If ServiceEngineGroup is configured for Legacy 1+1 Active Standby HA Mode, Floating IP's will be advertised only by the Active SE in the Pair. Virtual Services in this group must be disabled/enabled for any changes to the Floating IP's to take effect. Only active SE hosting VS tagged with Active Standby SE 2 Tag will advertise this floating IP when manual load distribution is enabled."),
         schema=floating_intf_ip_se_2_item_schema,
         required=False,
         update_allowed=True,
@@ -731,6 +748,30 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    enable_vip_on_all_interfaces_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable VIP on all interfaces of SE."),
+        required=False,
+        update_allowed=True,
+    )
+    se_thread_multiplier_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Multiplier for SE threads based on vCPU."),
+        required=False,
+        update_allowed=True,
+    )
+    async_ssl_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("SSL handshakes will be handled by dedicated SSL Threads"),
+        required=False,
+        update_allowed=True,
+    )
+    async_ssl_threads_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Number of Async SSL threads per se_dp"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -786,6 +827,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip',
         'hm_on_standby',
         'per_app',
+        'enable_vmac',
         'distribute_load_active_standby',
         'auto_redistribute_active_standby_load',
         'floating_intf_ip_se_2',
@@ -797,6 +839,10 @@ class ServiceEngineGroup(AviResource):
         'iptables',
         'enable_routing',
         'advertise_backend_networks',
+        'enable_vip_on_all_interfaces',
+        'se_thread_multiplier',
+        'async_ssl',
+        'async_ssl_threads',
     )
 
     # mapping of properties to their schemas
@@ -853,6 +899,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': floating_intf_ip_schema,
         'hm_on_standby': hm_on_standby_schema,
         'per_app': per_app_schema,
+        'enable_vmac': enable_vmac_schema,
         'distribute_load_active_standby': distribute_load_active_standby_schema,
         'auto_redistribute_active_standby_load': auto_redistribute_active_standby_load_schema,
         'floating_intf_ip_se_2': floating_intf_ip_se_2_schema,
@@ -864,6 +911,10 @@ class ServiceEngineGroup(AviResource):
         'iptables': iptables_schema,
         'enable_routing': enable_routing_schema,
         'advertise_backend_networks': advertise_backend_networks_schema,
+        'enable_vip_on_all_interfaces': enable_vip_on_all_interfaces_schema,
+        'se_thread_multiplier': se_thread_multiplier_schema,
+        'async_ssl': async_ssl_schema,
+        'async_ssl_threads': async_ssl_threads_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -880,6 +931,19 @@ class ServiceEngineGroup(AviResource):
         'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
         'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'iptables': getattr(IptableRuleSet, 'unique_keys', {}),
+        'floating_intf_ip_se_2': getattr(IpAddr, 'unique_keys', {}),
+        'vcenter_hosts': getattr(VcenterHosts, 'unique_keys', {}),
+        'custom_tag': getattr(CustomTag, 'unique_keys', {}),
+        'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'unique_keys', {}),
+        'vcenter_datastores': getattr(VcenterDatastore, 'unique_keys', {}),
+        'mgmt_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'vcenter_clusters': getattr(VcenterClusters, 'unique_keys', {}),
+        'se_dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
     }
 
 

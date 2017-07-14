@@ -20,7 +20,7 @@ class SSLKeyRSAParams(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_2048_BITS', 'SSL_KEY_4096_BITS', 'SSL_KEY_3072_BITS']),
+            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_3072_BITS', 'SSL_KEY_4096_BITS', 'SSL_KEY_2048_BITS']),
         ],
     )
     exponent_schema = properties.Schema(
@@ -41,7 +41,6 @@ class SSLKeyRSAParams(object):
         'key_size': key_size_schema,
         'exponent': exponent_schema,
     }
-
 
 
 
@@ -67,6 +66,9 @@ class SSLVersion(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'type',
+    }
 
 
 
@@ -125,7 +127,6 @@ class SSLKeyECParams(object):
     properties_schema = {
         'curve': curve_schema,
     }
-
 
 
 
@@ -206,7 +207,6 @@ class SSLCertificateDescription(object):
 
 
 
-
 class CertificateManagementProfile(AviResource):
     resource_name = "certificatemanagementprofile"
     # all schemas
@@ -256,6 +256,10 @@ class CertificateManagementProfile(AviResource):
         'script_params': getattr(CustomParams, 'field_references', {}),
     }
 
+    unique_keys = {
+        'script_params': getattr(CustomParams, 'unique_keys', {}),
+    }
+
 
 
 class SSLRating(object):
@@ -298,7 +302,6 @@ class SSLRating(object):
         'performance_rating': performance_rating_schema,
         'compatibility_rating': compatibility_rating_schema,
     }
-
 
 
 
@@ -395,7 +398,6 @@ class CRL(object):
 
 
 
-
 class SSLKeyParams(object):
     # all schemas
     algorithm_schema = properties.Schema(
@@ -442,6 +444,11 @@ class SSLKeyParams(object):
         'rsa_params': getattr(SSLKeyRSAParams, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ec_params': getattr(SSLKeyECParams, 'unique_keys', {}),
+        'rsa_params': getattr(SSLKeyRSAParams, 'unique_keys', {}),
+    }
+
 
 
 class SSLProfile(AviResource):
@@ -469,7 +476,7 @@ class SSLProfile(AviResource):
     )
     accepted_ciphers_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ciphers suites represented as defined by http://www.openssl.org/docs/apps/ciphers.html"),
+        _("Ciphers suites represented as defined by U(http://www.openssl.org/docs/apps/ciphers.html)"),
         required=False,
         update_allowed=True,
     )
@@ -479,7 +486,7 @@ class SSLProfile(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_RC4_128_SHA', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA']),
+            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_RC4_128_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA']),
         ],
     )
     cipher_enums_schema = properties.Schema(
@@ -518,7 +525,7 @@ class SSLProfile(AviResource):
     )
     prefer_client_cipher_ordering_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will prefer the SSL cipher ordering presented by the client during the SSL handshake rather than the one specified in the SSL Profile."),
+        _("Prefer the SSL cipher ordering presented by the client during the SSL handshake over the one specified in the SSL Profile."),
         required=False,
         update_allowed=True,
     )
@@ -576,6 +583,12 @@ class SSLProfile(AviResource):
         'ssl_rating': getattr(SSLRating, 'field_references', {}),
         'accepted_versions': getattr(SSLVersion, 'field_references', {}),
         'tags': getattr(Tag, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ssl_rating': getattr(SSLRating, 'unique_keys', {}),
+        'accepted_versions': getattr(SSLVersion, 'unique_keys', {}),
+        'tags': getattr(Tag, 'unique_keys', {}),
     }
 
 
@@ -763,6 +776,12 @@ class SSLCertificate(object):
         'issuer': getattr(SSLCertificateDescription, 'field_references', {}),
     }
 
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'subject': getattr(SSLCertificateDescription, 'unique_keys', {}),
+        'issuer': getattr(SSLCertificateDescription, 'unique_keys', {}),
+    }
+
 
 
 class PKIProfile(AviResource):
@@ -853,6 +872,11 @@ class PKIProfile(AviResource):
     field_references = {
         'ca_certs': getattr(SSLCertificate, 'field_references', {}),
         'crls': getattr(CRL, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ca_certs': getattr(SSLCertificate, 'unique_keys', {}),
+        'crls': getattr(CRL, 'unique_keys', {}),
     }
 
 
@@ -1005,6 +1029,13 @@ class SSLKeyAndCertificate(AviResource):
         'ca_certs': getattr(CertificateAuthority, 'field_references', {}),
         'certificate_management_profile_uuid': 'certificatemanagementprofile',
         'key_params': getattr(SSLKeyParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'ca_certs': getattr(CertificateAuthority, 'unique_keys', {}),
+        'dynamic_params': getattr(CustomParams, 'unique_keys', {}),
+        'certificate': getattr(SSLCertificate, 'unique_keys', {}),
     }
 
 

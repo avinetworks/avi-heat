@@ -68,6 +68,11 @@ class MicroServiceContainer(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip,task_id,container_id',
+    }
+
 
 
 class MicroService(AviResource):
@@ -149,6 +154,10 @@ class MicroService(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'containers': getattr(MicroServiceContainer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'containers': getattr(MicroServiceContainer, 'unique_keys', {}),
     }
 
 

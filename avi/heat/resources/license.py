@@ -182,7 +182,6 @@ class SingleLicense(object):
 
 
 
-
 class ControllerLicense(AviResource):
     resource_name = "controllerlicense"
     # all schemas
@@ -317,6 +316,10 @@ class ControllerLicense(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'licenses': getattr(SingleLicense, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'licenses': getattr(SingleLicense, 'unique_keys', {}),
     }
 
 

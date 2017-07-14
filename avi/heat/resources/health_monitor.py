@@ -56,7 +56,6 @@ class HealthMonitorTcp(object):
 
 
 
-
 class HealthMonitorExternal(object):
     # all schemas
     command_path_schema = properties.Schema(
@@ -99,7 +98,6 @@ class HealthMonitorExternal(object):
         'command_code': command_code_schema,
         'command_variables': command_variables_schema,
     }
-
 
 
 
@@ -173,7 +171,6 @@ class HealthMonitorHttp(object):
 
 
 
-
 class HealthMonitorUdp(object):
     # all schemas
     udp_request_schema = properties.Schema(
@@ -208,7 +205,6 @@ class HealthMonitorUdp(object):
         'udp_response': udp_response_schema,
         'maintenance_response': maintenance_response_schema,
     }
-
 
 
 
@@ -263,7 +259,6 @@ class HealthMonitorDNS(object):
 
 
 
-
 class HealthMonitor(AviResource):
     resource_name = "healthmonitor"
     # all schemas
@@ -303,7 +298,7 @@ class HealthMonitor(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_PING', 'HEALTH_MONITOR_GSLB']),
+            constraints.AllowedValues(['HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_PING']),
         ],
     )
     tcp_monitor_schema = properties.Schema(
@@ -405,6 +400,15 @@ class HealthMonitor(AviResource):
         'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
         'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
         'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'https_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'dns_monitor': getattr(HealthMonitorDNS, 'unique_keys', {}),
+        'tcp_monitor': getattr(HealthMonitorTcp, 'unique_keys', {}),
+        'udp_monitor': getattr(HealthMonitorUdp, 'unique_keys', {}),
+        'http_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
+        'external_monitor': getattr(HealthMonitorExternal, 'unique_keys', {}),
     }
 
 

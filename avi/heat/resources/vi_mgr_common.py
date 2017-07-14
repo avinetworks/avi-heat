@@ -34,7 +34,6 @@ class VcenterDatastore(object):
 
 
 
-
 class CdpLldpInfo(object):
     # all schemas
     switch_info_type_schema = properties.Schema(
@@ -96,5 +95,4 @@ class CdpLldpInfo(object):
         'mgmtaddr': mgmtaddr_schema,
         'system_name': system_name_schema,
     }
-
 

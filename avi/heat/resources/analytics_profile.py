@@ -16,7 +16,7 @@ class ClientLogConfiguration(object):
     # all schemas
     enable_significant_log_collection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable significant log collection. By default, this flag is enabled, which means that Avi SEs collect significant logs (logs corresponding to error conditions, such as when the response code for a request is 500) and forward them to Controller for further processing. Users can disable this flag to turn off default significant log collection."),
+        _("Enable significant log collection. By default, this flag is enabled, which means that Avi SEs collect significant logs and forward them to Controller for further processing. For example, these logs correspond to error conditions such as when the response code for a request is 500. Users can disable this flag to turn off default significant log collection."),
         required=False,
         update_allowed=True,
     )
@@ -30,7 +30,6 @@ class ClientLogConfiguration(object):
     properties_schema = {
         'enable_significant_log_collection': enable_significant_log_collection_schema,
     }
-
 
 
 
@@ -51,19 +50,19 @@ class AnalyticsProfile(AviResource):
     )
     apdex_response_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("If a client receives an HTTP response in less than the Satisfactory Latency Threshold, the request is considered Satisfied.  If the response time is greater than the Satisfactory Latency Threshold but less than the Tolerated Latency Factor multiplied by the Satisfactory Latency Threshold, it is considered Tolerated.  Greater than this number and the client's request is considered Frustrated."),
+        _("If a client receives an HTTP response in less than the Satisfactory Latency Threshold, the request is considered Satisfied. It is considered Tolerated if it is not Satisfied and less than Tolerated Latency Factor multiplied by the Satisfactory Latency Threshold. Greater than this number and the client's request is considered Frustrated."),
         required=False,
         update_allowed=True,
     )
     apdex_response_tolerated_factor_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Client tolerated response latency factor. Clientmust receive a response within this factor times the satisfactory threshold (apdex_response_threshold) to be considered tolerated"),
+        _("Client tolerated response latency factor. Client must receive a response within this factor times the satisfactory threshold (apdex_response_threshold) to be considered tolerated"),
         required=False,
         update_allowed=True,
     )
     apdex_server_response_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("If Avi receives an HTTP response from a server in less than the Satisfactory Latency Threshold, the server response is considered Satisfied.  If the response time is greater than the Satisfactory Latency Threshold but less than the Tolerated Latency Factor multiplied by the Satisfactory Latency Threshold, it is considered Tolerated.  Greater than this number and the server response is considered Frustrated."),
+        _("A server HTTP response is considered Satisfied if latency is less than the Satisfactory Latency Threshold. The response is considered tolerated when it is greater than Satisfied but less than the Tolerated Latency Factor * S_Latency.  Greater than this number and the server response is considered Frustrated."),
         required=False,
         update_allowed=True,
     )
@@ -99,7 +98,7 @@ class AnalyticsProfile(AviResource):
     )
     apdex_rum_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("If a client is able to load a page in less than the Satisfactory Latency Threshold, the PageLoad is considered Satisfied.  If the load time is greater than the Satisfied Latency but less than the Tolerated Latency multiplied by Satisifed Latency, it is considered Tolerated.  Greater than this number and the client's request is considered Frustrated.  A PageLoad includes the time for DNS lookup, download of all HTTP objects, and page render time."),
+        _("If a client is able to load a page in less than the Satisfactory Latency Threshold, the PageLoad is considered Satisfied.  It is considered tolerated if it is greater than Satisfied but less than the Tolerated Latency multiplied by Satisifed Latency. Greater than this number and the client's request is considered Frustrated.  A PageLoad includes the time for DNS lookup, download of all HTTP objects, and page render time."),
         required=False,
         update_allowed=True,
     )
@@ -129,7 +128,7 @@ class AnalyticsProfile(AviResource):
     )
     conn_lossy_zero_win_size_event_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("A connection between client and Avi is considered lossy when more than this percentage of times a packet could not be trasmitted due to zero window."),
+        _("A client connection is considered lossy when percentage of times a packet could not be trasmitted due to TCP zero window is above this threshold."),
         required=False,
         update_allowed=True,
     )
@@ -153,7 +152,7 @@ class AnalyticsProfile(AviResource):
     )
     conn_server_lossy_zero_win_size_event_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("A connection between Avi and server is considered lossy when more than this percentage of times a packet could not be trasmitted due to zero window."),
+        _("A server connection is considered lossy when percentage of times a packet could not be trasmitted due to TCP zero window is above this threshold."),
         required=False,
         update_allowed=True,
     )
@@ -431,7 +430,7 @@ class AnalyticsProfile(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+            constraints.AllowedValues(['AP_HTTP_RSP_4XX', 'AP_HTTP_RSP_5XX']),
         ],
     )
     resp_code_block_schema = properties.Schema(
@@ -588,6 +587,11 @@ class AnalyticsProfile(AviResource):
     field_references = {
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
         'client_log_config': getattr(ClientLogConfiguration, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+        'client_log_config': getattr(ClientLogConfiguration, 'unique_keys', {}),
     }
 
 

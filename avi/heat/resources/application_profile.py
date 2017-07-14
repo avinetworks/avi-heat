@@ -54,6 +54,11 @@ class DosRateLimitProfile(object):
         'dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rl_profile': getattr(RateLimiterProfile, 'unique_keys', {}),
+        'dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
+    }
+
 
 
 class DnsServiceApplicationProfile(object):
@@ -92,6 +97,12 @@ class DnsServiceApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    aaaa_empty_response_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Respond to AAAA queries with empty response when there are only IPV4 records"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -99,6 +110,7 @@ class DnsServiceApplicationProfile(object):
         'ttl',
         'error_response',
         'domain_names',
+        'aaaa_empty_response',
     )
 
     # mapping of properties to their schemas
@@ -107,8 +119,8 @@ class DnsServiceApplicationProfile(object):
         'ttl': ttl_schema,
         'error_response': error_response_schema,
         'domain_names': domain_names_schema,
+        'aaaa_empty_response': aaaa_empty_response_schema,
     }
-
 
 
 
@@ -144,7 +156,6 @@ class TCPApplicationProfile(object):
 
 
 
-
 class SSLClientRequestHeader(object):
     # all schemas
     request_header_schema = properties.Schema(
@@ -159,7 +170,7 @@ class SSLClientRequestHeader(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
         ],
     )
 
@@ -174,7 +185,6 @@ class SSLClientRequestHeader(object):
         'request_header': request_header_schema,
         'request_header_value': request_header_value_schema,
     }
-
 
 
 
@@ -216,6 +226,10 @@ class SSLClientCertificateAction(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'headers': getattr(SSLClientRequestHeader, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'headers': getattr(SSLClientRequestHeader, 'unique_keys', {}),
     }
 
 
@@ -393,7 +407,7 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
+            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_REQUIRE', 'SSL_CLIENT_CERTIFICATE_NONE']),
         ],
     )
     pki_profile_uuid_schema = properties.Schema(
@@ -444,6 +458,24 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    allow_dots_in_header_name_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Allow use of dot (.) in HTTP header names, for instance Header.app.special: PickAppVersionX."),
+        required=False,
+        update_allowed=True,
+    )
+    disable_keepalive_posts_msie6_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Disable keep-alive client side connections for older browsers based off MS Internet Explorer 6.0 (MSIE6). For some applications, this might break NTLM authentication for older clients based off MSIE6. For such applications, set this option to false to allow keep-alive connections."),
+        required=False,
+        update_allowed=True,
+    )
+    enable_request_body_buffering_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Enable request body buffering. When enabled, the max request body size is set to max(client_max_body_size, 32MB). Thus, with buffering enabled, max request body size for a single request is limited to 32MB or lower."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -483,6 +515,9 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip_uri',
         'keepalive_header',
         'use_app_keepalive_timeout',
+        'allow_dots_in_header_name',
+        'disable_keepalive_posts_msie6',
+        'enable_request_body_buffering',
     )
 
     # mapping of properties to their schemas
@@ -523,6 +558,9 @@ class HTTPApplicationProfile(object):
         'max_bad_rps_cip_uri': max_bad_rps_cip_uri_schema,
         'keepalive_header': keepalive_header_schema,
         'use_app_keepalive_timeout': use_app_keepalive_timeout_schema,
+        'allow_dots_in_header_name': allow_dots_in_header_name_schema,
+        'disable_keepalive_posts_msie6': disable_keepalive_posts_msie6_schema,
+        'enable_request_body_buffering': enable_request_body_buffering_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -531,6 +569,12 @@ class HTTPApplicationProfile(object):
         'compression_profile': getattr(CompressionProfile, 'field_references', {}),
         'ssl_client_certificate_action': getattr(SSLClientCertificateAction, 'field_references', {}),
         'cache_config': getattr(HttpCacheConfig, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'compression_profile': getattr(CompressionProfile, 'unique_keys', {}),
+        'ssl_client_certificate_action': getattr(SSLClientCertificateAction, 'unique_keys', {}),
+        'cache_config': getattr(HttpCacheConfig, 'unique_keys', {}),
     }
 
 
@@ -550,7 +594,7 @@ class ApplicationProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
         ],
     )
     http_profile_schema = properties.Schema(
@@ -624,6 +668,13 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile': getattr(TCPApplicationProfile, 'field_references', {}),
         'http_profile': getattr(HTTPApplicationProfile, 'field_references', {}),
         'dos_rl_profile': getattr(DosRateLimitProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'dns_service_profile': getattr(DnsServiceApplicationProfile, 'unique_keys', {}),
+        'tcp_app_profile': getattr(TCPApplicationProfile, 'unique_keys', {}),
+        'http_profile': getattr(HTTPApplicationProfile, 'unique_keys', {}),
+        'dos_rl_profile': getattr(DosRateLimitProfile, 'unique_keys', {}),
     }
 
 

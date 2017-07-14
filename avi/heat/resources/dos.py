@@ -19,7 +19,7 @@ class DosThreshold(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DOS_REQ_IP_URI_RL_DROP_BAD', 'DOS_REQ_CIP_SCAN_BAD_RL_DROP', 'IP_FRAG_OVERRUN', 'POLICY_DROPS', 'IP_FRAG_INCOMPLETE', 'DOS_CONN_IP_RL_DROP', 'FAKE_SESSION', 'DOS_HTTP_ABORT', 'SMURF', 'IP_FRAG_TOOSMALL', 'ICMP_PING_FLOOD', 'DOS_REQ_CIP_SCAN_UNKNOWN_RL_DROP', 'DOS_REQ_IP_URI_RL_DROP', 'LAND', 'UNKOWN_PROTOCOL', 'DOS_SLOW_URL', 'TCP_NON_SYN_FLOOD', 'ZERO_WINDOW_STRESS', 'IP_FRAG_FULL', 'DOS_REQ_RL_DROP', 'SMALL_WINDOW_STRESS', 'BAD_RST_FLOOD', 'DOS_APP_ERROR', 'DOS_SSL_ERROR', 'MALFORMED_FLOOD', 'PORT_SCAN', 'DOS_REQ_IP_RL_DROP', 'DOS_REQ_URI_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD_OLD', 'DOS_REQ_URI_SCAN_BAD_RL_DROP', 'DOS_REQ_IP_RL_DROP_BAD', 'DOS_REQ_URI_RL_DROP', 'SYN_FLOOD', 'DOS_HTTP_ERROR', 'TEARDROP', 'DOS_REQ_URI_SCAN_UNKNOWN_RL_DROP', 'DOS_HTTP_TIMEOUT', 'DOS_CONN_RL_DROP']),
+            constraints.AllowedValues(['DOS_REQ_IP_URI_RL_DROP_BAD', 'DOS_REQ_CIP_SCAN_BAD_RL_DROP', 'MALFORMED_FLOOD', 'POLICY_DROPS', 'IP_FRAG_INCOMPLETE', 'DOS_CONN_IP_RL_DROP', 'FAKE_SESSION', 'DOS_HTTP_ABORT', 'SMURF', 'IP_FRAG_TOOSMALL', 'ICMP_PING_FLOOD', 'DOS_REQ_CIP_SCAN_UNKNOWN_RL_DROP', 'DOS_REQ_IP_URI_RL_DROP', 'LAND', 'UNKOWN_PROTOCOL', 'DOS_REQ_IP_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD', 'ZERO_WINDOW_STRESS', 'IP_FRAG_FULL', 'DOS_REQ_RL_DROP', 'SMALL_WINDOW_STRESS', 'BAD_RST_FLOOD', 'DOS_APP_ERROR', 'DOS_SSL_ERROR', 'IP_FRAG_OVERRUN', 'PORT_SCAN', 'DOS_REQ_IP_RL_DROP', 'DOS_REQ_URI_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD_OLD', 'DOS_REQ_URI_SCAN_BAD_RL_DROP', 'DOS_SLOW_URL', 'DOS_REQ_URI_RL_DROP', 'SYN_FLOOD', 'DOS_HTTP_ERROR', 'TEARDROP', 'DOS_REQ_URI_SCAN_UNKNOWN_RL_DROP', 'DOS_HTTP_TIMEOUT', 'DOS_CONN_RL_DROP']),
         ],
     )
     min_value_schema = properties.Schema(
@@ -48,7 +48,6 @@ class DosThreshold(object):
         'min_value': min_value_schema,
         'max_value': max_value_schema,
     }
-
 
 
 
@@ -90,5 +89,9 @@ class DosThresholdProfile(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'thresh_info': getattr(DosThreshold, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'thresh_info': getattr(DosThreshold, 'unique_keys', {}),
     }
 

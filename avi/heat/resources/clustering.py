@@ -77,6 +77,10 @@ class ClusterNode(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class Cluster(AviResource):
@@ -136,6 +140,11 @@ class Cluster(AviResource):
     field_references = {
         'nodes': getattr(ClusterNode, 'field_references', {}),
         'virtual_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'nodes': getattr(ClusterNode, 'unique_keys', {}),
+        'virtual_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 

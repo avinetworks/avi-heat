@@ -22,7 +22,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
         ],
     )
     name_schema = properties.Schema(
@@ -77,7 +77,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
+            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
         ],
     )
     discovered_datacenter_schema = properties.Schema(
@@ -265,7 +265,7 @@ class VIMgrHostRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_AWS', 'CLOUD_OSHIFT_K8S', 'CLOUD_LINUXSERVER', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
         ],
     )
     name_schema = properties.Schema(
@@ -489,6 +489,10 @@ class VIMgrHostRuntime(AviResource):
     field_references = {
         'pnics': getattr(CdpLldpInfo, 'field_references', {}),
         'vm_uuids': 'vimgrvmruntime',
+    }
+
+    unique_keys = {
+        'pnics': getattr(CdpLldpInfo, 'unique_keys', {}),
     }
 
 

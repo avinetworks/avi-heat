@@ -33,7 +33,6 @@ class AutoScaleMesosSettings(object):
 
 
 
-
 class ServerAutoScalePolicy(AviResource):
     resource_name = "serverautoscalepolicy"
     # all schemas
@@ -209,7 +208,6 @@ class AutoScaleKVData(object):
 
 
 
-
 class AutoScaleAWSSettings(object):
     # all schemas
     instance_type_schema = properties.Schema(
@@ -311,6 +309,10 @@ class AutoScaleAWSSettings(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'block_device_mappings': getattr(AutoScaleKVData, 'unique_keys', {}),
     }
 
 
@@ -432,6 +434,12 @@ class AutoScaleOpenStackSettings(object):
         'block_device_mappings': getattr(AutoScaleKVData, 'field_references', {}),
     }
 
+    unique_keys = {
+        'scheduler_hints': getattr(AutoScaleKVData, 'unique_keys', {}),
+        'metadata': getattr(AutoScaleKVData, 'unique_keys', {}),
+        'block_device_mappings': getattr(AutoScaleKVData, 'unique_keys', {}),
+    }
+
 
 
 class AutoScaleLaunchConfig(AviResource):
@@ -502,6 +510,12 @@ class AutoScaleLaunchConfig(AviResource):
         'openstack': getattr(AutoScaleOpenStackSettings, 'field_references', {}),
         'aws': getattr(AutoScaleAWSSettings, 'field_references', {}),
         'mesos': getattr(AutoScaleMesosSettings, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'openstack': getattr(AutoScaleOpenStackSettings, 'unique_keys', {}),
+        'aws': getattr(AutoScaleAWSSettings, 'unique_keys', {}),
+        'mesos': getattr(AutoScaleMesosSettings, 'unique_keys', {}),
     }
 
 

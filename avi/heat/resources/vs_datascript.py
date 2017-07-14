@@ -43,7 +43,6 @@ class VSDataScript(object):
 
 
 
-
 class VSDataScripts(object):
     # all schemas
     index_schema = properties.Schema(
@@ -74,6 +73,10 @@ class VSDataScripts(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'vs_datascript_set_uuid': 'vsdatascriptset',
+    }
+
+    unique_keys = {
+        'my_key': 'index',
     }
 
 
@@ -189,6 +192,10 @@ class VSDataScriptSet(AviResource):
         'datascript': getattr(VSDataScript, 'field_references', {}),
         'ipgroup_uuids': 'ipaddrgroup',
         'pool_group_uuids': 'poolgroup',
+    }
+
+    unique_keys = {
+        'datascript': getattr(VSDataScript, 'unique_keys', {}),
     }
 
 

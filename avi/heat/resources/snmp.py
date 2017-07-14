@@ -44,6 +44,10 @@ class SnmpTrapServer(object):
         'ip_addr': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_addr': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class SnmpConfiguration(object):
@@ -51,20 +55,35 @@ class SnmpConfiguration(object):
     community_schema = properties.Schema(
         properties.Schema.STRING,
         _("Community string for SNMP v2c"),
-        required=True,
+        required=False,
+        update_allowed=True,
+    )
+    sys_location_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Sets the sysLocation in system MIB"),
+        required=False,
+        update_allowed=True,
+    )
+    sys_contact_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Sets the sysContact in system MIB"),
+        required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
         'community',
+        'sys_location',
+        'sys_contact',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'community': community_schema,
+        'sys_location': sys_location_schema,
+        'sys_contact': sys_contact_schema,
     }
-
 
 
 
@@ -107,6 +126,10 @@ class SnmpTrapProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'trap_servers': getattr(SnmpTrapServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'trap_servers': getattr(SnmpTrapServer, 'unique_keys', {}),
     }
 
 
