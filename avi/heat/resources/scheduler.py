@@ -70,13 +70,13 @@ class Scheduler(AviResource):
     )
     backup_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Backup Configuration to be executed by this scheduler You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Backup Configuration to be executed by this scheduler You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     run_script_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Control script to be executed by this scheduler You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Control script to be executed by this scheduler You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -163,7 +163,7 @@ class BackupConfiguration(AviResource):
     )
     ssh_user_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Access Credentials for remote destination. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Access Credentials for remote destination. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

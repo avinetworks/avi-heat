@@ -15,19 +15,19 @@ class HealthMonitorSSLAttributes(object):
     # all schemas
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) SSL profile defines ciphers and SSL versions to be used for healthmonitor traffic to the back-end servers. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) SSL profile defines ciphers and SSL versions to be used for healthmonitor traffic to the back-end servers. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) PKI profile used to validate the SSL certificate presented by a server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) PKI profile used to validate the SSL certificate presented by a server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Service engines will present this SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Service engines will present this SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

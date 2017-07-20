@@ -63,7 +63,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     datacenter_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=datacenter_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -358,7 +358,7 @@ class VIMgrHostRuntime(AviResource):
     )
     vm_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=vm_uuids_item_schema,
         required=False,
         update_allowed=True,

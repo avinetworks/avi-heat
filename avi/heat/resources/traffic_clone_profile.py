@@ -35,7 +35,7 @@ class CloneServer(object):
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Network to clone the traffic to You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Network to clone the traffic to You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

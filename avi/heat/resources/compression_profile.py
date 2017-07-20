@@ -37,7 +37,7 @@ class CompressionFilter(object):
     )
     ip_addrs_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -85,7 +85,7 @@ class CompressionFilter(object):
     )
     devices_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -174,7 +174,7 @@ class CompressionProfile(object):
     )
     compressible_content_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Compress only content types listed in this string group. Content types not present in this list are not compressed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'. (Default: System-Compressible-Content-Types)"),
+        _("Compress only content types listed in this string group. Content types not present in this list are not compressed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'. (Default: System-Compressible-Content-Types)"),
         required=False,
         update_allowed=True,
     )

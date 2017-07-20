@@ -46,7 +46,7 @@ class DnsQueryNameMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(Introduced in: 17.1.1) UUID of the string group(s) for matching against DNS query domain name in the question section You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) UUID of the string group(s) for matching against DNS query domain name in the question section You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -194,7 +194,7 @@ class DnsPolicies(object):
     )
     dns_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) UUID of the dns policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) UUID of the dns policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )

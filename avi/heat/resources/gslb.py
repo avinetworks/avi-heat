@@ -1217,7 +1217,7 @@ class GslbService(AviResource):
     )
     health_monitor_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Verify VS health by applying one or more health monitors.  Active monitors generate synthetic traffic from DNS Service Engine and to mark a VS up or down based on the response.  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Verify VS health by applying one or more health monitors.  Active monitors generate synthetic traffic from DNS Service Engine and to mark a VS up or down based on the response.  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=health_monitor_uuids_item_schema,
         required=False,
         update_allowed=True,

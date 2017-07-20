@@ -94,7 +94,7 @@ class HttpCacheConfig(object):
     )
     mime_types_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Whitelist string group of cacheable mime types. If both Cacheable Mime Types string list and string group are empty, this defaults to */* You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Whitelist string group of cacheable mime types. If both Cacheable Mime Types string list and string group are empty, this defaults to */* You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=mime_types_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -126,7 +126,7 @@ class HttpCacheConfig(object):
     )
     mime_types_black_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Blacklist string group of non-cacheable mime types You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Blacklist string group of non-cacheable mime types You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=mime_types_black_group_uuids_item_schema,
         required=False,
         update_allowed=True,

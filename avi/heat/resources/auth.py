@@ -206,7 +206,7 @@ class HTTPClientAuthenticationParams(object):
     )
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Auth Profile to use for validating users You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Auth Profile to use for validating users You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -465,7 +465,7 @@ class AuthMappingRule(object):
     )
     tenant_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=tenant_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -493,7 +493,7 @@ class AuthMappingRule(object):
     )
     role_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=role_uuids_item_schema,
         required=False,
         update_allowed=True,

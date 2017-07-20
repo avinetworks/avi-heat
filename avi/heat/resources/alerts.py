@@ -96,19 +96,19 @@ class ActionGroupConfig(AviResource):
     )
     email_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select the Email Notification configuration to use when sending alerts via email. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Select the Email Notification configuration to use when sending alerts via email. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     syslog_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select the Syslog Notification configuration to use when sending alerts via Syslog. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Select the Syslog Notification configuration to use when sending alerts via Syslog. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     action_script_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("reference of the action script configuration to be used You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("reference of the action script configuration to be used You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -120,7 +120,7 @@ class ActionGroupConfig(AviResource):
     )
     snmp_trap_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select the SNMP Trap Notification to use when sending alerts via SNMP Trap. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Select the SNMP Trap Notification to use when sending alerts via SNMP Trap. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -755,7 +755,7 @@ class AlertConfig(AviResource):
     )
     action_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The alert config will trigger the selected alert action, which can send notifications and execute a controlscript. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("The alert config will trigger the selected alert action, which can send notifications and execute a controlscript. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

@@ -70,7 +70,7 @@ class MicroServiceGroup(AviResource):
     )
     service_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Configure MicroService(es) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Configure MicroService(es) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=service_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -216,7 +216,7 @@ class IpAddrMatch(object):
     )
     group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of IP address group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of IP address group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -356,7 +356,7 @@ class MicroServiceMatch(object):
     )
     group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of Micro Service group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of Micro Service group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -502,7 +502,7 @@ class StringMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -693,8 +693,8 @@ class IpAddrGroupAddrs(AviNestedResource):
         properties.Schema.STRING,
         _("UUID of ipaddrgroup."
           " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
+          " with the prefix 'get_avi_uuid_by_name:', e.g.,"
+          " 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
@@ -920,7 +920,7 @@ class QueryMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -1032,7 +1032,7 @@ class PathMatch(object):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the string group(s) You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,
