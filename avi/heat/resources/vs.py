@@ -31,7 +31,7 @@ class ServicePoolSelector(object):
     )
     service_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -46,7 +46,7 @@ class ServicePoolSelector(object):
     )
     service_pool_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -161,7 +161,7 @@ class Service(object):
     )
     override_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Override the network profile for this specific service port. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Override the network profile for this specific service port. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -267,7 +267,7 @@ class IPNetworkSubnet(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Network for VirtualService IP allocation with Vantage as the IPAM provider. Network should be created before this is configured. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Network for VirtualService IP allocation with Vantage as the IPAM provider. Network should be created before this is configured. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -453,7 +453,7 @@ class SeList(object):
     # all schemas
     se_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -726,37 +726,37 @@ class VirtualService(AviResource):
     )
     application_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Enable application layer specific features for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Enable application layer specific features for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines network settings such as protocol, TCP or UDP, and related options for the protocol. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Determines network settings such as protocol, TCP or UDP, and related options for the protocol. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     server_network_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines the network settings profile for the server side of TCP proxied connections.  Leave blank to use the same settings as the client to VS side of the connection. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Determines the network settings profile for the server side of TCP proxied connections.  Leave blank to use the same settings as the client to VS side of the connection. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The pool is an object that contains destination servers and related attributes such as load-balancing and persistence. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("The pool is an object that contains destination servers and related attributes such as load-balancing and persistence. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connections for this VS. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("The Service Engine Group to use for this Virtual Service. Moving to a new SE Group is disruptive to existing connections for this VS. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     network_security_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Network security policies for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Network security policies for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -782,14 +782,14 @@ class VirtualService(AviResource):
     )
     ssl_key_and_certificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Select or create one or two certificates, EC and/or RSA, that will be presented to SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Select or create one or two certificates, EC and/or RSA, that will be presented to SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=ssl_key_and_certificate_uuids_item_schema,
         required=False,
         update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Determines the set of SSL versions and ciphers to accept for SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Determines the set of SSL versions and ciphers to accept for SSL/TLS terminated connections. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -809,13 +809,13 @@ class VirtualService(AviResource):
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Manually override the network on which the Virtual Service is placed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Manually override the network on which the Virtual Service is placed. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Virtual Routing Context that the Virtual Service is bound to. This is used to provide the isolation of the set of networks the application is attached to. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -839,7 +839,7 @@ class VirtualService(AviResource):
     )
     analytics_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies settings related to analytics. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Specifies settings related to analytics. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -851,7 +851,7 @@ class VirtualService(AviResource):
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered networks providing reachability for client facing Virtual Service IP. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) Discovered networks providing reachability for client facing Virtual Service IP. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -1065,7 +1065,7 @@ class VirtualService(AviResource):
     )
     pool_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The pool group is an object that contains pools. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("The pool group is an object that contains pools. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1095,7 +1095,7 @@ class VirtualService(AviResource):
     )
     microservice_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Microservice representing the virtual service You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Microservice representing the virtual service You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

@@ -54,7 +54,7 @@ class VSDataScripts(object):
     )
     vs_datascript_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the virtual service datascript collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the virtual service datascript collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -109,7 +109,7 @@ class VSDataScriptSet(AviResource):
     )
     pool_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of pools that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of pools that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=pool_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -122,7 +122,7 @@ class VSDataScriptSet(AviResource):
     )
     pool_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of pool groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of pool groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=pool_group_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -135,7 +135,7 @@ class VSDataScriptSet(AviResource):
     )
     ipgroup_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of IP Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of IP Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=ipgroup_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -148,7 +148,7 @@ class VSDataScriptSet(AviResource):
     )
     string_group_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("UUID of String Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of String Groups that could be referred by VSDataScriptSet objects. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=string_group_uuids_item_schema,
         required=False,
         update_allowed=True,

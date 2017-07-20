@@ -107,7 +107,7 @@ class PoolGroupMember(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -160,7 +160,7 @@ class AbPool(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Pool configured as B pool for A/B testing You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Pool configured as B pool for A/B testing You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -194,7 +194,7 @@ class FailActionBackupPool(object):
     # all schemas
     backup_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies the UUID of the Pool acting as backup pool. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Specifies the UUID of the Pool acting as backup pool. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -321,7 +321,7 @@ class PlacementNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -509,7 +509,7 @@ class NetworkFilter(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -610,7 +610,7 @@ class DiscoveredNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -674,7 +674,7 @@ class PoolGroup(AviResource):
     )
     priority_labels_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the priority labels. If not provided, pool group member priority label will be interpreted as a number with a larger number considered higher priority. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the priority labels. If not provided, pool group member priority label will be interpreted as a number with a larger number considered higher priority. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -837,13 +837,13 @@ class Server(object):
     )
     vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     nw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -855,7 +855,7 @@ class Server(object):
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -1058,7 +1058,7 @@ class Pool(AviResource):
     )
     health_monitor_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens to client to server communication and raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens to client to server communication and raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=health_monitor_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -1137,13 +1137,13 @@ class Pool(AviResource):
     )
     application_persistence_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Persistence will ensure the same user sticks to the same server for a desired duration of time. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Persistence will ensure the same user sticks to the same server for a desired duration of time. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1180,13 +1180,13 @@ class Pool(AviResource):
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi will validate the SSL certificate present by a server against the selected PKI Profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Avi will validate the SSL certificate present by a server against the selected PKI Profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Service Engines will present a client SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Service Engines will present a client SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1223,19 +1223,19 @@ class Pool(AviResource):
     )
     autoscale_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Reference to Server Autoscale Policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Reference to Server Autoscale Policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     autoscale_launch_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Reference to the Launch Configuration Profile You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Reference to the Launch Configuration Profile You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ipaddrgroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Use list of servers from Ip Address Group You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Use list of servers from Ip Address Group You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1497,8 +1497,8 @@ class PoolServers(AviNestedResource, Server):
         properties.Schema.STRING,
         _("UUID of pool."
           " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
+          " with the prefix 'get_avi_uuid_by_name:', e.g.,"
+          " 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )

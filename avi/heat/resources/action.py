@@ -210,7 +210,7 @@ class HTTPSwitchingAction(object):
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool of servers to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool of servers to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -239,7 +239,7 @@ class HTTPSwitchingAction(object):
     )
     pool_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool group to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool group to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
