@@ -1715,13 +1715,13 @@ class DockerConfiguration(object):
     )
     client_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the client TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the client TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ca_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the UCP CA TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the UCP CA TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1983,13 +1983,13 @@ class OShiftK8SConfiguration(object):
     )
     client_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the client TLS cert and key instead of service account token. One of client certificate or token is required You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the client TLS cert and key instead of service account token. One of client certificate or token is required You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ca_tls_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the UCP CA TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the UCP CA TLS cert and key You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -3080,25 +3080,25 @@ class Cloud(AviResource):
     )
     ipam_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ipam Profile for the cloud. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Ipam Profile for the cloud. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     dns_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS Profile for the cloud. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("DNS Profile for the cloud. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     east_west_ipam_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ipam Profile for East-West services. Warning - Please use virtual subnets in this IPAM profile that do not conflict with the underlay networks or any overlay networks in the cluster. For example in AWS and GCP, 169.254.0.0/16 is used for storing instance metadata. Hence, it should not be used in this profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Ipam Profile for East-West services. Warning - Please use virtual subnets in this IPAM profile that do not conflict with the underlay networks or any overlay networks in the cluster. For example in AWS and GCP, 169.254.0.0/16 is used for storing instance metadata. Hence, it should not be used in this profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     east_west_dns_provider_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS Profile for East-West services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("DNS Profile for East-West services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

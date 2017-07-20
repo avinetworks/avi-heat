@@ -86,7 +86,7 @@ class ContentRewriteProfile(object):
     # all schemas
     rewritable_content_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Rewrite only content types listed in this string group. Content types not present in this list are not rewritten. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Rewrite only content types listed in this string group. Content types not present in this list are not rewritten. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

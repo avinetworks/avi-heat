@@ -104,7 +104,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scaleout_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Trigger scaleout when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Trigger scaleout when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=scaleout_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -117,7 +117,7 @@ class ServerAutoScalePolicy(AviResource):
     )
     scalein_alertconfig_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Trigger scalein when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Trigger scalein when alerts due to any of these Alert configurations are raised You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=scalein_alertconfig_uuids_item_schema,
         required=False,
         update_allowed=True,

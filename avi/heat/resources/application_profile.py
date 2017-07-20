@@ -412,7 +412,7 @@ class HTTPApplicationProfile(object):
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Select the PKI profile to be associated with the Virtual Service. This profile defines the Certificate Authority and Revocation List. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )

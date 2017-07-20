@@ -109,7 +109,7 @@ class AdminAuthConfiguration(object):
     # all schemas
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -378,7 +378,7 @@ class PortalConfiguration(object):
     )
     sslkeyandcertificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=sslkeyandcertificate_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -391,7 +391,7 @@ class PortalConfiguration(object):
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
