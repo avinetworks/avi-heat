@@ -13,7 +13,13 @@ try:
 except:
     basestring = str
 
-from oslo_config import cfg
+try:
+    # new way of importing oslo config
+    from oslo_config import cfg
+except ImportError:
+    # old way of importing oslo config
+    from oslo.config import cfg
+
 controller_opt = cfg.StrOpt("avi_controller", default="",
                             help="Avi Controller IP or FQDN")
 cfg.CONF.register_opt(controller_opt)
