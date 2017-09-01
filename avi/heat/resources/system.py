@@ -75,7 +75,7 @@ class NTPAuthenticationKey(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NTP_AUTH_ALGORITHM_SHA1', 'NTP_AUTH_ALGORITHM_MD5']),
+            constraints.AllowedValues(['NTP_AUTH_ALGORITHM_MD5', 'NTP_AUTH_ALGORITHM_SHA1']),
         ],
     )
     key_schema = properties.Schema(
@@ -207,7 +207,7 @@ class EmailConfiguration(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SMTP_NONE', 'SMTP_LOCAL_HOST', 'SMTP_SERVER', 'SMTP_ANONYMOUS_SERVER']),
+            constraints.AllowedValues(['SMTP_ANONYMOUS_SERVER', 'SMTP_LOCAL_HOST', 'SMTP_NONE', 'SMTP_SERVER']),
         ],
     )
     from_email_schema = properties.Schema(
@@ -648,6 +648,12 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    docker_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(" (Default: False)"),
+        required=False,
+        update_allowed=False,
+    )
     snmp_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -725,6 +731,7 @@ class SystemConfiguration(AviResource):
         'global_tenant_config',
         'email_configuration',
         'admin_auth_configuration',
+        'docker_mode',
         'snmp_configuration',
         'linux_configuration',
         'proxy_configuration',
@@ -743,6 +750,7 @@ class SystemConfiguration(AviResource):
         'global_tenant_config': global_tenant_config_schema,
         'email_configuration': email_configuration_schema,
         'admin_auth_configuration': admin_auth_configuration_schema,
+        'docker_mode': docker_mode_schema,
         'snmp_configuration': snmp_configuration_schema,
         'linux_configuration': linux_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,

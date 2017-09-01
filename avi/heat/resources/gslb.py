@@ -22,7 +22,7 @@ class GslbHealthMonitorProxy(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_HEALTH_MONITOR_PROXY_PRIVATE_MEMBERS', 'GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS']),
+            constraints.AllowedValues(['GSLB_HEALTH_MONITOR_PROXY_ALL_MEMBERS', 'GSLB_HEALTH_MONITOR_PROXY_PRIVATE_MEMBERS']),
         ],
     )
     site_uuid_schema = properties.Schema(
@@ -75,7 +75,7 @@ class GslbClientIpAddrGroup(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_IP_PUBLIC', 'GSLB_IP_PRIVATE']),
+            constraints.AllowedValues(['GSLB_IP_PRIVATE', 'GSLB_IP_PUBLIC']),
         ],
     )
     addrs_item_schema = properties.Schema(
@@ -152,44 +152,6 @@ class GslbClientIpAddrGroup(object):
 
 
 
-class GslbApplicationPersistenceProfile(AviResource):
-    resource_name = "gslbapplicationpersistenceprofile"
-    # all schemas
-    avi_version_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
-        required=False,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) A user-friendly name for the persistence profile."),
-        required=True,
-        update_allowed=True,
-    )
-    description_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) "),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'avi_version',
-        'name',
-        'description',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'avi_version': avi_version_schema,
-        'name': name_schema,
-        'description': description_schema,
-    }
-
-
-
 class GslbGeoDbFile(object):
     # all schemas
     filename_schema = properties.Schema(
@@ -204,186 +166,48 @@ class GslbGeoDbFile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_GEODB_FILE_FORMAT_MAXMIND_CITY', 'GSLB_GEODB_FILE_FORMAT_AVI']),
+            constraints.AllowedValues(['GSLB_GEODB_FILE_FORMAT_AVI', 'GSLB_GEODB_FILE_FORMAT_MAXMIND_CITY']),
         ],
+    )
+    timestamp_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Internal timestamp associated with the file."),
+        required=False,
+        update_allowed=False,
+    )
+    checksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) File checksum is internally computed."),
+        required=False,
+        update_allowed=False,
+    )
+    file_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) System internal identifier for the file."),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
     PROPERTIES = (
         'filename',
         'format',
+        'timestamp',
+        'checksum',
+        'file_id',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'filename': filename_schema,
         'format': format_schema,
+        'timestamp': timestamp_schema,
+        'checksum': checksum_schema,
+        'file_id': file_id_schema,
     }
 
     unique_keys = {
         'my_key': 'filename',
-    }
-
-
-
-class GslbHealthMonitor(AviResource):
-    resource_name = "gslbhealthmonitor"
-    # all schemas
-    avi_version_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
-        required=False,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("A user friendly name for this health monitor."),
-        required=True,
-        update_allowed=True,
-    )
-    send_interval_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Frequency, in seconds, that monitors are sent to a server. (Units: SEC) (Default: 5)"),
-        required=False,
-        update_allowed=True,
-    )
-    receive_timeout_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("A valid response from the server is expected within the receive timeout window.  This timeout must be less than the send interval.  If server status is regularly flapping up and down, consider increasing this value. (Units: SEC) (Default: 4)"),
-        required=False,
-        update_allowed=True,
-    )
-    successful_checks_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of continuous successful health checks before server is marked up. (Default: 2)"),
-        required=False,
-        update_allowed=True,
-    )
-    failed_checks_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Number of continuous failed health checks before the server is marked down. (Default: 2)"),
-        required=False,
-        update_allowed=True,
-    )
-    type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Type of the health monitor."),
-        required=True,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_PING']),
-        ],
-    )
-    tcp_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorTcp.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    http_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorHttp.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    https_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorHttp.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    external_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorExternal.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    udp_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorUdp.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    dns_monitor_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=HealthMonitorDNS.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    monitor_port_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Use this port instead of the port defined for the server in the Pool. If the monitor succeeds to this port, the load balanced traffic will still be sent to the port of the server defined within the Pool."),
-        required=False,
-        update_allowed=True,
-    )
-    description_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'avi_version',
-        'name',
-        'send_interval',
-        'receive_timeout',
-        'successful_checks',
-        'failed_checks',
-        'type',
-        'tcp_monitor',
-        'http_monitor',
-        'https_monitor',
-        'external_monitor',
-        'udp_monitor',
-        'dns_monitor',
-        'monitor_port',
-        'description',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'avi_version': avi_version_schema,
-        'name': name_schema,
-        'send_interval': send_interval_schema,
-        'receive_timeout': receive_timeout_schema,
-        'successful_checks': successful_checks_schema,
-        'failed_checks': failed_checks_schema,
-        'type': type_schema,
-        'tcp_monitor': tcp_monitor_schema,
-        'http_monitor': http_monitor_schema,
-        'https_monitor': https_monitor_schema,
-        'external_monitor': external_monitor_schema,
-        'udp_monitor': udp_monitor_schema,
-        'dns_monitor': dns_monitor_schema,
-        'monitor_port': monitor_port_schema,
-        'description': description_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'https_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
-        'dns_monitor': getattr(HealthMonitorDNS, 'field_references', {}),
-        'tcp_monitor': getattr(HealthMonitorTcp, 'field_references', {}),
-        'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
-        'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
-        'external_monitor': getattr(HealthMonitorExternal, 'field_references', {}),
-    }
-
-    unique_keys = {
-        'https_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
-        'dns_monitor': getattr(HealthMonitorDNS, 'unique_keys', {}),
-        'tcp_monitor': getattr(HealthMonitorTcp, 'unique_keys', {}),
-        'udp_monitor': getattr(HealthMonitorUdp, 'unique_keys', {}),
-        'http_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
-        'external_monitor': getattr(HealthMonitorExternal, 'unique_keys', {}),
     }
 
 
@@ -427,7 +251,7 @@ class GslbServiceDownResponse(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_SERVICE_DOWN_RESPONSE_EMPTY', 'GSLB_SERVICE_DOWN_RESPONSE_NONE', 'GSLB_SERVICE_DOWN_RESPONSE_FALLBACK_IP', 'GSLB_SERVICE_DOWN_RESPONSE_ALL_RECORDS']),
+            constraints.AllowedValues(['GSLB_SERVICE_DOWN_RESPONSE_ALL_RECORDS', 'GSLB_SERVICE_DOWN_RESPONSE_EMPTY', 'GSLB_SERVICE_DOWN_RESPONSE_FALLBACK_IP', 'GSLB_SERVICE_DOWN_RESPONSE_NONE']),
         ],
     )
     fallback_ip_schema = properties.Schema(
@@ -469,7 +293,7 @@ class GslbGeoLocation(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_LOCATION_SRC_FROM_GEODB', 'GSLB_LOCATION_SRC_USER_CONFIGURED', 'GSLB_LOCATION_SRC_INHERIT_FROM_SITE']),
+            constraints.AllowedValues(['GSLB_LOCATION_SRC_FROM_GEODB', 'GSLB_LOCATION_SRC_INHERIT_FROM_SITE', 'GSLB_LOCATION_SRC_USER_CONFIGURED']),
         ],
     )
     location_schema = properties.Schema(
@@ -589,6 +413,20 @@ class GslbPoolMember(object):
         required=False,
         update_allowed=True,
     )
+    hm_proxies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Internal generated system-field."),
+        schema=GslbHealthMonitorProxy.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    hm_proxies_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Internal generated system-field."),
+        schema=hm_proxies_item_schema,
+        required=False,
+        update_allowed=False,
+    )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.2) The Cloud UUID of the Site."),
@@ -602,6 +440,12 @@ class GslbPoolMember(object):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) User provided information that records member details such as application owner name, contact, etc."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -612,8 +456,10 @@ class GslbPoolMember(object):
         'ratio',
         'enabled',
         'location',
+        'hm_proxies',
         'cloud_uuid',
         'public_ip',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -625,8 +471,10 @@ class GslbPoolMember(object):
         'ratio': ratio_schema,
         'enabled': enabled_schema,
         'location': location_schema,
+        'hm_proxies': hm_proxies_schema,
         'cloud_uuid': cloud_uuid_schema,
         'public_ip': public_ip_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -634,6 +482,7 @@ class GslbPoolMember(object):
         'public_ip': getattr(GslbIpAddr, 'field_references', {}),
         'ip': getattr(IpAddr, 'field_references', {}),
         'location': getattr(GslbGeoLocation, 'field_references', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
     }
 
     unique_keys = {
@@ -641,6 +490,7 @@ class GslbPoolMember(object):
         'ip': getattr(IpAddr, 'unique_keys', {}),
         'my_key': 'ip',
         'location': getattr(GslbGeoLocation, 'unique_keys', {}),
+        'hm_proxies': getattr(GslbHealthMonitorProxy, 'unique_keys', {}),
     }
 
 
@@ -674,6 +524,12 @@ class GslbGeoDbProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
+        required=False,
+        update_allowed=False,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) "),
@@ -686,6 +542,7 @@ class GslbGeoDbProfile(AviResource):
         'avi_version',
         'name',
         'entries',
+        'is_federated',
         'description',
     )
 
@@ -694,6 +551,7 @@ class GslbGeoDbProfile(AviResource):
         'avi_version': avi_version_schema,
         'name': name_schema,
         'entries': entries_schema,
+        'is_federated': is_federated_schema,
         'description': description_schema,
     }
 
@@ -779,7 +637,7 @@ class GslbSite(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_PASSIVE_MEMBER', 'GSLB_ACTIVE_MEMBER']),
+            constraints.AllowedValues(['GSLB_ACTIVE_MEMBER', 'GSLB_PASSIVE_MEMBER']),
         ],
     )
     enabled_schema = properties.Schema(
@@ -868,6 +726,12 @@ class GslbSite(object):
 
 class GslbThirdPartySite(object):
     # all schemas
+    cluster_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Third-party-site identifier generated by Avi."),
+        required=False,
+        update_allowed=False,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) Name of the third-party Site."),
@@ -910,6 +774,7 @@ class GslbThirdPartySite(object):
 
     # properties list
     PROPERTIES = (
+        'cluster_uuid',
         'name',
         'enabled',
         'location',
@@ -919,6 +784,7 @@ class GslbThirdPartySite(object):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'cluster_uuid': cluster_uuid_schema,
         'name': name_schema,
         'enabled': enabled_schema,
         'location': location_schema,
@@ -1001,6 +867,12 @@ class Gslb(AviResource):
         required=False,
         update_allowed=True,
     )
+    view_id_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The view-id is used in maintenance mode to differentiate partitioned groups while they havethe same gslb namespace. Each partitioned groupwill be able to operate independently by using theview-id. (Default: 0)"),
+        required=False,
+        update_allowed=False,
+    )
     third_party_sites_item_schema = properties.Schema(
         properties.Schema.MAP,
         _("(Introduced in: 17.1.1) Third party site member belonging to this Gslb."),
@@ -1022,6 +894,12 @@ class Gslb(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
+        required=False,
+        update_allowed=False,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -1038,8 +916,10 @@ class Gslb(AviResource):
         'leader_cluster_uuid',
         'send_interval',
         'clear_on_max_retries',
+        'view_id',
         'third_party_sites',
         'client_ip_addr_group',
+        'is_federated',
         'description',
     )
 
@@ -1052,8 +932,10 @@ class Gslb(AviResource):
         'leader_cluster_uuid': leader_cluster_uuid_schema,
         'send_interval': send_interval_schema,
         'clear_on_max_retries': clear_on_max_retries_schema,
+        'view_id': view_id_schema,
         'third_party_sites': third_party_sites_schema,
         'client_ip_addr_group': client_ip_addr_group_schema,
+        'is_federated': is_federated_schema,
         'description': description_schema,
     }
 
@@ -1094,7 +976,7 @@ class GslbPool(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_ALGORITHM_CONSISTENT_HASH', 'GSLB_ALGORITHM_ROUND_ROBIN', 'GSLB_ALGORITHM_GEO']),
+            constraints.AllowedValues(['GSLB_ALGORITHM_CONSISTENT_HASH', 'GSLB_ALGORITHM_GEO', 'GSLB_ALGORITHM_ROUND_ROBIN']),
         ],
     )
     consistent_hash_mask_schema = properties.Schema(
@@ -1117,6 +999,12 @@ class GslbPool(object):
         required=False,
         update_allowed=True,
     )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) User provided information that records member details such as application owner name, contact, etc."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1125,6 +1013,7 @@ class GslbPool(object):
         'algorithm',
         'consistent_hash_mask',
         'members',
+        'description',
     )
 
     # mapping of properties to their schemas
@@ -1134,6 +1023,7 @@ class GslbPool(object):
         'algorithm': algorithm_schema,
         'consistent_hash_mask': consistent_hash_mask_schema,
         'members': members_schema,
+        'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1234,7 +1124,7 @@ class GslbService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['GSLB_SERVICE_HEALTH_MONITOR_ONLY_NON_AVI_MEMBERS', 'GSLB_SERVICE_HEALTH_MONITOR_ALL_MEMBERS']),
+            constraints.AllowedValues(['GSLB_SERVICE_HEALTH_MONITOR_ALL_MEMBERS', 'GSLB_SERVICE_HEALTH_MONITOR_ONLY_NON_AVI_MEMBERS']),
         ],
     )
     enabled_schema = properties.Schema(
@@ -1254,6 +1144,12 @@ class GslbService(AviResource):
         _("(Introduced in: 17.1.1) Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
         required=False,
         update_allowed=True,
+    )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
+        required=False,
+        update_allowed=False,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1283,6 +1179,7 @@ class GslbService(AviResource):
         'enabled',
         'use_edns_client_subnet',
         'wildcard_match',
+        'is_federated',
         'created_by',
         'description',
     )
@@ -1302,13 +1199,14 @@ class GslbService(AviResource):
         'enabled': enabled_schema,
         'use_edns_client_subnet': use_edns_client_subnet_schema,
         'wildcard_match': wildcard_match_schema,
+        'is_federated': is_federated_schema,
         'created_by': created_by_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
-        'health_monitor_uuids': 'gslbhealthmonitor',
+        'health_monitor_uuids': 'healthmonitor',
         'down_response': getattr(GslbServiceDownResponse, 'field_references', {}),
         'groups': getattr(GslbPool, 'field_references', {}),
     }
@@ -1322,10 +1220,8 @@ class GslbService(AviResource):
 
 def resource_mapping():
     return {
-        'Avi::LBaaS::GslbHealthMonitor': GslbHealthMonitor,
-        'Avi::LBaaS::GslbService': GslbService,
-        'Avi::LBaaS::GslbApplicationPersistenceProfile': GslbApplicationPersistenceProfile,
-        'Avi::LBaaS::Gslb': Gslb,
         'Avi::LBaaS::GslbGeoDbProfile': GslbGeoDbProfile,
+        'Avi::LBaaS::GslbService': GslbService,
+        'Avi::LBaaS::Gslb': Gslb,
     }
 

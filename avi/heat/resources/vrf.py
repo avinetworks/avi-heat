@@ -87,6 +87,18 @@ class BgpPeer(object):
         required=False,
         update_allowed=True,
     )
+    ebgp_multihop_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) TTL for multihop ebgp Peer (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    local_as_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.6) Local AS to use for this ebgp peer. If specified, this will override the local AS configured at the VRF level"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -102,6 +114,8 @@ class BgpPeer(object):
         'connect_timer',
         'keepalive_interval',
         'hold_time',
+        'ebgp_multihop',
+        'local_as',
     )
 
     # mapping of properties to their schemas
@@ -118,6 +132,8 @@ class BgpPeer(object):
         'connect_timer': connect_timer_schema,
         'keepalive_interval': keepalive_interval_schema,
         'hold_time': hold_time_schema,
+        'ebgp_multihop': ebgp_multihop_schema,
+        'local_as': local_as_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -175,61 +191,6 @@ class InternalGatewayMonitor(object):
         'gateway_monitor_failure_threshold': gateway_monitor_failure_threshold_schema,
         'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
         'disable_gateway_monitor': disable_gateway_monitor_schema,
-    }
-
-
-
-class GatewayMonitor(object):
-    # all schemas
-    gateway_ip_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("IP address of next hop gateway to be monitored"),
-        schema=IpAddr.properties_schema,
-        required=True,
-        update_allowed=True,
-    )
-    gateway_monitor_interval_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
-        required=False,
-        update_allowed=True,
-    )
-    gateway_monitor_fail_threshold_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
-        required=False,
-        update_allowed=True,
-    )
-    gateway_monitor_success_threshold_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'gateway_ip',
-        'gateway_monitor_interval',
-        'gateway_monitor_fail_threshold',
-        'gateway_monitor_success_threshold',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'gateway_ip': gateway_ip_schema,
-        'gateway_monitor_interval': gateway_monitor_interval_schema,
-        'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
-        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'gateway_ip': getattr(IpAddr, 'field_references', {}),
-    }
-
-    unique_keys = {
-        'gateway_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -329,6 +290,157 @@ class DebugVrf(object):
 
 
 
+class DebugVrfContext(object):
+    # all schemas
+    flags_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) "),
+        schema=DebugVrf.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    flags_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) "),
+        schema=flags_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'flags',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'flags': flags_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'flags': getattr(DebugVrf, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'flags': getattr(DebugVrf, 'unique_keys', {}),
+    }
+
+
+
+class GatewayMonitor(object):
+    # all schemas
+    gateway_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("IP address of next hop gateway to be monitored"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    gateway_monitor_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The interval between two ping requests sent by the gateway monitor in milliseconds. If a value is not specified, requests are sent every second. (Units: MILLISECONDS) (Default: 1000)"),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_fail_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive failed gateway health checks before a gateway is marked down. (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    gateway_monitor_success_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("The number of consecutive successful gateway health checks before a gateway that was marked down by the gateway monitor is marked up. (Default: 15)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'gateway_ip',
+        'gateway_monitor_interval',
+        'gateway_monitor_fail_threshold',
+        'gateway_monitor_success_threshold',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'gateway_ip': gateway_ip_schema,
+        'gateway_monitor_interval': gateway_monitor_interval_schema,
+        'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
+        'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'gateway_ip': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'gateway_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
+
+class IpCommunity(object):
+    # all schemas
+    ip_begin_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.3) Beginning of IP address range."),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    ip_end_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.3) End of IP address range. Optional if ip_begin is the only IP address in specified IP range."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    community_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Community string either in aa:nn format where aa, nn is within [1,65535] or local-AS|no-advertise|no-export|internet."),
+        required=True,
+        update_allowed=False,
+    )
+    community_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Community string either in aa:nn format where aa, nn is within [1,65535] or local-AS|no-advertise|no-export|internet."),
+        schema=community_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip_begin',
+        'ip_end',
+        'community',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip_begin': ip_begin_schema,
+        'ip_end': ip_end_schema,
+        'community': community_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_end': getattr(IpAddr, 'field_references', {}),
+        'ip_begin': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip_end': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip_begin',
+        'ip_begin': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
+
 class BgpProfile(object):
     # all schemas
     local_as_schema = properties.Schema(
@@ -371,20 +483,34 @@ class BgpProfile(object):
     )
     send_community_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.2) Send community attribute to all peers (Default: True)"),
+        _("(Introduced in: 17.1.2) Send community attribute to all peers. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     community_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.2) Set the community attribute - 'internet', 'local-AS', 'no-advertise', 'no-export', <AS>:<Val> One or more of these can be configured with 1 <= AS,Val <= 65535"),
+        _("(Introduced in: 17.1.2) Community string either in aa:nn format where aa, nn is within [1,65535] or local-AS|no-advertise|no-export|internet."),
         required=True,
         update_allowed=False,
     )
     community_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(Introduced in: 17.1.2) Set the community attribute - 'internet', 'local-AS', 'no-advertise', 'no-export', <AS>:<Val> One or more of these can be configured with 1 <= AS,Val <= 65535"),
+        _("(Introduced in: 17.1.2) Community string either in aa:nn format where aa, nn is within [1,65535] or local-AS|no-advertise|no-export|internet."),
         schema=community_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ip_communities_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.3) Communities per IP address range."),
+        schema=IpCommunity.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip_communities_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Communities per IP address range."),
+        schema=ip_communities_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -398,6 +524,7 @@ class BgpProfile(object):
         'hold_time',
         'send_community',
         'community',
+        'ip_communities',
     )
 
     # mapping of properties to their schemas
@@ -409,53 +536,18 @@ class BgpProfile(object):
         'hold_time': hold_time_schema,
         'send_community': send_community_schema,
         'community': community_schema,
+        'ip_communities': ip_communities_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'peers': getattr(BgpPeer, 'field_references', {}),
+        'ip_communities': getattr(IpCommunity, 'field_references', {}),
     }
 
     unique_keys = {
         'peers': getattr(BgpPeer, 'unique_keys', {}),
-    }
-
-
-
-class DebugVrfContext(object):
-    # all schemas
-    flags_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) "),
-        schema=DebugVrf.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    flags_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("(Introduced in: 17.1.1) "),
-        schema=flags_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'flags',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'flags': flags_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'flags': getattr(DebugVrf, 'field_references', {}),
-    }
-
-    unique_keys = {
-        'flags': getattr(DebugVrf, 'unique_keys', {}),
+        'ip_communities': getattr(IpCommunity, 'unique_keys', {}),
     }
 
 
@@ -495,6 +587,12 @@ class VrfContext(AviResource):
         schema=BgpProfile.properties_schema,
         required=False,
         update_allowed=True,
+    )
+    system_default_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(" (Default: False)"),
+        required=False,
+        update_allowed=False,
     )
     gateway_mon_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -543,6 +641,7 @@ class VrfContext(AviResource):
         'name',
         'static_routes',
         'bgp_profile',
+        'system_default',
         'gateway_mon',
         'internal_gateway_monitor',
         'debugvrfcontext',
@@ -556,6 +655,7 @@ class VrfContext(AviResource):
         'name': name_schema,
         'static_routes': static_routes_schema,
         'bgp_profile': bgp_profile_schema,
+        'system_default': system_default_schema,
         'gateway_mon': gateway_mon_schema,
         'internal_gateway_monitor': internal_gateway_monitor_schema,
         'debugvrfcontext': debugvrfcontext_schema,

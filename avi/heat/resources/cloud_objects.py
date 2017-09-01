@@ -39,7 +39,7 @@ class vCloudAirConfiguration(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['NO_ACCESS', 'READ_ACCESS', 'WRITE_ACCESS']),
         ],
     )
     vca_instance_schema = properties.Schema(
@@ -174,7 +174,7 @@ class CloudStackConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'XEN', 'VMWARE_ESX', 'KVM']),
+            constraints.AllowedValues(['DEFAULT', 'KVM', 'VMWARE_ESX', 'VMWARE_VSAN', 'XEN']),
         ],
     )
 
@@ -364,7 +364,7 @@ class vCenterConfiguration(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['NO_ACCESS', 'READ_ACCESS', 'WRITE_ACCESS']),
         ],
     )
     datacenter_schema = properties.Schema(
@@ -1149,6 +1149,30 @@ class AwsConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Default TTL for all records (Units: SEC) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    wildcard_access_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) (Deprecated in: 17.1.5) If enabled, program SE security group with ingress rule to allow SSH (port 22) access from 0.0.0.0/0. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_sns_sqs_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) Use SNS/SQS based notifications for monitoring Auto Scaling Groups. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    asg_poll_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Time interval between periodic polling of all Auto Scaling Groups. (Units: SEC) (Default: 600)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1162,6 +1186,10 @@ class AwsConfiguration(object):
         'free_elasticips',
         'use_iam_roles',
         'iam_assume_role',
+        'ttl',
+        'wildcard_access',
+        'use_sns_sqs',
+        'asg_poll_interval',
     )
 
     # mapping of properties to their schemas
@@ -1176,6 +1204,10 @@ class AwsConfiguration(object):
         'free_elasticips': free_elasticips_schema,
         'use_iam_roles': use_iam_roles_schema,
         'iam_assume_role': iam_assume_role_schema,
+        'ttl': ttl_schema,
+        'wildcard_access': wildcard_access_schema,
+        'use_sns_sqs': use_sns_sqs_schema,
+        'asg_poll_interval': asg_poll_interval_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1513,7 +1545,7 @@ class MesosConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['MESOS_SE_CREATE_FLEET', 'MESOS_SE_CREATE_SSH', 'MESOS_SE_CREATE_MARATHON']),
+            constraints.AllowedValues(['MESOS_SE_CREATE_FLEET', 'MESOS_SE_CREATE_MARATHON', 'MESOS_SE_CREATE_SSH']),
         ],
     )
     use_controller_image_schema = properties.Schema(
@@ -1885,7 +1917,7 @@ class DockerConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_POD', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -2139,7 +2171,7 @@ class OShiftK8SConfiguration(object):
     )
     container_port_match_http_service_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Perform container port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService (Default: True)"),
+        _("Perform container port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Set either service_port_match_http_service or container_port_match_http_service (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -2169,7 +2201,7 @@ class OShiftK8SConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_POD', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -2354,6 +2386,18 @@ class OShiftK8SConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    disable_auto_gs_sync_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) Disable auto sync for GSLB services (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    service_port_match_http_service_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.4) Perform service port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Set either service_port_match_http_service or container_port_match_http_service (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -2392,6 +2436,8 @@ class OShiftK8SConfiguration(object):
         'default_shared_virtualservice',
         'node_availability_zone_label',
         'secure_egress_mode',
+        'disable_auto_gs_sync',
+        'service_port_match_http_service',
     )
 
     # mapping of properties to their schemas
@@ -2431,6 +2477,8 @@ class OShiftK8SConfiguration(object):
         'default_shared_virtualservice': default_shared_virtualservice_schema,
         'node_availability_zone_label': node_availability_zone_label_schema,
         'secure_egress_mode': secure_egress_mode_schema,
+        'disable_auto_gs_sync': disable_auto_gs_sync_schema,
+        'service_port_match_http_service': service_port_match_http_service_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2499,7 +2547,7 @@ class OpenStackConfiguration(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['NO_ACCESS', 'READ_ACCESS', 'WRITE_ACCESS']),
         ],
     )
     use_keystone_auth_schema = properties.Schema(
@@ -2539,7 +2587,7 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'XEN', 'VMWARE_ESX', 'KVM']),
+            constraints.AllowedValues(['DEFAULT', 'KVM', 'VMWARE_ESX', 'VMWARE_VSAN', 'XEN']),
         ],
     )
     tenant_se_schema = properties.Schema(
@@ -2590,7 +2638,7 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['OS_IMG_FMT_VMDK', 'OS_IMG_FMT_QCOW2', 'OS_IMG_FMT_FLAT', 'OS_IMG_FMT_RAW', 'OS_IMG_FMT_AUTO']),
+            constraints.AllowedValues(['OS_IMG_FMT_AUTO', 'OS_IMG_FMT_FLAT', 'OS_IMG_FMT_QCOW2', 'OS_IMG_FMT_RAW', 'OS_IMG_FMT_VMDK']),
         ],
     )
     use_admin_url_schema = properties.Schema(
@@ -2677,6 +2725,12 @@ class OpenStackConfiguration(object):
         properties.Schema.LIST,
         _("(Introduced in: 17.1.1) A tenant can normally use its own networks and any networks shared with it. In addition, this field provides extra networks that are usable by all tenants. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation. "),
         schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    wildcard_access_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) (Deprecated in: 17.1.5) If enabled, program SE security group with ingress rule to allow SSH (port 22) access from 0.0.0.0/0. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -2768,6 +2822,7 @@ class OpenStackConfiguration(object):
         'neutron_rbac',
         'map_admin_to_cloudadmin',
         'usable_network_uuids',
+        'wildcard_access',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
@@ -2812,6 +2867,7 @@ class OpenStackConfiguration(object):
         'neutron_rbac': neutron_rbac_schema,
         'map_admin_to_cloudadmin': map_admin_to_cloudadmin_schema,
         'usable_network_uuids': usable_network_uuids_schema,
+        'wildcard_access': wildcard_access_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,
@@ -2893,7 +2949,7 @@ class RancherConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_CREATE_POD', 'SE_CREATE_FLEET', 'SE_CREATE_SSH']),
+            constraints.AllowedValues(['SE_CREATE_FLEET', 'SE_CREATE_POD', 'SE_CREATE_SSH']),
         ],
     )
     fleet_endpoint_schema = properties.Schema(
@@ -3141,7 +3197,7 @@ class Cloud(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     vcenter_configuration_schema = properties.Schema(
@@ -3270,7 +3326,7 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LIC_SOCKETS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_BACKEND_SERVERS']),
+            constraints.AllowedValues(['LIC_BACKEND_SERVERS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_SOCKETS']),
         ],
     )
     ipam_provider_uuid_schema = properties.Schema(
@@ -3304,6 +3360,20 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
+    custom_tags_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.5) Custom tags for all Avi created resources in the cloud infrastructure."),
+        schema=CustomTag.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    custom_tags_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.5) Custom tags for all Avi created resources in the cloud infrastructure."),
+        schema=custom_tags_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -3334,6 +3404,7 @@ class Cloud(AviResource):
         'east_west_ipam_provider_uuid',
         'east_west_dns_provider_uuid',
         'nsx_configuration',
+        'custom_tags',
     )
 
     # mapping of properties to their schemas
@@ -3365,6 +3436,7 @@ class Cloud(AviResource):
         'east_west_ipam_provider_uuid': east_west_ipam_provider_uuid_schema,
         'east_west_dns_provider_uuid': east_west_dns_provider_uuid_schema,
         'nsx_configuration': nsx_configuration_schema,
+        'custom_tags': custom_tags_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -3375,6 +3447,7 @@ class Cloud(AviResource):
         'nsx_configuration': getattr(NsxConfiguration, 'field_references', {}),
         'east_west_ipam_provider_uuid': 'ipamdnsproviderprofile',
         'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
+        'custom_tags': getattr(CustomTag, 'field_references', {}),
         'east_west_dns_provider_uuid': 'ipamdnsproviderprofile',
         'docker_configuration': getattr(DockerConfiguration, 'field_references', {}),
         'openstack_configuration': getattr(OpenStackConfiguration, 'field_references', {}),
@@ -3394,6 +3467,7 @@ class Cloud(AviResource):
         'mesos_configuration': getattr(MesosConfiguration, 'unique_keys', {}),
         'nsx_configuration': getattr(NsxConfiguration, 'unique_keys', {}),
         'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'custom_tags': getattr(CustomTag, 'unique_keys', {}),
         'docker_configuration': getattr(DockerConfiguration, 'unique_keys', {}),
         'openstack_configuration': getattr(OpenStackConfiguration, 'unique_keys', {}),
         'linuxserver_configuration': getattr(LinuxServerConfiguration, 'unique_keys', {}),

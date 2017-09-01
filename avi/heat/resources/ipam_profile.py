@@ -118,6 +118,42 @@ class IpamDnsInfobloxProfile(object):
 
 
 
+class AwsZoneNetwork(object):
+    # all schemas
+    availability_zone_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Availability zone"),
+        required=True,
+        update_allowed=True,
+    )
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'availability_zone',
+        'usable_network_uuids',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'availability_zone': availability_zone_schema,
+        'usable_network_uuids': usable_network_uuids_schema,
+    }
+
+
+
 class DnsServiceDomain(object):
     # all schemas
     domain_name_schema = properties.Schema(
@@ -189,7 +225,7 @@ class IpamDnsAwsProfile(object):
     )
     use_iam_roles_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Use IAM roles instead of access and secret key. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -237,6 +273,26 @@ class IpamDnsAwsProfile(object):
         required=False,
         update_allowed=True,
     )
+    zones_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.3) Network configuration for Virtual IP per AZ."),
+        schema=AwsZoneNetwork.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    zones_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Network configuration for Virtual IP per AZ."),
+        schema=zones_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Default TTL for all records (Units: SEC) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -249,6 +305,8 @@ class IpamDnsAwsProfile(object):
         'usable_network_uuids',
         'usable_domains',
         'iam_assume_role',
+        'zones',
+        'ttl',
     )
 
     # mapping of properties to their schemas
@@ -262,6 +320,17 @@ class IpamDnsAwsProfile(object):
         'usable_network_uuids': usable_network_uuids_schema,
         'usable_domains': usable_domains_schema,
         'iam_assume_role': iam_assume_role_schema,
+        'zones': zones_schema,
+        'ttl': ttl_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'zones': getattr(AwsZoneNetwork, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'zones': getattr(AwsZoneNetwork, 'unique_keys', {}),
     }
 
 
@@ -563,7 +632,7 @@ class IpamDnsProviderProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IPAMDNS_TYPE_INFOBLOX_DNS', 'IPAMDNS_TYPE_CUSTOM_DNS', 'IPAMDNS_TYPE_OPENSTACK', 'IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_CUSTOM', 'IPAMDNS_TYPE_AWS']),
+            constraints.AllowedValues(['IPAMDNS_TYPE_AWS', 'IPAMDNS_TYPE_AWS_DNS', 'IPAMDNS_TYPE_CUSTOM', 'IPAMDNS_TYPE_CUSTOM_DNS', 'IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_INFOBLOX_DNS', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_OPENSTACK']),
         ],
     )
     infoblox_profile_schema = properties.Schema(

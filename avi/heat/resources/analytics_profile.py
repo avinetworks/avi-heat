@@ -32,7 +32,7 @@ class ClientLogStreamingConfig(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT', 'LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY']),
+            constraints.AllowedValues(['LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY', 'LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT']),
         ],
     )
     max_logs_per_second_schema = properties.Schema(
@@ -74,7 +74,7 @@ class ClientLogConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND', 'LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND']),
+            constraints.AllowedValues(['LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND', 'LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND']),
         ],
     )
     filtered_log_processing_schema = properties.Schema(
@@ -83,7 +83,7 @@ class ClientLogConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND', 'LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND']),
+            constraints.AllowedValues(['LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND', 'LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND']),
         ],
     )
     non_significant_log_processing_schema = properties.Schema(
@@ -92,7 +92,7 @@ class ClientLogConfiguration(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND', 'LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND']),
+            constraints.AllowedValues(['LOGS_PROCESSING_AUTO_SYNC_AND_INDEX', 'LOGS_PROCESSING_AUTO_SYNC_BUT_INDEX_ON_DEMAND', 'LOGS_PROCESSING_NONE', 'LOGS_PROCESSING_SYNC_AND_INDEX_ON_DEMAND']),
         ],
     )
 

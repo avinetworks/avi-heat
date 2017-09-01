@@ -20,7 +20,7 @@ class SSLKeyRSAParams(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_3072_BITS', 'SSL_KEY_4096_BITS', 'SSL_KEY_2048_BITS']),
+            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_2048_BITS', 'SSL_KEY_3072_BITS', 'SSL_KEY_4096_BITS']),
         ],
     )
     exponent_schema = properties.Schema(
@@ -52,7 +52,7 @@ class SSLVersion(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_VERSION_TLS1_1', 'SSL_VERSION_TLS1', 'SSL_VERSION_TLS1_2']),
+            constraints.AllowedValues(['SSL_VERSION_TLS1', 'SSL_VERSION_TLS1_1', 'SSL_VERSION_TLS1_2']),
         ],
     )
 
@@ -114,7 +114,7 @@ class SSLKeyECParams(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_EC_CURVE_SECP521R1', 'SSL_KEY_EC_CURVE_SECP256R1', 'SSL_KEY_EC_CURVE_SECP384R1']),
+            constraints.AllowedValues(['SSL_KEY_EC_CURVE_SECP256R1', 'SSL_KEY_EC_CURVE_SECP384R1', 'SSL_KEY_EC_CURVE_SECP521R1']),
         ],
     )
 
@@ -284,7 +284,7 @@ class SSLRating(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+            constraints.AllowedValues(['SSL_SCORE_AVERAGE', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_GOOD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_VERY_BAD']),
         ],
     )
     compatibility_rating_schema = properties.Schema(
@@ -293,7 +293,7 @@ class SSLRating(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+            constraints.AllowedValues(['SSL_SCORE_AVERAGE', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_GOOD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_VERY_BAD']),
         ],
     )
 
@@ -375,6 +375,12 @@ class CRL(object):
         required=False,
         update_allowed=True,
     )
+    last_refreshed_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Last time CRL was refreshed by the system. This is an internal field used by the system"),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -388,6 +394,7 @@ class CRL(object):
         'common_name',
         'fingerprint',
         'distinguished_name',
+        'last_refreshed',
     )
 
     # mapping of properties to their schemas
@@ -402,6 +409,7 @@ class CRL(object):
         'common_name': common_name_schema,
         'fingerprint': fingerprint_schema,
         'distinguished_name': distinguished_name_schema,
+        'last_refreshed': last_refreshed_schema,
     }
 
 
@@ -414,7 +422,7 @@ class SSLKeyParams(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_ALGORITHM_RSA', 'SSL_KEY_ALGORITHM_EC']),
+            constraints.AllowedValues(['SSL_KEY_ALGORITHM_EC', 'SSL_KEY_ALGORITHM_RSA']),
         ],
     )
     rsa_params_schema = properties.Schema(
@@ -500,7 +508,7 @@ class SSLProfile(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_RC4_128_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA']),
+            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_RSA_WITH_RC4_128_SHA']),
         ],
     )
     cipher_enums_schema = properties.Schema(
@@ -537,6 +545,12 @@ class SSLProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    dhparam_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("DH Parameters used in SSL. At this time, it is not configurable and is set to 2048 bits."),
+        required=False,
+        update_allowed=False,
+    )
     prefer_client_cipher_ordering_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Prefer the SSL cipher ordering presented by the client during the SSL handshake over the one specified in the SSL Profile. (Default: False)"),
@@ -572,6 +586,7 @@ class SSLProfile(AviResource):
         'tags',
         'ssl_rating',
         'send_close_notify',
+        'dhparam',
         'prefer_client_cipher_ordering',
         'enable_ssl_session_reuse',
         'ssl_session_timeout',
@@ -588,6 +603,7 @@ class SSLProfile(AviResource):
         'tags': tags_schema,
         'ssl_rating': ssl_rating_schema,
         'send_close_notify': send_close_notify_schema,
+        'dhparam': dhparam_schema,
         'prefer_client_cipher_ordering': prefer_client_cipher_ordering_schema,
         'enable_ssl_session_reuse': enable_ssl_session_reuse_schema,
         'ssl_session_timeout': ssl_session_timeout_schema,
@@ -710,7 +726,7 @@ class SSLCertificate(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CERTIFICATE_EXPIRED', 'SSL_CERTIFICATE_GOOD', 'SSL_CERTIFICATE_EXPIRY_WARNING']),
+            constraints.AllowedValues(['SSL_CERTIFICATE_EXPIRED', 'SSL_CERTIFICATE_EXPIRY_WARNING', 'SSL_CERTIFICATE_GOOD']),
         ],
     )
     chain_verified_schema = properties.Schema(
@@ -867,6 +883,12 @@ class PKIProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -878,6 +900,7 @@ class PKIProfile(AviResource):
         'crl_check',
         'validate_only_leaf_crl',
         'created_by',
+        'is_federated',
     )
 
     # mapping of properties to their schemas
@@ -890,6 +913,7 @@ class PKIProfile(AviResource):
         'crl_check': crl_check_schema,
         'validate_only_leaf_crl': validate_only_leaf_crl_schema,
         'created_by': created_by_schema,
+        'is_federated': is_federated_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -926,7 +950,7 @@ class SSLKeyAndCertificate(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CERTIFICATE_TYPE_SYSTEM', 'SSL_CERTIFICATE_TYPE_VIRTUALSERVICE', 'SSL_CERTIFICATE_TYPE_CA']),
+            constraints.AllowedValues(['SSL_CERTIFICATE_TYPE_CA', 'SSL_CERTIFICATE_TYPE_SYSTEM', 'SSL_CERTIFICATE_TYPE_VIRTUALSERVICE']),
         ],
     )
     certificate_schema = properties.Schema(

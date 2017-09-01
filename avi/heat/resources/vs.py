@@ -375,7 +375,7 @@ class VsSeVnic(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT_SECONDARY']),
+            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT_SECONDARY']),
         ],
     )
     lif_schema = properties.Schema(
@@ -1309,7 +1309,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VS_TYPE_VH_PARENT', 'VS_TYPE_VH_CHILD', 'VS_TYPE_NORMAL']),
+            constraints.AllowedValues(['VS_TYPE_NORMAL', 'VS_TYPE_VH_CHILD', 'VS_TYPE_VH_PARENT']),
         ],
     )
     vh_parent_vs_uuid_schema = properties.Schema(
@@ -1368,7 +1368,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     avi_allocated_vip_schema = properties.Schema(
@@ -1409,7 +1409,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LOAD_AWARE', 'CONSISTENT_HASH_SOURCE_IP_ADDRESS']),
+            constraints.AllowedValues(['CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LOAD_AWARE']),
         ],
     )
     ign_pool_net_reach_schema = properties.Schema(
@@ -1441,6 +1441,12 @@ class VirtualService(AviResource):
         _(""),
         required=False,
         update_allowed=True,
+    )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
     )
     east_west_placement_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -1682,6 +1688,7 @@ class VirtualService(AviResource):
         'pool_group_uuid',
         'remove_listening_port_on_vs_down',
         'description',
+        'cloud_uuid',
         'east_west_placement',
         'scaleout_ecmp',
         'microservice_uuid',
@@ -1762,6 +1769,7 @@ class VirtualService(AviResource):
         'pool_group_uuid': pool_group_uuid_schema,
         'remove_listening_port_on_vs_down': remove_listening_port_on_vs_down_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
         'east_west_placement': east_west_placement_schema,
         'scaleout_ecmp': scaleout_ecmp_schema,
         'microservice_uuid': microservice_uuid_schema,
@@ -1909,6 +1917,12 @@ class VsVip(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) "),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1918,6 +1932,7 @@ class VsVip(AviResource):
         'dns_info',
         'vrf_context_uuid',
         'east_west_placement',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -1928,6 +1943,7 @@ class VsVip(AviResource):
         'dns_info': dns_info_schema,
         'vrf_context_uuid': vrf_context_uuid_schema,
         'east_west_placement': east_west_placement_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

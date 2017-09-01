@@ -32,7 +32,7 @@ class CompressionFilter(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+            constraints.AllowedValues(['IS_IN', 'IS_NOT_IN']),
         ],
     )
     ip_addrs_uuid_schema = properties.Schema(
@@ -108,7 +108,7 @@ class CompressionFilter(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NORMAL_COMPRESSION', 'AGGRESSIVE_COMPRESSION', 'NO_COMPRESSION']),
+            constraints.AllowedValues(['AGGRESSIVE_COMPRESSION', 'NORMAL_COMPRESSION', 'NO_COMPRESSION']),
         ],
     )
 
@@ -184,7 +184,7 @@ class CompressionProfile(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CUSTOM_COMPRESSION', 'AUTO_COMPRESSION']),
+            constraints.AllowedValues(['AUTO_COMPRESSION', 'CUSTOM_COMPRESSION']),
         ],
     )
     filter_item_schema = properties.Schema(

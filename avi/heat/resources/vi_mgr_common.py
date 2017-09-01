@@ -42,7 +42,7 @@ class CdpLldpInfo(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LLDP', 'NOT_APPLICABLE', 'CDP']),
+            constraints.AllowedValues(['CDP', 'LLDP', 'NOT_APPLICABLE']),
         ],
     )
     device_schema = properties.Schema(

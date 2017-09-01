@@ -23,7 +23,7 @@ class HTTPSecurityAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+            constraints.AllowedValues(['HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_SEND_RESPONSE']),
         ],
     )
     status_code_schema = properties.Schema(
@@ -32,7 +32,7 @@ class HTTPSecurityAction(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429']),
         ],
     )
     https_port_schema = properties.Schema(

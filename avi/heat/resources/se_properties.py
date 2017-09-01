@@ -27,7 +27,7 @@ class AppHdr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SENSITIVE', 'INSENSITIVE']),
+            constraints.AllowedValues(['INSENSITIVE', 'SENSITIVE']),
         ],
     )
     hdr_string_op_schema = properties.Schema(
@@ -36,7 +36,7 @@ class AppHdr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
+            constraints.AllowedValues(['BEGINS_WITH', 'CONTAINS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_CONTAIN', 'DOES_NOT_END_WITH', 'DOES_NOT_EQUAL', 'ENDS_WITH', 'EQUALS', 'REGEX_DOES_NOT_MATCH', 'REGEX_MATCH']),
         ],
     )
 
@@ -601,6 +601,12 @@ class SeRuntimeProperties(object):
         required=False,
         update_allowed=True,
     )
+    max_throughput_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Deprecated in: 17.1.1) Deprecated (Units: MBPS) (Default: 10000)"),
+        required=False,
+        update_allowed=False,
+    )
     se_hb_persist_fudge_bits_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Internal use only. (Default: 3)"),
@@ -718,7 +724,7 @@ class SeRuntimeProperties(object):
     )
     dp_aggressive_hb_timeout_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Consecutive HB failures after which failure is reported to controller,when aggressive failure mode detection is enabled. (Default: 5)"),
+        _("Consecutive HB failures after which failure is reported to controller,when aggressive failure mode detection is enabled. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
@@ -843,13 +849,25 @@ class SeRuntimeProperties(object):
     )
     se_dp_vnic_queue_stall_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 2000)"),
+        _("(Introduced in: 17.1.1) Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     disable_flow_probes_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.1) Disable Flow Probes for Scaled out VS'es (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    user_defined_metric_age_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.5) Defines in seconds how long before an unused user-defined-metric is garbage collected. (Units: SEC) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_gro_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.6) Disable Generic Receive Offload (GRO) in DPDK poll-mode driver packet receive path.  GRO is on by default. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -916,6 +934,7 @@ class SeRuntimeProperties(object):
         'dp_hb_timeout_count',
         'dupip_frequency',
         'dupip_timeout_count',
+        'max_throughput',
         'se_hb_persist_fudge_bits',
         'log_agent_unknown_vs_timer',
         'global_mtu',
@@ -955,6 +974,8 @@ class SeRuntimeProperties(object):
         'se_dp_vnic_queue_stall_timeout',
         'se_dp_vnic_queue_stall_threshold',
         'disable_flow_probes',
+        'user_defined_metric_age',
+        'disable_gro',
     )
 
     # mapping of properties to their schemas
@@ -1019,6 +1040,7 @@ class SeRuntimeProperties(object):
         'dp_hb_timeout_count': dp_hb_timeout_count_schema,
         'dupip_frequency': dupip_frequency_schema,
         'dupip_timeout_count': dupip_timeout_count_schema,
+        'max_throughput': max_throughput_schema,
         'se_hb_persist_fudge_bits': se_hb_persist_fudge_bits_schema,
         'log_agent_unknown_vs_timer': log_agent_unknown_vs_timer_schema,
         'global_mtu': global_mtu_schema,
@@ -1058,6 +1080,8 @@ class SeRuntimeProperties(object):
         'se_dp_vnic_queue_stall_timeout': se_dp_vnic_queue_stall_timeout_schema,
         'se_dp_vnic_queue_stall_threshold': se_dp_vnic_queue_stall_threshold_schema,
         'disable_flow_probes': disable_flow_probes_schema,
+        'user_defined_metric_age': user_defined_metric_age_schema,
+        'disable_gro': disable_gro_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1229,7 +1253,7 @@ class SeAgentProperties(object):
     )
     controller_echo_rpc_aggressive_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Aggressive Timeout used for se health check (Units: MILLISECONDS) (Default: 500)"),
+        _("Aggressive Timeout used for se health check (Units: MILLISECONDS) (Default: 2000)"),
         required=False,
         update_allowed=True,
     )

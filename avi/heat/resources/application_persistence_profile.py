@@ -218,7 +218,7 @@ class ApplicationPersistenceProfile(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_PICK_NEW_SERVER', 'HM_DOWN_ABORT_CONNECTION']),
+            constraints.AllowedValues(['HM_DOWN_ABORT_CONNECTION', 'HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_PICK_NEW_SERVER']),
         ],
     )
     persistence_type_schema = properties.Schema(
@@ -227,7 +227,7 @@ class ApplicationPersistenceProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_GSLB_SITE', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_TLS']),
+            constraints.AllowedValues(['PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_GSLB_SITE', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_TLS']),
         ],
     )
     ip_persistence_profile_schema = properties.Schema(
@@ -258,6 +258,12 @@ class ApplicationPersistenceProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
+        required=False,
+        update_allowed=False,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -275,6 +281,7 @@ class ApplicationPersistenceProfile(AviResource):
         'hdr_persistence_profile',
         'app_cookie_persistence_profile',
         'http_cookie_persistence_profile',
+        'is_federated',
         'description',
     )
 
@@ -288,6 +295,7 @@ class ApplicationPersistenceProfile(AviResource):
         'hdr_persistence_profile': hdr_persistence_profile_schema,
         'app_cookie_persistence_profile': app_cookie_persistence_profile_schema,
         'http_cookie_persistence_profile': http_cookie_persistence_profile_schema,
+        'is_federated': is_federated_schema,
         'description': description_schema,
     }
 

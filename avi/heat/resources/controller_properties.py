@@ -275,7 +275,7 @@ class ControllerProperties(AviResource):
     )
     portal_token_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.2) Token used for uploading tech-support to portal"),
+        _("(Introduced in: 16.4.6,17.1.2) Token used for uploading tech-support to portal"),
         required=False,
         update_allowed=True,
     )

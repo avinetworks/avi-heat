@@ -15,35 +15,6 @@ from dos import *
 from analytics_policy import *
 
 
-class CustomTag(object):
-    # all schemas
-    tag_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    tag_val_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'tag_key',
-        'tag_val',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'tag_key': tag_key_schema,
-        'tag_val': tag_val_schema,
-    }
-
-
-
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -85,47 +56,6 @@ class VcenterClusters(object):
 
 
 
-class VcenterHosts(object):
-    # all schemas
-    host_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    host_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
-        schema=host_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    include_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(" (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'host_uuids',
-        'include',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'host_uuids': host_uuids_schema,
-        'include': include_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'host_uuids': 'vimgrhostruntime',
-    }
-
-
-
 class IptableRule(object):
     # all schemas
     src_ip_schema = properties.Schema(
@@ -162,7 +92,7 @@ class IptableRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PROTO_UDP', 'PROTO_TCP', 'PROTO_ICMP', 'PROTO_ALL']),
+            constraints.AllowedValues(['PROTO_ALL', 'PROTO_ICMP', 'PROTO_TCP', 'PROTO_UDP']),
         ],
     )
     input_interface_schema = properties.Schema(
@@ -183,7 +113,7 @@ class IptableRule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['MASQUERADE', 'DROP', 'DNAT', 'ACCEPT', 'REJECT']),
+            constraints.AllowedValues(['ACCEPT', 'DNAT', 'DROP', 'MASQUERADE', 'REJECT']),
         ],
     )
     dnat_ip_schema = properties.Schema(
@@ -243,6 +173,47 @@ class IptableRule(object):
         'src_port': getattr(PortRange, 'unique_keys', {}),
         'dst_port': getattr(PortRange, 'unique_keys', {}),
         'dnat_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
+
+class VcenterHosts(object):
+    # all schemas
+    host_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    host_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        schema=host_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    include_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(" (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'host_uuids',
+        'include',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'host_uuids': host_uuids_schema,
+        'include': include_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_uuids': 'vimgrhostruntime',
     }
 
 
@@ -324,7 +295,7 @@ class ServiceEngineGroup(AviResource):
     )
     max_vs_per_se_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of Virtual Services that can be placed on a single Service Engine. (Default: 10)"),
+        _("Maximum number of Virtual Services that can be placed on a single Service Engine. East West Virtual Services are excluded from this limit. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
@@ -366,13 +337,13 @@ class ServiceEngineGroup(AviResource):
     )
     max_cpu_usage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("When CPU usage on an SE exceeds this threshold, Virtual Services hosted on this SE may be rebalanced to other SEs to reduce load. A new SE may be created as part of this process. (Units: GB) (Default: 80)"),
+        _("When CPU usage on an SE exceeds this threshold, Virtual Services hosted on this SE may be rebalanced to other SEs to reduce load. A new SE may be created as part of this process. (Units: PERCENT) (Default: 80)"),
         required=False,
         update_allowed=True,
     )
     min_cpu_usage_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("When CPU usage on an SE falls below the minimum threshold, Virtual Services hosted on the SE may be consolidated onto other underutilized SEs. After consolidation, unused Service Engines may then be eligible for deletion.  (Default: 30)"),
+        _("When CPU usage on an SE falls below the minimum threshold, Virtual Services hosted on the SE may be consolidated onto other underutilized SEs. After consolidation, unused Service Engines may then be eligible for deletion.  (Units: PERCENT) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -486,7 +457,7 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HA_MODE_SHARED_PAIR', 'HA_MODE_LEGACY_ACTIVE_STANDBY', 'HA_MODE_SHARED']),
+            constraints.AllowedValues(['HA_MODE_LEGACY_ACTIVE_STANDBY', 'HA_MODE_SHARED', 'HA_MODE_SHARED_PAIR']),
         ],
     )
     algo_schema = properties.Schema(
@@ -495,7 +466,7 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PLACEMENT_ALGO_PACKED', 'PLACEMENT_ALGO_DISTRIBUTED']),
+            constraints.AllowedValues(['PLACEMENT_ALGO_DISTRIBUTED', 'PLACEMENT_ALGO_PACKED']),
         ],
     )
     buffer_se_schema = properties.Schema(
@@ -543,7 +514,7 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEFAULT', 'VMWARE_VSAN', 'XEN', 'VMWARE_ESX', 'KVM']),
+            constraints.AllowedValues(['DEFAULT', 'KVM', 'VMWARE_ESX', 'VMWARE_VSAN', 'XEN']),
         ],
     )
     se_dos_profile_schema = properties.Schema(
@@ -610,13 +581,13 @@ class ServiceEngineGroup(AviResource):
     )
     host_attribute_key_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Key of a (Key, Value) pair identifying a set of hosts. Currently used to separate North-South and East-West SE sizing requirements. This is useful in Container ecosystems where SEs on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
+        _("Key of a (Key, Value) pair identifying a label for a set of Nodes usually in Container Clouds. Needs to be specified together with host_attribute_value. SEs can be configured differently including HA modes across different SE Groups. May also be used for isolation between different classes of VirtualServices. VirtualServices' SE Group may be specified via annotations/labels. A OpenShift/Kubernetes namespace maybe annotated with a matching SE Group label as openshift.io/node-selector: apptype=prod. When multiple SE Groups are used in a Cloud with host attributes specified,just a single SE Group can exist as a match-all SE Group without a host_attribute_key."),
         required=False,
         update_allowed=True,
     )
     host_attribute_value_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Value of a (Key, Value) pair identifying a set of hosts. Currently used to separate North-South and East-West SE sizing requirements. This is useful in Container ecosystems where SEs on East-West traffic nodes are typically smaller than those on North-South traffic nodes."),
+        _("Value of a (Key, Value) pair identifying a label for a set of Nodes usually in Container Clouds. Needs to be specified together with host_attribute_key."),
         required=False,
         update_allowed=True,
     )
@@ -779,6 +750,12 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
+    )
     iptables_item_schema = properties.Schema(
         properties.Schema.MAP,
         _("Iptable Rules"),
@@ -844,6 +821,86 @@ class ServiceEngineGroup(AviResource):
     se_remote_punt_udp_port_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("(Introduced in: 17.1.2) UDP Port for punted packets in Docker bridge mode. (Default: 1501)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_tunnel_udp_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) UDP Port for tunneled packets from secondary to primary SE in Docker bridge mode. (Default: 1550)"),
+        required=False,
+        update_allowed=True,
+    )
+    custom_securitygroups_mgmt_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Custom Security Groups to be associated with management vNic for SE instances in OpenStack and AWS Clouds."),
+        required=True,
+        update_allowed=False,
+    )
+    custom_securitygroups_mgmt_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Custom Security Groups to be associated with management vNic for SE instances in OpenStack and AWS Clouds."),
+        schema=custom_securitygroups_mgmt_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    custom_securitygroups_data_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Custom Security Groups to be associated with data vNics for SE instances in OpenStack and AWS Clouds."),
+        required=True,
+        update_allowed=False,
+    )
+    custom_securitygroups_data_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Custom Security Groups to be associated with data vNics for SE instances in OpenStack and AWS Clouds."),
+        schema=custom_securitygroups_data_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    archive_shm_limit_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Amount of SE memory in GB until which shared memory is collected in core archive. (Units: GB) (Default: 8)"),
+        required=False,
+        update_allowed=True,
+    )
+    significant_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of significant logs generated per second per core on this SE. Default is 100 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 100)"),
+        required=False,
+        update_allowed=True,
+    )
+    udf_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of UDF logs generated per second per core on this SE. UDF logs are generated due to the configured client log filters or the rules with logging enabled. Default is 100 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 100)"),
+        required=False,
+        update_allowed=True,
+    )
+    non_significant_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of non-significant logs generated per second per core on this SE. Default is 100 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 100)"),
+        required=False,
+        update_allowed=True,
+    )
+    ingress_access_mgmt_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.5) Program SE security group ingress rules to allow SSH/ICMP management access from remote CIDR type. (Default: SG_INGRESS_ACCESS_ALL)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SG_INGRESS_ACCESS_ALL', 'SG_INGRESS_ACCESS_NONE', 'SG_INGRESS_ACCESS_VPC']),
+        ],
+    )
+    ingress_access_data_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.5) Program SE security group ingress rules to allow VIP data access from remote CIDR type. (Default: SG_INGRESS_ACCESS_ALL)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SG_INGRESS_ACCESS_ALL', 'SG_INGRESS_ACCESS_NONE', 'SG_INGRESS_ACCESS_VPC']),
+        ],
+    )
+    ignore_rtt_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.6) Ignore RTT samples if it is above threshold (Units: MILLISECONDS) (Default: 5000)"),
         required=False,
         update_allowed=True,
     )
@@ -918,6 +975,7 @@ class ServiceEngineGroup(AviResource):
         'service_ip_subnets',
         'se_vs_hb_max_vs_in_pkt',
         'se_vs_hb_max_pkts_in_batch',
+        'cloud_uuid',
         'iptables',
         'enable_routing',
         'advertise_backend_networks',
@@ -928,6 +986,16 @@ class ServiceEngineGroup(AviResource):
         'se_udp_encap_ipc',
         'se_ipc_udp_port',
         'se_remote_punt_udp_port',
+        'se_tunnel_udp_port',
+        'custom_securitygroups_mgmt',
+        'custom_securitygroups_data',
+        'archive_shm_limit',
+        'significant_log_throttle',
+        'udf_log_throttle',
+        'non_significant_log_throttle',
+        'ingress_access_mgmt',
+        'ingress_access_data',
+        'ignore_rtt_threshold',
     )
 
     # mapping of properties to their schemas
@@ -1000,6 +1068,7 @@ class ServiceEngineGroup(AviResource):
         'service_ip_subnets': service_ip_subnets_schema,
         'se_vs_hb_max_vs_in_pkt': se_vs_hb_max_vs_in_pkt_schema,
         'se_vs_hb_max_pkts_in_batch': se_vs_hb_max_pkts_in_batch_schema,
+        'cloud_uuid': cloud_uuid_schema,
         'iptables': iptables_schema,
         'enable_routing': enable_routing_schema,
         'advertise_backend_networks': advertise_backend_networks_schema,
@@ -1010,6 +1079,16 @@ class ServiceEngineGroup(AviResource):
         'se_udp_encap_ipc': se_udp_encap_ipc_schema,
         'se_ipc_udp_port': se_ipc_udp_port_schema,
         'se_remote_punt_udp_port': se_remote_punt_udp_port_schema,
+        'se_tunnel_udp_port': se_tunnel_udp_port_schema,
+        'custom_securitygroups_mgmt': custom_securitygroups_mgmt_schema,
+        'custom_securitygroups_data': custom_securitygroups_data_schema,
+        'archive_shm_limit': archive_shm_limit_schema,
+        'significant_log_throttle': significant_log_throttle_schema,
+        'udf_log_throttle': udf_log_throttle_schema,
+        'non_significant_log_throttle': non_significant_log_throttle_schema,
+        'ingress_access_mgmt': ingress_access_mgmt_schema,
+        'ingress_access_data': ingress_access_data_schema,
+        'ignore_rtt_threshold': ignore_rtt_threshold_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

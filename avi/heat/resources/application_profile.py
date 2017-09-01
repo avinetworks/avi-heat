@@ -103,6 +103,12 @@ class DnsServiceApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    edns_client_subnet_prefix_len_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Specifies the ip address prefix length to use in the edns client subnet (ecs) option. When the incoming request does not have any ecs option and the prefix length is specified, we insert an ecs option in the request to upstream servers."),
+        required=False,
+        update_allowed=True,
+    )
     dns_over_tcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.1) Enable DNS query/response over TCP. This enables analytics for pass-through queries as well. (Default: True)"),
@@ -115,6 +121,25 @@ class DnsServiceApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    ecs_stripping_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.5) Enable stripping of EDNS client subnet (ecs) option towards client if DNS service inserts ecs option in the DNS query towards upstream servers. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    authoritative_domain_names_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.6) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for fqdns that are subdomains of this domain, and do not have any DNS record in Avi, are dropped/NXDomain error response sent. "),
+        required=True,
+        update_allowed=False,
+    )
+    authoritative_domain_names_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.6) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for fqdns that are subdomains of this domain, and do not have any DNS record in Avi, are dropped/NXDomain error response sent. "),
+        schema=authoritative_domain_names_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -123,8 +148,11 @@ class DnsServiceApplicationProfile(object):
         'error_response',
         'domain_names',
         'edns',
+        'edns_client_subnet_prefix_len',
         'dns_over_tcp_enabled',
         'aaaa_empty_response',
+        'ecs_stripping_enabled',
+        'authoritative_domain_names',
     )
 
     # mapping of properties to their schemas
@@ -134,8 +162,11 @@ class DnsServiceApplicationProfile(object):
         'error_response': error_response_schema,
         'domain_names': domain_names_schema,
         'edns': edns_schema,
+        'edns_client_subnet_prefix_len': edns_client_subnet_prefix_len_schema,
         'dns_over_tcp_enabled': dns_over_tcp_enabled_schema,
         'aaaa_empty_response': aaaa_empty_response_schema,
+        'ecs_stripping_enabled': ecs_stripping_enabled_schema,
+        'authoritative_domain_names': authoritative_domain_names_schema,
     }
 
 
@@ -154,7 +185,7 @@ class TCPApplicationProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PROXY_PROTOCOL_VERSION_2', 'PROXY_PROTOCOL_VERSION_1']),
+            constraints.AllowedValues(['PROXY_PROTOCOL_VERSION_1', 'PROXY_PROTOCOL_VERSION_2']),
         ],
     )
 
@@ -186,7 +217,7 @@ class SSLClientRequestHeader(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+            constraints.AllowedValues(['HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_PROTOCOL', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_VS_PORT']),
         ],
     )
 
@@ -423,7 +454,7 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_REQUIRE', 'SSL_CLIENT_CERTIFICATE_NONE']),
+            constraints.AllowedValues(['SSL_CLIENT_CERTIFICATE_NONE', 'SSL_CLIENT_CERTIFICATE_REQUEST', 'SSL_CLIENT_CERTIFICATE_REQUIRE']),
         ],
     )
     pki_profile_uuid_schema = properties.Schema(
@@ -616,7 +647,7 @@ class ApplicationProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_SYSLOG', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG']),
         ],
     )
     http_profile_schema = properties.Schema(

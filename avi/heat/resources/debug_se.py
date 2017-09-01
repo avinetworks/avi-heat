@@ -21,7 +21,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['RPC_INFRA_DEBUG', 'TRANSACTION_DEBUG', 'NSX_AGENT_DEBUG', 'ALERT_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'HS_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'RES_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'EVENT_API_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'TASK_QUEUE_DEBUG', 'VI_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'APIC_AGENT_DEBUG', 'METRICS_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(
@@ -30,7 +30,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_ERROR', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_DEBUG_DETAIL']),
+            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_DEBUG_DETAIL', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_ERROR']),
         ],
     )
     log_level_schema = properties.Schema(
@@ -39,7 +39,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOG_LEVEL_ERROR', 'LOG_LEVEL_DISABLED', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
+            constraints.AllowedValues(['LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
         ],
     )
 
@@ -71,7 +71,7 @@ class DebugSeDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_STRICT', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ARP_PKT_OUT', 'DEBUG_ALL', 'DEBUG_PCAP_RX', 'DEBUG_IP_PKT_OUT', 'DEBUG_ARP_PKT_IN', 'DEBUG_POOL', 'DEBUG_MISC', 'DEBUG_CRUD', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_UDP', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_NONE', 'DEBUG_SE_VS_HB', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_ICMP', 'DEBUG_ERROR', 'DEBUG_ARP', 'DEBUG_SE_APP', 'DEBUG_ETHERNET', 'DEBUG_IP_PKT_IN', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_IP', 'DEBUG_PCAP_TX', 'DEBUG_CONFIG', 'DEBUG_DISPATCHER_FLOW_ALL']),
+            constraints.AllowedValues(['DEBUG_ALL', 'DEBUG_ARP', 'DEBUG_ARP_PKT_IN', 'DEBUG_ARP_PKT_OUT', 'DEBUG_CONFIG', 'DEBUG_CRUD', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_DISPATCHER_FLOW_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_ERROR', 'DEBUG_ETHERNET', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ICMP', 'DEBUG_IP', 'DEBUG_IP_PKT_IN', 'DEBUG_IP_PKT_OUT', 'DEBUG_MISC', 'DEBUG_NONE', 'DEBUG_PCAP_ALL', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_RX', 'DEBUG_PCAP_TX', 'DEBUG_POOL', 'DEBUG_SE_APP', 'DEBUG_SE_VS_HB', 'DEBUG_STRICT', 'DEBUG_UDP']),
         ],
     )
 
@@ -362,7 +362,7 @@ class DebugVsDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_VS_UDP', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_HM', 'DEBUG_VS_CONFIG', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_ERROR', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_NONE', 'DEBUG_VS_CREDIT', 'DEBUG_VS_UDP_PKT']),
+            constraints.AllowedValues(['DEBUG_VS_ALL', 'DEBUG_VS_CONFIG', 'DEBUG_VS_CREDIT', 'DEBUG_VS_ERROR', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_NONE', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_UDP', 'DEBUG_VS_UDP_PKT']),
         ],
     )
 
@@ -444,8 +444,14 @@ class DebugVirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_VS_HM_NONE', 'DEBUG_VS_HM_INCLUDE', 'DEBUG_VS_HM_ONLY']),
+            constraints.AllowedValues(['DEBUG_VS_HM_INCLUDE', 'DEBUG_VS_HM_NONE', 'DEBUG_VS_HM_ONLY']),
         ],
+    )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
@@ -458,6 +464,7 @@ class DebugVirtualService(AviResource):
         'capture_params',
         'se_params',
         'debug_hm',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -470,6 +477,7 @@ class DebugVirtualService(AviResource):
         'capture_params': capture_params_schema,
         'se_params': se_params_schema,
         'debug_hm': debug_hm_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

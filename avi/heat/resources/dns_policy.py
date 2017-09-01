@@ -14,6 +14,48 @@ from match import *
 from dns import *
 
 
+class DnsQueryTypeMatch(object):
+    # all schemas
+    match_criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Criterion to use for matching the DNS query typein the question section"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['IS_IN', 'IS_NOT_IN']),
+        ],
+    )
+    query_type_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) DNS query types in the request query "),
+        required=True,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
+        ],
+    )
+    query_type_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) DNS query types in the request query "),
+        schema=query_type_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_criteria',
+        'query_type',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_criteria': match_criteria_schema,
+        'query_type': query_type_schema,
+    }
+
+
+
 class DnsQueryNameMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
@@ -22,7 +64,7 @@ class DnsQueryNameMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['REGEX_MATCH', 'DOES_NOT_END_WITH', 'ENDS_WITH', 'CONTAINS', 'EQUALS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_EQUAL', 'REGEX_DOES_NOT_MATCH', 'DOES_NOT_CONTAIN', 'BEGINS_WITH']),
+            constraints.AllowedValues(['BEGINS_WITH', 'CONTAINS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_CONTAIN', 'DOES_NOT_END_WITH', 'DOES_NOT_EQUAL', 'ENDS_WITH', 'EQUALS', 'REGEX_DOES_NOT_MATCH', 'REGEX_MATCH']),
         ],
     )
     query_domain_names_item_schema = properties.Schema(
@@ -73,30 +115,32 @@ class DnsQueryNameMatch(object):
 
 
 
-class DnsQueryTypeMatch(object):
+class DnsGeoLocationMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Criterion to use for matching the DNS query typein the question section"),
+        _("(Introduced in: 17.1.5) Criterion to use for matching the client IP's geographical location"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+            constraints.AllowedValues(['IS_IN', 'IS_NOT_IN']),
         ],
     )
-    query_type_item_schema = properties.Schema(
+    use_edns_client_subnet_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.5) Use the IP address from the EDNS client subnet option, if available, to derive geo location of the DNS query (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    geolocation_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) DNS query types in the request query "),
-        required=True,
-        update_allowed=False,
-        constraints=[
-            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_RRSIG', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_AXFR', 'DNS_RECORD_SOA', 'DNS_RECORD_MX', 'DNS_RECORD_SRV', 'DNS_RECORD_HINFO', 'DNS_RECORD_OPT', 'DNS_RECORD_ANY', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_CNAME', 'DNS_RECORD_NS']),
-        ],
+        _("(Introduced in: 17.1.5) Geographical location of the client IP to be used in the match. This location is of the format Country/State/City e.g. US/CA/Santa Clara."),
+        required=False,
+        update_allowed=True,
     )
-    query_type_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("(Introduced in: 17.1.1) DNS query types in the request query "),
-        schema=query_type_item_schema,
+    geolocation_tag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.5) Geolocation tag for the client IP. This could be any string value for the client IP, e.g. client IPs from US East Coast geolocation would be tagged as 'East Coast'."),
         required=False,
         update_allowed=True,
     )
@@ -104,13 +148,38 @@ class DnsQueryTypeMatch(object):
     # properties list
     PROPERTIES = (
         'match_criteria',
-        'query_type',
+        'use_edns_client_subnet_ip',
+        'geolocation_name',
+        'geolocation_tag',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'match_criteria': match_criteria_schema,
-        'query_type': query_type_schema,
+        'use_edns_client_subnet_ip': use_edns_client_subnet_ip_schema,
+        'geolocation_name': geolocation_name_schema,
+        'geolocation_tag': geolocation_tag_schema,
+    }
+
+
+
+class DnsRuleActionGslbSiteSelection(object):
+    # all schemas
+    site_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.5) GSLB site name"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'site_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'site_name': site_name_schema,
     }
 
 
@@ -144,6 +213,45 @@ class DnsRuleActionAllowDrop(object):
 
 
 
+class DnsClientIpMatch(object):
+    # all schemas
+    client_ip_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.6) IP addresses to match against client IP"),
+        schema=IpAddrMatch.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    use_edns_client_subnet_ip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.6) Use the IP address from the EDNS client subnet option, if available, as the source IP address of the client. It should be noted that the edns subnet IP may not be a /32 IP address. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'client_ip',
+        'use_edns_client_subnet_ip',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'client_ip': client_ip_schema,
+        'use_edns_client_subnet_ip': use_edns_client_subnet_ip_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_ip': getattr(IpAddrMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+    }
+
+
+
 class DnsRuleActionResponse(object):
     # all schemas
     rcode_schema = properties.Schema(
@@ -152,7 +260,7 @@ class DnsRuleActionResponse(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RCODE_NOERROR', 'DNS_RCODE_NXDOMAIN', 'DNS_RCODE_YXDOMAIN', 'DNS_RCODE_REFUSED', 'DNS_RCODE_FORMERR', 'DNS_RCODE_YXRRSET', 'DNS_RCODE_NOTIMP', 'DNS_RCODE_NOTZONE', 'DNS_RCODE_SERVFAIL', 'DNS_RCODE_NOTAUTH', 'DNS_RCODE_NXRRSET']),
+            constraints.AllowedValues(['DNS_RCODE_FORMERR', 'DNS_RCODE_NOERROR', 'DNS_RCODE_NOTAUTH', 'DNS_RCODE_NOTIMP', 'DNS_RCODE_NOTZONE', 'DNS_RCODE_NXDOMAIN', 'DNS_RCODE_NXRRSET', 'DNS_RCODE_REFUSED', 'DNS_RCODE_SERVFAIL', 'DNS_RCODE_YXDOMAIN', 'DNS_RCODE_YXRRSET']),
         ],
     )
     truncation_schema = properties.Schema(
@@ -230,7 +338,7 @@ class DnsTransportProtocolMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IS_NOT_IN', 'IS_IN']),
+            constraints.AllowedValues(['IS_IN', 'IS_NOT_IN']),
         ],
     )
     protocol_schema = properties.Schema(
@@ -239,7 +347,7 @@ class DnsTransportProtocolMatch(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_OVER_UDP', 'DNS_OVER_TCP']),
+            constraints.AllowedValues(['DNS_OVER_TCP', 'DNS_OVER_UDP']),
         ],
     )
 
@@ -261,7 +369,7 @@ class DnsRuleMatchTarget(object):
     # all schemas
     client_ip_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) IP addresses to match against client IP"),
+        _("(Introduced in: 17.1.1) (Deprecated in: 17.1.6) IP addresses to match against client IP. From 17.1.6 release onwards, IP addresses needs to be configured in the client_ip_address field of this message."),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
@@ -287,6 +395,20 @@ class DnsRuleMatchTarget(object):
         required=False,
         update_allowed=True,
     )
+    geo_location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.5) Geographical location attribute to match against that of the client IP"),
+        schema=DnsGeoLocationMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    client_ip_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.6) IP addresses to match against client IP or the EDNS client subnet IP"),
+        schema=DnsClientIpMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -294,6 +416,8 @@ class DnsRuleMatchTarget(object):
         'protocol',
         'query_name',
         'query_type',
+        'geo_location',
+        'client_ip_address',
     )
 
     # mapping of properties to their schemas
@@ -302,21 +426,27 @@ class DnsRuleMatchTarget(object):
         'protocol': protocol_schema,
         'query_name': query_name_schema,
         'query_type': query_type_schema,
+        'geo_location': geo_location_schema,
+        'client_ip_address': client_ip_address_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
-        'query_name': getattr(DnsQueryNameMatch, 'field_references', {}),
         'client_ip': getattr(IpAddrMatch, 'field_references', {}),
         'protocol': getattr(DnsTransportProtocolMatch, 'field_references', {}),
+        'client_ip_address': getattr(DnsClientIpMatch, 'field_references', {}),
         'query_type': getattr(DnsQueryTypeMatch, 'field_references', {}),
+        'geo_location': getattr(DnsGeoLocationMatch, 'field_references', {}),
+        'query_name': getattr(DnsQueryNameMatch, 'field_references', {}),
     }
 
     unique_keys = {
-        'query_name': getattr(DnsQueryNameMatch, 'unique_keys', {}),
         'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
         'protocol': getattr(DnsTransportProtocolMatch, 'unique_keys', {}),
+        'client_ip_address': getattr(DnsClientIpMatch, 'unique_keys', {}),
         'query_type': getattr(DnsQueryTypeMatch, 'unique_keys', {}),
+        'geo_location': getattr(DnsGeoLocationMatch, 'unique_keys', {}),
+        'query_name': getattr(DnsQueryNameMatch, 'unique_keys', {}),
     }
 
 
@@ -337,26 +467,37 @@ class DnsRuleAction(object):
         required=False,
         update_allowed=True,
     )
+    gslb_site_selection_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.5) Select a specific GSLB site for the DNS query. This action should be used only when GSLB services have been configured for the DNS virtual service."),
+        schema=DnsRuleActionGslbSiteSelection.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'allow',
         'response',
+        'gslb_site_selection',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'allow': allow_schema,
         'response': response_schema,
+        'gslb_site_selection': gslb_site_selection_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'gslb_site_selection': getattr(DnsRuleActionGslbSiteSelection, 'field_references', {}),
         'response': getattr(DnsRuleActionResponse, 'field_references', {}),
         'allow': getattr(DnsRuleActionAllowDrop, 'field_references', {}),
     }
 
     unique_keys = {
+        'gslb_site_selection': getattr(DnsRuleActionGslbSiteSelection, 'unique_keys', {}),
         'response': getattr(DnsRuleActionResponse, 'unique_keys', {}),
         'allow': getattr(DnsRuleActionAllowDrop, 'unique_keys', {}),
     }

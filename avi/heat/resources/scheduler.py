@@ -38,7 +38,7 @@ class Scheduler(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['RUN_MODE_PERIODIC', 'RUN_MODE_AT', 'RUN_MODE_NOW']),
+            constraints.AllowedValues(['RUN_MODE_AT', 'RUN_MODE_NOW', 'RUN_MODE_PERIODIC']),
         ],
     )
     start_date_time_schema = properties.Schema(
@@ -65,7 +65,7 @@ class Scheduler(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SCHEDULER_FREQUENCY_UNIT_MIN', 'SCHEDULER_FREQUENCY_UNIT_WEEK', 'SCHEDULER_FREQUENCY_UNIT_DAY', 'SCHEDULER_FREQUENCY_UNIT_MONTH', 'SCHEDULER_FREQUENCY_UNIT_HOUR']),
+            constraints.AllowedValues(['SCHEDULER_FREQUENCY_UNIT_DAY', 'SCHEDULER_FREQUENCY_UNIT_HOUR', 'SCHEDULER_FREQUENCY_UNIT_MIN', 'SCHEDULER_FREQUENCY_UNIT_MONTH', 'SCHEDULER_FREQUENCY_UNIT_WEEK']),
         ],
     )
     backup_config_uuid_schema = properties.Schema(
@@ -86,7 +86,7 @@ class Scheduler(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SCHEDULER_ACTION_RUN_A_SCRIPT', 'SCHEDULER_ACTION_BACKUP']),
+            constraints.AllowedValues(['SCHEDULER_ACTION_BACKUP', 'SCHEDULER_ACTION_RUN_A_SCRIPT']),
         ],
     )
 

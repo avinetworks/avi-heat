@@ -26,7 +26,7 @@ class TCPProxyProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['KEEP_ALIVE', 'CLOSE_IDLE']),
+            constraints.AllowedValues(['CLOSE_IDLE', 'KEEP_ALIVE']),
         ],
     )
     idle_connection_timeout_schema = properties.Schema(
@@ -95,7 +95,7 @@ class TCPProxyProfile(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CC_ALGO_NEW_RENO', 'CC_ALGO_HTCP', 'CC_ALGO_CUBIC']),
+            constraints.AllowedValues(['CC_ALGO_CUBIC', 'CC_ALGO_HTCP', 'CC_ALGO_NEW_RENO']),
         ],
     )
     aggressive_congestion_avoidance_schema = properties.Schema(

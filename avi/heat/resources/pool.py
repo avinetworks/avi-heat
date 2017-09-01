@@ -22,7 +22,7 @@ class FailActionHTTPLocalResponse(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['FAIL_HTTP_STATUS_CODE_503', 'FAIL_HTTP_STATUS_CODE_200']),
+            constraints.AllowedValues(['FAIL_HTTP_STATUS_CODE_200', 'FAIL_HTTP_STATUS_CODE_503']),
         ],
     )
     file_schema = properties.Schema(
@@ -91,6 +91,12 @@ class PriorityLabels(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -98,6 +104,7 @@ class PriorityLabels(AviResource):
         'name',
         'equivalent_labels',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -106,6 +113,7 @@ class PriorityLabels(AviResource):
         'name': name_schema,
         'equivalent_labels': equivalent_labels_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -145,7 +153,7 @@ class PoolGroupMember(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['EVALUATION_IN_PROGRESS', 'IN_SERVICE', 'OUT_OF_SERVICE', 'EVALUATION_FAILED']),
+            constraints.AllowedValues(['EVALUATION_FAILED', 'EVALUATION_IN_PROGRESS', 'IN_SERVICE', 'OUT_OF_SERVICE']),
         ],
     )
 
@@ -267,7 +275,7 @@ class FailActionHTTPRedirect(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_307']),
         ],
     )
 
@@ -305,7 +313,7 @@ class PGDeploymentRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CO_GE', 'CO_LE', 'CO_LT', 'CO_GT', 'CO_EQ', 'CO_NE']),
+            constraints.AllowedValues(['CO_EQ', 'CO_GE', 'CO_GT', 'CO_LE', 'CO_LT', 'CO_NE']),
         ],
     )
     threshold_schema = properties.Schema(
@@ -509,6 +517,12 @@ class PoolGroupDeploymentPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -522,6 +536,7 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio',
         'auto_disable_old_prod_pools',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -536,6 +551,7 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio': target_test_traffic_ratio_schema,
         'auto_disable_old_prod_pools': auto_disable_old_prod_pools_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -618,7 +634,7 @@ class HTTPReselectRespCode(object):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_RSP_5XX', 'HTTP_RSP_4XX']),
+            constraints.AllowedValues(['HTTP_RSP_4XX', 'HTTP_RSP_5XX']),
         ],
     )
     resp_code_block_schema = properties.Schema(
@@ -773,6 +789,12 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -786,6 +808,7 @@ class PoolGroup(AviResource):
         'created_by',
         'cloud_config_cksum',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -800,6 +823,7 @@ class PoolGroup(AviResource):
         'created_by': created_by_schema,
         'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1023,6 +1047,19 @@ class Server(object):
         required=False,
         update_allowed=True,
     )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) (internal-use) Geographic location of the server.Currently only for internal usage."),
+        schema=GeoLocation.properties_schema,
+        required=False,
+        update_allowed=False,
+    )
+    autoscaling_group_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Name of autoscaling group this server belongs to."),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1047,6 +1084,8 @@ class Server(object):
         'rewrite_host_header',
         'external_orchestration_id',
         'description',
+        'location',
+        'autoscaling_group_name',
     )
 
     # mapping of properties to their schemas
@@ -1072,6 +1111,8 @@ class Server(object):
         'rewrite_host_header': rewrite_host_header_schema,
         'external_orchestration_id': external_orchestration_id_schema,
         'description': description_schema,
+        'location': location_schema,
+        'autoscaling_group_name': autoscaling_group_name_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1080,6 +1121,7 @@ class Server(object):
         'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'vm_uuid': 'vimgrvmruntime',
+        'location': getattr(GeoLocation, 'field_references', {}),
         'discovered_network_uuid': 'network',
         'nw_uuid': 'vimgrnwruntime',
     }
@@ -1088,6 +1130,7 @@ class Server(object):
         'ip': getattr(IpAddr, 'unique_keys', {}),
         'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
         'my_key': 'ip,port',
+        'location': getattr(GeoLocation, 'unique_keys', {}),
         'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
@@ -1171,7 +1214,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_NEAREST_SERVER', 'LB_ALGORITHM_LEAST_CONNECTIONS']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_CORE_AFFINITY', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_LEAST_CONNECTIONS', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_NEAREST_SERVER', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_ROUND_ROBIN']),
         ],
     )
     lb_algorithm_hash_schema = properties.Schema(
@@ -1180,7 +1223,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
         ],
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
@@ -1243,7 +1286,7 @@ class Pool(AviResource):
     )
     fail_action_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Enable an action - Close Connection, HTTP Redirect, Local HTTP Response, or Backup Pool - when a pool failure happens. By default, a connection will be closed, in case the pool experiences a failure."),
+        _("Enable an action - Close Connection, HTTP Redirect or Local HTTP Response - when a pool failure happens. By default, a connection will be closed, in case the pool experiences a failure."),
         schema=FailAction.properties_schema,
         required=False,
         update_allowed=True,
@@ -1314,6 +1357,12 @@ class Pool(AviResource):
         _("If configured then Avi will trigger orchestration of pool server creation and deletion. It is only supported for container clouds like Mesos, Opensift, Kubernates, Docker etc. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
+    )
+    vrf_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Virtual Routing Context that the pool is bound to. This is used to provide the isolation of the set of networks the pool is attached to. The pool inherits the Virtual Routing Conext of the Virtual Service, and this field is used only internally, and is set by pb-transform. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=False,
     )
     ipaddrgroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1465,11 +1514,23 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    lb_algorithm_core_nonaffinity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Degree of non-affinity for core afffinity based server selection. (Default: 2)"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the pool."),
         required=False,
         update_allowed=True,
+    )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
@@ -1503,6 +1564,7 @@ class Pool(AviResource):
         'autoscale_networks',
         'autoscale_policy_uuid',
         'autoscale_launch_config_uuid',
+        'vrf_uuid',
         'ipaddrgroup_uuid',
         'fewest_tasks_feedback_delay',
         'enabled',
@@ -1524,7 +1586,9 @@ class Pool(AviResource):
         'rewrite_host_header_to_server_name',
         'nsx_securitygroup',
         'external_autoscale_groups',
+        'lb_algorithm_core_nonaffinity',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -1558,6 +1622,7 @@ class Pool(AviResource):
         'autoscale_networks': autoscale_networks_schema,
         'autoscale_policy_uuid': autoscale_policy_uuid_schema,
         'autoscale_launch_config_uuid': autoscale_launch_config_uuid_schema,
+        'vrf_uuid': vrf_uuid_schema,
         'ipaddrgroup_uuid': ipaddrgroup_uuid_schema,
         'fewest_tasks_feedback_delay': fewest_tasks_feedback_delay_schema,
         'enabled': enabled_schema,
@@ -1579,7 +1644,9 @@ class Pool(AviResource):
         'rewrite_host_header_to_server_name': rewrite_host_header_to_server_name_schema,
         'nsx_securitygroup': nsx_securitygroup_schema,
         'external_autoscale_groups': external_autoscale_groups_schema,
+        'lb_algorithm_core_nonaffinity': lb_algorithm_core_nonaffinity_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1598,6 +1665,7 @@ class Pool(AviResource):
         'ab_pool': getattr(AbPool, 'field_references', {}),
         'fail_action': getattr(FailAction, 'field_references', {}),
         'servers': getattr(Server, 'field_references', {}),
+        'vrf_uuid': 'vrfcontext',
         'networks': getattr(NetworkFilter, 'field_references', {}),
     }
 

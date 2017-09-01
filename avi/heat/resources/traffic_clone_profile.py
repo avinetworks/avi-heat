@@ -105,6 +105,12 @@ class TrafficCloneProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) "),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -112,6 +118,7 @@ class TrafficCloneProfile(AviResource):
         'name',
         'clone_servers',
         'preserve_client_ip',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -120,6 +127,7 @@ class TrafficCloneProfile(AviResource):
         'name': name_schema,
         'clone_servers': clone_servers_schema,
         'preserve_client_ip': preserve_client_ip_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

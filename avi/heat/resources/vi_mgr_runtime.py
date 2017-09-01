@@ -28,7 +28,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(
@@ -74,7 +74,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['NO_ACCESS', 'READ_ACCESS', 'WRITE_ACCESS']),
         ],
     )
     inventory_state_schema = properties.Schema(
@@ -83,7 +83,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_RESYNC_FAILED', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
+            constraints.AllowedValues(['VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_DELETING_VCENTER', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_RESYNC_FAILED', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_WAITING_DC']),
         ],
     )
     discovered_datacenter_schema = properties.Schema(
@@ -279,7 +279,7 @@ class VIMgrHostRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(

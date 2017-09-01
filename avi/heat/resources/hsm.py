@@ -31,6 +31,12 @@ class HSMSafenetClientInfo(object):
         required=True,
         update_allowed=True,
     )
+    chrystoki_conf_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Generated File - Chrystoki.conf "),
+        required=False,
+        update_allowed=False,
+    )
     session_major_number_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Major number of the sesseion"),
@@ -49,6 +55,7 @@ class HSMSafenetClientInfo(object):
         'client_priv_key',
         'client_cert',
         'client_ip',
+        'chrystoki_conf',
         'session_major_number',
         'session_minor_number',
     )
@@ -58,6 +65,7 @@ class HSMSafenetClientInfo(object):
         'client_priv_key': client_priv_key_schema,
         'client_cert': client_cert_schema,
         'client_ip': client_ip_schema,
+        'chrystoki_conf': chrystoki_conf_schema,
         'session_major_number': session_major_number_schema,
         'session_minor_number': session_minor_number_schema,
     }
@@ -241,6 +249,12 @@ class HSMSafenetLuna(object):
         required=True,
         update_allowed=True,
     )
+    ha_group_num_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Group Number of generated HA Group"),
+        required=False,
+        update_allowed=False,
+    )
     node_info_item_schema = properties.Schema(
         properties.Schema.MAP,
         _("Node specific information"),
@@ -255,6 +269,12 @@ class HSMSafenetLuna(object):
         required=False,
         update_allowed=True,
     )
+    server_pem_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Generated File - server.pem"),
+        required=False,
+        update_allowed=False,
+    )
     use_dedicated_network_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("If enabled, dedicated network is used to communicate with HSM,else, the management network is used. (Default: False)"),
@@ -266,7 +286,9 @@ class HSMSafenetLuna(object):
     PROPERTIES = (
         'server',
         'is_ha',
+        'ha_group_num',
         'node_info',
+        'server_pem',
         'use_dedicated_network',
     )
 
@@ -274,7 +296,9 @@ class HSMSafenetLuna(object):
     properties_schema = {
         'server': server_schema,
         'is_ha': is_ha_schema,
+        'ha_group_num': ha_group_num_schema,
         'node_info': node_info_schema,
+        'server_pem': server_pem_schema,
         'use_dedicated_network': use_dedicated_network_schema,
     }
 
@@ -299,7 +323,7 @@ class HardwareSecurityModule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HSM_TYPE_THALES_NETHSM', 'HSM_TYPE_SAFENET_LUNA']),
+            constraints.AllowedValues(['HSM_TYPE_SAFENET_LUNA', 'HSM_TYPE_THALES_NETHSM']),
         ],
     )
     rfs_schema = properties.Schema(

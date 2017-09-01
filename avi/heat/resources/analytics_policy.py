@@ -32,12 +32,19 @@ class FullClientLogs(object):
         required=False,
         update_allowed=True,
     )
+    throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of non-significant logs generated per second for this VS on each SE. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'enabled',
         'duration',
         'all_headers',
+        'throttle',
     )
 
     # mapping of properties to their schemas
@@ -45,6 +52,7 @@ class FullClientLogs(object):
         'enabled': enabled_schema,
         'duration': duration_schema,
         'all_headers': all_headers_schema,
+        'throttle': throttle_schema,
     }
 
 
@@ -236,13 +244,25 @@ class AnalyticsPolicy(object):
         required=False,
         update_allowed=True,
     )
+    udf_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the total number of UDF logs generated per second for this VS on each SE. UDF logs are generated due to the configured client log filters or the rules with logging enabled. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    significant_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of significant logs generated per second for this VS on each SE. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
     client_insights_schema = properties.Schema(
         properties.Schema.STRING,
         _("Gain insights from sampled client to server HTTP requests and responses. (Default: ACTIVE)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PASSIVE', 'ACTIVE', 'NO_INSIGHTS']),
+            constraints.AllowedValues(['ACTIVE', 'NO_INSIGHTS', 'PASSIVE']),
         ],
     )
     metrics_realtime_update_schema = properties.Schema(
@@ -264,6 +284,8 @@ class AnalyticsPolicy(object):
     PROPERTIES = (
         'full_client_logs',
         'client_log_filters',
+        'udf_log_throttle',
+        'significant_log_throttle',
         'client_insights',
         'metrics_realtime_update',
         'client_insights_sampling',
@@ -273,6 +295,8 @@ class AnalyticsPolicy(object):
     properties_schema = {
         'full_client_logs': full_client_logs_schema,
         'client_log_filters': client_log_filters_schema,
+        'udf_log_throttle': udf_log_throttle_schema,
+        'significant_log_throttle': significant_log_throttle_schema,
         'client_insights': client_insights_schema,
         'metrics_realtime_update': metrics_realtime_update_schema,
         'client_insights_sampling': client_insights_sampling_schema,

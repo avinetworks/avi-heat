@@ -24,7 +24,7 @@ class IpAddr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['V4', 'DNS']),
+            constraints.AllowedValues(['DNS', 'V4']),
         ],
     )
 

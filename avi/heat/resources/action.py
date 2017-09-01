@@ -20,7 +20,7 @@ class URIParamToken(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['URI_TOKEN_TYPE_PATH', 'URI_TOKEN_TYPE_REGEX', 'URI_TOKEN_TYPE_STRING', 'URI_TOKEN_TYPE_STRING_GROUP', 'URI_TOKEN_TYPE_HOST']),
+            constraints.AllowedValues(['URI_TOKEN_TYPE_HOST', 'URI_TOKEN_TYPE_PATH', 'URI_TOKEN_TYPE_REGEX', 'URI_TOKEN_TYPE_STRING', 'URI_TOKEN_TYPE_STRING_GROUP']),
         ],
     )
     start_index_schema = properties.Schema(
@@ -173,7 +173,7 @@ class HTTPHdrValue(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+            constraints.AllowedValues(['HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_PROTOCOL', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_VS_PORT']),
         ],
     )
     val_schema = properties.Schema(
@@ -205,7 +205,7 @@ class HTTPSwitchingAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_LOCAL', 'HTTP_SWITCHING_SELECT_POOLGROUP', 'HTTP_SWITCHING_SELECT_POOL']),
+            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_LOCAL', 'HTTP_SWITCHING_SELECT_POOL', 'HTTP_SWITCHING_SELECT_POOLGROUP']),
         ],
     )
     pool_uuid_schema = properties.Schema(
@@ -220,7 +220,7 @@ class HTTPSwitchingAction(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429']),
         ],
     )
     file_schema = properties.Schema(
@@ -410,7 +410,7 @@ class HTTPRedirectAction(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_307']),
         ],
     )
 
@@ -577,7 +577,7 @@ class HTTPHdrAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REPLACE_HDR', 'HTTP_ADD_HDR', 'HTTP_REMOVE_HDR']),
+            constraints.AllowedValues(['HTTP_ADD_HDR', 'HTTP_REMOVE_HDR', 'HTTP_REPLACE_HDR']),
         ],
     )
     hdr_schema = properties.Schema(

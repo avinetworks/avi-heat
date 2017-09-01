@@ -173,6 +173,35 @@ class PortRange(object):
 
 
 
+class CustomTag(object):
+    # all schemas
+    tag_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    tag_val_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'tag_key',
+        'tag_val',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'tag_key': tag_key_schema,
+        'tag_val': tag_val_schema,
+    }
+
+
+
 class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
@@ -224,7 +253,7 @@ class Tag(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DEFINED', 'AVI_DEFINED', 'USER_DEFINED']),
+            constraints.AllowedValues(['AVI_DEFINED', 'USER_DEFINED', 'VCENTER_DEFINED']),
         ],
     )
 
@@ -248,13 +277,53 @@ class Tag(object):
 
 class GcpInfo(object):
     # all schemas
+    project_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Project this SE belongs to"),
+        required=True,
+        update_allowed=False,
+    )
+    zone_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Zone this SE is part of"),
+        required=True,
+        update_allowed=False,
+    )
+    network_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Network this SE is assigned"),
+        required=True,
+        update_allowed=False,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Subnet assigned to this SE"),
+        required=False,
+        update_allowed=False,
+    )
+    hostname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Hostname of this SE"),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
+        'project',
+        'zone',
+        'network',
+        'subnet',
+        'hostname',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'project': project_schema,
+        'zone': zone_schema,
+        'network': network_schema,
+        'subnet': subnet_schema,
+        'hostname': hostname_schema,
     }
 
 

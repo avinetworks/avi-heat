@@ -159,7 +159,7 @@ class HealthMonitorHttp(object):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_1XX', 'HTTP_3XX', 'HTTP_2XX', 'HTTP_5XX', 'HTTP_4XX', 'HTTP_ANY']),
+            constraints.AllowedValues(['HTTP_1XX', 'HTTP_2XX', 'HTTP_3XX', 'HTTP_4XX', 'HTTP_5XX', 'HTTP_ANY']),
         ],
     )
     http_response_code_schema = properties.Schema(
@@ -201,6 +201,12 @@ class HealthMonitorHttp(object):
         required=False,
         update_allowed=True,
     )
+    exact_http_request_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.6) Use the exact http_request string as specified by user, without any automatic insert of headers like Host header. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -210,6 +216,7 @@ class HealthMonitorHttp(object):
         'maintenance_code',
         'maintenance_response',
         'ssl_attributes',
+        'exact_http_request',
     )
 
     # mapping of properties to their schemas
@@ -220,6 +227,7 @@ class HealthMonitorHttp(object):
         'maintenance_code': maintenance_code_schema,
         'maintenance_response': maintenance_response_schema,
         'ssl_attributes': ssl_attributes_schema,
+        'exact_http_request': exact_http_request_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -284,7 +292,7 @@ class HealthMonitorDNS(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_ANY_TYPE', 'DNS_ANY_THING', 'DNS_QUERY_TYPE']),
+            constraints.AllowedValues(['DNS_ANY_THING', 'DNS_ANY_TYPE', 'DNS_QUERY_TYPE']),
         ],
     )
     rcode_schema = properties.Schema(
@@ -293,7 +301,7 @@ class HealthMonitorDNS(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['RCODE_NO_ERROR', 'RCODE_ANYTHING']),
+            constraints.AllowedValues(['RCODE_ANYTHING', 'RCODE_NO_ERROR']),
         ],
     )
     response_string_schema = properties.Schema(
@@ -366,7 +374,7 @@ class HealthMonitor(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_UDP', 'HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_PING']),
+            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_PING', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_UDP']),
         ],
     )
     tcp_monitor_schema = properties.Schema(
@@ -417,6 +425,12 @@ class HealthMonitor(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
+        required=False,
+        update_allowed=False,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -440,6 +454,7 @@ class HealthMonitor(AviResource):
         'udp_monitor',
         'dns_monitor',
         'monitor_port',
+        'is_federated',
         'description',
     )
 
@@ -459,6 +474,7 @@ class HealthMonitor(AviResource):
         'udp_monitor': udp_monitor_schema,
         'dns_monitor': dns_monitor_schema,
         'monitor_port': monitor_port_schema,
+        'is_federated': is_federated_schema,
         'description': description_schema,
     }
 
