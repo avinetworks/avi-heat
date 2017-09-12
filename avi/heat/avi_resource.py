@@ -23,6 +23,9 @@ except ImportError:
 controller_opt = cfg.StrOpt("avi_controller", default="",
                             help="Avi Controller IP or FQDN")
 cfg.CONF.register_opt(controller_opt)
+api_timeout = cfg.IntOpt("avi_api_timeout", default=300,
+                         help="Timeout to use for Avi API calls")
+cfg.CONF.register_opt(api_timeout)
 
 LOG = logging.getLogger(__name__)
 
@@ -89,6 +92,7 @@ class AviResource(resource.Resource):
             username=username,
             token=self.context.auth_token,
             password=password,
+            timeout=cfg.CONF.avi_api_timeout,
         )
         return api_session
 
