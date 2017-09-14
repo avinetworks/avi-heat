@@ -75,7 +75,7 @@ class ApiResponse(Response):
     """
     def __init__(self, rsp):
         super(ApiResponse, self).__init__()
-        for k, v in rsp.__dict__.iteritems():
+        for k, v in list(rsp.__dict__.items()):
             setattr(self, k, v)
 
     def json(self):
@@ -120,6 +120,49 @@ class ApiResponse(Response):
         return resp
 
 
+class AviCredentials(object):
+    controller = ''
+    username = ''
+    password = ''
+    api_version = '16.4.4'
+    tenant = None
+    tenant_uuid = None
+    token = None
+    port = None
+    timeout = 300
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    def update_from_ansible_module(self, module):
+        """
+        :param module: ansible module
+        :return:
+        """
+        if module.params['avi_credentials']:
+            for k, v in list(module.params['avi_credentials'].items()):
+                if hasattr(self, k):
+                    setattr(self, k, v)
+        if module.params['controller']:
+            self.controller = module.params['controller']
+        if module.params['username']:
+            self.username = module.params['username']
+        if module.params['password']:
+            self.password = module.params['password']
+        if (module.params['api_version'] and
+                (module.params['api_version'] != '16.4')):
+            self.api_version = module.params['api_version']
+        if module.params['tenant']:
+            self.tenant = module.params['tenant']
+        if module.params['tenant_uuid']:
+            self.tenant_uuid = module.params['tenant_uuid']
+
+    def __str__(self):
+        return 'controller %s user %s api %s tenant %s' % (
+            self.controller, self.username, self.api_version, self.tenant)
+
+
 class ApiSession(Session):
     """
     Extends the Request library's session object to provide helper
@@ -132,13 +175,13 @@ class ApiSession(Session):
     # a new cache for that process.
     AVI_SLUG = 'Slug'
     SESSION_CACHE_EXPIRY = 20*60
-    SHARED_USER_HDRS = ['X-CSRFToken', 'Session-Id']
+    SHARED_USER_HDRS = ['X-CSRFToken', 'Session-Id', 'Referer', 'Content-Type']
     MAX_API_RETRIES = 3
 
     def __init__(self, controller_ip, username, password=None, token=None,
                  tenant=None, tenant_uuid=None, verify=False, port=None,
                  timeout=60, api_version=None,
-                 retry_conxn_errors=False):
+                 retry_conxn_errors=False, data_log=False):
         """
         initialize new session object with authenticated token from login api.
         It also keeps a cache of user sessions that are cleaned up if inactive
@@ -167,6 +210,9 @@ class ApiSession(Session):
         self.key = controller_ip + ":" + username
         self.api_version = api_version
         self.retry_conxn_errors = retry_conxn_errors
+        self.remote_api_version = {}
+        self.user_hdrs = {}
+        self.data_log = data_log
 
         # Refer Notes 01 and 02
         if controller_ip.startswith('http'):
@@ -203,7 +249,7 @@ class ApiSession(Session):
     @staticmethod
     def get_session(controller_ip, username, password=None, token=None,
                     tenant=None, tenant_uuid=None, verify=False, port=None,
-                    timeout=60, retry_conxn_errors=False):
+                    timeout=60, retry_conxn_errors=False, api_version=None, data_log=False):
         """
         returns the session object for same user and tenant
         calls init if session dose not exist and adds it to session cache
@@ -215,6 +261,8 @@ class ApiSession(Session):
         :param tenant_uuid: Don't specify tenant when using tenant_id
         :param port: Rest-API may use a different port other than 443
         :param timeout: timeout for API calls; Default value is 60 seconds
+        :param retry_conxn_errors: retry on connection errors
+        :param api_version: Controller API version
         """
         key = controller_ip + ":" + username
         try:
@@ -223,7 +271,8 @@ class ApiSession(Session):
             if (user_session.password != password or
                     user_session.keystone_token != token or
                     user_session.tenant != tenant or
-                    user_session.tenant_uuid != tenant_uuid):
+                    user_session.tenant_uuid != tenant_uuid or
+                    user_session.api_version != api_version):
                 logger.debug('Api Session auth credential mismatch %s', key)
                 del ApiSession.sessionDict[key]
                 user_session = None
@@ -236,8 +285,8 @@ class ApiSession(Session):
             user_session = ApiSession(
                 controller_ip, username, password, token=token, tenant=tenant,
                 tenant_uuid=tenant_uuid, verify=verify, port=port,
-                timeout=timeout,
-                retry_conxn_errors=retry_conxn_errors)
+                timeout=timeout, retry_conxn_errors=retry_conxn_errors,
+                api_version=api_version, data_log=data_log)
             ApiSession.sessionDict[key] = \
                 {"api": user_session, "last_used": datetime.utcnow()}
         ApiSession._clean_inactive_sessions()
@@ -246,9 +295,12 @@ class ApiSession(Session):
     def reset_session(self):
         """
         resets and re-authenticates the current session.
-        :param api: ApiSession object
         """
         logger.info('resetting session for %s', self.key)
+        self.user_hdrs = {}
+        for k, v in self.headers.items():
+            if k not in self.SHARED_USER_HDRS:
+                self.user_hdrs[k] = v
         self.headers = {}
         self.authenticate_session()
 
@@ -267,14 +319,17 @@ class ApiSession(Session):
         rsp = super(ApiSession, self).post(self.prefix+"/login", body,
                                            timeout=self.timeout)
         if rsp.status_code != 200:
+            self.remote_api_version = {}
             raise Exception(
                 "Authentication failed with code %d reason msg: %s" %
                 (rsp.status_code, rsp.text))
-        logger.debug("rsp cookies: %s", dict(rsp.cookies))
+        self.remote_api_version = rsp.json().get('version', {})
+        self.headers.update(self.user_hdrs)
         self.headers.update({
             "Referer": self.prefix,
             "Content-Type": "application/json"
         })
+
         if rsp.cookies and 'csrftoken' in rsp.cookies:
             csrftoken = rsp.cookies['csrftoken']
             self.headers.update({"X-CSRFToken": csrftoken})
@@ -282,11 +337,12 @@ class ApiSession(Session):
                 cached_api = \
                     ApiSession.sessionDict[self.key]['api']
                 cached_api.headers.update({"X-CSRFToken": csrftoken})
-        logger.debug("authentication success for user %s with headers: %s",
-                     self.username, self.headers)
+        logger.debug("authentication success for user %s",
+                     self.username)
         return
 
-    def _get_api_headers(self, tenant, tenant_uuid, timeout, headers, api_version):
+    def _get_api_headers(self, tenant, tenant_uuid, timeout, headers,
+                         api_version):
         """
         returns the headers that are passed to the requests.Session api calls.
         """
@@ -338,7 +394,8 @@ class ApiSession(Session):
         fullpath = self._get_api_path(path)
         fn = getattr(super(ApiSession, self), api_name)
         api_hdrs = \
-            self._get_api_headers(tenant, tenant_uuid, timeout, headers, api_version)
+            self._get_api_headers(tenant, tenant_uuid, timeout, headers,
+                                  api_version)
         connection_error = False
         try:
             if (data is not None) and (type(data) == dict):
@@ -356,9 +413,11 @@ class ApiSession(Session):
             logger.error('Error in Requests library %s', e)
             raise
         if not connection_error:
-            logger.debug(
-                'path: %s http_method: %s hdrs: %s params: %s data: %s rsp: %s',
-                fullpath, api_name.upper(), api_hdrs, kwargs, data, resp.text)
+            logger.debug('path: %s http_method: %s hdrs: %s params: '
+                         '%s data: %s rsp: %s', fullpath, api_name.upper(),
+                         api_hdrs, kwargs, data,
+                         (resp.text if self.data_log else 'None'))
+
         if connection_error or resp.status_code in (401, 419):
             if connection_error:
                 logger.warning('Connection failed, retrying.')
@@ -376,8 +435,8 @@ class ApiSession(Session):
                     (self.MAX_API_RETRIES, connection_error))
             # should restore the updated_hdrs to one passed down
             resp = self._api(api_name, path, tenant, tenant_uuid, data,
-                             headers=headers, timeout=timeout,
-                             api_version=api_version, **kwargs)
+                             headers=headers, api_version=api_version,
+                             timeout=timeout, **kwargs)
             self.num_session_retries = 0
 
         if resp.cookies and 'csrftoken' in resp.cookies:
@@ -409,7 +468,8 @@ class ApiSession(Session):
                          params=params, api_version=api_version, **kwargs)
 
     def get_object_by_name(self, path, name, tenant='', tenant_uuid='',
-                           timeout=None, params=None, api_version=None, **kwargs):
+                           timeout=None, params=None, api_version=None,
+                           **kwargs):
         """
         Helper function to access Avi REST Objects using object
         type and name. It behaves like python dictionary interface where it
@@ -472,7 +532,8 @@ class ApiSession(Session):
             headers[self.AVI_SLUG] = force_uuid
             kwargs['headers'] = headers
         return self._api('post', path, tenant, tenant_uuid, data=data,
-                         timeout=timeout, params=params, api_version=api_version, **kwargs)
+                         timeout=timeout, params=params,
+                         api_version=api_version, **kwargs)
 
     def put(self, path, data=None, tenant='', tenant_uuid='',
             timeout=None, params=None, api_version=None, **kwargs):
@@ -495,7 +556,8 @@ class ApiSession(Session):
         returns session's response object
         """
         return self._api('put', path, tenant, tenant_uuid, data=data,
-                         timeout=timeout, params=params, api_version=api_version, **kwargs)
+                         timeout=timeout, params=params,
+                         api_version=api_version, **kwargs)
 
     def patch(self, path, data=None, tenant='', tenant_uuid='',
               timeout=None, params=None, api_version=None, **kwargs):
@@ -518,10 +580,12 @@ class ApiSession(Session):
         returns session's response object
         """
         return self._api('patch', path, tenant, tenant_uuid, data=data,
-                         timeout=timeout, params=params, api_version=api_version, **kwargs)
+                         timeout=timeout, params=params,
+                         api_version=api_version, **kwargs)
 
     def put_by_name(self, path, name, data=None, tenant='',
-                    tenant_uuid='', timeout=None, params=None, api_version=None, **kwargs):
+                    tenant_uuid='', timeout=None, params=None,
+                    api_version=None, **kwargs):
         """
         Helper function to perform HTTP PUT on Avi REST Objects using object
         type and name.
@@ -540,7 +604,8 @@ class ApiSession(Session):
             session creation
         returns session's response object
         """
-        uuid = self._get_uuid_by_name(path, name, tenant, tenant_uuid)
+        uuid = self._get_uuid_by_name(
+            path, name, tenant, tenant_uuid, api_version=api_version)
         path = '%s/%s' % (path, uuid)
         return self.put(path, data, tenant, tenant_uuid, timeout=timeout,
                         params=params, api_version=api_version, **kwargs)
@@ -566,10 +631,11 @@ class ApiSession(Session):
         returns session's response object
         """
         return self._api('delete', path, tenant, tenant_uuid, data=data,
-                         timeout=timeout, params=params, api_version=api_version, **kwargs)
+                         timeout=timeout, params=params,
+                         api_version=api_version, **kwargs)
 
-    def delete_by_name(self, path, name, tenant='', tenant_uuid='', timeout=None,
-                       params=None, api_version=None, **kwargs):
+    def delete_by_name(self, path, name, tenant='', tenant_uuid='',
+                       timeout=None, params=None, api_version=None, **kwargs):
         """
         Helper function to perform HTTP DELETE on Avi REST Objects using object
         type and name.Internally, it transforms the request to
@@ -586,7 +652,8 @@ class ApiSession(Session):
             session creation
         returns session's response object
         """
-        uuid = self._get_uuid_by_name(path, name, tenant, tenant_uuid)
+        uuid = self._get_uuid_by_name(path, name, tenant, tenant_uuid,
+                                      api_version=api_version)
         if not uuid:
             raise ObjectNotFound("%s/?name=%s" % (path, name))
         path = '%s/%s' % (path, uuid)
@@ -632,9 +699,11 @@ class ApiSession(Session):
         else:
             return self.prefix+'/api/'+path
 
-    def _get_uuid_by_name(self, path, name, tenant='admin', tenant_uuid=''):
+    def _get_uuid_by_name(self, path, name, tenant='admin',
+                          tenant_uuid='', api_version=None):
         """gets object by name and service path and returns uuid"""
-        resp = self.get_object_by_name(path, name, tenant, tenant_uuid)
+        resp = self.get_object_by_name(
+            path, name, tenant, tenant_uuid, api_version=api_version)
         if not resp:
             raise ObjectNotFound("%s/%s" % (path, name))
         return self.get_obj_uuid(resp)
@@ -654,7 +723,7 @@ class ApiSession(Session):
         logger.debug("cleaning inactive sessions in pid %d num elem %d",
                      os.getpid(), len(session_cache))
         keys_to_delete = []
-        for key, session in session_cache.iteritems():
+        for key, session in list(session_cache.items()):
             tdiff = avi_timedelta(session["last_used"] - datetime.utcnow())
             if tdiff < ApiSession.SESSION_CACHE_EXPIRY:
                 continue
