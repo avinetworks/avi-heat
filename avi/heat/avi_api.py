@@ -3,6 +3,7 @@ import sys
 import copy
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from requests import ConnectionError
 from requests import Response
@@ -176,12 +177,12 @@ class ApiSession(Session):
     AVI_SLUG = 'Slug'
     SESSION_CACHE_EXPIRY = 20*60
     SHARED_USER_HDRS = ['X-CSRFToken', 'Session-Id', 'Referer', 'Content-Type']
-    MAX_API_RETRIES = 3
+    MAX_API_RETRIES = 30
 
     def __init__(self, controller_ip, username, password=None, token=None,
                  tenant=None, tenant_uuid=None, verify=False, port=None,
                  timeout=60, api_version=None,
-                 retry_conxn_errors=False, data_log=False):
+                 retry_conxn_errors=True, data_log=False):
         """
         initialize new session object with authenticated token from login api.
         It also keeps a cache of user sessions that are cleaned up if inactive
@@ -420,6 +421,7 @@ class ApiSession(Session):
 
         if connection_error or resp.status_code in (401, 419):
             if connection_error:
+                time.sleep(1)
                 logger.warning('Connection failed, retrying.')
             else:
                 logger.info('received error %d %s so resetting connection',
