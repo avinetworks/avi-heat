@@ -3,8 +3,10 @@ Avi Heat Resources
 
 Heat resources for Avi Objects
 
+.. contents:: Table of Contents
+
 Installation Steps
-------------------
+==================
 
 1. Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
 
@@ -36,8 +38,10 @@ Installation Steps
     $> service heat-engine restart
 
 
-5. For AutoScalingGroup to work, you need to allow the stack_domain_admin configured
-in your /etc/heat.conf to be able to access Avi Controller with Tenant-Admin privileges.
+5. For implementing AutoScalingGroup, Heat engines use the credentials configured under
+stack_domain_admin variable /etc/heat.conf. So, an AutoScalingGroup with template
+containing Avi resouces will work only if the Heat Engine can login to Avi Controller
+using those same stack_domain_admin credentials.
 
 For example, consider the following settings in /etc/heat.conf::
 
@@ -47,13 +51,19 @@ For example, consider the following settings in /etc/heat.conf::
     ...
 
 In this case, you need to create a user named "heat_domain_admin" on Avi Controller
-with Tenant-Admin privileges in any tenant, and using the same password as defined
-in the heat.conf. The following picture shows how to create such
+using the same password as defined
+in the heat.conf. 
+We recommend granting this user Tenant-Admin role in all tenants so that any
+Avi resource can be created, updated, or deleted via the templates used in
+AutoScalingGroup. However, if this is deemed a security issue, you can create
+a new role in Avi with specific privileges and assign only that role to this
+new user.
+
+The following picture shows how to create such
 user in Avi UI.
 
 .. image:: heat_user_on_avi.png
    :scale: 50 %
-
 
 Alternatively, you can perform a POST API for /api/user URI with the following data
 (role_ref needs to be replaced with the url corresponding to the Tenant-Admin role)::
@@ -68,9 +78,17 @@ Alternatively, you can perform a POST API for /api/user URI with the following d
         "require_password_confirmation": False,
     }
 
+The following picture shows a more restricted custom role on Avi that only allows
+write access to the Pool resource. By assigning such a role to the stack_domain_admin user
+instead of Tenant-Admin role, one can allow an AutoScalingGroup to automatically
+add members to a group, but not allow write access to any other objects in the system.
+
+.. image:: custom_role_on_avi.png
+   :scale: 50 %
+
 
 Usage Notes
------------
+===========
 
 Once installed, Heat will expose Avi resource types that users can specify in their heat templates.
 For a full list of resource types, use the following command::
