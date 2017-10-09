@@ -152,3 +152,68 @@ please refer to the example in test-member-pool-as-param.yaml: https://github.co
                pname: { get_param: pool_name }
     ...
 
+
+Versioning
+~~~~~~~~~~
+
+Starting version 17.1.X, Avi Vantage supports API versioning and backwards compatability.
+Avi Heat plugin leverages this backwards compatability. Thus, any
+heat template written for a version of Avi Vantage continues to work even when the Avi
+Vantage software or the Avi Heat plugin is updated to a later version.
+
+For each Avi Resource, any attribute that is newly introduced in a specific version
+is noted with phrase "(Introduced in: <version>)" in the description of that attribute.
+Similarly, phrase "(Deprecated in: <version>)" denotes the version a specific attribute
+is deprecated in. An attribute that doesn't have either of those notations is available
+is valid across all versions.
+
+Each Avi Resource has a special attribute called "avi_version", that can be used by the users
+to explicitly specify a version to use when creating that resource. When no version is
+specified, the resource definition can only use those attributes that don't have "Introduced in"
+annotation in their descriptions. To be able to use attributes with "Introduced in"
+annotation, one has to set the "avi_version" attribute to a version equal to or higher
+than the version mentioned in the "Introduced in" annotation. For example, if an
+attribute has "(Introduced in: 17.1.3)" annotation in the description, then
+the "avi_version" attribute has to be set to either "17.1.3" or higher (e.g., "17.1.6" or "18.1.2").
+
+Note that once the "avi_version" attribute of a resource is set, all attributes of that
+resource that are deprecated in a version equal to or lower than that version can not
+be used in that resource's definition in that template.
+
+Consider the following example snippet for using Avi::LBaaS::VirtualService resource type::
+
+    ...
+    vs:
+      type: Avi::LBaaS::VirtualService
+      properties:
+        name: "mytestvs"
+        pool_uuid: {get_resource: pool}
+        ip_address:
+          addr: 10.10.10.100
+          type: V4
+        services:
+          - port: 80
+    ...
+
+The above does not use any attributes with "(Introduced in: <version>)" annotation in their
+descriptions. Hence, the resource doesn't need to have the "avi_version" attribute set. Suppose
+you want to use the concept of shared VIPs introduced in Avi Vantage version 17.1.1. The
+following template shows the exact same VirtualSerice definition as above but using the
+attribute "vip" that is only available from versions 17.1.1 and beyond::
+
+    ...
+    vs:
+      type: Avi::LBaaS::VirtualService
+      properties:
+        avi_version: 17.1.1
+        name: "mytestvs"
+        pool_uuid: {get_resource: pool}
+        vip:
+          - ip_address:
+              addr: 10.10.10.100
+              type: V4
+            vip_id: myvip
+        services:
+          - port: 80
+    ...
+
