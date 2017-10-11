@@ -91,7 +91,8 @@ Usage Notes
 ===========
 
 Once installed, Heat will expose Avi resource types that users can specify in their heat templates.
-For a full list of resource types, use the following command::
+For a full list of resource types, use the following command (or use "openstack orchestration
+resource type list" when heat CLI client is not available)::
 
     $> heat resource-type-list | grep Avi
     ...
@@ -102,7 +103,8 @@ For a full list of resource types, use the following command::
     | Avi::LBaaS::SeProperties                  |
     ...
 
-For a full list of attributes available for any resource type, use the following command::
+For a full list of attributes available for any resource type, use the following command (or
+use "openstack orchestration resource type show Avi::LBaaS::Pool" when heat CLI client is not available)::
  
     $> heat resource-type-show Avi::LBaaS::Pool
     ...
