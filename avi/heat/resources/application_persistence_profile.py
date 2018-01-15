@@ -32,12 +32,11 @@ class HdrPersistenceProfile(object):
 
 
 
-
 class IPPersistenceProfile(object):
     # all schemas
     ip_persistent_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. (Units: MIN) (Default: 5)"),
         required=False,
         update_allowed=True,
     )
@@ -51,7 +50,6 @@ class IPPersistenceProfile(object):
     properties_schema = {
         'ip_persistent_timeout': ip_persistent_timeout_schema,
     }
-
 
 
 
@@ -92,7 +90,6 @@ class HttpCookiePersistenceKey(object):
 
 
 
-
 class HttpCookiePersistenceProfile(object):
     # all schemas
     encryption_key_schema = properties.Schema(
@@ -123,13 +120,13 @@ class HttpCookiePersistenceProfile(object):
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. No value or 'zero' indicates no timeout. (Units: MIN)"),
         required=False,
         update_allowed=True,
     )
     always_send_cookie_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If no persistence cookie was received from the client, always send it."),
+        _("If no persistence cookie was received from the client, always send it. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -157,6 +154,10 @@ class HttpCookiePersistenceProfile(object):
         'key': getattr(HttpCookiePersistenceKey, 'field_references', {}),
     }
 
+    unique_keys = {
+        'key': getattr(HttpCookiePersistenceKey, 'unique_keys', {}),
+    }
+
 
 
 class AppCookiePersistenceProfile(object):
@@ -169,7 +170,7 @@ class AppCookiePersistenceProfile(object):
     )
     timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The length of time after a client's connections have closed before expiring the client's persistence to a server."),
+        _("The length of time after a client's connections have closed before expiring the client's persistence to a server. (Units: MIN) (Default: 20)"),
         required=False,
         update_allowed=True,
     )
@@ -196,10 +197,15 @@ class AppCookiePersistenceProfile(object):
 
 
 
-
 class ApplicationPersistenceProfile(AviResource):
     resource_name = "applicationpersistenceprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("A user-friendly name for the persistence profile."),
@@ -208,20 +214,20 @@ class ApplicationPersistenceProfile(AviResource):
     )
     server_hm_down_recovery_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies behavior when a persistent server has been marked down by a health monitor."),
+        _("Specifies behavior when a persistent server has been marked down by a health monitor. (Default: HM_DOWN_PICK_NEW_SERVER)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_PICK_NEW_SERVER', 'HM_DOWN_ABORT_CONNECTION']),
+            constraints.AllowedValues(['HM_DOWN_ABORT_CONNECTION', 'HM_DOWN_CONTINUE_PERSISTENT_SERVER', 'HM_DOWN_PICK_NEW_SERVER']),
         ],
     )
     persistence_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Method used to persist clients to the same server for a duration of time or a session."),
+        _("Method used to persist clients to the same server for a duration of time or a session. (Default: PERSISTENCE_TYPE_CLIENT_IP_ADDRESS)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_TLS']),
+            constraints.AllowedValues(['PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_GSLB_SITE', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_TLS']),
         ],
     )
     ip_persistence_profile_schema = properties.Schema(
@@ -252,6 +258,12 @@ class ApplicationPersistenceProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -261,6 +273,7 @@ class ApplicationPersistenceProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'server_hm_down_recovery',
         'persistence_type',
@@ -268,11 +281,13 @@ class ApplicationPersistenceProfile(AviResource):
         'hdr_persistence_profile',
         'app_cookie_persistence_profile',
         'http_cookie_persistence_profile',
+        'is_federated',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'server_hm_down_recovery': server_hm_down_recovery_schema,
         'persistence_type': persistence_type_schema,
@@ -280,6 +295,7 @@ class ApplicationPersistenceProfile(AviResource):
         'hdr_persistence_profile': hdr_persistence_profile_schema,
         'app_cookie_persistence_profile': app_cookie_persistence_profile_schema,
         'http_cookie_persistence_profile': http_cookie_persistence_profile_schema,
+        'is_federated': is_federated_schema,
         'description': description_schema,
     }
 
@@ -289,6 +305,13 @@ class ApplicationPersistenceProfile(AviResource):
         'ip_persistence_profile': getattr(IPPersistenceProfile, 'field_references', {}),
         'app_cookie_persistence_profile': getattr(AppCookiePersistenceProfile, 'field_references', {}),
         'hdr_persistence_profile': getattr(HdrPersistenceProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'http_cookie_persistence_profile': getattr(HttpCookiePersistenceProfile, 'unique_keys', {}),
+        'ip_persistence_profile': getattr(IPPersistenceProfile, 'unique_keys', {}),
+        'app_cookie_persistence_profile': getattr(AppCookiePersistenceProfile, 'unique_keys', {}),
+        'hdr_persistence_profile': getattr(HdrPersistenceProfile, 'unique_keys', {}),
     }
 
 

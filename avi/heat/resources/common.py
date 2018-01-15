@@ -11,6 +11,51 @@ from options import *
 from options import *
 
 
+class GeoLocation(object):
+    # all schemas
+    latitude_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Latitude of the location. This is represented as degrees.minutes. The range is from -90.0 (south) to +90.0 (north)."),
+        required=False,
+        update_allowed=True,
+    )
+    longitude_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Longitude of the location. This is represented as degrees.minutes. The range is from -180.0 (west) to +180.0 (east)."),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Location name in the format Country/State/City."),
+        required=False,
+        update_allowed=True,
+    )
+    tag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Location tag string - example: USEast."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'latitude',
+        'longitude',
+        'name',
+        'tag',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'latitude': latitude_schema,
+        'longitude': longitude_schema,
+        'name': name_schema,
+        'tag': tag_schema,
+    }
+
+
+
 class IpAddrRange(object):
     # all schemas
     begin_schema = properties.Schema(
@@ -46,6 +91,12 @@ class IpAddrRange(object):
         'end': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'end': getattr(IpAddr, 'unique_keys', {}),
+        'begin': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'begin,end',
+    }
+
 
 
 class CustomParams(object):
@@ -64,13 +115,13 @@ class CustomParams(object):
     )
     is_sensitive_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     is_dynamic_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -90,7 +141,6 @@ class CustomParams(object):
         'is_sensitive': is_sensitive_schema,
         'is_dynamic': is_dynamic_schema,
     }
-
 
 
 
@@ -123,24 +173,52 @@ class PortRange(object):
 
 
 
+class CustomTag(object):
+    # all schemas
+    tag_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    tag_val_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'tag_key',
+        'tag_val',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'tag_key': tag_key_schema,
+        'tag_val': tag_val_schema,
+    }
+
+
 
 class TenantConfiguration(object):
     # all schemas
     tenant_vrf_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain."),
+        _("When 'Per Tenant IP Domain' is selected, each tenant gets its own routing domain that is not shared with any other tenant. When 'Share IP Domain across all tenants' is selected, all tenants share the same routing domain. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     se_in_provider_context_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Controls the ownership of ServiceEngines. Service Engines can either be exclusively owned by each tenant or owned by the administrator and shared by all tenants. When ServiceEngines are owned by the administrator, each tenant can have either read access or no access to their Service Engines."),
+        _("Controls the ownership of ServiceEngines. Service Engines can either be exclusively owned by each tenant or owned by the administrator and shared by all tenants. When ServiceEngines are owned by the administrator, each tenant can have either read access or no access to their Service Engines. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     tenant_access_to_provider_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -161,7 +239,6 @@ class TenantConfiguration(object):
 
 
 
-
 class Tag(object):
     # all schemas
     value_schema = properties.Schema(
@@ -172,11 +249,11 @@ class Tag(object):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: USER_DEFINED)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DEFINED', 'AVI_DEFINED', 'USER_DEFINED']),
+            constraints.AllowedValues(['AVI_DEFINED', 'USER_DEFINED', 'VCENTER_DEFINED']),
         ],
     )
 
@@ -192,20 +269,62 @@ class Tag(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'value',
+    }
 
 
 
 class GcpInfo(object):
     # all schemas
+    project_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Project this SE belongs to"),
+        required=True,
+        update_allowed=True,
+    )
+    zone_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Zone this SE is part of"),
+        required=True,
+        update_allowed=True,
+    )
+    network_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Network this SE is assigned"),
+        required=True,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Subnet assigned to this SE"),
+        required=False,
+        update_allowed=True,
+    )
+    hostname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Hostname of this SE"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'project',
+        'zone',
+        'network',
+        'subnet',
+        'hostname',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'project': project_schema,
+        'zone': zone_schema,
+        'network': network_schema,
+        'subnet': subnet_schema,
+        'hostname': hostname_schema,
     }
-
 
 
 
@@ -235,7 +354,6 @@ class TimeStamp(object):
         'secs': secs_schema,
         'usecs': usecs_schema,
     }
-
 
 
 
@@ -288,6 +406,10 @@ class IpAddrPort(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HTTPLocalFile(object):
@@ -317,4 +439,115 @@ class HTTPLocalFile(object):
         'file_content': file_content_schema,
     }
 
+
+
+class Property(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Property name."),
+        required=True,
+        update_allowed=True,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Property value."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'value': value_schema,
+    }
+
+    unique_keys = {
+        'my_key': 'name',
+    }
+
+
+
+class SeNetworkSubnet(object):
+    # all schemas
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.4) "),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.4) "),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'network_uuid',
+        'subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'network_uuid': network_uuid_schema,
+        'subnet': subnet_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
+
+
+class PlacementNetwork(object):
+    # all schemas
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'network_uuid',
+        'subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'network_uuid': network_uuid_schema,
+        'subnet': subnet_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'network_uuid': 'network',
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
 

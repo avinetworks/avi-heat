@@ -14,6 +14,12 @@ from options import *
 class ControllerProperties(AviResource):
     resource_name = "controllerproperties"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     dummy_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(""),
@@ -22,211 +28,211 @@ class ControllerProperties(AviResource):
     )
     unresponsive_se_reboot_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 300)"),
         required=False,
         update_allowed=True,
     )
     crashed_se_reboot_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 900)"),
         required=False,
         update_allowed=True,
     )
     se_offline_del_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 172000)"),
         required=False,
         update_allowed=True,
     )
     vs_se_create_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 1500)"),
         required=False,
         update_allowed=True,
     )
     vs_se_vnic_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 300)"),
         required=False,
         update_allowed=True,
     )
     vs_se_bootup_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 480)"),
         required=False,
         update_allowed=True,
     )
     se_vnic_cooldown_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 120)"),
         required=False,
         update_allowed=True,
     )
     vs_se_vnic_ip_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 120)"),
         required=False,
         update_allowed=True,
     )
     fatal_error_lease_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 120)"),
         required=False,
         update_allowed=True,
     )
     upgrade_lease_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 360)"),
         required=False,
         update_allowed=True,
     )
     query_host_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 180)"),
         required=False,
         update_allowed=True,
     )
     vnic_op_fail_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 180)"),
         required=False,
         update_allowed=True,
     )
     dns_refresh_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     se_create_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 900)"),
         required=False,
         update_allowed=True,
     )
     max_dead_se_in_grp_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     dead_se_detection_timer_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 360)"),
         required=False,
         update_allowed=True,
     )
     api_idle_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 15)"),
         required=False,
         update_allowed=True,
     )
     allow_unauthenticated_nodes_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
     cluster_ip_gratuitous_arp_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     vs_key_rotate_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     secure_channel_controller_token_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     secure_channel_se_token_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     max_seq_vnic_failures_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 3)"),
         required=False,
         update_allowed=True,
     )
     vs_awaiting_se_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     vs_apic_scaleout_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time to wait for the scaled out SE to become ready before marking the scaleout done, applies to APIC configuration only"),
+        _("Time to wait for the scaled out SE to become ready before marking the scaleout done, applies to APIC configuration only (Units: SEC) (Default: 360)"),
         required=False,
         update_allowed=True,
     )
     secure_channel_cleanup_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     attach_ip_retry_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 360)"),
         required=False,
         update_allowed=True,
     )
     attach_ip_retry_limit_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     persistence_key_rotate_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     allow_unauthenticated_apis_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allow unauthenticated access for special APIs"),
+        _("Allow unauthenticated access for special APIs (Default: False)"),
         required=False,
         update_allowed=True,
     )
     warmstart_se_reconnect_wait_time_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 300)"),
         required=False,
         update_allowed=True,
     )
     vs_se_ping_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: SEC) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     se_failover_attempt_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Interval between attempting failovers to an SE"),
+        _("Interval between attempting failovers to an SE (Units: SEC) (Default: 300)"),
         required=False,
         update_allowed=True,
     )
     max_pcap_per_tenant_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of pcap files stored per tenant"),
+        _("Maximum number of pcap files stored per tenant (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     ssl_certificate_expiry_warning_days_item_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("Number of days for SSL Certificate expiry warning (Units: DAYS)"),
         required=True,
         update_allowed=False,
     )
@@ -239,19 +245,68 @@ class ControllerProperties(AviResource):
     )
     seupgrade_fabric_pool_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Pool size used for all fabric commands during se upgrade."),
+        _("Pool size used for all fabric commands during se upgrade. (Default: 20)"),
         required=False,
         update_allowed=True,
     )
     seupgrade_segroup_min_dead_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time to wait before marking segroup upgrade as stuck."),
+        _("Time to wait before marking segroup upgrade as stuck. (Units: SEC) (Default: 360)"),
+        required=False,
+        update_allowed=True,
+    )
+    allow_ip_forwarding_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1)  (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    appviewx_compat_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1) Export configuration in appviewx compatibility mode (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    upgrade_dns_ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Time to account for DNS TTL during upgrade. This is in addition to vs_scalein_timeout_for_upgrade in se_group. (Units: SEC) (Default: 5)"),
+        required=False,
+        update_allowed=True,
+    )
+    portal_token_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 16.4.6,17.1.2) Token used for uploading tech-support to portal"),
+        required=False,
+        update_allowed=True,
+    )
+    bm_use_ansible_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.2) Use Ansible for SE creation in baremetal (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    vs_se_attach_ip_fail_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.2) Time to wait before marking attach IP operation on an SE as failed (Units: SEC) (Default: 3600)"),
+        required=False,
+        update_allowed=True,
+    )
+    max_seq_attach_ip_failures_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.2) Maximum number of consecutive attach IP failures that halts VS placement (Default: 3)"),
+        required=False,
+        update_allowed=True,
+    )
+    safenet_hsm_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 16.5.2,17.2.3) Version of the safenet package installed on the controller"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'dummy',
         'unresponsive_se_reboot',
         'crashed_se_reboot',
@@ -290,10 +345,19 @@ class ControllerProperties(AviResource):
         'ssl_certificate_expiry_warning_days',
         'seupgrade_fabric_pool_size',
         'seupgrade_segroup_min_dead_timeout',
+        'allow_ip_forwarding',
+        'appviewx_compat_mode',
+        'upgrade_dns_ttl',
+        'portal_token',
+        'bm_use_ansible',
+        'vs_se_attach_ip_fail',
+        'max_seq_attach_ip_failures',
+        'safenet_hsm_version',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'dummy': dummy_schema,
         'unresponsive_se_reboot': unresponsive_se_reboot_schema,
         'crashed_se_reboot': crashed_se_reboot_schema,
@@ -332,8 +396,15 @@ class ControllerProperties(AviResource):
         'ssl_certificate_expiry_warning_days': ssl_certificate_expiry_warning_days_schema,
         'seupgrade_fabric_pool_size': seupgrade_fabric_pool_size_schema,
         'seupgrade_segroup_min_dead_timeout': seupgrade_segroup_min_dead_timeout_schema,
+        'allow_ip_forwarding': allow_ip_forwarding_schema,
+        'appviewx_compat_mode': appviewx_compat_mode_schema,
+        'upgrade_dns_ttl': upgrade_dns_ttl_schema,
+        'portal_token': portal_token_schema,
+        'bm_use_ansible': bm_use_ansible_schema,
+        'vs_se_attach_ip_fail': vs_se_attach_ip_fail_schema,
+        'max_seq_attach_ip_failures': max_seq_attach_ip_failures_schema,
+        'safenet_hsm_version': safenet_hsm_version_schema,
     }
-
 
 
 

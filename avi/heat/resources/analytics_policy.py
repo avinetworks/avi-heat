@@ -16,19 +16,25 @@ class FullClientLogs(object):
     # all schemas
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Capture all client logs including connections and requests.  When disabled, only errors will be logged."),
+        _("Capture all client logs including connections and requests.  When disabled, only errors will be logged. (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("How long should the system capture all logs, measured in minutes. Set to 0 for infinite."),
+        _("How long should the system capture all logs, measured in minutes. Set to 0 for infinite. (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Log all headers."),
+        _("Log all headers. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of non-significant logs generated per second for this VS on each SE. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
@@ -38,6 +44,7 @@ class FullClientLogs(object):
         'enabled',
         'duration',
         'all_headers',
+        'throttle',
     )
 
     # mapping of properties to their schemas
@@ -45,8 +52,8 @@ class FullClientLogs(object):
         'enabled': enabled_schema,
         'duration': duration_schema,
         'all_headers': all_headers_schema,
+        'throttle': throttle_schema,
     }
-
 
 
 
@@ -54,13 +61,13 @@ class MetricsRealTimeUpdate(object):
     # all schemas
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enables real time metrics collection.  When disabled, 6 hour view is the most granular the system will track."),
+        _("Enables real time metrics collection.  When disabled, 6 hour view is the most granular the system will track. (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Real time metrics collection duration in minutes. 0 for infinite."),
+        _("Real time metrics collection duration in minutes. 0 for infinite. (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -76,7 +83,6 @@ class MetricsRealTimeUpdate(object):
         'enabled': enabled_schema,
         'duration': duration_schema,
     }
-
 
 
 
@@ -103,7 +109,7 @@ class ClientLogFilter(object):
     )
     all_headers_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -116,13 +122,13 @@ class ClientLogFilter(object):
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=True,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -153,6 +159,11 @@ class ClientLogFilter(object):
     field_references = {
         'client_ip': getattr(IpAddrMatch, 'field_references', {}),
         'uri': getattr(StringMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'uri': getattr(StringMatch, 'unique_keys', {}),
     }
 
 
@@ -202,6 +213,12 @@ class ClientInsightsSampling(object):
         'sample_uris': getattr(StringMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'skip_uris': getattr(StringMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'sample_uris': getattr(StringMatch, 'unique_keys', {}),
+    }
+
 
 
 class AnalyticsPolicy(object):
@@ -227,13 +244,25 @@ class AnalyticsPolicy(object):
         required=False,
         update_allowed=True,
     )
+    udf_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the total number of UDF logs generated per second for this VS on each SE. UDF logs are generated due to the configured client log filters or the rules with logging enabled. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    significant_log_throttle_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) This setting limits the number of significant logs generated per second for this VS on each SE. Default is 10 logs per second. Set it to zero (0) to disable throttling. (Units: PER_SECOND) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
     client_insights_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Gain insights from sampled client to server HTTP requests and responses."),
+        _("Gain insights from sampled client to server HTTP requests and responses. (Default: NO_INSIGHTS)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PASSIVE', 'ACTIVE', 'NO_INSIGHTS']),
+            constraints.AllowedValues(['ACTIVE', 'NO_INSIGHTS', 'PASSIVE']),
         ],
     )
     metrics_realtime_update_schema = properties.Schema(
@@ -250,23 +279,35 @@ class AnalyticsPolicy(object):
         required=False,
         update_allowed=True,
     )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Disable Analytics on this VirtualService. This will disable the collection of both metrics and logs (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'full_client_logs',
         'client_log_filters',
+        'udf_log_throttle',
+        'significant_log_throttle',
         'client_insights',
         'metrics_realtime_update',
         'client_insights_sampling',
+        'enabled',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'full_client_logs': full_client_logs_schema,
         'client_log_filters': client_log_filters_schema,
+        'udf_log_throttle': udf_log_throttle_schema,
+        'significant_log_throttle': significant_log_throttle_schema,
         'client_insights': client_insights_schema,
         'metrics_realtime_update': metrics_realtime_update_schema,
         'client_insights_sampling': client_insights_sampling_schema,
+        'enabled': enabled_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -275,5 +316,12 @@ class AnalyticsPolicy(object):
         'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'field_references', {}),
         'client_insights_sampling': getattr(ClientInsightsSampling, 'field_references', {}),
         'full_client_logs': getattr(FullClientLogs, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_log_filters': getattr(ClientLogFilter, 'unique_keys', {}),
+        'metrics_realtime_update': getattr(MetricsRealTimeUpdate, 'unique_keys', {}),
+        'client_insights_sampling': getattr(ClientInsightsSampling, 'unique_keys', {}),
+        'full_client_logs': getattr(FullClientLogs, 'unique_keys', {}),
     }
 

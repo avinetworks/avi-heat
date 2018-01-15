@@ -18,11 +18,11 @@ class FailActionHTTPLocalResponse(object):
     # all schemas
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: FAIL_HTTP_STATUS_CODE_503)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['FAIL_HTTP_STATUS_CODE_503', 'FAIL_HTTP_STATUS_CODE_200']),
+            constraints.AllowedValues(['FAIL_HTTP_STATUS_CODE_200', 'FAIL_HTTP_STATUS_CODE_503']),
         ],
     )
     file_schema = properties.Schema(
@@ -50,11 +50,21 @@ class FailActionHTTPLocalResponse(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class PriorityLabels(AviResource):
     resource_name = "prioritylabels"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the priority labels."),
@@ -63,7 +73,7 @@ class PriorityLabels(AviResource):
     )
     equivalent_labels_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Equivalent priority labels in descending order."),
         schema=EquivalentLabels.properties_schema,
         required=True,
         update_allowed=False,
@@ -81,24 +91,38 @@ class PriorityLabels(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'equivalent_labels',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'equivalent_labels': equivalent_labels_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'equivalent_labels': getattr(EquivalentLabels, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'equivalent_labels': getattr(EquivalentLabels, 'unique_keys', {}),
     }
 
 
@@ -107,13 +131,13 @@ class PoolGroupMember(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Ratio of selecting eligible pools in the pool group. "),
+        _("Ratio of selecting eligible pools in the pool group.  (Default: 1)"),
         required=False,
         update_allowed=True,
     )
@@ -129,7 +153,7 @@ class PoolGroupMember(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['EVALUATION_IN_PROGRESS', 'IN_SERVICE', 'OUT_OF_SERVICE', 'EVALUATION_FAILED']),
+            constraints.AllowedValues(['EVALUATION_FAILED', 'EVALUATION_IN_PROGRESS', 'IN_SERVICE', 'OUT_OF_SERVICE']),
         ],
     )
 
@@ -160,13 +184,13 @@ class AbPool(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Pool configured as B pool for A/B testing You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Pool configured as B pool for A/B testing You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Ratio of traffic diverted to the B pool, for A/B testing"),
+        _("Ratio of traffic diverted to the B pool, for A/B testing (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -194,7 +218,7 @@ class FailActionBackupPool(object):
     # all schemas
     backup_pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Specifies the UUID of the Pool acting as backup pool. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Specifies the UUID of the Pool acting as backup pool. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -220,7 +244,7 @@ class FailActionHTTPRedirect(object):
     # all schemas
     protocol_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: HTTPS)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -247,11 +271,11 @@ class FailActionHTTPRedirect(object):
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: HTTP_REDIRECT_STATUS_CODE_302)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_307']),
         ],
     )
 
@@ -275,7 +299,6 @@ class FailActionHTTPRedirect(object):
 
 
 
-
 class PGDeploymentRule(object):
     # all schemas
     metric_id_schema = properties.Schema(
@@ -286,11 +309,11 @@ class PGDeploymentRule(object):
     )
     operator_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: CO_GE)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CO_GE', 'CO_LE', 'CO_LT', 'CO_GT', 'CO_EQ', 'CO_NE']),
+            constraints.AllowedValues(['CO_EQ', 'CO_GE', 'CO_GT', 'CO_LE', 'CO_LT', 'CO_NE']),
         ],
     )
     threshold_schema = properties.Schema(
@@ -316,19 +339,25 @@ class PGDeploymentRule(object):
 
 
 
-
-class PlacementNetwork(object):
+class DiscoveredNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
-    subnet_schema = properties.Schema(
+    subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Discovered subnet for this IP."),
         schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Discovered subnet for this IP."),
+        schema=subnet_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -351,13 +380,17 @@ class PlacementNetwork(object):
         'network_uuid': 'network',
     }
 
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
 
 
 class FailAction(object):
     # all schemas
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Enables a response to client when pool experiences a failure. By default TCP connection is closed."),
+        _("Enables a response to client when pool experiences a failure. By default TCP connection is closed. (Default: FAIL_ACTION_CLOSE_CONN)"),
         required=True,
         update_allowed=True,
         constraints=[
@@ -409,11 +442,23 @@ class FailAction(object):
         'local_rsp': getattr(FailActionHTTPLocalResponse, 'field_references', {}),
     }
 
+    unique_keys = {
+        'redirect': getattr(FailActionHTTPRedirect, 'unique_keys', {}),
+        'backup_pool': getattr(FailActionBackupPool, 'unique_keys', {}),
+        'local_rsp': getattr(FailActionHTTPLocalResponse, 'unique_keys', {}),
+    }
+
 
 
 class PoolGroupDeploymentPolicy(AviResource):
     resource_name = "poolgroupdeploymentpolicy"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool group deployment policy"),
@@ -422,7 +467,7 @@ class PoolGroupDeploymentPolicy(AviResource):
     )
     scheme_schema = properties.Schema(
         properties.Schema.STRING,
-        _("deployment scheme"),
+        _("deployment scheme (Default: BLUE_GREEN)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -431,7 +476,7 @@ class PoolGroupDeploymentPolicy(AviResource):
     )
     test_traffic_ratio_rampup_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Ratio of the traffic that is sent to the pool under test. test ratio of 100 means blue green"),
+        _("Ratio of the traffic that is sent to the pool under test. test ratio of 100 means blue green (Default: 100)"),
         required=False,
         update_allowed=True,
     )
@@ -451,25 +496,25 @@ class PoolGroupDeploymentPolicy(AviResource):
     )
     webhook_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Webhook configured with URL that Avi controller will pass back information about pool group, old and new pool information and current deployment rule results"),
+        _("(Introduced in: 17.1.1) Webhook configured with URL that Avi controller will pass back information about pool group, old and new pool information and current deployment rule results"),
         required=False,
         update_allowed=True,
     )
     evaluation_duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Duration of evaluation period for automatic deployment"),
+        _("Duration of evaluation period for automatic deployment (Units: SEC) (Default: 300)"),
         required=False,
         update_allowed=True,
     )
     target_test_traffic_ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Target traffic ratio before pool is made production"),
+        _("Target traffic ratio before pool is made production (Units: RATIO) (Default: 100)"),
         required=False,
         update_allowed=True,
     )
     auto_disable_old_prod_pools_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("It will automatically disable old production pools once there is a new production candidate"),
+        _("It will automatically disable old production pools once there is a new production candidate (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -479,9 +524,16 @@ class PoolGroupDeploymentPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'scheme',
         'test_traffic_ratio_rampup',
@@ -491,10 +543,12 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio',
         'auto_disable_old_prod_pools',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'scheme': scheme_schema,
         'test_traffic_ratio_rampup': test_traffic_ratio_rampup_schema,
@@ -504,11 +558,16 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio': target_test_traffic_ratio_schema,
         'auto_disable_old_prod_pools': auto_disable_old_prod_pools_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(PGDeploymentRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(PGDeploymentRule, 'unique_keys', {}),
     }
 
 
@@ -517,7 +576,7 @@ class NetworkFilter(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -551,7 +610,7 @@ class HTTPReselectRespCode(object):
     # all schemas
     codes_item_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _("HTTP response code to be matched."),
         required=True,
         update_allowed=False,
     )
@@ -564,7 +623,7 @@ class HTTPReselectRespCode(object):
     )
     ranges_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP response code ranges to match."),
         schema=HTTPStatusRange.properties_schema,
         required=True,
         update_allowed=False,
@@ -578,11 +637,11 @@ class HTTPReselectRespCode(object):
     )
     resp_code_block_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Block of HTTP response codes to match for server reselect."),
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_RSP_5XX', 'HTTP_RSP_4XX']),
+            constraints.AllowedValues(['HTTP_RSP_4XX', 'HTTP_RSP_5XX']),
         ],
     )
     resp_code_block_schema = properties.Schema(
@@ -612,47 +671,8 @@ class HTTPReselectRespCode(object):
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
     }
 
-
-
-class DiscoveredNetwork(object):
-    # all schemas
-    network_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
-        required=True,
-        update_allowed=True,
-    )
-    subnet_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=IpAddrPrefix.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    subnet_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Discovered subnet for this IP."),
-        schema=subnet_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'network_uuid',
-        'subnet',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'network_uuid': network_uuid_schema,
-        'subnet': subnet_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
-        'network_uuid': 'network',
+    unique_keys = {
+        'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
     }
 
 
@@ -660,6 +680,12 @@ class DiscoveredNetwork(object):
 class PoolGroup(AviResource):
     resource_name = "poolgroup"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool group."),
@@ -668,27 +694,27 @@ class PoolGroup(AviResource):
     )
     members_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of pool group members object of type PoolGroupMember."),
         schema=PoolGroupMember.properties_schema,
         required=True,
         update_allowed=False,
     )
     members_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Member details"),
+        _("List of pool group members object of type PoolGroupMember."),
         schema=members_item_schema,
         required=False,
         update_allowed=True,
     )
     priority_labels_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the priority labels. If not provided, pool group member priority label will be interpreted as a number with a larger number considered higher priority. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the priority labels. If not provided, pool group member priority label will be interpreted as a number with a larger number considered higher priority. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     min_servers_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The minimum number of servers to distribute traffic to."),
+        _("The minimum number of servers to distribute traffic to. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -705,9 +731,15 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    implicit_priority_labels_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.9,17.2.3) Whether an implicit set of priority labels is generated. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Creator name"),
+        _("Name of the user who created the object."),
         required=False,
         update_allowed=True,
     )
@@ -719,6 +751,12 @@ class PoolGroup(AviResource):
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
+        _("Description of Pool Group."),
+        required=False,
+        update_allowed=True,
+    )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
         _(""),
         required=False,
         update_allowed=True,
@@ -726,28 +764,34 @@ class PoolGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'members',
         'priority_labels_uuid',
         'min_servers',
         'deployment_policy_uuid',
         'fail_action',
+        'implicit_priority_labels',
         'created_by',
         'cloud_config_cksum',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'members': members_schema,
         'priority_labels_uuid': priority_labels_uuid_schema,
         'min_servers': min_servers_schema,
         'deployment_policy_uuid': deployment_policy_uuid_schema,
         'fail_action': fail_action_schema,
+        'implicit_priority_labels': implicit_priority_labels_schema,
         'created_by': created_by_schema,
         'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -757,13 +801,18 @@ class PoolGroup(AviResource):
         'members': getattr(PoolGroupMember, 'field_references', {}),
     }
 
+    unique_keys = {
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'members': getattr(PoolGroupMember, 'unique_keys', {}),
+    }
+
 
 
 class HTTPServerReselect(object):
     # all schemas
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable HTTP request reselect when server responds with specific response codes."),
+        _("Enable HTTP request reselect when server responds with specific response codes. (Default: False)"),
         required=True,
         update_allowed=True,
     )
@@ -776,13 +825,13 @@ class HTTPServerReselect(object):
     )
     num_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of times to retry an HTTP request when server responds with configured status codes."),
+        _("Number of times to retry an HTTP request when server responds with configured status codes. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     retry_nonidempotent_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Allow retry of non-idempotent HTTP requests."),
+        _("Allow retry of non-idempotent HTTP requests. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -806,6 +855,10 @@ class HTTPServerReselect(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'svr_resp_code': getattr(HTTPReselectRespCode, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'svr_resp_code': getattr(HTTPReselectRespCode, 'unique_keys', {}),
     }
 
 
@@ -833,37 +886,37 @@ class Server(object):
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable, Disable or Graceful Disable determine if new or existing connections to the server are allowed."),
+        _("Enable, Disable or Graceful Disable determine if new or existing connections to the server are allowed. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     ratio_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Ratio of selecting eligible servers in the pool"),
+        _("Ratio of selecting eligible servers in the pool (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     vm_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     nw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(internal-use) This field is used internally by Avi, not editable by the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     discovered_network_uuid_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered network for this server. This field is deprecated."),
         required=True,
         update_allowed=False,
     )
     discovered_network_uuid_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered network for this server. This field is deprecated. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=discovered_network_uuid_item_schema,
         required=False,
         update_allowed=True,
@@ -876,27 +929,27 @@ class Server(object):
     )
     discovered_subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered subnet for this server. This field is deprecated."),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
     )
     discovered_subnet_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(internal-use) Discovered subnet for this server. This field is deprecated."),
+        _("(Deprecated in: 17.1.1) (internal-use) Discovered subnet for this server. This field is deprecated."),
         schema=discovered_subnet_item_schema,
         required=False,
         update_allowed=True,
     )
     verify_network_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Verify server belongs to a discovered network or reachable via a discovered network. Verify reachable network isn't the OpenStack management network"),
+        _("Verify server belongs to a discovered network or reachable via a discovered network. Verify reachable network isn't the OpenStack management network (Default: False)"),
         required=False,
         update_allowed=True,
     )
     discovered_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(internal-use) Discovered networks providing reachability for server IP. This field is used internally by Avi, not editable by the user."),
         schema=DiscoveredNetwork.properties_schema,
         required=True,
         update_allowed=False,
@@ -910,13 +963,13 @@ class Server(object):
     )
     resolve_server_by_dns_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Auto resolve server's IP using DNS name"),
+        _("Auto resolve server's IP using DNS name (Default: False)"),
         required=False,
         update_allowed=True,
     )
     prst_hdr_val_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Header value for custom header persistence."),
+        _("Header value for custom header persistence. "),
         required=False,
         update_allowed=True,
     )
@@ -928,7 +981,7 @@ class Server(object):
     )
     static_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If statically learned."),
+        _("If statically learned. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -946,7 +999,7 @@ class Server(object):
     )
     rewrite_host_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Rewrite incoming Host Header to server name."),
+        _("Rewrite incoming Host Header to server name. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -959,6 +1012,19 @@ class Server(object):
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("A description of the Server."),
+        required=False,
+        update_allowed=True,
+    )
+    location_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) (internal-use) Geographic location of the server.Currently only for internal usage."),
+        schema=GeoLocation.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    autoscaling_group_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Name of autoscaling group this server belongs to."),
         required=False,
         update_allowed=True,
     )
@@ -986,6 +1052,8 @@ class Server(object):
         'rewrite_host_header',
         'external_orchestration_id',
         'description',
+        'location',
+        'autoscaling_group_name',
     )
 
     # mapping of properties to their schemas
@@ -1011,6 +1079,8 @@ class Server(object):
         'rewrite_host_header': rewrite_host_header_schema,
         'external_orchestration_id': external_orchestration_id_schema,
         'description': description_schema,
+        'location': location_schema,
+        'autoscaling_group_name': autoscaling_group_name_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1019,8 +1089,17 @@ class Server(object):
         'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'discovered_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'vm_uuid': 'vimgrvmruntime',
+        'location': getattr(GeoLocation, 'field_references', {}),
         'discovered_network_uuid': 'network',
         'nw_uuid': 'vimgrnwruntime',
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
+        'my_key': 'ip,port',
+        'location': getattr(GeoLocation, 'unique_keys', {}),
+        'discovered_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -1028,6 +1107,12 @@ class Server(object):
 class Pool(AviResource):
     resource_name = "pool"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("The name of the pool."),
@@ -1036,44 +1121,44 @@ class Pool(AviResource):
     )
     default_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Traffic sent to servers will use this destination server port unless overridden by the server's specific port attribute. The SSL checkbox enables Avi to server encryption."),
+        _("Traffic sent to servers will use this destination server port unless overridden by the server's specific port attribute. The SSL checkbox enables Avi to server encryption. (Default: 80)"),
         required=False,
         update_allowed=True,
     )
     graceful_disable_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Used to gracefully disable a server. Virtual service waits for the specified time before terminating the existing connections  to the servers that are disabled."),
+        _("Used to gracefully disable a server. Virtual service waits for the specified time before terminating the existing connections  to the servers that are disabled. (Units: MIN) (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     connection_ramp_duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Duration for which new connections will be gradually ramped up to a server recently brought online.  Useful for LB algorithms that are least connection based."),
+        _("Duration for which new connections will be gradually ramped up to a server recently brought online.  Useful for LB algorithms that are least connection based. (Units: MIN) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     max_concurrent_connections_per_server_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The maximum number of concurrent connections allowed to each server within the pool."),
+        _("The maximum number of concurrent connections allowed to each server within the pool. NOTE: applied value will be no less than the number of service engines that the pool is placed on. If set to 0, no limit is applied. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     health_monitor_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens only to client to server communication. It raises or lowers the ratio of traffic destined to a server based on successful responses."),
         required=True,
         update_allowed=False,
     )
     health_monitor_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens to client to server communication and raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Verify server health by applying one or more health monitors.  Active monitors generate synthetic traffic from each Service Engine and mark a server up or down based on the response. The Passive monitor listens only to client to server communication. It raises or lowers the ratio of traffic destined to a server based on successful responses. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=health_monitor_uuids_item_schema,
         required=False,
         update_allowed=True,
     )
     servers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("The pool directs load balanced traffic to this list of destination servers. The servers can be configured by IP address, name, network or via IP Address Group"),
         schema=Server.properties_schema,
         required=True,
         update_allowed=False,
@@ -1087,26 +1172,26 @@ class Pool(AviResource):
     )
     server_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     lb_algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The load balancing algorithm will pick a server within the pool's list of available servers."),
+        _("The load balancing algorithm will pick a server within the pool's list of available servers. (Default: LB_ALGORITHM_LEAST_CONNECTIONS)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_ROUND_ROBIN', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_LEAST_CONNECTIONS']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH', 'LB_ALGORITHM_CORE_AFFINITY', 'LB_ALGORITHM_FASTEST_RESPONSE', 'LB_ALGORITHM_FEWEST_SERVERS', 'LB_ALGORITHM_FEWEST_TASKS', 'LB_ALGORITHM_LEAST_CONNECTIONS', 'LB_ALGORITHM_LEAST_LOAD', 'LB_ALGORITHM_NEAREST_SERVER', 'LB_ALGORITHM_RANDOM', 'LB_ALGORITHM_ROUND_ROBIN']),
         ],
     )
     lb_algorithm_hash_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Criteria used as a key for determining the hash between the client and  server."),
+        _("Criteria used as a key for determining the hash between the client and  server. (Default: LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_STRING', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
         ],
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
@@ -1117,7 +1202,7 @@ class Pool(AviResource):
     )
     networks_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(internal-use) Networks designated as containing servers for this pool.  The servers may be further narrowed down by a filter. This field is used internally by Avi, not editable by the user."),
         schema=NetworkFilter.properties_schema,
         required=True,
         update_allowed=False,
@@ -1131,76 +1216,76 @@ class Pool(AviResource):
     )
     placement_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10-1-1-0/24. Use static routes in VRF configuration when pool servers are not directly connected butroutable from the service engine."),
         schema=PlacementNetwork.properties_schema,
         required=True,
         update_allowed=False,
     )
     placement_networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10.1.1.0/24. If the Pool Servers are not directly connected, but routable from the ServiceEngine, please also provide the appropriate static routes to reach the Servers in the VRF configuration."),
+        _("Manually select the networks and subnets used to provide reachability to the pool's servers.  Specify the Subnet using the following syntax: 10-1-1-0/24. Use static routes in VRF configuration when pool servers are not directly connected butroutable from the service engine."),
         schema=placement_networks_item_schema,
         required=False,
         update_allowed=True,
     )
     application_persistence_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Persistence will ensure the same user sticks to the same server for a desired duration of time. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Persistence will ensure the same user sticks to the same server for a desired duration of time. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("When enabled, Avi re-encrypts traffic to the backend servers. The specific SSL profile defines which ciphers and SSL versions will be supported. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     inline_health_monitor_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("The Passive monitor will monitor client to server connections and requests and adjust traffic load to servers based on successful responses.  This may alter the expected behavior of the LB method, such as Round Robin."),
+        _("The Passive monitor will monitor client to server connections and requests and adjust traffic load to servers based on successful responses.  This may alter the expected behavior of the LB method, such as Round Robin. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     use_service_port_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Do not translate the client's destination port when sending the connection to the server.  The pool or servers specified service port will still be used for health monitoring.  This feature is only applicable for a Virtual Service configured with the application type set to L4."),
+        _("Do not translate the client's destination port when sending the connection to the server.  The pool or servers specified service port will still be used for health monitoring. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     fail_action_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Enable an action - Close Connection, HTTP Redirect, Local HTTP Response, or Backup Pool - when a pool failure happens. By default, a connection will be closed, in case the pool experiences a failure."),
+        _("Enable an action - Close Connection, HTTP Redirect or Local HTTP Response - when a pool failure happens. By default, a connection will be closed, in case the pool experiences a failure."),
         schema=FailAction.properties_schema,
         required=False,
         update_allowed=True,
     )
     capacity_estimation_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Inline estimation of capacity of servers."),
+        _("Inline estimation of capacity of servers. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     capacity_estimation_ttfb_thresh_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The maximum time-to-first-byte of a server."),
+        _("The maximum time-to-first-byte of a server. (Units: MILLISECONDS) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     pki_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi will validate the SSL certificate present by a server against the selected PKI Profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Avi will validate the SSL certificate present by a server against the selected PKI Profile. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ssl_key_and_certificate_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Service Engines will present a client SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Service Engines will present a client SSL certificate to the server. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     server_auto_scale_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Server AutoScale. Not used anymore."),
+        _("Server AutoScale. Not used anymore. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1218,7 +1303,7 @@ class Pool(AviResource):
     )
     autoscale_networks_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Network Ids for the launch configuration"),
         required=True,
         update_allowed=False,
     )
@@ -1231,31 +1316,37 @@ class Pool(AviResource):
     )
     autoscale_policy_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Reference to Server Autoscale Policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Reference to Server Autoscale Policy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     autoscale_launch_config_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Reference to the Launch Configuration Profile You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("If configured then Avi will trigger orchestration of pool server creation and deletion. It is only supported for container clouds like Mesos, Opensift, Kubernates, Docker etc. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    vrf_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Virtual Routing Context that the pool is bound to. This is used to provide the isolation of the set of networks the pool is attached to. The pool inherits the Virtual Routing Conext of the Virtual Service, and this field is used only internally, and is set by pb-transform. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     ipaddrgroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Use list of servers from Ip Address Group You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Use list of servers from Ip Address Group You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     fewest_tasks_feedback_delay_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Periodicity of feedback for fewest tasks server selection algorithm."),
+        _("Periodicity of feedback for fewest tasks server selection algorithm. (Units: SEC) (Default: 10)"),
         required=False,
         update_allowed=True,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the pool.  Disabling will terminate all open connections and pause health monitors."),
+        _("Enable or disable the pool.  Disabling will terminate all open connections and pause health monitors. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -1286,13 +1377,13 @@ class Pool(AviResource):
     )
     request_queue_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable request queue when pool is full"),
+        _("Enable request queue when pool is full (Default: False)"),
         required=False,
         update_allowed=True,
     )
     request_queue_depth_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Minimum number of requests to be queued when pool is full."),
+        _("Minimum number of requests to be queued when pool is full. (Default: 128)"),
         required=False,
         update_allowed=True,
     )
@@ -1324,26 +1415,26 @@ class Pool(AviResource):
     )
     host_check_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable common name check for server certificate. If enabled and no explicit domain name is specified, Avi will use the incoming host header to do the match."),
+        _("Enable common name check for server certificate. If enabled and no explicit domain name is specified, Avi will use the incoming host header to do the match. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     domain_name_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates. It is performed only when common name check host_check_enabled is enabled."),
         required=True,
         update_allowed=False,
     )
     domain_name_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates if common name check (host_check_enabled) is enabled."),
+        _("Comma separated list of domain names which will be used to verify the common names or subject alternative names presented by server certificates. It is performed only when common name check host_check_enabled is enabled."),
         schema=domain_name_item_schema,
         required=False,
         update_allowed=True,
     )
     sni_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable TLS SNI for server connections. If disabled, Avi will not send the SNI extension as part of the handshake."),
+        _("Enable TLS SNI for server connections. If disabled, Avi will not send the SNI extension as part of the handshake. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -1355,13 +1446,57 @@ class Pool(AviResource):
     )
     rewrite_host_header_to_sni_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("If SNI server name is specified, rewrite incoming host header to the SNI server name."),
+        _("If SNI server name is specified, rewrite incoming host header to the SNI server name. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     rewrite_host_header_to_server_name_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Rewrite incoming Host Header to server name of the server to which the request is proxied.  Enabling this feature rewrites Host Header for requests to all servers in the pool."),
+        _("Rewrite incoming Host Header to server name of the server to which the request is proxied.  Enabling this feature rewrites Host Header for requests to all servers in the pool. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    nsx_securitygroup_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) A list of NSX Service Groups where the Servers for the Pool are created "),
+        required=True,
+        update_allowed=False,
+    )
+    nsx_securitygroup_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) A list of NSX Service Groups where the Servers for the Pool are created "),
+        schema=nsx_securitygroup_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    external_autoscale_groups_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS and Azure"),
+        required=True,
+        update_allowed=False,
+    )
+    external_autoscale_groups_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS and Azure"),
+        schema=external_autoscale_groups_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    lb_algorithm_core_nonaffinity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Degree of non-affinity for core afffinity based server selection. (Default: 2)"),
+        required=False,
+        update_allowed=True,
+    )
+    gslb_sp_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Indicates if the pool is a site-persistence pool. "),
+        required=False,
+        update_allowed=False,
+    )
+    lookup_server_by_name_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.11,17.2.4) Allow server lookup by name. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1371,9 +1506,16 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'default_server_port',
         'graceful_disable_timeout',
@@ -1402,6 +1544,7 @@ class Pool(AviResource):
         'autoscale_networks',
         'autoscale_policy_uuid',
         'autoscale_launch_config_uuid',
+        'vrf_uuid',
         'ipaddrgroup_uuid',
         'fewest_tasks_feedback_delay',
         'enabled',
@@ -1421,11 +1564,18 @@ class Pool(AviResource):
         'server_name',
         'rewrite_host_header_to_sni',
         'rewrite_host_header_to_server_name',
+        'nsx_securitygroup',
+        'external_autoscale_groups',
+        'lb_algorithm_core_nonaffinity',
+        'gslb_sp_enabled',
+        'lookup_server_by_name',
         'description',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'default_server_port': default_server_port_schema,
         'graceful_disable_timeout': graceful_disable_timeout_schema,
@@ -1454,6 +1604,7 @@ class Pool(AviResource):
         'autoscale_networks': autoscale_networks_schema,
         'autoscale_policy_uuid': autoscale_policy_uuid_schema,
         'autoscale_launch_config_uuid': autoscale_launch_config_uuid_schema,
+        'vrf_uuid': vrf_uuid_schema,
         'ipaddrgroup_uuid': ipaddrgroup_uuid_schema,
         'fewest_tasks_feedback_delay': fewest_tasks_feedback_delay_schema,
         'enabled': enabled_schema,
@@ -1473,7 +1624,13 @@ class Pool(AviResource):
         'server_name': server_name_schema,
         'rewrite_host_header_to_sni': rewrite_host_header_to_sni_schema,
         'rewrite_host_header_to_server_name': rewrite_host_header_to_server_name_schema,
+        'nsx_securitygroup': nsx_securitygroup_schema,
+        'external_autoscale_groups': external_autoscale_groups_schema,
+        'lb_algorithm_core_nonaffinity': lb_algorithm_core_nonaffinity_schema,
+        'gslb_sp_enabled': gslb_sp_enabled_schema,
+        'lookup_server_by_name': lookup_server_by_name_schema,
         'description': description_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1492,7 +1649,18 @@ class Pool(AviResource):
         'ab_pool': getattr(AbPool, 'field_references', {}),
         'fail_action': getattr(FailAction, 'field_references', {}),
         'servers': getattr(Server, 'field_references', {}),
+        'vrf_uuid': 'vrfcontext',
         'networks': getattr(NetworkFilter, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'server_reselect': getattr(HTTPServerReselect, 'unique_keys', {}),
+        'max_conn_rate_per_server': getattr(RateProfile, 'unique_keys', {}),
+        'placement_networks': getattr(PlacementNetwork, 'unique_keys', {}),
+        'ab_pool': getattr(AbPool, 'unique_keys', {}),
+        'fail_action': getattr(FailAction, 'unique_keys', {}),
+        'servers': getattr(Server, 'unique_keys', {}),
+        'networks': getattr(NetworkFilter, 'unique_keys', {}),
     }
 
 
@@ -1505,17 +1673,26 @@ class PoolServers(AviNestedResource, Server):
         properties.Schema.STRING,
         _("UUID of pool."
           " You can also provide a name"
-          " with the prefix 'get_avi_uuid_for_name:', e.g.,"
-          " 'get_avi_uuid_for_name:my_obj_name'."),
+          " with the prefix 'get_avi_uuid_by_name:', e.g.,"
+          " 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=False,
     )
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+
 
     # properties list
-    PROPERTIES = Server.PROPERTIES + ('pool_uuid',)
+    PROPERTIES = Server.PROPERTIES + (
+        'pool_uuid','avi_version')
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'pool_uuid': parent_uuid_schema,
     }
     properties_schema.update(Server.properties_schema)

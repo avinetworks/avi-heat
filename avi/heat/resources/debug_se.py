@@ -21,7 +21,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(
@@ -30,7 +30,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_ERROR', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_DEBUG_DETAIL']),
+            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_DEBUG_DETAIL', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_ERROR']),
         ],
     )
     log_level_schema = properties.Schema(
@@ -39,7 +39,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOG_LEVEL_ERROR', 'LOG_LEVEL_DISABLED', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
+            constraints.AllowedValues(['LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
         ],
     )
 
@@ -57,6 +57,9 @@ class DebugSeAgent(object):
         'log_level': log_level_schema,
     }
 
+    unique_keys = {
+        'my_key': 'sub_module',
+    }
 
 
 
@@ -68,7 +71,7 @@ class DebugSeDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_STRICT', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ARP_PKT_OUT', 'DEBUG_ALL', 'DEBUG_PCAP_RX', 'DEBUG_IP_PKT_OUT', 'DEBUG_ARP_PKT_IN', 'DEBUG_POOL', 'DEBUG_MISC', 'DEBUG_CRUD', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_UDP', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_NONE', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_ICMP', 'DEBUG_ERROR', 'DEBUG_ARP', 'DEBUG_SE_APP', 'DEBUG_ETHERNET', 'DEBUG_IP_PKT_IN', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_IP', 'DEBUG_PCAP_TX', 'DEBUG_CONFIG', 'DEBUG_DISPATCHER_FLOW_ALL']),
+            constraints.AllowedValues(['DEBUG_ALL', 'DEBUG_ARP', 'DEBUG_ARP_PKT_IN', 'DEBUG_ARP_PKT_OUT', 'DEBUG_CONFIG', 'DEBUG_CRUD', 'DEBUG_DISPATCHER_FLOW', 'DEBUG_DISPATCHER_FLOW_ALL', 'DEBUG_DISPATCHER_FLOW_DETAIL', 'DEBUG_ERROR', 'DEBUG_ETHERNET', 'DEBUG_ETHERNET_PKT_IN', 'DEBUG_ETHERNET_PKT_OUT', 'DEBUG_ICMP', 'DEBUG_IP', 'DEBUG_IP_PKT_IN', 'DEBUG_IP_PKT_OUT', 'DEBUG_MISC', 'DEBUG_ND', 'DEBUG_NONE', 'DEBUG_PCAP_ALL', 'DEBUG_PCAP_DOS', 'DEBUG_PCAP_DROP', 'DEBUG_PCAP_HM', 'DEBUG_PCAP_RX', 'DEBUG_PCAP_TX', 'DEBUG_POOL', 'DEBUG_SE_APP', 'DEBUG_SE_VS_HB', 'DEBUG_STRICT', 'DEBUG_UDP']),
         ],
     )
 
@@ -82,6 +85,9 @@ class DebugSeDataplane(object):
         'flag': flag_schema,
     }
 
+    unique_keys = {
+        'my_key': 'flag',
+    }
 
 
 
@@ -112,12 +118,21 @@ class DebugSeCpuShares(object):
         'shares': shares_schema,
     }
 
+    unique_keys = {
+        'my_key': 'cpu',
+    }
 
 
 
 class DebugServiceEngine(AviResource):
     resource_name = "debugserviceengine"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -169,6 +184,7 @@ class DebugServiceEngine(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'seagent_debug',
         'flags',
@@ -177,6 +193,7 @@ class DebugServiceEngine(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'seagent_debug': seagent_debug_schema,
         'flags': flags_schema,
@@ -188,6 +205,12 @@ class DebugServiceEngine(AviResource):
         'flags': getattr(DebugSeDataplane, 'field_references', {}),
         'seagent_debug': getattr(DebugSeAgent, 'field_references', {}),
         'cpu_shares': getattr(DebugSeCpuShares, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'flags': getattr(DebugSeDataplane, 'unique_keys', {}),
+        'seagent_debug': getattr(DebugSeAgent, 'unique_keys', {}),
+        'cpu_shares': getattr(DebugSeCpuShares, 'unique_keys', {}),
     }
 
 
@@ -258,6 +281,12 @@ class DebugIpAddr(object):
         'addrs': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ranges': getattr(IpAddrRange, 'unique_keys', {}),
+        'prefixes': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'addrs': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class DebugVirtualServiceSeParams(object):
@@ -288,18 +317,17 @@ class DebugVirtualServiceSeParams(object):
 
 
 
-
 class DebugVirtualServiceCapture(object):
     # all schemas
     pkt_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of bytes of each packet to capture. Use 0 to capture the entire packet."),
+        _("Number of bytes of each packet to capture. Use 0 to capture the entire packet. (Units: BYTES) (Default: 128)"),
         required=False,
         update_allowed=True,
     )
     duration_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of minutes to capture packets. Use 0 to capture until manually stopped."),
+        _("Number of minutes to capture packets. Use 0 to capture until manually stopped. (Units: MIN) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -326,7 +354,6 @@ class DebugVirtualServiceCapture(object):
 
 
 
-
 class DebugVsDataplane(object):
     # all schemas
     flag_schema = properties.Schema(
@@ -335,7 +362,7 @@ class DebugVsDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_VS_UDP', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_HM', 'DEBUG_VS_CONFIG', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_ERROR', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_NONE', 'DEBUG_VS_CREDIT', 'DEBUG_VS_UDP_PKT']),
+            constraints.AllowedValues(['DEBUG_VS_ALL', 'DEBUG_VS_CONFIG', 'DEBUG_VS_CREDIT', 'DEBUG_VS_ERROR', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_NONE', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_UDP', 'DEBUG_VS_UDP_PKT', 'DEBUG_VS_WAF']),
         ],
     )
 
@@ -349,12 +376,21 @@ class DebugVsDataplane(object):
         'flag': flag_schema,
     }
 
+    unique_keys = {
+        'my_key': 'flag',
+    }
 
 
 
 class DebugVirtualService(AviResource):
     resource_name = "debugvirtualservice"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -404,16 +440,23 @@ class DebugVirtualService(AviResource):
     )
     debug_hm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("This option controls the capture of Health Monitor flows."),
+        _("This option controls the capture of Health Monitor flows. (Default: DEBUG_VS_HM_NONE)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_VS_HM_NONE', 'DEBUG_VS_HM_INCLUDE', 'DEBUG_VS_HM_ONLY']),
+            constraints.AllowedValues(['DEBUG_VS_HM_INCLUDE', 'DEBUG_VS_HM_NONE', 'DEBUG_VS_HM_ONLY']),
         ],
+    )
+    cloud_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'flags',
         'debug_ip',
@@ -421,10 +464,12 @@ class DebugVirtualService(AviResource):
         'capture_params',
         'se_params',
         'debug_hm',
+        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'flags': flags_schema,
         'debug_ip': debug_ip_schema,
@@ -432,6 +477,7 @@ class DebugVirtualService(AviResource):
         'capture_params': capture_params_schema,
         'se_params': se_params_schema,
         'debug_hm': debug_hm_schema,
+        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -440,6 +486,13 @@ class DebugVirtualService(AviResource):
         'debug_ip': getattr(DebugIpAddr, 'field_references', {}),
         'flags': getattr(DebugVsDataplane, 'field_references', {}),
         'se_params': getattr(DebugVirtualServiceSeParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'capture_params': getattr(DebugVirtualServiceCapture, 'unique_keys', {}),
+        'debug_ip': getattr(DebugIpAddr, 'unique_keys', {}),
+        'flags': getattr(DebugVsDataplane, 'unique_keys', {}),
+        'se_params': getattr(DebugVirtualServiceSeParams, 'unique_keys', {}),
     }
 
 

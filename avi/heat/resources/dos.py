@@ -19,7 +19,7 @@ class DosThreshold(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DOS_REQ_IP_URI_RL_DROP_BAD', 'DOS_REQ_CIP_SCAN_BAD_RL_DROP', 'MALFORMED_FLOOD', 'POLICY_DROPS', 'IP_FRAG_INCOMPLETE', 'DOS_CONN_IP_RL_DROP', 'FAKE_SESSION', 'DOS_HTTP_ABORT', 'SMURF', 'IP_FRAG_TOOSMALL', 'ICMP_PING_FLOOD', 'DOS_REQ_CIP_SCAN_UNKNOWN_RL_DROP', 'DOS_REQ_IP_URI_RL_DROP', 'LAND', 'UNKOWN_PROTOCOL', 'DOS_REQ_IP_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD', 'ZERO_WINDOW_STRESS', 'IP_FRAG_FULL', 'DOS_REQ_RL_DROP', 'SMALL_WINDOW_STRESS', 'BAD_RST_FLOOD', 'DOS_APP_ERROR', 'DOS_SSL_ERROR', 'IP_FRAG_OVERRUN', 'PORT_SCAN', 'DOS_REQ_IP_RL_DROP', 'DOS_REQ_URI_RL_DROP_BAD', 'TCP_NON_SYN_FLOOD_OLD', 'DOS_REQ_URI_SCAN_BAD_RL_DROP', 'DOS_SLOW_URL', 'DOS_REQ_URI_RL_DROP', 'SYN_FLOOD', 'DOS_HTTP_ERROR', 'TEARDROP', 'DOS_REQ_URI_SCAN_UNKNOWN_RL_DROP', 'DOS_HTTP_TIMEOUT', 'DOS_CONN_RL_DROP']),
+            constraints.AllowedValues(['BAD_RST_FLOOD', 'DOS_APP_ERROR', 'DOS_CONN_IP_RL_DROP', 'DOS_CONN_RL_DROP', 'DOS_HTTP_ABORT', 'DOS_HTTP_ERROR', 'DOS_HTTP_TIMEOUT', 'DOS_REQ_CIP_SCAN_BAD_RL_DROP', 'DOS_REQ_CIP_SCAN_UNKNOWN_RL_DROP', 'DOS_REQ_IP_RL_DROP', 'DOS_REQ_IP_RL_DROP_BAD', 'DOS_REQ_IP_URI_RL_DROP', 'DOS_REQ_IP_URI_RL_DROP_BAD', 'DOS_REQ_RL_DROP', 'DOS_REQ_URI_RL_DROP', 'DOS_REQ_URI_RL_DROP_BAD', 'DOS_REQ_URI_SCAN_BAD_RL_DROP', 'DOS_REQ_URI_SCAN_UNKNOWN_RL_DROP', 'DOS_SLOW_URL', 'DOS_SSL_ERROR', 'FAKE_SESSION', 'ICMP_PING_FLOOD', 'IP_FRAG_FULL', 'IP_FRAG_INCOMPLETE', 'IP_FRAG_OVERRUN', 'IP_FRAG_TOOSMALL', 'LAND', 'MALFORMED_FLOOD', 'POLICY_DROPS', 'PORT_SCAN', 'SMALL_WINDOW_STRESS', 'SMURF', 'SYN_FLOOD', 'TCP_NON_SYN_FLOOD', 'TCP_NON_SYN_FLOOD_OLD', 'TEARDROP', 'UNKOWN_PROTOCOL', 'ZERO_WINDOW_STRESS']),
         ],
     )
     min_value_schema = properties.Schema(
@@ -51,18 +51,17 @@ class DosThreshold(object):
 
 
 
-
 class DosThresholdProfile(object):
     # all schemas
     thresh_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Timer value in seconds to collect DoS attack metrics based on threshold on the Service Engine for this Virtual Service."),
+        _("Timer value in seconds to collect DoS attack metrics based on threshold on the Service Engine for this Virtual Service. (Units: SEC) (Default: 5)"),
         required=True,
         update_allowed=True,
     )
     thresh_info_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Attack type, min and max values for DoS attack detection."),
         schema=DosThreshold.properties_schema,
         required=True,
         update_allowed=False,
@@ -90,5 +89,9 @@ class DosThresholdProfile(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'thresh_info': getattr(DosThreshold, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'thresh_info': getattr(DosThreshold, 'unique_keys', {}),
     }
 

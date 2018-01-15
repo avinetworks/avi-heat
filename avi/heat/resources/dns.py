@@ -11,28 +11,6 @@ from options import *
 from options import *
 
 
-class DnsCnameRdata(object):
-    # all schemas
-    cname_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Canonical name"),
-        required=True,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'cname',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'cname': cname_schema,
-    }
-
-
-
-
 class DnsARdata(object):
     # all schemas
     ip_address_schema = properties.Schema(
@@ -58,19 +36,73 @@ class DnsARdata(object):
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
+
+class DnsNsRdata(object):
+    # all schemas
+    nsname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Name Server name"),
+        required=True,
+        update_allowed=True,
+    )
+    ip_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) IP address for Name Server"),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ip6_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) IPv6 address for Name Server"),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'nsname',
+        'ip_address',
+        'ip6_address',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'nsname': nsname_schema,
+        'ip_address': ip_address_schema,
+        'ip6_address': ip6_address_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip6_address': getattr(IpAddr, 'field_references', {}),
+        'ip_address': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip6_address': getattr(IpAddr, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class DnsSrvRdata(object):
     # all schemas
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority of the target hosting the service, low value implies higher priority for this service record"),
+        _("Priority of the target hosting the service, low value implies higher priority for this service record (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     weight_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Relative weight for service records with same priority, high value implies higher preference for this service record"),
+        _("Relative weight for service records with same priority, high value implies higher preference for this service record (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -105,6 +137,57 @@ class DnsSrvRdata(object):
 
 
 
+class DnsCnameRdata(object):
+    # all schemas
+    cname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Canonical name"),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'cname',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'cname': cname_schema,
+    }
+
+
+
+class DnsAAAARdata(object):
+    # all schemas
+    ip6_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) IPv6 address for FQDN"),
+        schema=IpAddr.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'ip6_address',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'ip6_address': ip6_address_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip6_address': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip6_address': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
 
 class DnsInfo(object):
     # all schemas
@@ -122,12 +205,40 @@ class DnsInfo(object):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("DNS record type"),
+        _("DNS record type (Default: DNS_RECORD_A)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_RRSIG', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_AXFR', 'DNS_RECORD_SOA', 'DNS_RECORD_MX', 'DNS_RECORD_SRV', 'DNS_RECORD_HINFO', 'DNS_RECORD_OPT', 'DNS_RECORD_ANY', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_CNAME', 'DNS_RECORD_NS']),
+            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
         ],
+    )
+    num_records_in_response_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Specifies the number of records returned for this FQDN. Enter 0 to return all records. Default is 0 (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    algorithm_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is consistent hash. (Default: DNS_RECORD_RESPONSE_CONSISTENT_HASH)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_RESPONSE_CONSISTENT_HASH', 'DNS_RECORD_RESPONSE_ROUND_ROBIN']),
+        ],
+    )
+    cname_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Canonical name in CNAME record."),
+        schema=DnsCnameRdata.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    metadata_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) Any metadata associated with this record"),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
@@ -135,6 +246,10 @@ class DnsInfo(object):
         'fqdn',
         'ttl',
         'type',
+        'num_records_in_response',
+        'algorithm',
+        'cname',
+        'metadata',
     )
 
     # mapping of properties to their schemas
@@ -142,8 +257,20 @@ class DnsInfo(object):
         'fqdn': fqdn_schema,
         'ttl': ttl_schema,
         'type': type_schema,
+        'num_records_in_response': num_records_in_response_schema,
+        'algorithm': algorithm_schema,
+        'cname': cname_schema,
+        'metadata': metadata_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cname': getattr(DnsCnameRdata, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
+    }
 
 
 
@@ -151,7 +278,7 @@ class DnsRecord(object):
     # all schemas
     fqdn_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Fully Qualified Domain Name"),
         required=True,
         update_allowed=False,
     )
@@ -168,7 +295,7 @@ class DnsRecord(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DNS_RECORD_DNSKEY', 'DNS_RECORD_RRSIG', 'DNS_RECORD_A', 'DNS_RECORD_OTHER', 'DNS_RECORD_AXFR', 'DNS_RECORD_SOA', 'DNS_RECORD_MX', 'DNS_RECORD_SRV', 'DNS_RECORD_HINFO', 'DNS_RECORD_OPT', 'DNS_RECORD_ANY', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_TXT', 'DNS_RECORD_AAAA', 'DNS_RECORD_CNAME', 'DNS_RECORD_NS']),
+            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
         ],
     )
     ttl_schema = properties.Schema(
@@ -179,7 +306,7 @@ class DnsRecord(object):
     )
     ip_address_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("IP address in A record"),
         schema=DnsARdata.properties_schema,
         required=True,
         update_allowed=False,
@@ -193,7 +320,7 @@ class DnsRecord(object):
     )
     service_locator_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Service locator info in SRV record"),
         schema=DnsSrvRdata.properties_schema,
         required=True,
         update_allowed=False,
@@ -212,6 +339,61 @@ class DnsRecord(object):
         required=False,
         update_allowed=True,
     )
+    ns_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Name Server information in NS record"),
+        schema=DnsNsRdata.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ns_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Name Server information in NS record"),
+        schema=ns_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    num_records_in_response_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Specifies the number of records returned by the DNS service. Enter 0 to return all records. Default is 0 (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    algorithm_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is round-robin. (Default: DNS_RECORD_RESPONSE_ROUND_ROBIN)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_RESPONSE_CONSISTENT_HASH', 'DNS_RECORD_RESPONSE_ROUND_ROBIN']),
+        ],
+    )
+    wildcard_match_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1) Enable wild-card match of fqdn: if an exact match is not found in the DNS table, the longest match is chosen by wild-carding the fqdn in the DNS request. Default is false. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    delegated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.2) Configured FQDNs are delegated domains (i.e. they represent a zone cut). (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    ip6_address_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) IPv6 address in AAAA record"),
+        schema=DnsAAAARdata.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip6_address_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.1) IPv6 address in AAAA record"),
+        schema=ip6_address_item_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _("Details of DNS record"),
@@ -227,6 +409,12 @@ class DnsRecord(object):
         'ip_address',
         'service_locator',
         'cname',
+        'ns',
+        'num_records_in_response',
+        'algorithm',
+        'wildcard_match',
+        'delegated',
+        'ip6_address',
         'description',
     )
 
@@ -238,13 +426,29 @@ class DnsRecord(object):
         'ip_address': ip_address_schema,
         'service_locator': service_locator_schema,
         'cname': cname_schema,
+        'ns': ns_schema,
+        'num_records_in_response': num_records_in_response_schema,
+        'algorithm': algorithm_schema,
+        'wildcard_match': wildcard_match_schema,
+        'delegated': delegated_schema,
+        'ip6_address': ip6_address_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'ns': getattr(DnsNsRdata, 'field_references', {}),
+        'ip6_address': getattr(DnsAAAARdata, 'field_references', {}),
         'cname': getattr(DnsCnameRdata, 'field_references', {}),
         'ip_address': getattr(DnsARdata, 'field_references', {}),
         'service_locator': getattr(DnsSrvRdata, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ns': getattr(DnsNsRdata, 'unique_keys', {}),
+        'ip6_address': getattr(DnsAAAARdata, 'unique_keys', {}),
+        'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
+        'ip_address': getattr(DnsARdata, 'unique_keys', {}),
+        'service_locator': getattr(DnsSrvRdata, 'unique_keys', {}),
     }
 

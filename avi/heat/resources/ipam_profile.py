@@ -10,6 +10,8 @@ from options import *
 
 from options import *
 from dns import *
+from system import *
+from common import *
 
 
 class IpamDnsInfobloxProfile(object):
@@ -53,7 +55,7 @@ class IpamDnsInfobloxProfile(object):
     )
     usable_subnets_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Usable subnets to pick from Infoblox"),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
@@ -67,7 +69,7 @@ class IpamDnsInfobloxProfile(object):
     )
     usable_domains_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Usable domains to pick from Infoblox"),
         required=True,
         update_allowed=False,
     )
@@ -109,19 +111,30 @@ class IpamDnsInfobloxProfile(object):
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'usable_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'ip_address': getattr(IpAddr, 'unique_keys', {}),
+    }
 
 
-class IpamDnsGCPProfile(object):
+
+class AwsZoneNetwork(object):
     # all schemas
+    availability_zone_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.3) Availability zone"),
+        required=True,
+        update_allowed=True,
+    )
     usable_network_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.1.3) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
         required=True,
         update_allowed=False,
     )
     usable_network_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        _("(Introduced in: 17.1.3) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
         schema=usable_network_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -129,14 +142,175 @@ class IpamDnsGCPProfile(object):
 
     # properties list
     PROPERTIES = (
+        'availability_zone',
         'usable_network_uuids',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'availability_zone': availability_zone_schema,
         'usable_network_uuids': usable_network_uuids_schema,
     }
 
+
+
+class IpamDnsAzureProfile(object):
+    # all schemas
+    subscription_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Subscription Id for the Azure subscription"),
+        required=False,
+        update_allowed=True,
+    )
+    azure_userpass_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) User name password based credentials for azure. Only one of azure_userpass or azure_serviceprincipal is allowed."),
+        schema=AzureUserPassCredentials.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    azure_serviceprincipal_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Service principal based credentials for azure. Only one of azure_userpass or azure_serviceprincipal is allowed."),
+        schema=AzureServicePrincipalCredentials.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    virtual_network_ids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Virtual networks where Virtual IPs will belong."),
+        required=True,
+        update_allowed=False,
+    )
+    virtual_network_ids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Virtual networks where Virtual IPs will belong."),
+        schema=virtual_network_ids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    resource_group_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Azure resource group dedicated for Avi Controller. Avi Controller will create all its resources in this resource group."),
+        required=False,
+        update_allowed=True,
+    )
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    use_enhanced_ha_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Use Azure's enhanced HA features. This needs a public IP to be associated with the VIP. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    usable_domains_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Usable domains to pick from Azure DNS"),
+        required=True,
+        update_allowed=False,
+    )
+    usable_domains_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Usable domains to pick from Azure DNS"),
+        schema=usable_domains_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'subscription_id',
+        'azure_userpass',
+        'azure_serviceprincipal',
+        'virtual_network_ids',
+        'resource_group',
+        'usable_network_uuids',
+        'use_enhanced_ha',
+        'usable_domains',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'subscription_id': subscription_id_schema,
+        'azure_userpass': azure_userpass_schema,
+        'azure_serviceprincipal': azure_serviceprincipal_schema,
+        'virtual_network_ids': virtual_network_ids_schema,
+        'resource_group': resource_group_schema,
+        'usable_network_uuids': usable_network_uuids_schema,
+        'use_enhanced_ha': use_enhanced_ha_schema,
+        'usable_domains': usable_domains_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'azure_serviceprincipal': getattr(AzureServicePrincipalCredentials, 'field_references', {}),
+        'azure_userpass': getattr(AzureUserPassCredentials, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'azure_serviceprincipal': getattr(AzureServicePrincipalCredentials, 'unique_keys', {}),
+        'azure_userpass': getattr(AzureUserPassCredentials, 'unique_keys', {}),
+    }
+
+
+
+class DnsServiceDomain(object):
+    # all schemas
+    domain_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Service domain string used for FQDN"),
+        required=True,
+        update_allowed=True,
+    )
+    record_ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("TTL value for DNS records (Units: SEC)"),
+        required=False,
+        update_allowed=True,
+    )
+    num_dns_ip_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Specifies the number of A records returned by Avi DNS Service. (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    pass_through_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Third-party Authoritative domain requests are delegated toDNS VirtualService's pool of nameservers. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'domain_name',
+        'record_ttl',
+        'num_dns_ip',
+        'pass_through',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'domain_name': domain_name_schema,
+        'record_ttl': record_ttl_schema,
+        'num_dns_ip': num_dns_ip_schema,
+        'pass_through': pass_through_schema,
+    }
+
+    unique_keys = {
+        'my_key': 'domain_name',
+    }
 
 
 
@@ -162,7 +336,7 @@ class IpamDnsAwsProfile(object):
     )
     use_iam_roles_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _("Use IAM roles instead of access and secret key. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -178,6 +352,58 @@ class IpamDnsAwsProfile(object):
         required=False,
         update_allowed=True,
     )
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    usable_domains_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Usable domains to pick from Amazon Route 53"),
+        required=True,
+        update_allowed=False,
+    )
+    usable_domains_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Usable domains to pick from Amazon Route 53"),
+        schema=usable_domains_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    iam_assume_role_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) IAM assume role for cross-account access."),
+        required=False,
+        update_allowed=True,
+    )
+    zones_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.3) Network configuration for Virtual IP per AZ."),
+        schema=AwsZoneNetwork.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    zones_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.3) Network configuration for Virtual IP per AZ."),
+        schema=zones_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Default TTL for all records (Units: SEC) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -187,6 +413,11 @@ class IpamDnsAwsProfile(object):
         'use_iam_roles',
         'access_key_id',
         'secret_access_key',
+        'usable_network_uuids',
+        'usable_domains',
+        'iam_assume_role',
+        'zones',
+        'ttl',
     )
 
     # mapping of properties to their schemas
@@ -197,54 +428,120 @@ class IpamDnsAwsProfile(object):
         'use_iam_roles': use_iam_roles_schema,
         'access_key_id': access_key_id_schema,
         'secret_access_key': secret_access_key_schema,
+        'usable_network_uuids': usable_network_uuids_schema,
+        'usable_domains': usable_domains_schema,
+        'iam_assume_role': iam_assume_role_schema,
+        'zones': zones_schema,
+        'ttl': ttl_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'zones': getattr(AwsZoneNetwork, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'zones': getattr(AwsZoneNetwork, 'unique_keys', {}),
     }
 
 
 
-
-class DnsServiceDomain(object):
+class CustomIpamDnsProfile(AviResource):
+    resource_name = "customipamdnsprofile"
     # all schemas
-    domain_name_schema = properties.Schema(
+    avi_version_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Service domain string used for FQDN"),
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Name of the Custom IPAM DNS Profile."),
         required=True,
         update_allowed=True,
     )
-    record_ttl_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("TTL value for DNS records"),
-        required=False,
+    script_uri_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Script URI of form controller://ipamdnsscripts/<file-name>"),
+        required=True,
         update_allowed=True,
     )
-    num_dns_ip_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Specifies the number of A records returned by Avi DNS Service."),
-        required=False,
-        update_allowed=True,
+    script_params_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Parameters that are always passed to the IPAM/DNS script."),
+        schema=CustomParams.properties_schema,
+        required=True,
+        update_allowed=False,
     )
-    pass_through_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Non Avi Authoritative domain requests are delegated toDNS VirtualService's pool of nameservers."),
+    script_params_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Parameters that are always passed to the IPAM/DNS script."),
+        schema=script_params_item_schema,
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'domain_name',
-        'record_ttl',
-        'num_dns_ip',
-        'pass_through',
+        'avi_version',
+        'name',
+        'script_uri',
+        'script_params',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'domain_name': domain_name_schema,
-        'record_ttl': record_ttl_schema,
-        'num_dns_ip': num_dns_ip_schema,
-        'pass_through': pass_through_schema,
+        'avi_version': avi_version_schema,
+        'name': name_schema,
+        'script_uri': script_uri_schema,
+        'script_params': script_params_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'script_params': getattr(CustomParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'script_params': getattr(CustomParams, 'unique_keys', {}),
+    }
+
+
+
+class IpamDnsGCPProfile(object):
+    # all schemas
+    usable_network_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        required=True,
+        update_allowed=False,
+    )
+    usable_network_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
+        schema=usable_network_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    match_se_group_subnet_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1) Match SE group subnets for VIP placement. Default is to not match SE group subnets. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'usable_network_uuids',
+        'match_se_group_subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'usable_network_uuids': usable_network_uuids_schema,
+        'match_se_group_subnet': match_se_group_subnet_schema,
+    }
 
 
 
@@ -252,7 +549,7 @@ class IpamDnsInternalProfile(object):
     # all schemas
     dns_service_domain_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of service domains"),
         schema=DnsServiceDomain.properties_schema,
         required=True,
         update_allowed=False,
@@ -266,7 +563,7 @@ class IpamDnsInternalProfile(object):
     )
     ttl_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Default TTL for all records, overridden by TTL value for each service domain configured in DnsServiceDomain."),
+        _("Default TTL for all records, overridden by TTL value for each service domain configured in DnsServiceDomain. (Units: SEC) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -278,7 +575,7 @@ class IpamDnsInternalProfile(object):
     )
     usable_network_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Usable networks for Virtual IP. If VirtualService does not specify a network and auto_allocate_ip is set, then the first available network from this list will be chosen for IP allocation."),
         required=True,
         update_allowed=False,
     )
@@ -309,6 +606,90 @@ class IpamDnsInternalProfile(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'dns_service_domain': getattr(DnsServiceDomain, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'dns_service_domain': getattr(DnsServiceDomain, 'unique_keys', {}),
+    }
+
+
+
+class IpamDnsCustomProfile(object):
+    # all schemas
+    custom_ipam_dns_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1)  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    dynamic_params_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Custom parameters that will passed to the IPAM/DNS provider including but not limited to provider credentials and API version."),
+        schema=CustomParams.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    dynamic_params_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.1) Custom parameters that will passed to the IPAM/DNS provider including but not limited to provider credentials and API version."),
+        schema=dynamic_params_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    usable_subnets_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.2) Usable subnets"),
+        schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    usable_subnets_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.2) Usable subnets"),
+        schema=usable_subnets_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    usable_domains_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) Usable domains"),
+        required=True,
+        update_allowed=False,
+    )
+    usable_domains_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.2) Usable domains"),
+        schema=usable_domains_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'custom_ipam_dns_profile_uuid',
+        'dynamic_params',
+        'usable_subnets',
+        'usable_domains',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'custom_ipam_dns_profile_uuid': custom_ipam_dns_profile_uuid_schema,
+        'dynamic_params': dynamic_params_schema,
+        'usable_subnets': usable_subnets_schema,
+        'usable_domains': usable_domains_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'usable_subnets': getattr(IpAddrPrefix, 'field_references', {}),
+        'custom_ipam_dns_profile_uuid': 'customipamdnsprofile',
+        'dynamic_params': getattr(CustomParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'usable_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'dynamic_params': getattr(CustomParams, 'unique_keys', {}),
     }
 
 
@@ -374,10 +755,15 @@ class IpamDnsOpenstackProfile(object):
 
 
 
-
 class IpamDnsProviderProfile(AviResource):
     resource_name = "ipamdnsproviderprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name for the IPAM/DNS Provider profile"),
@@ -390,7 +776,7 @@ class IpamDnsProviderProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_OPENSTACK', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_AWS']),
+            constraints.AllowedValues(['IPAMDNS_TYPE_AWS', 'IPAMDNS_TYPE_AWS_DNS', 'IPAMDNS_TYPE_AZURE', 'IPAMDNS_TYPE_AZURE_DNS', 'IPAMDNS_TYPE_CUSTOM', 'IPAMDNS_TYPE_CUSTOM_DNS', 'IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_INFOBLOX_DNS', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_OPENSTACK']),
         ],
     )
     infoblox_profile_schema = properties.Schema(
@@ -428,9 +814,37 @@ class IpamDnsProviderProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    custom_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) Provider details if type is Custom"),
+        schema=IpamDnsCustomProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    azure_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Provider details if type is Microsoft Azure"),
+        schema=IpamDnsAzureProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    proxy_configuration_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.1) "),
+        schema=ProxyConfiguration.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    allocate_ip_in_vrf_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) If this flag is set, only allocate IP from networks in the Virtual Service VRF. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'type',
         'infoblox_profile',
@@ -438,10 +852,15 @@ class IpamDnsProviderProfile(AviResource):
         'openstack_profile',
         'internal_profile',
         'gcp_profile',
+        'custom_profile',
+        'azure_profile',
+        'proxy_configuration',
+        'allocate_ip_in_vrf',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'type': type_schema,
         'infoblox_profile': infoblox_profile_schema,
@@ -449,21 +868,40 @@ class IpamDnsProviderProfile(AviResource):
         'openstack_profile': openstack_profile_schema,
         'internal_profile': internal_profile_schema,
         'gcp_profile': gcp_profile_schema,
+        'custom_profile': custom_profile_schema,
+        'azure_profile': azure_profile_schema,
+        'proxy_configuration': proxy_configuration_schema,
+        'allocate_ip_in_vrf': allocate_ip_in_vrf_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
-        'infoblox_profile': getattr(IpamDnsInfobloxProfile, 'field_references', {}),
-        'aws_profile': getattr(IpamDnsAwsProfile, 'field_references', {}),
+        'azure_profile': getattr(IpamDnsAzureProfile, 'field_references', {}),
         'openstack_profile': getattr(IpamDnsOpenstackProfile, 'field_references', {}),
-        'internal_profile': getattr(IpamDnsInternalProfile, 'field_references', {}),
         'gcp_profile': getattr(IpamDnsGCPProfile, 'field_references', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
+        'infoblox_profile': getattr(IpamDnsInfobloxProfile, 'field_references', {}),
+        'custom_profile': getattr(IpamDnsCustomProfile, 'field_references', {}),
+        'internal_profile': getattr(IpamDnsInternalProfile, 'field_references', {}),
+        'aws_profile': getattr(IpamDnsAwsProfile, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'azure_profile': getattr(IpamDnsAzureProfile, 'unique_keys', {}),
+        'openstack_profile': getattr(IpamDnsOpenstackProfile, 'unique_keys', {}),
+        'gcp_profile': getattr(IpamDnsGCPProfile, 'unique_keys', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'infoblox_profile': getattr(IpamDnsInfobloxProfile, 'unique_keys', {}),
+        'custom_profile': getattr(IpamDnsCustomProfile, 'unique_keys', {}),
+        'internal_profile': getattr(IpamDnsInternalProfile, 'unique_keys', {}),
+        'aws_profile': getattr(IpamDnsAwsProfile, 'unique_keys', {}),
     }
 
 
 
 def resource_mapping():
     return {
+        'Avi::LBaaS::CustomIpamDnsProfile': CustomIpamDnsProfile,
         'Avi::LBaaS::IpamDnsProviderProfile': IpamDnsProviderProfile,
     }
 

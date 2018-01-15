@@ -24,7 +24,7 @@ class IpAddr(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['V4', 'DNS']),
+            constraints.AllowedValues(['DNS', 'V4', 'V6']),
         ],
     )
 
@@ -40,6 +40,9 @@ class IpAddr(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'addr',
+    }
 
 
 
@@ -74,5 +77,10 @@ class IpAddrPrefix(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip_addr': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip_addr': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip_addr,mask',
     }
 

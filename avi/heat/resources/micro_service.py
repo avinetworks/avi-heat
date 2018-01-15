@@ -68,11 +68,22 @@ class MicroServiceContainer(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip,task_id,container_id',
+    }
+
 
 
 class MicroService(AviResource):
     resource_name = "microservice"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -99,7 +110,7 @@ class MicroService(AviResource):
     )
     containers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("The list of containers for this microservice"),
         schema=MicroServiceContainer.properties_schema,
         required=True,
         update_allowed=False,
@@ -126,6 +137,7 @@ class MicroService(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'orchestrator_name',
         'application_name',
@@ -137,6 +149,7 @@ class MicroService(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'orchestrator_name': orchestrator_name_schema,
         'application_name': application_name_schema,
@@ -149,6 +162,10 @@ class MicroService(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'containers': getattr(MicroServiceContainer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'containers': getattr(MicroServiceContainer, 'unique_keys', {}),
     }
 
 

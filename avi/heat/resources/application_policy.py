@@ -23,7 +23,7 @@ class HTTPSecurityAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SECURITY_ACTION_SEND_RESPONSE', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN']),
+            constraints.AllowedValues(['HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_SEND_RESPONSE']),
         ],
     )
     status_code_schema = properties.Schema(
@@ -32,7 +32,7 @@ class HTTPSecurityAction(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429']),
         ],
     )
     https_port_schema = properties.Schema(
@@ -80,6 +80,11 @@ class HTTPSecurityAction(object):
         'file': getattr(HTTPLocalFile, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rate_limit': getattr(RateProfile, 'unique_keys', {}),
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+    }
+
 
 
 class HTTPPolicies(object):
@@ -92,7 +97,7 @@ class HTTPPolicies(object):
     )
     http_policy_set_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the virtual service HTTP policy collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the virtual service HTTP policy collection You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
@@ -114,6 +119,10 @@ class HTTPPolicies(object):
         'http_policy_set_uuid': 'httppolicyset',
     }
 
+    unique_keys = {
+        'my_key': 'http_policy_set_uuid',
+    }
+
 
 
 class HTTPRequestRule(object):
@@ -132,7 +141,7 @@ class HTTPRequestRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -152,7 +161,7 @@ class HTTPRequestRule(object):
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP header rewrite action"),
         schema=HTTPHdrAction.properties_schema,
         required=True,
         update_allowed=False,
@@ -228,6 +237,15 @@ class HTTPRequestRule(object):
         'switching_action': getattr(HTTPSwitchingAction, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rewrite_url_action': getattr(HTTPRewriteURLAction, 'unique_keys', {}),
+        'my_key': 'name',
+        'switching_action': getattr(HTTPSwitchingAction, 'unique_keys', {}),
+        'redirect_action': getattr(HTTPRedirectAction, 'unique_keys', {}),
+        'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
+        'match': getattr(MatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPResponseRule(object):
@@ -246,7 +264,7 @@ class HTTPResponseRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -259,7 +277,7 @@ class HTTPResponseRule(object):
     )
     hdr_action_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("HTTP header rewrite action"),
         schema=HTTPHdrAction.properties_schema,
         required=True,
         update_allowed=False,
@@ -322,6 +340,13 @@ class HTTPResponseRule(object):
         'match': getattr(ResponseMatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'loc_hdr_action': getattr(HTTPRewriteLocHdrAction, 'unique_keys', {}),
+        'my_key': 'name',
+        'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
+        'match': getattr(ResponseMatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPSecurityRule(object):
@@ -340,7 +365,7 @@ class HTTPSecurityRule(object):
     )
     enable_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable or disable the rule"),
+        _("Enable or disable the rule (Default: True)"),
         required=True,
         update_allowed=True,
     )
@@ -391,13 +416,19 @@ class HTTPSecurityRule(object):
         'match': getattr(MatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'action': getattr(HTTPSecurityAction, 'unique_keys', {}),
+        'my_key': 'name',
+        'match': getattr(MatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class HTTPRequestPolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP request policy"),
         schema=HTTPRequestRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -425,13 +456,17 @@ class HTTPRequestPolicy(object):
         'rules': getattr(HTTPRequestRule, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rules': getattr(HTTPRequestRule, 'unique_keys', {}),
+    }
+
 
 
 class HTTPSecurityPolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP security policy"),
         schema=HTTPSecurityRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -459,13 +494,17 @@ class HTTPSecurityPolicy(object):
         'rules': getattr(HTTPSecurityRule, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rules': getattr(HTTPSecurityRule, 'unique_keys', {}),
+    }
+
 
 
 class HTTPResponsePolicy(object):
     # all schemas
     rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Add rules to the HTTP response policy"),
         schema=HTTPResponseRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -493,11 +532,21 @@ class HTTPResponsePolicy(object):
         'rules': getattr(HTTPResponseRule, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rules': getattr(HTTPResponseRule, 'unique_keys', {}),
+    }
+
 
 
 class HTTPPolicySet(AviResource):
     resource_name = "httppolicyset"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the HTTP Policy Set"),
@@ -539,7 +588,7 @@ class HTTPPolicySet(AviResource):
     )
     is_internal_policy_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -552,6 +601,7 @@ class HTTPPolicySet(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'http_security_policy',
         'http_request_policy',
@@ -564,6 +614,7 @@ class HTTPPolicySet(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'http_security_policy': http_security_policy_schema,
         'http_request_policy': http_request_policy_schema,
@@ -579,6 +630,12 @@ class HTTPPolicySet(AviResource):
         'http_request_policy': getattr(HTTPRequestPolicy, 'field_references', {}),
         'http_response_policy': getattr(HTTPResponsePolicy, 'field_references', {}),
         'http_security_policy': getattr(HTTPSecurityPolicy, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'http_request_policy': getattr(HTTPRequestPolicy, 'unique_keys', {}),
+        'http_response_policy': getattr(HTTPResponsePolicy, 'unique_keys', {}),
+        'http_security_policy': getattr(HTTPSecurityPolicy, 'unique_keys', {}),
     }
 
 
