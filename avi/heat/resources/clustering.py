@@ -47,7 +47,14 @@ class ClusterNode(object):
     )
     vm_hostname_schema = properties.Schema(
         properties.Schema.STRING,
-        _("hostname assigned to this controller VM"),
+        _("Hostname assigned to this controller VM"),
+        required=False,
+        update_allowed=True,
+    )
+    public_ip_or_name_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) Public IP address or hostname of the controller VM"),
+        schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -60,6 +67,7 @@ class ClusterNode(object):
         'vm_name',
         'vm_mor',
         'vm_hostname',
+        'public_ip_or_name',
     )
 
     # mapping of properties to their schemas
@@ -70,11 +78,100 @@ class ClusterNode(object):
         'vm_name': vm_name_schema,
         'vm_mor': vm_mor_schema,
         'vm_hostname': vm_hostname_schema,
+        'public_ip_or_name': public_ip_or_name_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip': getattr(IpAddr, 'field_references', {}),
+        'public_ip_or_name': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+        'public_ip_or_name': getattr(IpAddr, 'unique_keys', {}),
+    }
+
+
+
+class AzureClusterInfo(object):
+    # all schemas
+    subscription_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=True,
+        update_allowed=True,
+    )
+    cloud_credential_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5)  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'subscription_id',
+        'cloud_credential_uuid',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'subscription_id': subscription_id_schema,
+        'cloud_credential_uuid': cloud_credential_uuid_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cloud_credential_uuid': 'cloudconnectoruser',
+    }
+
+
+
+class ClusterCloudDetails(AviResource):
+    resource_name = "clusterclouddetails"
+    # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=True,
+        update_allowed=True,
+    )
+    azure_info_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) Azure info to configure cluster_vip on the controller"),
+        schema=AzureClusterInfo.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'avi_version',
+        'name',
+        'azure_info',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'avi_version': avi_version_schema,
+        'name': name_schema,
+        'azure_info': azure_info_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'azure_info': getattr(AzureClusterInfo, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'azure_info': getattr(AzureClusterInfo, 'unique_keys', {}),
     }
 
 
@@ -82,6 +179,12 @@ class ClusterNode(object):
 class Cluster(AviResource):
     resource_name = "cluster"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -111,13 +214,14 @@ class Cluster(AviResource):
     )
     rejoin_nodes_automatically_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Re-join cluster nodes automatically in the event one of the node is reset to factory."),
+        _("Re-join cluster nodes automatically in the event one of the node is reset to factory. (Default: True)"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'virtual_ip',
         'nodes',
@@ -126,6 +230,7 @@ class Cluster(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'virtual_ip': virtual_ip_schema,
         'nodes': nodes_schema,
@@ -138,10 +243,16 @@ class Cluster(AviResource):
         'virtual_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'nodes': getattr(ClusterNode, 'unique_keys', {}),
+        'virtual_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 def resource_mapping():
     return {
         'Avi::LBaaS::Cluster': Cluster,
+        'Avi::LBaaS::ClusterCloudDetails': ClusterCloudDetails,
     }
 

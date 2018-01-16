@@ -16,16 +16,16 @@ class SSLKeyRSAParams(object):
     # all schemas
     key_size_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_2048_BITS)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_3072_BITS', 'SSL_KEY_4096_BITS', 'SSL_KEY_2048_BITS']),
+            constraints.AllowedValues(['SSL_KEY_1024_BITS', 'SSL_KEY_2048_BITS', 'SSL_KEY_3072_BITS', 'SSL_KEY_4096_BITS']),
         ],
     )
     exponent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 65537)"),
         required=False,
         update_allowed=True,
     )
@@ -44,16 +44,15 @@ class SSLKeyRSAParams(object):
 
 
 
-
 class SSLVersion(object):
     # all schemas
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_VERSION_TLS1_1)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_VERSION_TLS1_1', 'SSL_VERSION_TLS1', 'SSL_VERSION_TLS1_2']),
+            constraints.AllowedValues(['SSL_VERSION_SSLV3', 'SSL_VERSION_TLS1', 'SSL_VERSION_TLS1_1', 'SSL_VERSION_TLS1_2']),
         ],
     )
 
@@ -67,6 +66,9 @@ class SSLVersion(object):
         'type': type_schema,
     }
 
+    unique_keys = {
+        'my_key': 'type',
+    }
 
 
 
@@ -80,7 +82,7 @@ class CertificateAuthority(object):
     )
     ca_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -108,11 +110,11 @@ class SSLKeyECParams(object):
     # all schemas
     curve_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_EC_CURVE_SECP256R1)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_EC_CURVE_SECP521R1', 'SSL_KEY_EC_CURVE_SECP256R1', 'SSL_KEY_EC_CURVE_SECP384R1']),
+            constraints.AllowedValues(['SSL_KEY_EC_CURVE_SECP256R1', 'SSL_KEY_EC_CURVE_SECP384R1', 'SSL_KEY_EC_CURVE_SECP521R1']),
         ],
     )
 
@@ -125,7 +127,6 @@ class SSLKeyECParams(object):
     properties_schema = {
         'curve': curve_schema,
     }
-
 
 
 
@@ -206,10 +207,15 @@ class SSLCertificateDescription(object):
 
 
 
-
 class CertificateManagementProfile(AviResource):
     resource_name = "certificatemanagementprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
@@ -239,6 +245,7 @@ class CertificateManagementProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'script_params',
         'script_path',
@@ -246,6 +253,7 @@ class CertificateManagementProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'script_params': script_params_schema,
         'script_path': script_path_schema,
@@ -254,6 +262,10 @@ class CertificateManagementProfile(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'script_params': getattr(CustomParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'script_params': getattr(CustomParams, 'unique_keys', {}),
     }
 
 
@@ -272,7 +284,7 @@ class SSLRating(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+            constraints.AllowedValues(['SSL_SCORE_AVERAGE', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_GOOD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_VERY_BAD']),
         ],
     )
     compatibility_rating_schema = properties.Schema(
@@ -281,7 +293,7 @@ class SSLRating(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_SCORE_GOOD', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_VERY_BAD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_AVERAGE']),
+            constraints.AllowedValues(['SSL_SCORE_AVERAGE', 'SSL_SCORE_BAD', 'SSL_SCORE_EXCELLENT', 'SSL_SCORE_GOOD', 'SSL_SCORE_NOT_SECURE', 'SSL_SCORE_VERY_BAD']),
         ],
     )
 
@@ -298,7 +310,6 @@ class SSLRating(object):
         'performance_rating': performance_rating_schema,
         'compatibility_rating': compatibility_rating_schema,
     }
-
 
 
 
@@ -330,7 +341,7 @@ class CRL(object):
     )
     update_interval_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Interval in minutes to check for CRL update. If not specified, interval will be 1 day"),
+        _("Interval in minutes to check for CRL update. If not specified, interval will be 1 day (Units: MIN)"),
         required=False,
         update_allowed=True,
     )
@@ -364,6 +375,12 @@ class CRL(object):
         required=False,
         update_allowed=True,
     )
+    last_refreshed_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Last time CRL was refreshed by the system. This is an internal field used by the system"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -377,6 +394,7 @@ class CRL(object):
         'common_name',
         'fingerprint',
         'distinguished_name',
+        'last_refreshed',
     )
 
     # mapping of properties to their schemas
@@ -391,8 +409,8 @@ class CRL(object):
         'common_name': common_name_schema,
         'fingerprint': fingerprint_schema,
         'distinguished_name': distinguished_name_schema,
+        'last_refreshed': last_refreshed_schema,
     }
-
 
 
 
@@ -400,11 +418,11 @@ class SSLKeyParams(object):
     # all schemas
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_KEY_ALGORITHM_RSA)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_KEY_ALGORITHM_RSA', 'SSL_KEY_ALGORITHM_EC']),
+            constraints.AllowedValues(['SSL_KEY_ALGORITHM_EC', 'SSL_KEY_ALGORITHM_RSA']),
         ],
     )
     rsa_params_schema = properties.Schema(
@@ -442,11 +460,22 @@ class SSLKeyParams(object):
         'rsa_params': getattr(SSLKeyRSAParams, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ec_params': getattr(SSLKeyECParams, 'unique_keys', {}),
+        'rsa_params': getattr(SSLKeyRSAParams, 'unique_keys', {}),
+    }
+
 
 
 class SSLProfile(AviResource):
     resource_name = "sslprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -455,7 +484,7 @@ class SSLProfile(AviResource):
     )
     accepted_versions_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Set of versions accepted by the server"),
         schema=SSLVersion.properties_schema,
         required=True,
         update_allowed=False,
@@ -469,7 +498,7 @@ class SSLProfile(AviResource):
     )
     accepted_ciphers_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Ciphers suites represented as defined by http://www.openssl.org/docs/apps/ciphers.html"),
+        _("Ciphers suites represented as defined by U(http://www.openssl.org/docs/apps/ciphers.html)"),
         required=False,
         update_allowed=True,
     )
@@ -479,7 +508,7 @@ class SSLProfile(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_RC4_128_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA']),
+            constraints.AllowedValues(['TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256', 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA', 'TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384', 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384', 'TLS_RSA_WITH_3DES_EDE_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA', 'TLS_RSA_WITH_AES_128_CBC_SHA256', 'TLS_RSA_WITH_AES_128_GCM_SHA256', 'TLS_RSA_WITH_AES_256_CBC_SHA', 'TLS_RSA_WITH_AES_256_CBC_SHA256', 'TLS_RSA_WITH_AES_256_GCM_SHA384', 'TLS_RSA_WITH_RC4_128_SHA']),
         ],
     )
     cipher_enums_schema = properties.Schema(
@@ -512,25 +541,31 @@ class SSLProfile(AviResource):
     )
     send_close_notify_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Send 'close notify' alert message for a clean shutdown of the SSL connection."),
+        _("Send 'close notify' alert message for a clean shutdown of the SSL connection. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    dhparam_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("DH Parameters used in SSL. At this time, it is not configurable and is set to 2048 bits."),
         required=False,
         update_allowed=True,
     )
     prefer_client_cipher_ordering_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will prefer the SSL cipher ordering presented by the client during the SSL handshake rather than the one specified in the SSL Profile."),
+        _("Prefer the SSL cipher ordering presented by the client during the SSL handshake over the one specified in the SSL Profile. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     enable_ssl_session_reuse_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable SSL session re-use."),
+        _("Enable SSL session re-use. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     ssl_session_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The amount of time before an SSL session expires."),
+        _("The amount of time before an SSL session expires. (Units: SEC) (Default: 86400)"),
         required=False,
         update_allowed=True,
     )
@@ -543,6 +578,7 @@ class SSLProfile(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'accepted_versions',
         'accepted_ciphers',
@@ -550,6 +586,7 @@ class SSLProfile(AviResource):
         'tags',
         'ssl_rating',
         'send_close_notify',
+        'dhparam',
         'prefer_client_cipher_ordering',
         'enable_ssl_session_reuse',
         'ssl_session_timeout',
@@ -558,6 +595,7 @@ class SSLProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'accepted_versions': accepted_versions_schema,
         'accepted_ciphers': accepted_ciphers_schema,
@@ -565,6 +603,7 @@ class SSLProfile(AviResource):
         'tags': tags_schema,
         'ssl_rating': ssl_rating_schema,
         'send_close_notify': send_close_notify_schema,
+        'dhparam': dhparam_schema,
         'prefer_client_cipher_ordering': prefer_client_cipher_ordering_schema,
         'enable_ssl_session_reuse': enable_ssl_session_reuse_schema,
         'ssl_session_timeout': ssl_session_timeout_schema,
@@ -576,6 +615,12 @@ class SSLProfile(AviResource):
         'ssl_rating': getattr(SSLRating, 'field_references', {}),
         'accepted_versions': getattr(SSLVersion, 'field_references', {}),
         'tags': getattr(Tag, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ssl_rating': getattr(SSLRating, 'unique_keys', {}),
+        'accepted_versions': getattr(SSLVersion, 'unique_keys', {}),
+        'tags': getattr(Tag, 'unique_keys', {}),
     }
 
 
@@ -677,11 +722,11 @@ class SSLCertificate(object):
     )
     expiry_status_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_GOOD)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CERTIFICATE_EXPIRED', 'SSL_CERTIFICATE_GOOD', 'SSL_CERTIFICATE_EXPIRY_WARNING']),
+            constraints.AllowedValues(['SSL_CERTIFICATE_EXPIRED', 'SSL_CERTIFICATE_EXPIRY_WARNING', 'SSL_CERTIFICATE_GOOD']),
         ],
     )
     chain_verified_schema = properties.Schema(
@@ -692,7 +737,7 @@ class SSLCertificate(object):
     )
     subject_alt_names_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("subjectAltName that provides additional subject identities"),
         required=True,
         update_allowed=False,
     )
@@ -705,7 +750,7 @@ class SSLCertificate(object):
     )
     days_until_expire_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 365)"),
         required=False,
         update_allowed=True,
     )
@@ -763,11 +808,23 @@ class SSLCertificate(object):
         'issuer': getattr(SSLCertificateDescription, 'field_references', {}),
     }
 
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'subject': getattr(SSLCertificateDescription, 'unique_keys', {}),
+        'issuer': getattr(SSLCertificateDescription, 'unique_keys', {}),
+    }
+
 
 
 class PKIProfile(AviResource):
     resource_name = "pkiprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the PKI Profile"),
@@ -776,7 +833,7 @@ class PKIProfile(AviResource):
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of Certificate Authorities (Root and Intermediate) trusted that is used for certificate validation"),
         schema=SSLCertificate.properties_schema,
         required=True,
         update_allowed=False,
@@ -790,7 +847,7 @@ class PKIProfile(AviResource):
     )
     crls_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Certificate Revocation Lists"),
         schema=CRL.properties_schema,
         required=True,
         update_allowed=False,
@@ -804,19 +861,19 @@ class PKIProfile(AviResource):
     )
     ignore_peer_chain_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will not trust Intermediate and Root certs presented by a client.  Instead, only the chain certs configured in the Certificate Authority section will be used to verify trust of the client's cert."),
+        _("When enabled, Avi will not trust Intermediate and Root certs presented by a client.  Instead, only the chain certs configured in the Certificate Authority section will be used to verify trust of the client's cert. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     crl_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked."),
+        _("When enabled, Avi will verify via CRL checks that certificates in the trust chain have not been revoked. (Default: True)"),
         required=False,
         update_allowed=True,
     )
     validate_only_leaf_crl_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When enabled, Avi will only validate the revocation status of the leaf certificate using CRL. To enable validation for the entire chain, disable this option and provide all the relevant CRLs"),
+        _("When enabled, Avi will only validate the revocation status of the leaf certificate using CRL. To enable validation for the entire chain, disable this option and provide all the relevant CRLs (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -826,9 +883,16 @@ class PKIProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    is_federated_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'ca_certs',
         'crls',
@@ -836,10 +900,12 @@ class PKIProfile(AviResource):
         'crl_check',
         'validate_only_leaf_crl',
         'created_by',
+        'is_federated',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'ca_certs': ca_certs_schema,
         'crls': crls_schema,
@@ -847,6 +913,7 @@ class PKIProfile(AviResource):
         'crl_check': crl_check_schema,
         'validate_only_leaf_crl': validate_only_leaf_crl_schema,
         'created_by': created_by_schema,
+        'is_federated': is_federated_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -855,11 +922,22 @@ class PKIProfile(AviResource):
         'crls': getattr(CRL, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ca_certs': getattr(SSLCertificate, 'unique_keys', {}),
+        'crls': getattr(CRL, 'unique_keys', {}),
+    }
+
 
 
 class SSLKeyAndCertificate(AviResource):
     resource_name = "sslkeyandcertificate"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -868,11 +946,11 @@ class SSLKeyAndCertificate(AviResource):
     )
     type_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_TYPE_VIRTUALSERVICE)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SSL_CERTIFICATE_TYPE_SYSTEM', 'SSL_CERTIFICATE_TYPE_VIRTUALSERVICE', 'SSL_CERTIFICATE_TYPE_CA']),
+            constraints.AllowedValues(['SSL_CERTIFICATE_TYPE_CA', 'SSL_CERTIFICATE_TYPE_SYSTEM', 'SSL_CERTIFICATE_TYPE_VIRTUALSERVICE']),
         ],
     )
     certificate_schema = properties.Schema(
@@ -897,7 +975,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     status_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _(" (Default: SSL_CERTIFICATE_FINISHED)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -906,7 +984,7 @@ class SSLKeyAndCertificate(AviResource):
     )
     ca_certs_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("CA certificates in certificate chain"),
         schema=CertificateAuthority.properties_schema,
         required=True,
         update_allowed=False,
@@ -932,19 +1010,19 @@ class SSLKeyAndCertificate(AviResource):
     )
     hardwaresecuritymodulegroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     certificate_management_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     dynamic_params_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Dynamic parameters needed for certificate management profile"),
         schema=CustomParams.properties_schema,
         required=True,
         update_allowed=False,
@@ -965,6 +1043,7 @@ class SSLKeyAndCertificate(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'type',
         'certificate',
@@ -982,6 +1061,7 @@ class SSLKeyAndCertificate(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'type': type_schema,
         'certificate': certificate_schema,
@@ -1005,6 +1085,13 @@ class SSLKeyAndCertificate(AviResource):
         'ca_certs': getattr(CertificateAuthority, 'field_references', {}),
         'certificate_management_profile_uuid': 'certificatemanagementprofile',
         'key_params': getattr(SSLKeyParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'key_params': getattr(SSLKeyParams, 'unique_keys', {}),
+        'ca_certs': getattr(CertificateAuthority, 'unique_keys', {}),
+        'dynamic_params': getattr(CustomParams, 'unique_keys', {}),
+        'certificate': getattr(SSLCertificate, 'unique_keys', {}),
     }
 
 

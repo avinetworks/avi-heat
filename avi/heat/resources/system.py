@@ -19,7 +19,7 @@ class DNSConfiguration(object):
     # all schemas
     server_list_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of DNS Server IP addresses"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -55,6 +55,10 @@ class DNSConfiguration(object):
         'server_list': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'server_list': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class NTPAuthenticationKey(object):
@@ -67,11 +71,11 @@ class NTPAuthenticationKey(object):
     )
     algorithm_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Message Digest Algorithm used for NTP authentication. Default is NTP_AUTH_ALGORITHM_MD5"),
+        _("Message Digest Algorithm used for NTP authentication. Default is NTP_AUTH_ALGORITHM_MD5 (Default: NTP_AUTH_ALGORITHM_MD5)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NTP_AUTH_ALGORITHM_SHA1', 'NTP_AUTH_ALGORITHM_MD5']),
+            constraints.AllowedValues(['NTP_AUTH_ALGORITHM_MD5', 'NTP_AUTH_ALGORITHM_SHA1']),
         ],
     )
     key_schema = properties.Schema(
@@ -95,6 +99,9 @@ class NTPAuthenticationKey(object):
         'key': key_schema,
     }
 
+    unique_keys = {
+        'my_key': 'key_number',
+    }
 
 
 
@@ -102,13 +109,13 @@ class AdminAuthConfiguration(object):
     # all schemas
     auth_profile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     mapping_rules_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Rules list for tenant or role mapping"),
         schema=AuthMappingRule.properties_schema,
         required=True,
         update_allowed=False,
@@ -120,23 +127,35 @@ class AdminAuthConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    allow_local_user_login_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1) Allow any user created locally to login with local credentials (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'auth_profile_uuid',
         'mapping_rules',
+        'allow_local_user_login',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'auth_profile_uuid': auth_profile_uuid_schema,
         'mapping_rules': mapping_rules_schema,
+        'allow_local_user_login': allow_local_user_login_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'mapping_rules': getattr(AuthMappingRule, 'field_references', {}),
         'auth_profile_uuid': 'authprofile',
+    }
+
+    unique_keys = {
+        'mapping_rules': getattr(AuthMappingRule, 'unique_keys', {}),
     }
 
 
@@ -174,27 +193,46 @@ class NTPServer(object):
         'server': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'server': getattr(IpAddr, 'unique_keys', {}),
+    }
 
 
-class TechSupportUploaderConfiguration(object):
+
+class AzureUserPassCredentials(object):
     # all schemas
-    auto_upload_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(""),
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Username for Azure subscription. Required only for username password based authentication."),
+        required=False,
+        update_allowed=True,
+    )
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Password for Azure subscription. Required only if username is provided."),
+        required=False,
+        update_allowed=True,
+    )
+    tenant_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Tenant or the active directory associated with the subscription. Required for user name password authentication."),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'auto_upload',
+        'username',
+        'password',
+        'tenant_name',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'auto_upload': auto_upload_schema,
+        'username': username_schema,
+        'password': password_schema,
+        'tenant_name': tenant_name_schema,
     }
-
 
 
 
@@ -202,11 +240,11 @@ class EmailConfiguration(object):
     # all schemas
     smtp_type_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Type of SMTP Mail Service"),
+        _("Type of SMTP Mail Service (Default: SMTP_LOCAL_HOST)"),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SMTP_NONE', 'SMTP_LOCAL_HOST', 'SMTP_SERVER', 'SMTP_ANONYMOUS_SERVER']),
+            constraints.AllowedValues(['SMTP_ANONYMOUS_SERVER', 'SMTP_LOCAL_HOST', 'SMTP_NONE', 'SMTP_SERVER']),
         ],
     )
     from_email_schema = properties.Schema(
@@ -223,7 +261,7 @@ class EmailConfiguration(object):
     )
     mail_server_port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Mail server port"),
+        _("Mail server port (Default: 25)"),
         required=False,
         update_allowed=True,
     )
@@ -260,6 +298,42 @@ class EmailConfiguration(object):
         'auth_password': auth_password_schema,
     }
 
+
+
+class AzureServicePrincipalCredentials(object):
+    # all schemas
+    application_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Application Id created for Avi Controller. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+    authentication_token_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Authentication token created for the Avi Controller application. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+    tenant_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Tenant ID for the subscription. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'application_id',
+        'authentication_token',
+        'tenant_id',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'application_id': application_id_schema,
+        'authentication_token': authentication_token_schema,
+        'tenant_id': tenant_id_schema,
+    }
 
 
 
@@ -308,7 +382,6 @@ class ProxyConfiguration(object):
 
 
 
-
 class LinuxConfiguration(object):
     # all schemas
     motd_schema = properties.Schema(
@@ -338,61 +411,60 @@ class LinuxConfiguration(object):
 
 
 
-
 class PortalConfiguration(object):
     # all schemas
     enable_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     redirect_to_https_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     enable_http_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     sslkeyandcertificate_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs"),
         required=True,
         update_allowed=False,
     )
     sslkeyandcertificate_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("Certificates for system portal. Maximum 2 allowed. Leave list empty to use system default certs You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=sslkeyandcertificate_uuids_item_schema,
         required=False,
         update_allowed=True,
     )
     use_uuid_from_input_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use UUID in POST object data as UUID of the new object, instead of a generated UUID."),
+        _("Use UUID in POST object data as UUID of the new object, instead of a generated UUID. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'. (Default: System-Standard)"),
         required=False,
         update_allowed=True,
     )
     enable_clickjacking_protection_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable/Disable Clickjacking protection"),
+        _("Enable/Disable Clickjacking protection (Default: True)"),
         required=False,
         update_allowed=True,
     )
     allow_basic_authentication_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Enable/Disable HTTP basic authentication"),
+        _("Enable/Disable HTTP basic authentication (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -410,13 +482,13 @@ class PortalConfiguration(object):
     )
     password_strength_check_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Strict checking of password strength for user accounts"),
+        _("Strict checking of password strength for user accounts (Default: False)"),
         required=False,
         update_allowed=True,
     )
     disable_remote_cli_shell_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable Remote CLI Shell Client access"),
+        _("Disable Remote CLI Shell Client access (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -465,7 +537,7 @@ class NTPConfiguration(object):
     # all schemas
     ntp_server_list_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of NTP server hostnames or IP addresses"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -479,7 +551,7 @@ class NTPConfiguration(object):
     )
     ntp_authentication_keys_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("NTP Authentication keys"),
         schema=NTPAuthenticationKey.properties_schema,
         required=True,
         update_allowed=False,
@@ -493,7 +565,7 @@ class NTPConfiguration(object):
     )
     ntp_servers_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("List of NTP Servers"),
         schema=NTPServer.properties_schema,
         required=True,
         update_allowed=False,
@@ -525,6 +597,12 @@ class NTPConfiguration(object):
         'ntp_servers': getattr(NTPServer, 'field_references', {}),
         'ntp_authentication_keys': getattr(NTPAuthenticationKey, 'field_references', {}),
         'ntp_server_list': getattr(IpAddr, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ntp_servers': getattr(NTPServer, 'unique_keys', {}),
+        'ntp_authentication_keys': getattr(NTPAuthenticationKey, 'unique_keys', {}),
+        'ntp_server_list': getattr(IpAddr, 'unique_keys', {}),
     }
 
 
@@ -584,11 +662,24 @@ class MgmtIpAccessControl(object):
         'shell_server_access': getattr(IpAddrMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'snmp_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'api_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'ssh_access': getattr(IpAddrMatch, 'unique_keys', {}),
+        'shell_server_access': getattr(IpAddrMatch, 'unique_keys', {}),
+    }
+
 
 
 class SystemConfiguration(AviResource):
     resource_name = "systemconfiguration"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     dns_configuration_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -600,13 +691,6 @@ class SystemConfiguration(AviResource):
         properties.Schema.MAP,
         _(""),
         schema=NTPConfiguration.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    tech_support_uploader_configuration_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=TechSupportUploaderConfiguration.properties_schema,
         required=False,
         update_allowed=True,
     )
@@ -635,6 +719,12 @@ class SystemConfiguration(AviResource):
         properties.Schema.MAP,
         _(""),
         schema=AdminAuthConfiguration.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    docker_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -668,7 +758,7 @@ class SystemConfiguration(AviResource):
     )
     ssh_ciphers_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Allowed Ciphers list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default ciphers are allowed. ssh -Q cipher provides the list of default ciphers supported."),
         required=True,
         update_allowed=False,
     )
@@ -681,7 +771,7 @@ class SystemConfiguration(AviResource):
     )
     ssh_hmacs_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("Allowed HMAC list for SSH to the management interface on the Controller and Service Engines. If this is not specified, all the default HMACs are allowed. ssh -Q mac provides the list of default HMACs supported."),
         required=True,
         update_allowed=False,
     )
@@ -694,7 +784,7 @@ class SystemConfiguration(AviResource):
     )
     dns_virtualservice_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("DNS virtualservices hosting FQDN records for applications across Avi Vantage. If no virtualservices are provided, Avi Vantage will provide DNS services for configured applications. Switching back to Avi Vantage from DNS virtualservices is not allowed."),
         required=True,
         update_allowed=False,
     )
@@ -705,16 +795,26 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    default_license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the default license tier which would be used by new Clouds (Default: ENTERPRISE_18)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'dns_configuration',
         'ntp_configuration',
-        'tech_support_uploader_configuration',
         'portal_configuration',
         'global_tenant_config',
         'email_configuration',
         'admin_auth_configuration',
+        'docker_mode',
         'snmp_configuration',
         'linux_configuration',
         'proxy_configuration',
@@ -722,17 +822,19 @@ class SystemConfiguration(AviResource):
         'ssh_ciphers',
         'ssh_hmacs',
         'dns_virtualservice_uuids',
+        'default_license_tier',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'dns_configuration': dns_configuration_schema,
         'ntp_configuration': ntp_configuration_schema,
-        'tech_support_uploader_configuration': tech_support_uploader_configuration_schema,
         'portal_configuration': portal_configuration_schema,
         'global_tenant_config': global_tenant_config_schema,
         'email_configuration': email_configuration_schema,
         'admin_auth_configuration': admin_auth_configuration_schema,
+        'docker_mode': docker_mode_schema,
         'snmp_configuration': snmp_configuration_schema,
         'linux_configuration': linux_configuration_schema,
         'proxy_configuration': proxy_configuration_schema,
@@ -740,6 +842,7 @@ class SystemConfiguration(AviResource):
         'ssh_ciphers': ssh_ciphers_schema,
         'ssh_hmacs': ssh_hmacs_schema,
         'dns_virtualservice_uuids': dns_virtualservice_uuids_schema,
+        'default_license_tier': default_license_tier_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -748,13 +851,25 @@ class SystemConfiguration(AviResource):
         'global_tenant_config': getattr(TenantConfiguration, 'field_references', {}),
         'dns_configuration': getattr(DNSConfiguration, 'field_references', {}),
         'proxy_configuration': getattr(ProxyConfiguration, 'field_references', {}),
-        'tech_support_uploader_configuration': getattr(TechSupportUploaderConfiguration, 'field_references', {}),
         'snmp_configuration': getattr(SnmpConfiguration, 'field_references', {}),
         'linux_configuration': getattr(LinuxConfiguration, 'field_references', {}),
         'portal_configuration': getattr(PortalConfiguration, 'field_references', {}),
         'ntp_configuration': getattr(NTPConfiguration, 'field_references', {}),
         'admin_auth_configuration': getattr(AdminAuthConfiguration, 'field_references', {}),
         'mgmt_ip_access_control': getattr(MgmtIpAccessControl, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'email_configuration': getattr(EmailConfiguration, 'unique_keys', {}),
+        'global_tenant_config': getattr(TenantConfiguration, 'unique_keys', {}),
+        'dns_configuration': getattr(DNSConfiguration, 'unique_keys', {}),
+        'proxy_configuration': getattr(ProxyConfiguration, 'unique_keys', {}),
+        'snmp_configuration': getattr(SnmpConfiguration, 'unique_keys', {}),
+        'linux_configuration': getattr(LinuxConfiguration, 'unique_keys', {}),
+        'portal_configuration': getattr(PortalConfiguration, 'unique_keys', {}),
+        'ntp_configuration': getattr(NTPConfiguration, 'unique_keys', {}),
+        'admin_auth_configuration': getattr(AdminAuthConfiguration, 'unique_keys', {}),
+        'mgmt_ip_access_control': getattr(MgmtIpAccessControl, 'unique_keys', {}),
     }
 
 

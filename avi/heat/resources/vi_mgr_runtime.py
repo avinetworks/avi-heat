@@ -13,16 +13,99 @@ from options import *
 from vi_mgr_common import *
 
 
+class AzureInfo(object):
+    # all schemas
+    vm_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Azure VM uuid for the SE VM"),
+        required=False,
+        update_allowed=True,
+    )
+    resource_group_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Resource group name for the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Name of the Azure VM"),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Subnet ID of the primary nic of the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    vnic_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) VNIC id of the primary nic of the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    availability_set_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Name of the availability set of which the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+    fault_domain_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Fault domain within the availability set the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+    update_domain_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Update domain within the availability set the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vm_uuid',
+        'resource_group',
+        'name',
+        'subnet_id',
+        'vnic_id',
+        'availability_set',
+        'fault_domain',
+        'update_domain',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vm_uuid': vm_uuid_schema,
+        'resource_group': resource_group_schema,
+        'name': name_schema,
+        'subnet_id': subnet_id_schema,
+        'vnic_id': vnic_id_schema,
+        'availability_set': availability_set_schema,
+        'fault_domain': fault_domain_schema,
+        'update_domain': update_domain_schema,
+    }
+
+
+
 class VIMgrVcenterRuntime(AviResource):
     resource_name = "vimgrvcenterruntime"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(
@@ -57,7 +140,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     datacenter_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=datacenter_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -68,7 +151,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['NO_ACCESS', 'READ_ACCESS', 'WRITE_ACCESS']),
         ],
     )
     inventory_state_schema = properties.Schema(
@@ -77,7 +160,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_WAITING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_DELETING_VCENTER']),
+            constraints.AllowedValues(['VCENTER_DISCOVERY_BAD_CREDENTIALS', 'VCENTER_DISCOVERY_COMPLETE', 'VCENTER_DISCOVERY_COMPLETE_NO_MGMT_NW', 'VCENTER_DISCOVERY_COMPLETE_PER_TENANT_IP_ROUTE', 'VCENTER_DISCOVERY_DELETING_VCENTER', 'VCENTER_DISCOVERY_FAILURE', 'VCENTER_DISCOVERY_MAKING_SE_OVA', 'VCENTER_DISCOVERY_ONGOING', 'VCENTER_DISCOVERY_RESYNCING', 'VCENTER_DISCOVERY_RESYNC_FAILED', 'VCENTER_DISCOVERY_RETRIEVING_DC', 'VCENTER_DISCOVERY_RETRIEVING_NW', 'VCENTER_DISCOVERY_WAITING_DC']),
         ],
     )
     discovered_datacenter_schema = properties.Schema(
@@ -154,7 +237,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     apic_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -178,7 +261,7 @@ class VIMgrVcenterRuntime(AviResource):
     )
     vcenter_connected_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -191,6 +274,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'type',
         'name',
         'vcenter_url',
@@ -221,6 +305,7 @@ class VIMgrVcenterRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'type': type_schema,
         'name': name_schema,
         'vcenter_url': vcenter_url_schema,
@@ -259,13 +344,19 @@ class VIMgrVcenterRuntime(AviResource):
 class VIMgrHostRuntime(AviResource):
     resource_name = "vimgrhostruntime"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     type_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_VCENTER', 'CLOUD_DOCKER_UCP', 'CLOUD_APIC', 'CLOUD_OPENSTACK', 'CLOUD_MESOS', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_LINUXSERVER', 'CLOUD_OSHIFT_K8S', 'CLOUD_AWS', 'CLOUD_NONE']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(
@@ -344,7 +435,7 @@ class VIMgrHostRuntime(AviResource):
     )
     vm_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         schema=vm_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -387,13 +478,13 @@ class VIMgrHostRuntime(AviResource):
     )
     quarantined_periods_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 1)"),
         required=False,
         update_allowed=True,
     )
     cntlr_accessible_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -431,6 +522,7 @@ class VIMgrHostRuntime(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'type',
         'name',
         'managed_object_id',
@@ -459,6 +551,7 @@ class VIMgrHostRuntime(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'type': type_schema,
         'name': name_schema,
         'managed_object_id': managed_object_id_schema,
@@ -489,6 +582,10 @@ class VIMgrHostRuntime(AviResource):
     field_references = {
         'pnics': getattr(CdpLldpInfo, 'field_references', {}),
         'vm_uuids': 'vimgrvmruntime',
+    }
+
+    unique_keys = {
+        'pnics': getattr(CdpLldpInfo, 'unique_keys', {}),
     }
 
 

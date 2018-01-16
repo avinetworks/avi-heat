@@ -20,7 +20,7 @@ class URIParamToken(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['URI_TOKEN_TYPE_PATH', 'URI_TOKEN_TYPE_REGEX', 'URI_TOKEN_TYPE_STRING', 'URI_TOKEN_TYPE_STRING_GROUP', 'URI_TOKEN_TYPE_HOST']),
+            constraints.AllowedValues(['URI_TOKEN_TYPE_HOST', 'URI_TOKEN_TYPE_PATH', 'URI_TOKEN_TYPE_REGEX', 'URI_TOKEN_TYPE_STRING', 'URI_TOKEN_TYPE_STRING_GROUP']),
         ],
     )
     start_index_schema = properties.Schema(
@@ -57,7 +57,6 @@ class URIParamToken(object):
         'end_index': end_index_schema,
         'str_value': str_value_schema,
     }
-
 
 
 
@@ -102,6 +101,10 @@ class PoolServer(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HTTPCookieData(object):
@@ -133,12 +136,11 @@ class HTTPCookieData(object):
 
 
 
-
 class URIParamQuery(object):
     # all schemas
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Use or drop the query of the incoming request URI in the request URI to the backend server"),
+        _("Use or drop the query of the incoming request URI in the request URI to the backend server (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -163,7 +165,6 @@ class URIParamQuery(object):
 
 
 
-
 class HTTPHdrValue(object):
     # all schemas
     var_schema = properties.Schema(
@@ -172,7 +173,7 @@ class HTTPHdrValue(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_VS_PORT', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_PROTOCOL']),
+            constraints.AllowedValues(['HTTP_POLICY_VAR_CLIENT_IP', 'HTTP_POLICY_VAR_HTTP_HDR', 'HTTP_POLICY_VAR_SSL_CIPHER', 'HTTP_POLICY_VAR_SSL_CLIENT_FINGERPRINT', 'HTTP_POLICY_VAR_SSL_CLIENT_ISSUER', 'HTTP_POLICY_VAR_SSL_CLIENT_RAW', 'HTTP_POLICY_VAR_SSL_CLIENT_SERIAL', 'HTTP_POLICY_VAR_SSL_CLIENT_SUBJECT', 'HTTP_POLICY_VAR_SSL_PROTOCOL', 'HTTP_POLICY_VAR_SSL_SERVER_NAME', 'HTTP_POLICY_VAR_USER_NAME', 'HTTP_POLICY_VAR_VS_IP', 'HTTP_POLICY_VAR_VS_PORT']),
         ],
     )
     val_schema = properties.Schema(
@@ -196,7 +197,6 @@ class HTTPHdrValue(object):
 
 
 
-
 class HTTPSwitchingAction(object):
     # all schemas
     action_schema = properties.Schema(
@@ -205,12 +205,12 @@ class HTTPSwitchingAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_LOCAL', 'HTTP_SWITCHING_SELECT_POOLGROUP', 'HTTP_SWITCHING_SELECT_POOL']),
+            constraints.AllowedValues(['HTTP_SWITCHING_SELECT_LOCAL', 'HTTP_SWITCHING_SELECT_POOL', 'HTTP_SWITCHING_SELECT_POOLGROUP']),
         ],
     )
     pool_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool of servers to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool of servers to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -220,7 +220,7 @@ class HTTPSwitchingAction(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404']),
+            constraints.AllowedValues(['HTTP_LOCAL_RESPONSE_STATUS_CODE_200', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_403', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_404', 'HTTP_LOCAL_RESPONSE_STATUS_CODE_429']),
         ],
     )
     file_schema = properties.Schema(
@@ -239,7 +239,7 @@ class HTTPSwitchingAction(object):
     )
     pool_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("UUID of the pool group to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _("UUID of the pool group to serve the request You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -272,6 +272,11 @@ class HTTPSwitchingAction(object):
         'server': getattr(PoolServer, 'field_references', {}),
     }
 
+    unique_keys = {
+        'file': getattr(HTTPLocalFile, 'unique_keys', {}),
+        'server': getattr(PoolServer, 'unique_keys', {}),
+    }
+
 
 
 class URIParam(object):
@@ -287,7 +292,7 @@ class URIParam(object):
     )
     tokens_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Token config either for the URI components or a constant string"),
         schema=URIParamToken.properties_schema,
         required=True,
         update_allowed=False,
@@ -315,6 +320,10 @@ class URIParam(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'tokens': getattr(URIParamToken, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'tokens': getattr(URIParamToken, 'unique_keys', {}),
     }
 
 
@@ -352,6 +361,10 @@ class HTTPHdrData(object):
         'value': getattr(HTTPHdrValue, 'field_references', {}),
     }
 
+    unique_keys = {
+        'value': getattr(HTTPHdrValue, 'unique_keys', {}),
+    }
+
 
 
 class HTTPRedirectAction(object):
@@ -387,17 +400,17 @@ class HTTPRedirectAction(object):
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Keep or drop the query of the incoming request URI in the redirected URI"),
+        _("Keep or drop the query of the incoming request URI in the redirected URI (Default: True)"),
         required=False,
         update_allowed=True,
     )
     status_code_schema = properties.Schema(
         properties.Schema.STRING,
-        _("HTTP redirect status code"),
+        _("HTTP redirect status code (Default: HTTP_REDIRECT_STATUS_CODE_302)"),
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_307']),
+            constraints.AllowedValues(['HTTP_REDIRECT_STATUS_CODE_301', 'HTTP_REDIRECT_STATUS_CODE_302', 'HTTP_REDIRECT_STATUS_CODE_307']),
         ],
     )
 
@@ -425,6 +438,11 @@ class HTTPRedirectAction(object):
     field_references = {
         'path': getattr(URIParam, 'field_references', {}),
         'host': getattr(URIParam, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'path': getattr(URIParam, 'unique_keys', {}),
+        'host': getattr(URIParam, 'unique_keys', {}),
     }
 
 
@@ -474,6 +492,12 @@ class HTTPRewriteURLAction(object):
         'path': getattr(URIParam, 'field_references', {}),
     }
 
+    unique_keys = {
+        'host_hdr': getattr(URIParam, 'unique_keys', {}),
+        'query': getattr(URIParamQuery, 'unique_keys', {}),
+        'path': getattr(URIParam, 'unique_keys', {}),
+    }
+
 
 
 class HTTPRewriteLocHdrAction(object):
@@ -509,7 +533,7 @@ class HTTPRewriteLocHdrAction(object):
     )
     keep_query_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Keep or drop the query from the server side redirect URI"),
+        _("Keep or drop the query from the server side redirect URI (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -538,6 +562,11 @@ class HTTPRewriteLocHdrAction(object):
         'host': getattr(URIParam, 'field_references', {}),
     }
 
+    unique_keys = {
+        'path': getattr(URIParam, 'unique_keys', {}),
+        'host': getattr(URIParam, 'unique_keys', {}),
+    }
+
 
 
 class HTTPHdrAction(object):
@@ -548,7 +577,7 @@ class HTTPHdrAction(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_REPLACE_HDR', 'HTTP_ADD_HDR', 'HTTP_REMOVE_HDR']),
+            constraints.AllowedValues(['HTTP_ADD_HDR', 'HTTP_REMOVE_HDR', 'HTTP_REPLACE_HDR']),
         ],
     )
     hdr_schema = properties.Schema(
@@ -584,5 +613,10 @@ class HTTPHdrAction(object):
     field_references = {
         'cookie': getattr(HTTPCookieData, 'field_references', {}),
         'hdr': getattr(HTTPHdrData, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'cookie': getattr(HTTPCookieData, 'unique_keys', {}),
+        'hdr': getattr(HTTPHdrData, 'unique_keys', {}),
     }
 

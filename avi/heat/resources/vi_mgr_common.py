@@ -11,6 +11,7 @@ from options import *
 from common import *
 from options import *
 from cloud_objects import *
+from network import *
 
 
 class VcenterDatastore(object):
@@ -34,7 +35,6 @@ class VcenterDatastore(object):
 
 
 
-
 class CdpLldpInfo(object):
     # all schemas
     switch_info_type_schema = properties.Schema(
@@ -43,7 +43,7 @@ class CdpLldpInfo(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LLDP', 'NOT_APPLICABLE', 'CDP']),
+            constraints.AllowedValues(['CDP', 'LLDP', 'NOT_APPLICABLE']),
         ],
     )
     device_schema = properties.Schema(
@@ -96,5 +96,4 @@ class CdpLldpInfo(object):
         'mgmtaddr': mgmtaddr_schema,
         'system_name': system_name_schema,
     }
-
 

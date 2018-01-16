@@ -15,6 +15,12 @@ from common import *
 class UserAccountProfile(AviResource):
     resource_name = "useraccountprofile"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -23,37 +29,38 @@ class UserAccountProfile(AviResource):
     )
     max_password_history_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of passwords to be maintained in the password history. Default is 4 passwords."),
+        _("Maximum number of passwords to be maintained in the password history. Default is 4 passwords. (Default: 4)"),
         required=False,
         update_allowed=True,
     )
     max_login_failure_count_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of login attempts before lockout. Default is 3 attempts."),
+        _("Number of login attempts before lockout. Default is 3 attempts. (Default: 3)"),
         required=False,
         update_allowed=True,
     )
     account_lock_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Lock timeout period (in minutes). Default is 30 minutes."),
+        _("Lock timeout period (in minutes). Default is 30 minutes. (Units: MIN) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
     max_concurrent_sessions_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of concurrent sessions allowed. There are unlimited sessions by default."),
+        _("Maximum number of concurrent sessions allowed. There are unlimited sessions by default. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     credentials_timeout_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The time period after which credentials expire. Default is 180 days."),
+        _("The time period after which credentials expire. Default is 180 days. (Units: DAYS) (Default: 180)"),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'max_password_history_count',
         'max_login_failure_count',
@@ -64,6 +71,7 @@ class UserAccountProfile(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'max_password_history_count': max_password_history_count_schema,
         'max_login_failure_count': max_login_failure_count_schema,
@@ -71,7 +79,6 @@ class UserAccountProfile(AviResource):
         'max_concurrent_sessions': max_concurrent_sessions_schema,
         'credentials_timeout_threshold': credentials_timeout_threshold_schema,
     }
-
 
 
 
@@ -83,7 +90,7 @@ class Permission(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['WRITE_ACCESS', 'READ_ACCESS', 'NO_ACCESS']),
+            constraints.AllowedValues(['JOB_OWNER_CONSISTENCY_CHECKER', 'JOB_OWNER_DEBUG_VIRTUALSERVICE', 'JOB_OWNER_NETWORKSECURITYPOLICY', 'JOB_OWNER_PKI_PROFILE', 'JOB_OWNER_POSTGRES_STATUS', 'JOB_OWNER_SEGROUP', 'JOB_OWNER_SSL', 'JOB_OWNER_TECHSUPPORT_UPLOADER', 'JOB_OWNER_VIRTUALSERVICE']),
         ],
     )
     resource_schema = properties.Schema(
@@ -92,7 +99,7 @@ class Permission(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PERMISSION_SSLPROFILE', 'PERMISSION_ROLE', 'PERMISSION_NETWORK', 'PERMISSION_GSLBSERVICE', 'PERMISSION_GSLB', 'PERMISSION_AUTHPROFILE', 'PERMISSION_VIRTUALSERVICE_MAINTENANCE', 'PERMISSION_EXEMPT', 'PERMISSION_ALERT', 'PERMISSION_CLOUD', 'PERMISSION_MICROSERVICEGROUP', 'PERMISSION_ALERTSYSLOGCONFIG', 'PERMISSION_REBOOT', 'PERMISSION_PRIORITYLABELS', 'PERMISSION_ANALYTICSPROFILE', 'PERMISSION_HTTPPOLICYSET', 'PERMISSION_VRFCONTEXT', 'PERMISSION_APPLICATIONPROFILE', 'PERMISSION_POOLGROUP', 'PERMISSION_VSDATASCRIPTSET', 'PERMISSION_ALERTCONFIG', 'PERMISSION_NETWORKPROFILE', 'PERMISSION_SERVICEENGINEGROUP', 'PERMISSION_UPGRADE', 'PERMISSION_IPADDRGROUP', 'PERMISSION_INTERNAL', 'PERMISSION_APPLICATIONPERSISTENCEPROFILE', 'PERMISSION_GSLBHEALTHMONITOR', 'PERMISSION_SNMPTRAPPROFILE', 'PERMISSION_ACTIONGROUPCONFIG', 'PERMISSION_PKIPROFILE', 'PERMISSION_SSLKEYANDCERTIFICATE', 'PERMISSION_CONTROLLER', 'PERMISSION_IPAMDNSPROVIDERPROFILE', 'PERMISSION_HEALTHMONITOR', 'PERMISSION_ALERTEMAILCONFIG', 'PERMISSION_CERTIFICATEMANAGEMENTPROFILE', 'PERMISSION_SERVICEENGINE', 'PERMISSION_TENANT', 'PERMISSION_TRAFFIC_CAPTURE', 'PERMISSION_USER', 'PERMISSION_POOLGROUPDEPLOYMENTPOLICY', 'PERMISSION_VIRTUALSERVICE', 'PERMISSION_POOL', 'PERMISSION_TECHSUPPORT', 'PERMISSION_STRINGGROUP', 'PERMISSION_SYSTEMCONFIGURATION', 'PERMISSION_POOL_MAINTENANCE', 'PERMISSION_NETWORKSECURITYPOLICY']),
+            constraints.AllowedValues(['PERMISSION_ACTIONGROUPCONFIG', 'PERMISSION_ALERT', 'PERMISSION_ALERTCONFIG', 'PERMISSION_ALERTEMAILCONFIG', 'PERMISSION_ALERTSYSLOGCONFIG', 'PERMISSION_ANALYTICSPROFILE', 'PERMISSION_APPLICATIONPERSISTENCEPROFILE', 'PERMISSION_APPLICATIONPROFILE', 'PERMISSION_AUTHPROFILE', 'PERMISSION_AUTOSCALE', 'PERMISSION_CERTIFICATEMANAGEMENTPROFILE', 'PERMISSION_CLOUD', 'PERMISSION_CONTROLLER', 'PERMISSION_CUSTOMIPAMDNSPROFILE', 'PERMISSION_DNSPOLICY', 'PERMISSION_ERRORPAGEBODY', 'PERMISSION_ERRORPAGEPROFILE', 'PERMISSION_EXEMPT', 'PERMISSION_GSLB', 'PERMISSION_GSLBGEODBPROFILE', 'PERMISSION_GSLBSERVICE', 'PERMISSION_HEALTHMONITOR', 'PERMISSION_HTTPPOLICYSET', 'PERMISSION_INTERNAL', 'PERMISSION_IPADDRGROUP', 'PERMISSION_IPAMDNSPROVIDERPROFILE', 'PERMISSION_MICROSERVICEGROUP', 'PERMISSION_NETWORK', 'PERMISSION_NETWORKPROFILE', 'PERMISSION_NETWORKSECURITYPOLICY', 'PERMISSION_PKIPROFILE', 'PERMISSION_POOL', 'PERMISSION_POOLGROUP', 'PERMISSION_POOLGROUPDEPLOYMENTPOLICY', 'PERMISSION_POOL_MAINTENANCE', 'PERMISSION_PRIORITYLABELS', 'PERMISSION_REBOOT', 'PERMISSION_ROLE', 'PERMISSION_SERVICEENGINE', 'PERMISSION_SERVICEENGINEGROUP', 'PERMISSION_SE_TOKEN', 'PERMISSION_SNMPTRAPPROFILE', 'PERMISSION_SSLKEYANDCERTIFICATE', 'PERMISSION_SSLPROFILE', 'PERMISSION_STRINGGROUP', 'PERMISSION_SYSTEMCONFIGURATION', 'PERMISSION_TECHSUPPORT', 'PERMISSION_TENANT', 'PERMISSION_TRAFFICCLONEPROFILE', 'PERMISSION_TRAFFIC_CAPTURE', 'PERMISSION_UPGRADE', 'PERMISSION_USER', 'PERMISSION_USER_CREDENTIAL', 'PERMISSION_VIRTUALSERVICE', 'PERMISSION_VIRTUALSERVICE_MAINTENANCE', 'PERMISSION_VRFCONTEXT', 'PERMISSION_VSDATASCRIPTSET', 'PERMISSION_WAFPOLICY', 'PERMISSION_WAFPROFILE']),
         ],
     )
 
@@ -110,10 +117,15 @@ class Permission(object):
 
 
 
-
 class Role(AviResource):
     resource_name = "role"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -137,12 +149,14 @@ class Role(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'privileges',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'privileges': privileges_schema,
     }
@@ -150,6 +164,10 @@ class Role(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'privileges': getattr(Permission, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'privileges': getattr(Permission, 'unique_keys', {}),
     }
 
 

@@ -23,7 +23,7 @@ class Subnet(object):
     )
     static_ips_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Specify a pool of IP addresses for use in Service Engines"),
         schema=IpAddr.properties_schema,
         required=True,
         update_allowed=False,
@@ -71,11 +71,24 @@ class Subnet(object):
         'static_ranges': getattr(IpAddrRange, 'field_references', {}),
     }
 
+    unique_keys = {
+        'prefix': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'static_ips': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'prefix',
+        'static_ranges': getattr(IpAddrRange, 'unique_keys', {}),
+    }
+
 
 
 class Network(AviResource):
     resource_name = "network"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -84,25 +97,25 @@ class Network(AviResource):
     )
     vcenter_dvs_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: True)"),
         required=False,
         update_allowed=True,
     )
     vimgrnw_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Select the IP address management scheme for this Network"),
+        _("Select the IP address management scheme for this Network (Default: True)"),
         required=False,
         update_allowed=True,
     )
     exclude_discovered_subnets_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("When selected, excludes all discovered subnets in this network from consideration for virtual service placement."),
+        _("When selected, excludes all discovered subnets in this network from consideration for virtual service placement. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -122,13 +135,13 @@ class Network(AviResource):
     )
     vrf_context_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_for_name:', e.g., 'get_avi_uuid_for_name:my_obj_name'."),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
     synced_from_se_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -138,9 +151,16 @@ class Network(AviResource):
         required=False,
         update_allowed=True,
     )
+    ip6_autocfg_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.1) Enable IPv6 auto configuration (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'vcenter_dvs',
         'vimgrnw_uuid',
@@ -150,10 +170,12 @@ class Network(AviResource):
         'vrf_context_uuid',
         'synced_from_se',
         'cloud_uuid',
+        'ip6_autocfg_enabled',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'vcenter_dvs': vcenter_dvs_schema,
         'vimgrnw_uuid': vimgrnw_uuid_schema,
@@ -163,6 +185,7 @@ class Network(AviResource):
         'vrf_context_uuid': vrf_context_uuid_schema,
         'synced_from_se': synced_from_se_schema,
         'cloud_uuid': cloud_uuid_schema,
+        'ip6_autocfg_enabled': ip6_autocfg_enabled_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -170,6 +193,10 @@ class Network(AviResource):
         'vrf_context_uuid': 'vrfcontext',
         'configured_subnets': getattr(Subnet, 'field_references', {}),
         'vimgrnw_uuid': 'vimgrnwruntime',
+    }
+
+    unique_keys = {
+        'configured_subnets': getattr(Subnet, 'unique_keys', {}),
     }
 
 

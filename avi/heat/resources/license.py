@@ -11,6 +11,156 @@ from options import *
 from options import *
 
 
+class UsedLicenseResource(object):
+    # all schemas
+    license_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LIC_BACKEND_SERVERS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_SE_BANDWIDTH', 'LIC_SOCKETS']),
+        ],
+    )
+    used_count_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+    )
+    bandwidth_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_BANDWIDTH_10000M', 'SE_BANDWIDTH_1000M', 'SE_BANDWIDTH_200M', 'SE_BANDWIDTH_25M', 'SE_BANDWIDTH_UNLIMITED']),
+        ],
+    )
+    license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'license_type',
+        'used_count',
+        'bandwidth_type',
+        'license_tier',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'license_type': license_type_schema,
+        'used_count': used_count_schema,
+        'bandwidth_type': bandwidth_type_schema,
+        'license_tier': license_tier_schema,
+    }
+
+
+
+class SEBandwidthLimit(object):
+    # all schemas
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Maximum bandwidth allowed by each Service Engine"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_BANDWIDTH_10000M', 'SE_BANDWIDTH_1000M', 'SE_BANDWIDTH_200M', 'SE_BANDWIDTH_25M', 'SE_BANDWIDTH_UNLIMITED']),
+        ],
+    )
+    count_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engines for bandwidth based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'type',
+        'count',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'type': type_schema,
+        'count': count_schema,
+    }
+
+
+
+class BurstResource(object):
+    # all schemas
+    se_cookie_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+    )
+    se_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Service Engine which triggered the burst license usage"),
+        required=False,
+        update_allowed=True,
+    )
+    start_time_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Time UTC when the burst license was put in use"),
+        required=False,
+        update_allowed=True,
+    )
+    accounted_license_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) License ID against which this burst has been accounted"),
+        required=False,
+        update_allowed=True,
+    )
+    last_alert_time_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Time UTC of the last alert created for this burst resource"),
+        required=False,
+        update_allowed=True,
+    )
+    license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'se_cookie',
+        'se_uuid',
+        'start_time',
+        'accounted_license_id',
+        'last_alert_time',
+        'license_tier',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'se_cookie': se_cookie_schema,
+        'se_uuid': se_uuid_schema,
+        'start_time': start_time_schema,
+        'accounted_license_id': accounted_license_id_schema,
+        'last_alert_time': last_alert_time_schema,
+        'license_tier': license_tier_schema,
+    }
+
+
+
 class SingleLicense(object):
     # all schemas
     license_name_schema = properties.Schema(
@@ -45,7 +195,7 @@ class SingleLicense(object):
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engine cores in non-container clouds"),
+        _("Number of Service Engine cores in non-container clouds"),
         required=False,
         update_allowed=True,
     )
@@ -57,7 +207,7 @@ class SingleLicense(object):
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engines hosts in container clouds"),
+        _("Number of Service Engines hosts in container clouds"),
         required=False,
         update_allowed=True,
     )
@@ -131,7 +281,36 @@ class SingleLicense(object):
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
+        _("Number of physical cpu sockets across Service Engines in no access and linux server clouds"),
+        required=False,
+        update_allowed=True,
+    )
+    se_bandwidth_limits_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=SEBandwidthLimit.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    se_bandwidth_limits_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=se_bandwidth_limits_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    tier_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the licensed tier"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
+    burst_cores_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engine burst cores for core based licenses"),
         required=False,
         update_allowed=True,
     )
@@ -156,6 +335,9 @@ class SingleLicense(object):
         'license_type',
         'enforced_params',
         'sockets',
+        'se_bandwidth_limits',
+        'tier_type',
+        'burst_cores',
     )
 
     # mapping of properties to their schemas
@@ -178,14 +360,112 @@ class SingleLicense(object):
         'license_type': license_type_schema,
         'enforced_params': enforced_params_schema,
         'sockets': sockets_schema,
+        'se_bandwidth_limits': se_bandwidth_limits_schema,
+        'tier_type': tier_type_schema,
+        'burst_cores': burst_cores_schema,
     }
 
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'unique_keys', {}),
+    }
+
+
+
+class CumulativeLicense(object):
+    # all schemas
+    tier_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the licensed tier"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
+    se_bandwidth_limits_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=SEBandwidthLimit.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    se_bandwidth_limits_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=se_bandwidth_limits_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    cores_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engine cores for core based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+    sockets_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engine sockets for socket based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+    max_ses_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engines for host based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+    burst_cores_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engine cores for burst core based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'tier_type',
+        'se_bandwidth_limits',
+        'cores',
+        'sockets',
+        'max_ses',
+        'burst_cores',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'tier_type': tier_type_schema,
+        'se_bandwidth_limits': se_bandwidth_limits_schema,
+        'cores': cores_schema,
+        'sockets': sockets_schema,
+        'max_ses': max_ses_schema,
+        'burst_cores': burst_cores_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'unique_keys', {}),
+    }
 
 
 
 class ControllerLicense(AviResource):
     resource_name = "controllerlicense"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -218,7 +498,7 @@ class ControllerLicense(AviResource):
     )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engine cores in non-container clouds"),
+        _("Number of Service Engine cores in non-container clouds"),
         required=False,
         update_allowed=True,
     )
@@ -243,7 +523,7 @@ class ControllerLicense(AviResource):
     )
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of service engines hosts in container clouds"),
+        _("Number of Service Engines hosts in container clouds"),
         required=False,
         update_allowed=True,
     )
@@ -261,7 +541,7 @@ class ControllerLicense(AviResource):
     )
     sockets_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Number of physical cpu sockets across service engines in no access and linux server clouds"),
+        _("Number of physical cpu sockets across Service Engines in no access and linux server clouds"),
         required=False,
         update_allowed=True,
     )
@@ -279,9 +559,84 @@ class ControllerLicense(AviResource):
         required=False,
         update_allowed=True,
     )
+    se_bandwidth_limits_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=SEBandwidthLimit.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    se_bandwidth_limits_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) Service Engine bandwidth limits for bandwidth based licenses"),
+        schema=se_bandwidth_limits_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    license_tiers_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) "),
+        schema=CumulativeLicense.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    license_tiers_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) "),
+        schema=license_tiers_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    burst_cores_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Total number of Service Engine cores for burst core based licenses"),
+        required=False,
+        update_allowed=True,
+    )
+    active_burst_resources_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) List of active burst core license in use"),
+        schema=BurstResource.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    active_burst_resources_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) List of active burst core license in use"),
+        schema=active_burst_resources_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    expired_burst_resources_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) List of used or expired burst core licenses"),
+        schema=BurstResource.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    expired_burst_resources_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) List of used or expired burst core licenses"),
+        schema=expired_burst_resources_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    license_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+    )
+    disable_enforcement_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.5) "),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'start_on',
         'valid_until',
@@ -295,10 +650,18 @@ class ControllerLicense(AviResource):
         'max_vses',
         'sockets',
         'licenses',
+        'se_bandwidth_limits',
+        'license_tiers',
+        'burst_cores',
+        'active_burst_resources',
+        'expired_burst_resources',
+        'license_id',
+        'disable_enforcement',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'start_on': start_on_schema,
         'valid_until': valid_until_schema,
@@ -312,11 +675,30 @@ class ControllerLicense(AviResource):
         'max_vses': max_vses_schema,
         'sockets': sockets_schema,
         'licenses': licenses_schema,
+        'se_bandwidth_limits': se_bandwidth_limits_schema,
+        'license_tiers': license_tiers_schema,
+        'burst_cores': burst_cores_schema,
+        'active_burst_resources': active_burst_resources_schema,
+        'expired_burst_resources': expired_burst_resources_schema,
+        'license_id': license_id_schema,
+        'disable_enforcement': disable_enforcement_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'licenses': getattr(SingleLicense, 'field_references', {}),
+        'expired_burst_resources': getattr(BurstResource, 'field_references', {}),
+        'license_tiers': getattr(CumulativeLicense, 'field_references', {}),
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'field_references', {}),
+        'active_burst_resources': getattr(BurstResource, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'licenses': getattr(SingleLicense, 'unique_keys', {}),
+        'expired_burst_resources': getattr(BurstResource, 'unique_keys', {}),
+        'license_tiers': getattr(CumulativeLicense, 'unique_keys', {}),
+        'se_bandwidth_limits': getattr(SEBandwidthLimit, 'unique_keys', {}),
+        'active_burst_resources': getattr(BurstResource, 'unique_keys', {}),
     }
 
 

@@ -40,7 +40,6 @@ class VsDebugFilter(object):
 
 
 
-
 class AutoScaleMgrDebugFilter(object):
     # all schemas
     pool_uuid_schema = properties.Schema(
@@ -55,19 +54,26 @@ class AutoScaleMgrDebugFilter(object):
         required=False,
         update_allowed=True,
     )
+    enable_aws_autoscale_integration_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.1) Enable aws autoscale integration. This is an alpha feature. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'pool_uuid',
         'intelligent_autoscale_period',
+        'enable_aws_autoscale_integration',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'pool_uuid': pool_uuid_schema,
         'intelligent_autoscale_period': intelligent_autoscale_period_schema,
+        'enable_aws_autoscale_integration': enable_aws_autoscale_integration_schema,
     }
-
 
 
 
@@ -108,7 +114,6 @@ class CloudConnectorDebugFilter(object):
 
 
 
-
 class HSMgrDebugFilter(object):
     # all schemas
     metric_entity_schema = properties.Schema(
@@ -117,7 +122,7 @@ class HSMgrDebugFilter(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
+            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
         ],
     )
     entity_schema = properties.Schema(
@@ -173,7 +178,6 @@ class HSMgrDebugFilter(object):
 
 
 
-
 class SeMgrDebugFilter(object):
     # all schemas
     name_schema = properties.Schema(
@@ -192,7 +196,6 @@ class SeMgrDebugFilter(object):
     properties_schema = {
         'name': name_schema,
     }
-
 
 
 
@@ -233,7 +236,6 @@ class AlertMgrDebugFilter(object):
 
 
 
-
 class MesosMetricsDebugFilter(object):
     # all schemas
     metric_entity_schema = properties.Schema(
@@ -242,7 +244,7 @@ class MesosMetricsDebugFilter(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
+            constraints.AllowedValues(['APPLICATION_METRICS_ENTITY', 'CONTROLLER_METRICS_ENTITY', 'SE_METRICS_ENTITY', 'TENANT_METRICS_ENTITY', 'VM_METRICS_ENTITY', 'VSERVER_METRICS_ENTITY']),
         ],
     )
     mesos_master_schema = properties.Schema(
@@ -259,7 +261,7 @@ class MesosMetricsDebugFilter(object):
     )
     metrics_collection_frq_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(""),
+        _(" (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -279,7 +281,6 @@ class MesosMetricsDebugFilter(object):
         'mesos_slave': mesos_slave_schema,
         'metrics_collection_frq': metrics_collection_frq_schema,
     }
-
 
 
 
@@ -368,7 +369,6 @@ class MetricsMgrDebugFilter(object):
 
 
 
-
 class StateCacheMgrDebugFilter(object):
     # all schemas
     vs_uuid_schema = properties.Schema(
@@ -398,7 +398,6 @@ class StateCacheMgrDebugFilter(object):
 
 
 
-
 class DebugFilterUnion(object):
     # all schemas
     type_schema = properties.Schema(
@@ -407,7 +406,7 @@ class DebugFilterUnion(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
         ],
     )
     se_mgr_debug_filter_schema = properties.Schema(
@@ -515,11 +514,29 @@ class DebugFilterUnion(object):
         'hs_debug_filter': getattr(HSMgrDebugFilter, 'field_references', {}),
     }
 
+    unique_keys = {
+        'mesos_metrics_debug_filter': getattr(MesosMetricsDebugFilter, 'unique_keys', {}),
+        'cloud_connector_debug_filter': getattr(CloudConnectorDebugFilter, 'unique_keys', {}),
+        'metrics_debug_filter': getattr(MetricsMgrDebugFilter, 'unique_keys', {}),
+        'alert_debug_filter': getattr(AlertMgrDebugFilter, 'unique_keys', {}),
+        'se_mgr_debug_filter': getattr(SeMgrDebugFilter, 'unique_keys', {}),
+        'state_cache_mgr_debug_filter': getattr(StateCacheMgrDebugFilter, 'unique_keys', {}),
+        'autoscale_mgr_debug_filter': getattr(AutoScaleMgrDebugFilter, 'unique_keys', {}),
+        'vs_debug_filter': getattr(VsDebugFilter, 'unique_keys', {}),
+        'hs_debug_filter': getattr(HSMgrDebugFilter, 'unique_keys', {}),
+    }
+
 
 
 class DebugController(AviResource):
     resource_name = "debugcontroller"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -532,7 +549,7 @@ class DebugController(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VI_MGR_DEBUG', 'HS_MGR_DEBUG', 'SE_MGR_DEBUG', 'SE_AGENT_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'METRICS_MANAGER_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'RES_MGR_DEBUG', 'ALERT_MGR_DEBUG', 'REDIS_INFRA_DEBUG', 'APIC_AGENT_DEBUG', 'MESOS_METRICS_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'METRICS_MGR_DEBUG', 'VIRTUALSERVICE_DEBUG', 'STATECACHE_MGR_DEBUG', 'EVENT_API_DEBUG', 'JOB_MGR_DEBUG']),
+            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(
@@ -541,7 +558,7 @@ class DebugController(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_ERROR', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_DEBUG_DETAIL']),
+            constraints.AllowedValues(['TRACE_LEVEL_DEBUG', 'TRACE_LEVEL_DEBUG_DETAIL', 'TRACE_LEVEL_DISABLED', 'TRACE_LEVEL_ERROR']),
         ],
     )
     log_level_schema = properties.Schema(
@@ -550,7 +567,7 @@ class DebugController(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LOG_LEVEL_ERROR', 'LOG_LEVEL_DISABLED', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
+            constraints.AllowedValues(['LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
         ],
     )
     filters_schema = properties.Schema(
@@ -563,6 +580,7 @@ class DebugController(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'sub_module',
         'trace_level',
@@ -572,6 +590,7 @@ class DebugController(AviResource):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'sub_module': sub_module_schema,
         'trace_level': trace_level_schema,
@@ -582,6 +601,10 @@ class DebugController(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'filters': getattr(DebugFilterUnion, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'filters': getattr(DebugFilterUnion, 'unique_keys', {}),
     }
 
 

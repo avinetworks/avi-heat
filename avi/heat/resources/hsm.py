@@ -31,6 +31,12 @@ class HSMSafenetClientInfo(object):
         required=True,
         update_allowed=True,
     )
+    chrystoki_conf_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Generated File - Chrystoki.conf "),
+        required=False,
+        update_allowed=True,
+    )
     session_major_number_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Major number of the sesseion"),
@@ -49,6 +55,7 @@ class HSMSafenetClientInfo(object):
         'client_priv_key',
         'client_cert',
         'client_ip',
+        'chrystoki_conf',
         'session_major_number',
         'session_minor_number',
     )
@@ -58,10 +65,14 @@ class HSMSafenetClientInfo(object):
         'client_priv_key': client_priv_key_schema,
         'client_cert': client_cert_schema,
         'client_ip': client_ip_schema,
+        'chrystoki_conf': chrystoki_conf_schema,
         'session_major_number': session_major_number_schema,
         'session_minor_number': session_minor_number_schema,
     }
 
+    unique_keys = {
+        'my_key': 'client_ip',
+    }
 
 
 
@@ -76,7 +87,7 @@ class HSMThalesRFS(object):
     )
     port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Port at which the RFS server accepts the sync request from clients for Thales encrypted private key"),
+        _("Port at which the RFS server accepts the sync request from clients for Thales encrypted private key (Default: 9004)"),
         required=False,
         update_allowed=True,
     )
@@ -98,6 +109,10 @@ class HSMThalesRFS(object):
         'ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HSMThalesNetHsm(object):
@@ -111,7 +126,7 @@ class HSMThalesNetHsm(object):
     )
     remote_port_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Port at which the netHSM device accepts the connection"),
+        _("Port at which the netHSM device accepts the connection (Default: 9004)"),
         required=False,
         update_allowed=True,
     )
@@ -123,7 +138,7 @@ class HSMThalesNetHsm(object):
     )
     module_id_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Local module id of the netHSM device"),
+        _("Local module id of the netHSM device (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -135,7 +150,7 @@ class HSMThalesNetHsm(object):
     )
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority class of the nethsm in an high availability setup. 1 is the highest priority and 100 is the lowest priority"),
+        _("Priority class of the nethsm in an high availability setup. 1 is the highest priority and 100 is the lowest priority (Default: 100)"),
         required=True,
         update_allowed=True,
     )
@@ -165,6 +180,10 @@ class HSMThalesNetHsm(object):
         'remote_ip': getattr(IpAddr, 'field_references', {}),
     }
 
+    unique_keys = {
+        'remote_ip': getattr(IpAddr, 'unique_keys', {}),
+    }
+
 
 
 class HSMSafenetLunaServer(object):
@@ -187,12 +206,26 @@ class HSMSafenetLunaServer(object):
         required=False,
         update_allowed=True,
     )
+    partition_serial_number_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 16.5.2,17.2.3) Serial number of the partition assigned to this client."),
+        required=False,
+        update_allowed=True,
+    )
+    index_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 16.5.2,17.2.3) "),
+        required=True,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'remote_ip',
         'server_cert',
         'partition_passwd',
+        'partition_serial_number',
+        'index',
     )
 
     # mapping of properties to their schemas
@@ -200,8 +233,13 @@ class HSMSafenetLunaServer(object):
         'remote_ip': remote_ip_schema,
         'server_cert': server_cert_schema,
         'partition_passwd': partition_passwd_schema,
+        'partition_serial_number': partition_serial_number_schema,
+        'index': index_schema,
     }
 
+    unique_keys = {
+        'my_key': 'index',
+    }
 
 
 
@@ -209,7 +247,7 @@ class HSMSafenetLuna(object):
     # all schemas
     server_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("SafeNet/Gemalto HSM Servers used for crypto operations"),
         schema=HSMSafenetLunaServer.properties_schema,
         required=True,
         update_allowed=False,
@@ -223,13 +261,19 @@ class HSMSafenetLuna(object):
     )
     is_ha_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Set to indicate HA across more than one servers"),
+        _("Set to indicate HA across more than one servers (Default: False)"),
         required=True,
+        update_allowed=True,
+    )
+    ha_group_num_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Group Number of generated HA Group"),
+        required=False,
         update_allowed=True,
     )
     node_info_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Node specific information"),
         schema=HSMSafenetClientInfo.properties_schema,
         required=True,
         update_allowed=False,
@@ -241,25 +285,48 @@ class HSMSafenetLuna(object):
         required=False,
         update_allowed=True,
     )
+    server_pem_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Generated File - server.pem"),
+        required=False,
+        update_allowed=True,
+    )
+    use_dedicated_network_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If enabled, dedicated network is used to communicate with HSM,else, the management network is used. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'server',
         'is_ha',
+        'ha_group_num',
         'node_info',
+        'server_pem',
+        'use_dedicated_network',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'server': server_schema,
         'is_ha': is_ha_schema,
+        'ha_group_num': ha_group_num_schema,
         'node_info': node_info_schema,
+        'server_pem': server_pem_schema,
+        'use_dedicated_network': use_dedicated_network_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'node_info': getattr(HSMSafenetClientInfo, 'field_references', {}),
         'server': getattr(HSMSafenetLunaServer, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'node_info': getattr(HSMSafenetClientInfo, 'unique_keys', {}),
+        'server': getattr(HSMSafenetLunaServer, 'unique_keys', {}),
     }
 
 
@@ -272,7 +339,7 @@ class HardwareSecurityModule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HSM_TYPE_THALES_NETHSM', 'HSM_TYPE_SAFENET_LUNA']),
+            constraints.AllowedValues(['HSM_TYPE_SAFENET_LUNA', 'HSM_TYPE_THALES_NETHSM']),
         ],
     )
     rfs_schema = properties.Schema(
@@ -284,7 +351,7 @@ class HardwareSecurityModule(object):
     )
     nethsm_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Thales netHSM specific configuration"),
         schema=HSMThalesNetHsm.properties_schema,
         required=True,
         update_allowed=False,
@@ -327,11 +394,23 @@ class HardwareSecurityModule(object):
         'nethsm': getattr(HSMThalesNetHsm, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rfs': getattr(HSMThalesRFS, 'unique_keys', {}),
+        'sluna': getattr(HSMSafenetLuna, 'unique_keys', {}),
+        'nethsm': getattr(HSMThalesNetHsm, 'unique_keys', {}),
+    }
+
 
 
 class HardwareSecurityModuleGroup(AviResource):
     resource_name = "hardwaresecuritymodulegroup"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the HSM Group configuration object"),
@@ -348,12 +427,14 @@ class HardwareSecurityModuleGroup(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'hsm',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'hsm': hsm_schema,
     }
@@ -361,6 +442,10 @@ class HardwareSecurityModuleGroup(AviResource):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'hsm': getattr(HardwareSecurityModule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'hsm': getattr(HardwareSecurityModule, 'unique_keys', {}),
     }
 
 

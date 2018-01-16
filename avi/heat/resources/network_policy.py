@@ -57,6 +57,12 @@ class NetworkSecurityMatchTarget(object):
         'vs_port': getattr(PortMatch, 'field_references', {}),
     }
 
+    unique_keys = {
+        'microservice': getattr(MicroServiceMatch, 'unique_keys', {}),
+        'client_ip': getattr(IpAddrMatch, 'unique_keys', {}),
+        'vs_port': getattr(PortMatch, 'unique_keys', {}),
+    }
+
 
 
 class NetworkSecurityPolicyActionRLParam(object):
@@ -69,7 +75,7 @@ class NetworkSecurityPolicyActionRLParam(object):
     )
     burst_size_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of connections or requests or packets to be rate limited instantaneously."),
+        _("Maximum number of connections or requests or packets to be rate limited instantaneously. (Default: 0)"),
         required=True,
         update_allowed=True,
     )
@@ -85,7 +91,6 @@ class NetworkSecurityPolicyActionRLParam(object):
         'max_rate': max_rate_schema,
         'burst_size': burst_size_schema,
     }
-
 
 
 
@@ -122,12 +127,12 @@ class NetworkSecurityRule(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW']),
+            constraints.AllowedValues(['NETWORK_SECURITY_POLICY_ACTION_TYPE_ALLOW', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_DENY', 'NETWORK_SECURITY_POLICY_ACTION_TYPE_RATE_LIMIT']),
         ],
     )
     log_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _(""),
+        _(" (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -140,7 +145,13 @@ class NetworkSecurityRule(object):
     )
     age_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Time in minutes after which rule will be deleted."),
+        _("Time in minutes after which rule will be deleted. (Units: MIN) (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Creator name"),
         required=False,
         update_allowed=True,
     )
@@ -155,6 +166,7 @@ class NetworkSecurityRule(object):
         'log',
         'rl_param',
         'age',
+        'created_by',
     )
 
     # mapping of properties to their schemas
@@ -167,6 +179,7 @@ class NetworkSecurityRule(object):
         'log': log_schema,
         'rl_param': rl_param_schema,
         'age': age_schema,
+        'created_by': created_by_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -175,11 +188,23 @@ class NetworkSecurityRule(object):
         'match': getattr(NetworkSecurityMatchTarget, 'field_references', {}),
     }
 
+    unique_keys = {
+        'rl_param': getattr(NetworkSecurityPolicyActionRLParam, 'unique_keys', {}),
+        'my_key': 'index',
+        'match': getattr(NetworkSecurityMatchTarget, 'unique_keys', {}),
+    }
+
 
 
 class NetworkSecurityPolicy(AviResource):
     resource_name = "networksecuritypolicy"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -206,6 +231,12 @@ class NetworkSecurityPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Checksum of cloud configuration for Network Sec Policy. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -215,23 +246,31 @@ class NetworkSecurityPolicy(AviResource):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'name',
         'rules',
         'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'name': name_schema,
         'rules': rules_schema,
         'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'rules': getattr(NetworkSecurityRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'rules': getattr(NetworkSecurityRule, 'unique_keys', {}),
     }
 
 
