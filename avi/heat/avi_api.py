@@ -3,12 +3,17 @@ import sys
 import copy
 import json
 import logging
+import time
 from datetime import datetime, timedelta
 from requests import ConnectionError
 from requests import Response
 from requests.sessions import Session
+from ssl import SSLError
 
 logger = logging.getLogger(__name__)
+
+global sessionDict
+sessionDict = {}
 
 
 def avi_timedelta(td):
@@ -130,33 +135,39 @@ class AviCredentials(object):
     token = None
     port = None
     timeout = 300
+    session_id = None
+    csrftoken = None
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def update_from_ansible_module(self, module):
+    def update_from_ansible_module(self, m):
         """
-        :param module: ansible module
+        :param m: ansible module
         :return:
         """
-        if module.params['avi_credentials']:
-            for k, v in list(module.params['avi_credentials'].items()):
+        if m.params.get('avi_credentials'):
+            for k, v in m.params['avi_credentials'].items():
                 if hasattr(self, k):
                     setattr(self, k, v)
-        if module.params['controller']:
-            self.controller = module.params['controller']
-        if module.params['username']:
-            self.username = module.params['username']
-        if module.params['password']:
-            self.password = module.params['password']
-        if (module.params['api_version'] and
-                (module.params['api_version'] != '16.4')):
-            self.api_version = module.params['api_version']
-        if module.params['tenant']:
-            self.tenant = module.params['tenant']
-        if module.params['tenant_uuid']:
-            self.tenant_uuid = module.params['tenant_uuid']
+        if m.params['controller']:
+            self.controller = m.params['controller']
+        if m.params['username']:
+            self.username = m.params['username']
+        if m.params['password']:
+            self.password = m.params['password']
+        if (m.params['api_version'] and
+                (m.params['api_version'] != '16.4.4')):
+            self.api_version = m.params['api_version']
+        if m.params['tenant']:
+            self.tenant = m.params['tenant']
+        if m.params['tenant_uuid']:
+            self.tenant_uuid = m.params['tenant_uuid']
+        if m.params.get('session_id'):
+            self.session_id = m.params['session_id']
+        if m.params.get('csrftoken'):
+            self.csrftoken = m.params['csrftoken']
 
     def __str__(self):
         return 'controller %s user %s api %s tenant %s' % (
@@ -169,7 +180,7 @@ class ApiSession(Session):
     utilities to work with Avi Controller like authentication, api massaging
     etc.
     """
-    sessionDict = {}
+
     # This keeps track of the process which created the cache.
     # At anytime the pid of the process changes then it would create
     # a new cache for that process.
@@ -178,12 +189,17 @@ class ApiSession(Session):
     SHARED_USER_HDRS = ['X-CSRFToken', 'Session-Id', 'Referer', 'Content-Type']
     MAX_API_RETRIES = 3
 
-    def __init__(self, controller_ip, username, password=None, token=None,
-                 tenant=None, tenant_uuid=None, verify=False, port=None,
-                 timeout=60, api_version=None,
-                 retry_conxn_errors=False, data_log=False):
+    def __init__(self, controller_ip=None, username=None, password=None,
+                 token=None, tenant=None, tenant_uuid=None, verify=False,
+                 port=None, timeout=60, api_version=None,
+                 retry_conxn_errors=True, data_log=False,
+                 avi_credentials=None, session_id=None, csrftoken=None,
+                 lazy_authentication=False):
         """
-        initialize new session object with authenticated token from login api.
+         ApiSession takes ownership of avi_credentials and may update the
+         information inside it.
+
+        Initialize new session object with authenticated token from login api.
         It also keeps a cache of user sessions that are cleaned up if inactive
         for more than 20 mins.
 
@@ -198,58 +214,155 @@ class ApiSession(Session):
             the prefix.
         """
         super(ApiSession, self).__init__()
-        self.controller_ip = controller_ip
-        self.username = username
-        self.password = password
-        self.keystone_token = token
-        self.tenant_uuid = tenant_uuid
-        self.tenant = tenant if tenant else "admin"
+        if not avi_credentials:
+            tenant = tenant if tenant else "admin"
+            self.avi_credentials = AviCredentials(
+                controller=controller_ip, username=username, password=password,
+                api_version=api_version, tenant=tenant, tenant_uuid=tenant_uuid,
+                token=token, port=port, timeout=timeout,
+                session_id=session_id, csrftoken=csrftoken)
+        else:
+            self.avi_credentials = avi_credentials
         self.headers = {}
         self.verify = verify
-        self.port = port
-        self.key = controller_ip + ":" + username
-        self.api_version = api_version
         self.retry_conxn_errors = retry_conxn_errors
         self.remote_api_version = {}
         self.user_hdrs = {}
         self.data_log = data_log
 
         # Refer Notes 01 and 02
-        if controller_ip.startswith('http'):
-            if port is None or port == 80:
-                self.prefix = controller_ip
+        k_port = port if port else 443
+        if self.avi_credentials.controller.startswith('http'):
+            k_port = 80 if not self.avi_credentials.port else k_port
+            if self.avi_credentials.port is None or self.avi_credentials.port\
+                    == 80:
+                self.prefix = self.avi_credentials.controller
             else:
-                self.prefix = '{x}:{y}'.format(x=controller_ip, y=port)
+                self.prefix = '{x}:{y}'.format(
+                    x=self.avi_credentials.controller,
+                    y=self.avi_credentials.port)
         else:
             if port is None or port == 443:
-                self.prefix = 'https://{x}'.format(x=controller_ip)
+                self.prefix = 'https://{x}'.format(
+                    x=self.avi_credentials.controller)
             else:
-                self.prefix = 'https://{x}:{y}'.format(x=controller_ip, y=port)
+                self.prefix = 'https://{x}:{y}'.format(
+                    x=self.avi_credentials.controller,
+                    y=self.avi_credentials.port)
         self.timeout = timeout
-        try:
-            user_session = ApiSession.sessionDict[self.key]["api"]
-        except KeyError:
-            logger.debug("Session does not exist; Creating new session for %s",
-                         self.key)
+        self.key = '%s:%s:%s' % (self.avi_credentials.controller,
+                                 self.avi_credentials.username, k_port)
+        # Added api token and session id to sessionDict for handle single
+        # session
+        if self.avi_credentials.csrftoken:
+            sessionDict[self.key] = {
+                'api': self,
+                "csrftoken": self.avi_credentials.csrftoken,
+                "session_id":self.avi_credentials.session_id,
+                "last_used": datetime.utcnow()
+            }
+        elif lazy_authentication:
+            sessionDict.get(self.key, {}).update(
+                {'api': self, "last_used": datetime.utcnow()})
+        else:
             self.authenticate_session()
-            ApiSession.sessionDict[self.key] = \
-                {"api": self, "last_used": datetime.utcnow()}
-            user_session = self
-        # don't save the tenant headers as it would interfere with the
-        # individual method tenant overrides
-        for hdr in self.SHARED_USER_HDRS:
-            if hdr in user_session.headers:
-                self.headers[hdr] = user_session.headers[hdr]
-        self.cookies = user_session.cookies
+
         self.num_session_retries = 0
         self.pid = os.getpid()
         ApiSession._clean_inactive_sessions()
         return
 
+    @property
+    def controller_ip(self):
+        return self.avi_credentials.controller
+
+    @controller_ip.setter
+    def controller_ip(self, controller_ip):
+        self.avi_credentials.controller = controller_ip
+
+    @property
+    def username(self):
+        return self.avi_credentials.username
+
+    @username.setter
+    def username(self, username):
+        self.avi_credentials.username = username
+
+    @property
+    def password(self):
+        return self.avi_credentials.password
+
+    @password.setter
+    def password(self, password):
+        self.avi_credentials.password = password
+
+    @property
+    def keystone_token(self):
+        return sessionDict.get(self.key, {}).get('csrftoken', None)
+
+    @keystone_token.setter
+    def keystone_token(self, token):
+        sessionDict[self.key]['csrftoken'] = token
+
+    @property
+    def tenant_uuid(self):
+        self.avi_credentials.tenant_uuid
+
+    @tenant_uuid.setter
+    def tenant_uuid(self, tenant_uuid):
+        self.avi_credentials.tenant_uuid = tenant_uuid
+
+    @property
+    def tenant(self):
+        return self.avi_credentials.tenant
+
+    @tenant.setter
+    def tenant(self, tenant):
+        if tenant:
+            self.avi_credentials.tenant = tenant
+        else:
+            self.avi_credentials.tenant = 'admin'
+
+    @property
+    def port(self):
+        self.avi_credentials.port
+
+    @port.setter
+    def port(self, port):
+        self.avi_credentials.port = port
+
+    @property
+    def api_version(self):
+        return self.avi_credentials.api_version
+
+    @api_version.setter
+    def api_version(self, api_version):
+        self.avi_credentials.api_version = api_version
+
+    @property
+    def session_id(self):
+        return sessionDict[self.key]['session_id']
+
+    def get_context(self):
+        return {
+            'session_id':sessionDict[self.key]['session_id'],
+            'csrftoken': sessionDict[self.key]['csrftoken']
+        }
+
     @staticmethod
-    def get_session(controller_ip, username, password=None, token=None,
-                    tenant=None, tenant_uuid=None, verify=False, port=None,
-                    timeout=60, retry_conxn_errors=False, api_version=None, data_log=False):
+    def clear_cached_sessions():
+        global sessionDict
+        sessionDict = {}
+
+
+
+    @staticmethod
+    def get_session(
+            controller_ip=None, username=None, password=None, token=None, tenant=None,
+            tenant_uuid=None, verify=False, port=None, timeout=60,
+            retry_conxn_errors=True, api_version=None, data_log=False,
+            avi_credentials=None, session_id=None, csrftoken=None,
+            lazy_authentication=False):
         """
         returns the session object for same user and tenant
         calls init if session dose not exist and adds it to session cache
@@ -264,32 +377,34 @@ class ApiSession(Session):
         :param retry_conxn_errors: retry on connection errors
         :param api_version: Controller API version
         """
-        key = controller_ip + ":" + username
-        try:
-            user_session = ApiSession.sessionDict[key]["api"]
-            tenant = tenant if tenant else 'admin'
-            if (user_session.password != password or
-                    user_session.keystone_token != token or
-                    user_session.tenant != tenant or
-                    user_session.tenant_uuid != tenant_uuid or
-                    user_session.api_version != api_version):
-                logger.debug('Api Session auth credential mismatch %s', key)
-                del ApiSession.sessionDict[key]
-                user_session = None
-        except KeyError:
-            logger.debug("Session does not exist; Creating new session for %s",
-                         key)
-            user_session = None
+        if not avi_credentials:
+            tenant = tenant if tenant else "admin"
+            avi_credentials = AviCredentials(
+                controller=controller_ip, username=username, password=password,
+                api_version=api_version, tenant=tenant, tenant_uuid=tenant_uuid,
+                token=token, port=port, timeout=timeout,
+                session_id=session_id, csrftoken=csrftoken)
 
-        if not user_session:
+        k_port = avi_credentials.port if avi_credentials.port else 443
+        if avi_credentials.controller.startswith('http'):
+            k_port = 80 if not avi_credentials.port else k_port
+        key = '%s:%s:%s' % (avi_credentials.controller,
+                            avi_credentials.username, k_port)
+        cached_session = sessionDict.get(key)
+        if cached_session:
+            user_session = cached_session['api']
+            if not (user_session.avi_credentials.csrftoken or
+                    lazy_authentication):
+                user_session.authenticate_session()
+        else:
             user_session = ApiSession(
                 controller_ip, username, password, token=token, tenant=tenant,
                 tenant_uuid=tenant_uuid, verify=verify, port=port,
                 timeout=timeout, retry_conxn_errors=retry_conxn_errors,
-                api_version=api_version, data_log=data_log)
-            ApiSession.sessionDict[key] = \
-                {"api": user_session, "last_used": datetime.utcnow()}
-        ApiSession._clean_inactive_sessions()
+                api_version=api_version, data_log=data_log,
+                avi_credentials=avi_credentials,
+                lazy_authentication=lazy_authentication)
+            ApiSession._clean_inactive_sessions()
         return user_session
 
     def reset_session(self):
@@ -309,36 +424,36 @@ class ApiSession(Session):
         Performs session authentication with Avi controller and stores
         session cookies and sets header options like tenant.
         """
-        body = {"username": self.username}
-        if not self.keystone_token:
-            body["password"] = self.password
+        body = {"username": self.avi_credentials.username}
+        if self.avi_credentials.password:
+            body["password"] = self.avi_credentials.password
+        elif self.avi_credentials.token:
+            body["token"] = self.avi_credentials.token
         else:
-            body["token"] = self.keystone_token
-
-        logger.debug('authenticating user %s ', self.username)
+            raise Exception("Neither user password or token provided")
+        logger.debug('authenticating user %s ', self.avi_credentials.username)
         rsp = super(ApiSession, self).post(self.prefix+"/login", body,
                                            timeout=self.timeout)
         if rsp.status_code != 200:
             self.remote_api_version = {}
+            logger.error("Authentication failed with code %d reason %s",
+                         rsp.status_code, rsp.text)
             raise Exception(
                 "Authentication failed with code %d reason msg: %s" %
                 (rsp.status_code, rsp.text))
         self.remote_api_version = rsp.json().get('version', {})
         self.headers.update(self.user_hdrs)
-        self.headers.update({
-            "Referer": self.prefix,
-            "Content-Type": "application/json"
-        })
 
         if rsp.cookies and 'csrftoken' in rsp.cookies:
             csrftoken = rsp.cookies['csrftoken']
-            self.headers.update({"X-CSRFToken": csrftoken})
-            if self.key in ApiSession.sessionDict:
-                cached_api = \
-                    ApiSession.sessionDict[self.key]['api']
-                cached_api.headers.update({"X-CSRFToken": csrftoken})
+            sessionDict[self.key] = {
+                'csrftoken': csrftoken,
+                'session_id': rsp.cookies['sessionid'],
+                'last_used': datetime.utcnow(),
+                'api': self
+            }
         logger.debug("authentication success for user %s",
-                     self.username)
+                     self.avi_credentials.username)
         return
 
     def _get_api_headers(self, tenant, tenant_uuid, timeout, headers,
@@ -347,24 +462,45 @@ class ApiSession(Session):
         returns the headers that are passed to the requests.Session api calls.
         """
         api_hdrs = copy.deepcopy(self.headers)
+        api_hdrs.update({
+            "Referer": self.prefix,
+            "Content-Type": "application/json"
+        })
         api_hdrs['timeout'] = str(timeout)
+        if self.key in sessionDict and 'csrftoken' in sessionDict.get(self.key):
+            api_hdrs['X-CSRFToken'] = sessionDict.get(self.key)['csrftoken']
+            # Added Cookie to handle single session
+            api_hdrs['Cookie'] = "[<Cookie csrftoken=%s " \
+                                 "for %s/>, " \
+                                 "<Cookie sessionid=%s " \
+                                 "for %s/>]" %(sessionDict[self.key]['csrftoken'],
+                                               self.avi_credentials.controller,
+                                               sessionDict[self.key]['session_id'],
+                                               self.avi_credentials.controller)
+        else:
+            self.authenticate_session()
+            api_hdrs['X-CSRFToken'] = sessionDict.get(self.key)['csrftoken']
         if api_version:
             api_hdrs['X-Avi-Version'] = api_version
-        elif self.api_version:
-            api_hdrs['X-Avi-Version'] = self.api_version
+        elif self.avi_credentials.api_version:
+            api_hdrs['X-Avi-Version'] = self.avi_credentials.api_version
         if tenant:
             tenant_uuid = None
         elif tenant_uuid:
             tenant = None
         else:
-            tenant = self.tenant
-            tenant_uuid = self.tenant_uuid
+            tenant = self.avi_credentials.tenant
+            tenant_uuid = self.avi_credentials.tenant_uuid
         if tenant_uuid:
             api_hdrs.update({"X-Avi-Tenant-UUID": "%s" % tenant_uuid})
             api_hdrs.pop("X-Avi-Tenant", None)
         elif tenant:
             api_hdrs.update({"X-Avi-Tenant": "%s" % tenant})
             api_hdrs.pop("X-Avi-Tenant-UUID", None)
+        # Override any user headers that were passed by users. We don't know
+        # when the user had updated the user_hdrs
+        if self.user_hdrs:
+            api_hdrs.update(self.user_hdrs)
         if headers:
             # overwrite the headers passed via the API calls.
             api_hdrs.update(headers)
@@ -393,9 +529,8 @@ class ApiSession(Session):
             timeout = self.timeout
         fullpath = self._get_api_path(path)
         fn = getattr(super(ApiSession, self), api_name)
-        api_hdrs = \
-            self._get_api_headers(tenant, tenant_uuid, timeout, headers,
-                                  api_version)
+        api_hdrs = self._get_api_headers(tenant, tenant_uuid, timeout, headers,
+                                         api_version)
         connection_error = False
         try:
             if (data is not None) and (type(data) == dict):
@@ -404,7 +539,7 @@ class ApiSession(Session):
             else:
                 resp = fn(fullpath, data=data, headers=api_hdrs,
                           timeout=timeout, **kwargs)
-        except ConnectionError as e:
+        except (ConnectionError, SSLError) as e:
             logger.warning('Connection error retrying %s', e)
             if not self.retry_conxn_errors:
                 raise
@@ -417,10 +552,16 @@ class ApiSession(Session):
                          '%s data: %s rsp: %s', fullpath, api_name.upper(),
                          api_hdrs, kwargs, data,
                          (resp.text if self.data_log else 'None'))
-
         if connection_error or resp.status_code in (401, 419):
             if connection_error:
+                try:
+                    self.close()
+                except:
+                    # ignoring exception in cleanup path
+                    pass
                 logger.warning('Connection failed, retrying.')
+                # Adding sleep before retrying
+                time.sleep(5)
             else:
                 logger.info('received error %d %s so resetting connection',
                             resp.status_code, resp.text)
@@ -491,7 +632,8 @@ class ApiSession(Session):
         if not params:
             params = {}
         params['name'] = name
-        resp = self.get(path, tenant, tenant_uuid, timeout=timeout,
+        resp = self.get(path, tenant=tenant, tenant_uuid=tenant_uuid,
+                        timeout=timeout,
                         params=params, api_version=api_version, **kwargs)
         if resp.status_code in (401, 419):
             ApiSession.reset_session(self)
@@ -709,17 +851,13 @@ class ApiSession(Session):
         return self.get_obj_uuid(resp)
 
     def _update_session_last_used(self):
-        if self.key in ApiSession.sessionDict:
-            ApiSession.sessionDict[self.key]["last_used"] = \
-                datetime.utcnow()
-        else:
-            ApiSession.sessionDict[self.key] = \
-                {'api': self, 'last_used': datetime.utcnow()}
+        if self.key in sessionDict:
+            sessionDict[self.key]["last_used"] = datetime.utcnow()
 
     @staticmethod
     def _clean_inactive_sessions():
         """Removes sessions which are inactive more than 20 min"""
-        session_cache = ApiSession.sessionDict
+        session_cache = sessionDict
         logger.debug("cleaning inactive sessions in pid %d num elem %d",
                      os.getpid(), len(session_cache))
         keys_to_delete = []
@@ -735,6 +873,6 @@ class ApiSession(Session):
     def delete_session(self):
         """ Removes the session for cleanup"""
         logger.debug("Removed session for : %s", self.key)
-        ApiSession.sessionDict.pop(self.key, None)
+        sessionDict.pop(self.key, None)
         return
 # End of file
