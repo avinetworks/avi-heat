@@ -38,5 +38,6 @@ setup(
     install_requires = [''],
     package_data={'avi': ['*.cfg', '*.conf', '*.crt', '*.json', '*.key',
                           '*.pem', '*.xml', '*.yaml']},
+    data_files = [('', ['VERSION'])],
 )
 
