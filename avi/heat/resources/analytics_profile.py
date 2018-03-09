@@ -540,6 +540,12 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    exclude_dns_policy_drop_as_significant_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.2) Exclude dns policy drops from the list of errors. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -609,6 +615,7 @@ class AnalyticsProfile(AviResource):
         'ranges',
         'resp_code_block',
         'exclude_server_dns_error_as_error',
+        'exclude_dns_policy_drop_as_significant',
     )
 
     # mapping of properties to their schemas
@@ -679,6 +686,7 @@ class AnalyticsProfile(AviResource):
         'ranges': ranges_schema,
         'resp_code_block': resp_code_block_schema,
         'exclude_server_dns_error_as_error': exclude_server_dns_error_as_error_schema,
+        'exclude_dns_policy_drop_as_significant': exclude_dns_policy_drop_as_significant_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

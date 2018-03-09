@@ -162,6 +162,12 @@ class VSDataScriptSet(AviResource):
         required=False,
         update_allowed=True,
     )
+    created_by_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.11,17.2.4) Creator name"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -178,6 +184,7 @@ class VSDataScriptSet(AviResource):
         'pool_group_uuids',
         'ipgroup_uuids',
         'string_group_uuids',
+        'created_by',
         'description',
     )
 
@@ -190,6 +197,7 @@ class VSDataScriptSet(AviResource):
         'pool_group_uuids': pool_group_uuids_schema,
         'ipgroup_uuids': ipgroup_uuids_schema,
         'string_group_uuids': string_group_uuids_schema,
+        'created_by': created_by_schema,
         'description': description_schema,
     }
 

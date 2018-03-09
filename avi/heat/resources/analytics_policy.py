@@ -258,7 +258,7 @@ class AnalyticsPolicy(object):
     )
     client_insights_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Gain insights from sampled client to server HTTP requests and responses. (Default: ACTIVE)"),
+        _("Gain insights from sampled client to server HTTP requests and responses. (Default: NO_INSIGHTS)"),
         required=False,
         update_allowed=True,
         constraints=[
@@ -279,6 +279,12 @@ class AnalyticsPolicy(object):
         required=False,
         update_allowed=True,
     )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Disable Analytics on this VirtualService. This will disable the collection of both metrics and logs (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -289,6 +295,7 @@ class AnalyticsPolicy(object):
         'client_insights',
         'metrics_realtime_update',
         'client_insights_sampling',
+        'enabled',
     )
 
     # mapping of properties to their schemas
@@ -300,6 +307,7 @@ class AnalyticsPolicy(object):
         'client_insights': client_insights_schema,
         'metrics_realtime_update': metrics_realtime_update_schema,
         'client_insights_sampling': client_insights_sampling_schema,
+        'enabled': enabled_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

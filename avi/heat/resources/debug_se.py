@@ -42,12 +42,19 @@ class DebugSeAgent(object):
             constraints.AllowedValues(['LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
         ],
     )
+    log_every_n_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.7) Log every nth message (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'sub_module',
         'trace_level',
         'log_level',
+        'log_every_n',
     )
 
     # mapping of properties to their schemas
@@ -55,6 +62,7 @@ class DebugSeAgent(object):
         'sub_module': sub_module_schema,
         'trace_level': trace_level_schema,
         'log_level': log_level_schema,
+        'log_every_n': log_every_n_schema,
     }
 
     unique_keys = {
@@ -362,7 +370,7 @@ class DebugVsDataplane(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['DEBUG_VS_ALL', 'DEBUG_VS_CONFIG', 'DEBUG_VS_CREDIT', 'DEBUG_VS_ERROR', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_NONE', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_UDP', 'DEBUG_VS_UDP_PKT']),
+            constraints.AllowedValues(['DEBUG_VS_ALL', 'DEBUG_VS_CONFIG', 'DEBUG_VS_CREDIT', 'DEBUG_VS_ERROR', 'DEBUG_VS_EVENTS', 'DEBUG_VS_HM', 'DEBUG_VS_HM_ERR', 'DEBUG_VS_HM_EXT', 'DEBUG_VS_HM_PKT', 'DEBUG_VS_HTTP_ALL', 'DEBUG_VS_HTTP_CORE', 'DEBUG_VS_HTTP_RULES', 'DEBUG_VS_NONE', 'DEBUG_VS_PROXY_CONNECTION', 'DEBUG_VS_PROXY_ERR', 'DEBUG_VS_PROXY_PKT', 'DEBUG_VS_SSL', 'DEBUG_VS_TCP_ALL', 'DEBUG_VS_TCP_APP', 'DEBUG_VS_TCP_APP_PKT', 'DEBUG_VS_TCP_CONNECTION', 'DEBUG_VS_TCP_CONN_ERROR', 'DEBUG_VS_TCP_PKT', 'DEBUG_VS_TCP_PKT_ERROR', 'DEBUG_VS_TCP_RETRANSMIT', 'DEBUG_VS_TCP_REXMT', 'DEBUG_VS_TCP_TIMER', 'DEBUG_VS_UDP', 'DEBUG_VS_UDP_PKT', 'DEBUG_VS_WAF']),
         ],
     )
 

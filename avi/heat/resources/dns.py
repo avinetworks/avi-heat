@@ -42,65 +42,6 @@ class DnsARdata(object):
 
 
 
-class DnsInfo(object):
-    # all schemas
-    fqdn_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Fully qualified domain name."),
-        required=False,
-        update_allowed=True,
-    )
-    ttl_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Time to live for fqdn record. Default value is chosen from DNS profile for this cloud if no value provided."),
-        required=False,
-        update_allowed=True,
-    )
-    type_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("DNS record type (Default: DNS_RECORD_A)"),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
-        ],
-    )
-    num_records_in_response_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Specifies the number of records returned for this FQDN. Enter 0 to return all records. Default is 0 (Default: 1)"),
-        required=False,
-        update_allowed=True,
-    )
-    algorithm_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is consistent hash. (Default: DNS_RECORD_RESPONSE_CONSISTENT_HASH)"),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['DNS_RECORD_RESPONSE_CONSISTENT_HASH', 'DNS_RECORD_RESPONSE_ROUND_ROBIN']),
-        ],
-    )
-
-    # properties list
-    PROPERTIES = (
-        'fqdn',
-        'ttl',
-        'type',
-        'num_records_in_response',
-        'algorithm',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'fqdn': fqdn_schema,
-        'ttl': ttl_schema,
-        'type': type_schema,
-        'num_records_in_response': num_records_in_response_schema,
-        'algorithm': algorithm_schema,
-    }
-
-
-
 class DnsNsRdata(object):
     # all schemas
     nsname_schema = properties.Schema(
@@ -364,5 +305,90 @@ class DnsRecord(object):
         'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
         'ip_address': getattr(DnsARdata, 'unique_keys', {}),
         'service_locator': getattr(DnsSrvRdata, 'unique_keys', {}),
+    }
+
+
+
+class DnsInfo(object):
+    # all schemas
+    fqdn_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Fully qualified domain name."),
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("Time to live for fqdn record. Default value is chosen from DNS profile for this cloud if no value provided."),
+        required=False,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("DNS record type (Default: DNS_RECORD_A)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
+        ],
+    )
+    num_records_in_response_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Specifies the number of records returned for this FQDN. Enter 0 to return all records. Default is 0 (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    algorithm_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Specifies the algorithm to pick the IP address(es) to be returned, when multiple entries are configured. This does not apply if num_records_in_response is 0. Default is consistent hash. (Default: DNS_RECORD_RESPONSE_CONSISTENT_HASH)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_RESPONSE_CONSISTENT_HASH', 'DNS_RECORD_RESPONSE_ROUND_ROBIN']),
+        ],
+    )
+    cname_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Canonical name in CNAME record."),
+        schema=DnsCnameRdata.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    metadata_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) Any metadata associated with this record"),
+        required=False,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'fqdn',
+        'ttl',
+        'type',
+        'num_records_in_response',
+        'algorithm',
+        'cname',
+        'metadata',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'fqdn': fqdn_schema,
+        'ttl': ttl_schema,
+        'type': type_schema,
+        'num_records_in_response': num_records_in_response_schema,
+        'algorithm': algorithm_schema,
+        'cname': cname_schema,
+        'metadata': metadata_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'cname': getattr(DnsCnameRdata, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
     }
 

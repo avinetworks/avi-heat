@@ -258,13 +258,13 @@ class SeRuntimeProperties(object):
     )
     flow_table_new_syn_max_entries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum number of flow table entries that have not completed TCP three-way handshake yet (Default: 40000)"),
+        _("(Deprecated in: 17.2.5) Deprecated (Default: 40000)"),
         required=False,
         update_allowed=True,
     )
     tcp_syn_cache_max_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum size of the SYN cache table. After this limit is reached, SYN cookies are used. This is per core of the serviceengine. (Default: 32768)"),
+        _("(Deprecated in: 17.2.5) Maximum size of the SYN cache table. After this limit is reached, SYN cookies are used. This is per core of the serviceengine. (Default: 32768)"),
         required=False,
         update_allowed=True,
     )
@@ -318,7 +318,7 @@ class SeRuntimeProperties(object):
     )
     log_agent_max_storage_ignore_percent_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Maximum storage on the disk not allocated for logs on the Service Engine. (Default: 10.0)"),
+        _("Maximum storage on the disk not allocated for logs on the Service Engine. (Default: 20.0)"),
         required=False,
         update_allowed=True,
     )
@@ -837,19 +837,19 @@ class SeRuntimeProperties(object):
     )
     se_dp_vnic_queue_stall_event_sleep_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Time (in seconds) service engine waits for after generating a Vnic transmit queue stall event before asserting totrigger a failover. (Default: 10)"),
+        _("(Introduced in: 17.1.1) Time (in seconds) service engine waits for after generating a Vnic transmit queue stall event before resetting theNIC. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
     se_dp_vnic_queue_stall_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Time (in milliseconds) to wait for network/NIC recovery on detecting a transmit queue stall after which service engine asserts triggering a failover (Default: 10000)"),
+        _("(Introduced in: 17.1.1) Time (in milliseconds) to wait for network/NIC recovery on detecting a transmit queue stall after which service engine resets the NIC (Default: 10000)"),
         required=False,
         update_allowed=True,
     )
     se_dp_vnic_queue_stall_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 10000)"),
+        _("(Introduced in: 17.1.1) Number of consecutive transmit failures to look for before generating a Vnic transmit queue stall event. (Default: 2000)"),
         required=False,
         update_allowed=True,
     )
@@ -867,7 +867,31 @@ class SeRuntimeProperties(object):
     )
     disable_gro_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.6) Disable Generic Receive Offload (GRO) in DPDK poll-mode driver packet receive path.  GRO is on by default. (Default: False)"),
+        _("(Introduced in: 17.2.1) (Deprecated in: 17.2.5) Deprecated (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    enable_hsm_log_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 16.4.8, 17.2.3) Enable HSM luna engine logs (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_tso_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) (Deprecated in: 17.2.5) Deprecated (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_dp_vnic_restart_on_queue_stall_count_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.14, 17.2.5) Number of consecutive transmit queue stall events in se_dp_vnic_stall_se_restart_window to look for before restarting SE (Default: 3)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_dp_vnic_stall_se_restart_window_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.14, 17.2.5) Window of time (in seconds) during which se_dp_vnic_restart_on_queue_stall_count number of consecutive stalls results in a SE restart (Default: 3600)"),
         required=False,
         update_allowed=True,
     )
@@ -976,6 +1000,10 @@ class SeRuntimeProperties(object):
         'disable_flow_probes',
         'user_defined_metric_age',
         'disable_gro',
+        'enable_hsm_log',
+        'disable_tso',
+        'se_dp_vnic_restart_on_queue_stall_count',
+        'se_dp_vnic_stall_se_restart_window',
     )
 
     # mapping of properties to their schemas
@@ -1082,6 +1110,10 @@ class SeRuntimeProperties(object):
         'disable_flow_probes': disable_flow_probes_schema,
         'user_defined_metric_age': user_defined_metric_age_schema,
         'disable_gro': disable_gro_schema,
+        'enable_hsm_log': enable_hsm_log_schema,
+        'disable_tso': disable_tso_schema,
+        'se_dp_vnic_restart_on_queue_stall_count': se_dp_vnic_restart_on_queue_stall_count_schema,
+        'se_dp_vnic_stall_se_restart_window': se_dp_vnic_stall_se_restart_window_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1157,7 +1189,7 @@ class SeAgentProperties(object):
     )
     dp_max_wait_rsp_time_sec_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: SEC) (Default: 12)"),
+        _(" (Units: SEC) (Default: 60)"),
         required=False,
         update_allowed=True,
     )

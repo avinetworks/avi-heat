@@ -19,7 +19,7 @@ class ReplaceStringVar(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['HTTP_SECURITY_ACTION_ALLOW', 'HTTP_SECURITY_ACTION_CLOSE_CONN', 'HTTP_SECURITY_ACTION_RATE_LIMIT', 'HTTP_SECURITY_ACTION_REDIRECT_TO_HTTPS', 'HTTP_SECURITY_ACTION_SEND_RESPONSE']),
+            constraints.AllowedValues(['DATASCRIPT_VAR', 'HTTP_HEADER_VAR', 'LITERAL_STRING']),
         ],
     )
     val_schema = properties.Schema(

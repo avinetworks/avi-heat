@@ -58,7 +58,7 @@ class ControllerProperties(AviResource):
     )
     vs_se_bootup_fail_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: SEC) (Default: 300)"),
+        _(" (Units: SEC) (Default: 480)"),
         required=False,
         update_allowed=True,
     )
@@ -279,6 +279,30 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    bm_use_ansible_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.2) Use Ansible for SE creation in baremetal (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    vs_se_attach_ip_fail_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.2) Time to wait before marking attach IP operation on an SE as failed (Units: SEC) (Default: 3600)"),
+        required=False,
+        update_allowed=True,
+    )
+    max_seq_attach_ip_failures_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.2) Maximum number of consecutive attach IP failures that halts VS placement (Default: 3)"),
+        required=False,
+        update_allowed=True,
+    )
+    safenet_hsm_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 16.5.2,17.2.3) Version of the safenet package installed on the controller"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -325,6 +349,10 @@ class ControllerProperties(AviResource):
         'appviewx_compat_mode',
         'upgrade_dns_ttl',
         'portal_token',
+        'bm_use_ansible',
+        'vs_se_attach_ip_fail',
+        'max_seq_attach_ip_failures',
+        'safenet_hsm_version',
     )
 
     # mapping of properties to their schemas
@@ -372,6 +400,10 @@ class ControllerProperties(AviResource):
         'appviewx_compat_mode': appviewx_compat_mode_schema,
         'upgrade_dns_ttl': upgrade_dns_ttl_schema,
         'portal_token': portal_token_schema,
+        'bm_use_ansible': bm_use_ansible_schema,
+        'vs_se_attach_ip_fail': vs_se_attach_ip_fail_schema,
+        'max_seq_attach_ip_failures': max_seq_attach_ip_failures_schema,
+        'safenet_hsm_version': safenet_hsm_version_schema,
     }
 
 

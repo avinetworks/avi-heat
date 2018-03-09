@@ -120,7 +120,7 @@ class HTTPPolicies(object):
     }
 
     unique_keys = {
-        'my_key': 'index',
+        'my_key': 'http_policy_set_uuid',
     }
 
 
@@ -239,7 +239,7 @@ class HTTPRequestRule(object):
 
     unique_keys = {
         'rewrite_url_action': getattr(HTTPRewriteURLAction, 'unique_keys', {}),
-        'my_key': 'index',
+        'my_key': 'name',
         'switching_action': getattr(HTTPSwitchingAction, 'unique_keys', {}),
         'redirect_action': getattr(HTTPRedirectAction, 'unique_keys', {}),
         'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
@@ -342,7 +342,7 @@ class HTTPResponseRule(object):
 
     unique_keys = {
         'loc_hdr_action': getattr(HTTPRewriteLocHdrAction, 'unique_keys', {}),
-        'my_key': 'index',
+        'my_key': 'name',
         'hdr_action': getattr(HTTPHdrAction, 'unique_keys', {}),
         'match': getattr(ResponseMatchTarget, 'unique_keys', {}),
     }
@@ -418,7 +418,7 @@ class HTTPSecurityRule(object):
 
     unique_keys = {
         'action': getattr(HTTPSecurityAction, 'unique_keys', {}),
-        'my_key': 'index',
+        'my_key': 'name',
         'match': getattr(MatchTarget, 'unique_keys', {}),
     }
 

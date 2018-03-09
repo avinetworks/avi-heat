@@ -309,12 +309,19 @@ class LinuxServerHost(object):
         required=False,
         update_allowed=True,
     )
+    se_group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) The SE Group association for the SE. If None, then 'Default-Group' SEGroup is associated with the SE"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'host_ip',
         'host_attr',
         'node_availability_zone',
+        'se_group_uuid',
     )
 
     # mapping of properties to their schemas
@@ -322,6 +329,7 @@ class LinuxServerHost(object):
         'host_ip': host_ip_schema,
         'host_attr': host_attr_schema,
         'node_availability_zone': node_availability_zone_schema,
+        'se_group_uuid': se_group_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -424,60 +432,6 @@ class vCenterConfiguration(object):
 
     unique_keys = {
         'management_ip_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
-    }
-
-
-
-class CloudConnectorUser(AviResource):
-    resource_name = "cloudconnectoruser"
-    # all schemas
-    avi_version_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
-        required=False,
-        update_allowed=True,
-    )
-    name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=True,
-    )
-    private_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    public_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    password_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'avi_version',
-        'name',
-        'private_key',
-        'public_key',
-        'password',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'avi_version': avi_version_schema,
-        'name': name_schema,
-        'private_key': private_key_schema,
-        'public_key': public_key_schema,
-        'password': password_schema,
     }
 
 
@@ -822,6 +776,89 @@ class MarathonSeDeployment(object):
 
 
 
+class CloudConnectorUser(AviResource):
+    resource_name = "cloudconnectoruser"
+    # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=True,
+    )
+    private_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    public_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    azure_userpass_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) "),
+        schema=AzureUserPassCredentials.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    azure_serviceprincipal_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) "),
+        schema=AzureServicePrincipalCredentials.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'avi_version',
+        'name',
+        'private_key',
+        'public_key',
+        'password',
+        'azure_userpass',
+        'azure_serviceprincipal',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'avi_version': avi_version_schema,
+        'name': name_schema,
+        'private_key': private_key_schema,
+        'public_key': public_key_schema,
+        'password': password_schema,
+        'azure_userpass': azure_userpass_schema,
+        'azure_serviceprincipal': azure_serviceprincipal_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'azure_serviceprincipal': getattr(AzureServicePrincipalCredentials, 'field_references', {}),
+        'azure_userpass': getattr(AzureUserPassCredentials, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'azure_serviceprincipal': getattr(AzureServicePrincipalCredentials, 'unique_keys', {}),
+        'azure_userpass': getattr(AzureUserPassCredentials, 'unique_keys', {}),
+    }
+
+
+
 class MesosAttribute(object):
     # all schemas
     attribute_schema = properties.Schema(
@@ -1026,6 +1063,56 @@ class OshiftDockerRegistryMetaData(object):
 
 
 
+class OpenStackHypervisorProperties(object):
+    # all schemas
+    hypervisor_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Hypervisor type"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DEFAULT', 'KVM', 'VMWARE_ESX', 'VMWARE_VSAN', 'XEN']),
+        ],
+    )
+    image_properties_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Custom properties to be associated with the SE image in Glance for this hypervisor type."),
+        schema=Property.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    image_properties_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Custom properties to be associated with the SE image in Glance for this hypervisor type."),
+        schema=image_properties_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'hypervisor',
+        'image_properties',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'hypervisor': hypervisor_schema,
+        'image_properties': image_properties_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'image_properties': getattr(Property, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'image_properties': getattr(Property, 'unique_keys', {}),
+        'my_key': 'hypervisor',
+    }
+
+
+
 class NsxConfiguration(object):
     # all schemas
     nsx_manager_name_schema = properties.Schema(
@@ -1079,148 +1166,6 @@ class NsxConfiguration(object):
 
 
 
-class AwsConfiguration(object):
-    # all schemas
-    access_key_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS access key ID"),
-        required=False,
-        update_allowed=True,
-    )
-    secret_access_key_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS secret access key"),
-        required=False,
-        update_allowed=True,
-    )
-    region_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("AWS region"),
-        required=False,
-        update_allowed=True,
-    )
-    vpc_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("VPC name"),
-        required=False,
-        update_allowed=True,
-    )
-    vpc_id_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("VPC ID"),
-        required=True,
-        update_allowed=True,
-    )
-    zones_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AwsZoneConfig.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    zones_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=zones_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    route53_integration_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("If enabled, create/update DNS entries in Amazon Route 53 zones (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-    free_elasticips_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Free unused elastic IP addresses. (Default: True)"),
-        required=False,
-        update_allowed=True,
-    )
-    use_iam_roles_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Use IAM roles instead of access and secret key. (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-    iam_assume_role_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("IAM assume role for cross-account access."),
-        required=False,
-        update_allowed=True,
-    )
-    ttl_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.3) Default TTL for all records (Units: SEC) (Default: 60)"),
-        required=False,
-        update_allowed=True,
-    )
-    wildcard_access_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.3) (Deprecated in: 17.1.5) If enabled, program SE security group with ingress rule to allow SSH (port 22) access from 0.0.0.0/0. (Default: True)"),
-        required=False,
-        update_allowed=True,
-    )
-    use_sns_sqs_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.3) Use SNS/SQS based notifications for monitoring Auto Scaling Groups. (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-    asg_poll_interval_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.3) Time interval between periodic polling of all Auto Scaling Groups. (Units: SEC) (Default: 600)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'access_key_id',
-        'secret_access_key',
-        'region',
-        'vpc',
-        'vpc_id',
-        'zones',
-        'route53_integration',
-        'free_elasticips',
-        'use_iam_roles',
-        'iam_assume_role',
-        'ttl',
-        'wildcard_access',
-        'use_sns_sqs',
-        'asg_poll_interval',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'access_key_id': access_key_id_schema,
-        'secret_access_key': secret_access_key_schema,
-        'region': region_schema,
-        'vpc': vpc_schema,
-        'vpc_id': vpc_id_schema,
-        'zones': zones_schema,
-        'route53_integration': route53_integration_schema,
-        'free_elasticips': free_elasticips_schema,
-        'use_iam_roles': use_iam_roles_schema,
-        'iam_assume_role': iam_assume_role_schema,
-        'ttl': ttl_schema,
-        'wildcard_access': wildcard_access_schema,
-        'use_sns_sqs': use_sns_sqs_schema,
-        'asg_poll_interval': asg_poll_interval_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'zones': getattr(AwsZoneConfig, 'field_references', {}),
-    }
-
-    unique_keys = {
-        'zones': getattr(AwsZoneConfig, 'unique_keys', {}),
-    }
-
-
-
 class FeProxyRoutePublishConfig(object):
     # all schemas
     mode_schema = properties.Schema(
@@ -1269,6 +1214,67 @@ class FeProxyRoutePublishConfig(object):
 
 
 
+class aws_encryption(object):
+    # all schemas
+    mode_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) AWS encryption mode. (Default: AWS_ENCRYPTION_MODE_NONE)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AWS_ENCRYPTION_MODE_NONE', 'AWS_ENCRYPTION_MODE_SSE_KMS']),
+        ],
+    )
+    master_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) AWS KMS ARN ID of the master key for encryption."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'mode',
+        'master_key',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'mode': mode_schema,
+        'master_key': master_key_schema,
+    }
+
+
+
+class AzureNetworkInfo(object):
+    # all schemas
+    virtual_network_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Virtual network where Virtual IPs will belong."),
+        required=False,
+        update_allowed=True,
+    )
+    se_network_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Id of the Azure subnet where Avi Controller will create the Service Engines. "),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'virtual_network_id',
+        'se_network_id',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'virtual_network_id': virtual_network_id_schema,
+        'se_network_id': se_network_id_schema,
+    }
+
+
+
 class OpenStackRoleMapping(object):
     # all schemas
     os_role_schema = properties.Schema(
@@ -1302,7 +1308,7 @@ class DockerRegistry(object):
     # all schemas
     registry_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Avi ServiceEngine repository name. For private registry, it's registry:port/repository, for public registry, it's registry/repository, for openshift registry, it's registry:port/<namespace>/<repo>"),
+        _("Avi ServiceEngine repository name. For private registry, it's registry:port/repository, for public registry, it's registry/repository, for openshift registry, it's registry:port/namespace/repo"),
         required=False,
         update_allowed=True,
     )
@@ -1474,6 +1480,124 @@ class LinuxServerConfiguration(object):
         'ssh_attr': getattr(SSHSeDeployment, 'unique_keys', {}),
         'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
         'hosts': getattr(LinuxServerHost, 'unique_keys', {}),
+    }
+
+
+
+class AzureConfiguration(object):
+    # all schemas
+    subscription_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Subscription Id for the Azure subscription"),
+        required=False,
+        update_allowed=True,
+    )
+    cloud_credentials_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Credentials to access azure cloud You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    location_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Azure location where this cloud will be located"),
+        required=False,
+        update_allowed=True,
+    )
+    network_info_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Azure virtual network and subnet information"),
+        schema=AzureNetworkInfo.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    network_info_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Azure virtual network and subnet information"),
+        schema=network_info_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    resource_group_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Azure resource group dedicated for Avi Controller. Avi Controller will create all its resources in this resource group."),
+        required=False,
+        update_allowed=True,
+    )
+    use_azure_dns_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Azure is the DNS provider (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_enhanced_ha_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Use Azure's enhanced HA features. This needs a public IP to be associated with the VIP.  (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_managed_disks_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.2) Use Azure managed disks for SE storage (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    availability_zones_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Availability zones to be used in Azure"),
+        required=True,
+        update_allowed=False,
+    )
+    availability_zones_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) Availability zones to be used in Azure"),
+        schema=availability_zones_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    use_standard_alb_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7) Use Standard SKU Azure Load Balancer. By default Basic SKU Load Balancer is used. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'subscription_id',
+        'cloud_credentials_uuid',
+        'location',
+        'network_info',
+        'resource_group',
+        'use_azure_dns',
+        'use_enhanced_ha',
+        'use_managed_disks',
+        'availability_zones',
+        'use_standard_alb',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'subscription_id': subscription_id_schema,
+        'cloud_credentials_uuid': cloud_credentials_uuid_schema,
+        'location': location_schema,
+        'network_info': network_info_schema,
+        'resource_group': resource_group_schema,
+        'use_azure_dns': use_azure_dns_schema,
+        'use_enhanced_ha': use_enhanced_ha_schema,
+        'use_managed_disks': use_managed_disks_schema,
+        'availability_zones': availability_zones_schema,
+        'use_standard_alb': use_standard_alb_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'network_info': getattr(AzureNetworkInfo, 'field_references', {}),
+        'cloud_credentials_uuid': 'cloudconnectoruser',
+    }
+
+    unique_keys = {
+        'network_info': getattr(AzureNetworkInfo, 'unique_keys', {}),
     }
 
 
@@ -2363,13 +2487,13 @@ class OShiftK8SConfiguration(object):
     )
     routes_share_virtualservice_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.1) Routes use shared virtualservices. If configured, all OpenShift Routes will be created under a parent VirtualService. OpenShift Services will not trigger a VirtualService creation (Default: False)"),
+        _("(Introduced in: 17.1.1) (Deprecated in: 17.1.9) Deprecated (Default: False)"),
         required=False,
         update_allowed=True,
     )
     default_shared_virtualservice_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) Default shared virtualservice that acts as the parent for all OpenShift Routes"),
+        _("(Introduced in: 17.1.1) (Deprecated in: 17.1.9) Deprecated"),
         schema=OshiftSharedVirtualService.properties_schema,
         required=False,
         update_allowed=True,
@@ -2382,7 +2506,7 @@ class OShiftK8SConfiguration(object):
     )
     secure_egress_mode_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.1) Allow Avi Vantage to create Security Context Constraints and Service Accounts which allow Egress Pods to run in privileged mode in an Openshift environment. Assumption is that credentials provided have cluster-admin role when this mode is enabled. (Default: False)"),
+        _("(Introduced in: 17.1.1) Allow Avi Vantage to create SecurityContextConstraints and ServiceAccounts which allow Egress Pods to run in privileged mode in an Openshift environment. Enabling this would exclude egress services from 'disable_auto_backend_service_sync' (if set) behaviour. Note: Access credentials must have cluster-admin role privileges. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -2394,7 +2518,47 @@ class OShiftK8SConfiguration(object):
     )
     service_port_match_http_service_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.4) Perform service port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Set either service_port_match_http_service or container_port_match_http_service (Default: False)"),
+        _("Perform service port matching to create a HTTP Virtualservice instead of a TCP/UDP VirtualService. Set either service_port_match_http_service or container_port_match_http_service (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    shared_virtualservice_namespace_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.9,17.2.3) Projects/Namespaces use a shared virtualservice for http/https Routes and Ingress objects unless overriden by the avi_virtualservice: dedicated|shared annotation (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    ns_include_attributes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.9,17.2.3) Sync applications only for namespaces/projects that have these include attributes configured."),
+        schema=MesosAttribute.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ns_include_attributes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.9,17.2.3) Sync applications only for namespaces/projects that have these include attributes configured."),
+        schema=ns_include_attributes_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ns_exclude_attributes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.1.9,17.2.3) Syncing of applications is disabled only for namespaces/projects that have these exclude attributes configured. If there are apps synced already for these namespaces, they will be removed from Avi."),
+        schema=MesosAttribute.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ns_exclude_attributes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.1.9,17.2.3) Syncing of applications is disabled only for namespaces/projects that have these exclude attributes configured. If there are apps synced already for these namespaces, they will be removed from Avi."),
+        schema=ns_exclude_attributes_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    cluster_tag_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Openshift/K8S Cluster ID used to uniquely map same named namespaces as tenants in Avi. Warn: All virtual services will be disrupted if this field is modified."),
         required=False,
         update_allowed=True,
     )
@@ -2438,6 +2602,10 @@ class OShiftK8SConfiguration(object):
         'secure_egress_mode',
         'disable_auto_gs_sync',
         'service_port_match_http_service',
+        'shared_virtualservice_namespace',
+        'ns_include_attributes',
+        'ns_exclude_attributes',
+        'cluster_tag',
     )
 
     # mapping of properties to their schemas
@@ -2479,11 +2647,16 @@ class OShiftK8SConfiguration(object):
         'secure_egress_mode': secure_egress_mode_schema,
         'disable_auto_gs_sync': disable_auto_gs_sync_schema,
         'service_port_match_http_service': service_port_match_http_service_schema,
+        'shared_virtualservice_namespace': shared_virtualservice_namespace_schema,
+        'ns_include_attributes': ns_include_attributes_schema,
+        'ns_exclude_attributes': ns_exclude_attributes_schema,
+        'cluster_tag': cluster_tag_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ssh_se_deployment': getattr(SSHSeDeployment, 'field_references', {}),
+        'ns_include_attributes': getattr(MesosAttribute, 'field_references', {}),
         'east_west_placement_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'avi_bridge_subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'nuage_controller': getattr(NuageSDNController, 'field_references', {}),
@@ -2491,6 +2664,7 @@ class OShiftK8SConfiguration(object):
         'client_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
         'default_shared_virtualservice': getattr(OshiftSharedVirtualService, 'field_references', {}),
         'se_include_attributes': getattr(MesosAttribute, 'field_references', {}),
+        'ns_exclude_attributes': getattr(MesosAttribute, 'field_references', {}),
         'docker_registry_se': getattr(DockerRegistry, 'field_references', {}),
         'ca_tls_key_and_certificate_uuid': 'sslkeyandcertificate',
         'ssh_user_uuid': 'cloudconnectoruser',
@@ -2498,12 +2672,14 @@ class OShiftK8SConfiguration(object):
 
     unique_keys = {
         'ssh_se_deployment': getattr(SSHSeDeployment, 'unique_keys', {}),
+        'ns_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
         'east_west_placement_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'avi_bridge_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'nuage_controller': getattr(NuageSDNController, 'unique_keys', {}),
         'se_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
         'default_shared_virtualservice': getattr(OshiftSharedVirtualService, 'unique_keys', {}),
         'se_include_attributes': getattr(MesosAttribute, 'unique_keys', {}),
+        'ns_exclude_attributes': getattr(MesosAttribute, 'unique_keys', {}),
         'docker_registry_se': getattr(DockerRegistry, 'unique_keys', {}),
     }
 
@@ -2734,6 +2910,26 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    hypervisor_properties_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Custom properties per hypervisor type"),
+        schema=OpenStackHypervisorProperties.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    hypervisor_properties_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.1) Custom properties per hypervisor type"),
+        schema=hypervisor_properties_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    se_group_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("The Service Engine Group to use as template."),
+        required=False,
+        update_allowed=True,
+    )
     nuage_vsd_host_schema = properties.Schema(
         properties.Schema.STRING,
         _("Nuage VSD host name or IP address"),
@@ -2764,9 +2960,15 @@ class OpenStackConfiguration(object):
         required=False,
         update_allowed=True,
     )
-    se_group_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("The Service Engine Group to use as template."),
+    use_nuagevip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) If True, use nuage:vip as device_owner of VIP ports, else use neutron:LOADBALANCER. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    nuage_virtualip_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.3) Applicable only if allowed-address-pairs is disabled or unusable. VIP placement uses Nuage virtualIp if true, else redirectionTarget. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -2823,12 +3025,15 @@ class OpenStackConfiguration(object):
         'map_admin_to_cloudadmin',
         'usable_network_uuids',
         'wildcard_access',
+        'hypervisor_properties',
+        'se_group_uuid',
         'nuage_vsd_host',
         'nuage_port',
         'nuage_username',
         'nuage_password',
         'nuage_organization',
-        'se_group_uuid',
+        'use_nuagevip',
+        'nuage_virtualip',
         'contrail_plugin',
         'contrail_endpoint',
         'name_owner',
@@ -2868,12 +3073,15 @@ class OpenStackConfiguration(object):
         'map_admin_to_cloudadmin': map_admin_to_cloudadmin_schema,
         'usable_network_uuids': usable_network_uuids_schema,
         'wildcard_access': wildcard_access_schema,
+        'hypervisor_properties': hypervisor_properties_schema,
+        'se_group_uuid': se_group_uuid_schema,
         'nuage_vsd_host': nuage_vsd_host_schema,
         'nuage_port': nuage_port_schema,
         'nuage_username': nuage_username_schema,
         'nuage_password': nuage_password_schema,
         'nuage_organization': nuage_organization_schema,
-        'se_group_uuid': se_group_uuid_schema,
+        'use_nuagevip': use_nuagevip_schema,
+        'nuage_virtualip': nuage_virtualip_schema,
         'contrail_plugin': contrail_plugin_schema,
         'contrail_endpoint': contrail_endpoint_schema,
         'name_owner': name_owner_schema,
@@ -2881,11 +3089,177 @@ class OpenStackConfiguration(object):
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'hypervisor_properties': getattr(OpenStackHypervisorProperties, 'field_references', {}),
         'role_mapping': getattr(OpenStackRoleMapping, 'field_references', {}),
     }
 
     unique_keys = {
+        'hypervisor_properties': getattr(OpenStackHypervisorProperties, 'unique_keys', {}),
         'role_mapping': getattr(OpenStackRoleMapping, 'unique_keys', {}),
+    }
+
+
+
+class AwsConfiguration(object):
+    # all schemas
+    access_key_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("AWS access key ID"),
+        required=False,
+        update_allowed=True,
+    )
+    secret_access_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("AWS secret access key"),
+        required=False,
+        update_allowed=True,
+    )
+    region_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("AWS region"),
+        required=False,
+        update_allowed=True,
+    )
+    vpc_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("VPC name"),
+        required=False,
+        update_allowed=True,
+    )
+    vpc_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("VPC ID"),
+        required=True,
+        update_allowed=True,
+    )
+    zones_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=AwsZoneConfig.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    zones_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=zones_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    route53_integration_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("If enabled, create/update DNS entries in Amazon Route 53 zones (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    free_elasticips_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Free unused elastic IP addresses. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_iam_roles_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Use IAM roles instead of access and secret key. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    iam_assume_role_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("IAM assume role for cross-account access."),
+        required=False,
+        update_allowed=True,
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Default TTL for all records (Units: SEC) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    wildcard_access_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) (Deprecated in: 17.1.5) If enabled, program SE security group with ingress rule to allow SSH (port 22) access from 0.0.0.0/0. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    use_sns_sqs_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.3) Use SNS/SQS based notifications for monitoring Auto Scaling Groups. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    asg_poll_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.3) Time interval between periodic polling of all Auto Scaling Groups. (Units: SEC) (Default: 600)"),
+        required=False,
+        update_allowed=True,
+    )
+    ebs_encryption_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) EBS encryption mode and the master key to be used for encrypting SE AMI, Volumes, and Snapshots."),
+        schema=aws_encryption.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    s3_encryption_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) S3 encryption mode and the master key to be used for encrypting S3 buckets during SE AMI upload. Only SSE-KMS mode is supported."),
+        schema=aws_encryption.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'access_key_id',
+        'secret_access_key',
+        'region',
+        'vpc',
+        'vpc_id',
+        'zones',
+        'route53_integration',
+        'free_elasticips',
+        'use_iam_roles',
+        'iam_assume_role',
+        'ttl',
+        'wildcard_access',
+        'use_sns_sqs',
+        'asg_poll_interval',
+        'ebs_encryption',
+        's3_encryption',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'access_key_id': access_key_id_schema,
+        'secret_access_key': secret_access_key_schema,
+        'region': region_schema,
+        'vpc': vpc_schema,
+        'vpc_id': vpc_id_schema,
+        'zones': zones_schema,
+        'route53_integration': route53_integration_schema,
+        'free_elasticips': free_elasticips_schema,
+        'use_iam_roles': use_iam_roles_schema,
+        'iam_assume_role': iam_assume_role_schema,
+        'ttl': ttl_schema,
+        'wildcard_access': wildcard_access_schema,
+        'use_sns_sqs': use_sns_sqs_schema,
+        'asg_poll_interval': asg_poll_interval_schema,
+        'ebs_encryption': ebs_encryption_schema,
+        's3_encryption': s3_encryption_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'zones': getattr(AwsZoneConfig, 'field_references', {}),
+        'ebs_encryption': getattr(aws_encryption, 'field_references', {}),
+        's3_encryption': getattr(aws_encryption, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'zones': getattr(AwsZoneConfig, 'unique_keys', {}),
+        'ebs_encryption': getattr(aws_encryption, 'unique_keys', {}),
+        's3_encryption': getattr(aws_encryption, 'unique_keys', {}),
     }
 
 
@@ -3197,7 +3571,7 @@ class Cloud(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     vcenter_configuration_schema = properties.Schema(
@@ -3290,6 +3664,13 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
+    azure_configuration_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) "),
+        schema=AzureConfiguration.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Select the IP address management scheme (Default: False)"),
@@ -3326,7 +3707,7 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LIC_BACKEND_SERVERS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_SOCKETS']),
+            constraints.AllowedValues(['LIC_BACKEND_SERVERS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_SE_BANDWIDTH', 'LIC_SOCKETS']),
         ],
     )
     ipam_provider_uuid_schema = properties.Schema(
@@ -3374,6 +3755,21 @@ class Cloud(AviResource):
         required=False,
         update_allowed=True,
     )
+    state_based_dns_registration_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.12) DNS records for VIPs are added/deleted based on the operational state of the VIPs. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the default license tier which would be used by new SE Groups. This field by default inherits the value from system configuration."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
 
     # properties list
     PROPERTIES = (
@@ -3393,6 +3789,7 @@ class Cloud(AviResource):
         'docker_configuration',
         'rancher_configuration',
         'oshiftk8s_configuration',
+        'azure_configuration',
         'dhcp_enabled',
         'mtu',
         'prefer_static_routes',
@@ -3405,6 +3802,8 @@ class Cloud(AviResource):
         'east_west_dns_provider_uuid',
         'nsx_configuration',
         'custom_tags',
+        'state_based_dns_registration',
+        'license_tier',
     )
 
     # mapping of properties to their schemas
@@ -3425,6 +3824,7 @@ class Cloud(AviResource):
         'docker_configuration': docker_configuration_schema,
         'rancher_configuration': rancher_configuration_schema,
         'oshiftk8s_configuration': oshiftk8s_configuration_schema,
+        'azure_configuration': azure_configuration_schema,
         'dhcp_enabled': dhcp_enabled_schema,
         'mtu': mtu_schema,
         'prefer_static_routes': prefer_static_routes_schema,
@@ -3437,6 +3837,8 @@ class Cloud(AviResource):
         'east_west_dns_provider_uuid': east_west_dns_provider_uuid_schema,
         'nsx_configuration': nsx_configuration_schema,
         'custom_tags': custom_tags_schema,
+        'state_based_dns_registration': state_based_dns_registration_schema,
+        'license_tier': license_tier_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -3459,6 +3861,7 @@ class Cloud(AviResource):
         'ipam_provider_uuid': 'ipamdnsproviderprofile',
         'cloudstack_configuration': getattr(CloudStackConfiguration, 'field_references', {}),
         'vcenter_configuration': getattr(vCenterConfiguration, 'field_references', {}),
+        'azure_configuration': getattr(AzureConfiguration, 'field_references', {}),
     }
 
     unique_keys = {
@@ -3476,6 +3879,7 @@ class Cloud(AviResource):
         'aws_configuration': getattr(AwsConfiguration, 'unique_keys', {}),
         'cloudstack_configuration': getattr(CloudStackConfiguration, 'unique_keys', {}),
         'vcenter_configuration': getattr(vCenterConfiguration, 'unique_keys', {}),
+        'azure_configuration': getattr(AzureConfiguration, 'unique_keys', {}),
     }
 
 

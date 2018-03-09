@@ -22,6 +22,8 @@ from dns import *
 from dns_policy import *
 from content_rewrite_profile import *
 from traffic_clone_profile import *
+from error_page import *
+from l4_policy import *
 
 
 class ServicePoolSelector(object):
@@ -53,6 +55,12 @@ class ServicePoolSelector(object):
         required=False,
         update_allowed=True,
     )
+    service_port_range_end_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.4) The end of the Service port number range. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -60,6 +68,7 @@ class ServicePoolSelector(object):
         'service_pool_uuid',
         'service_protocol',
         'service_pool_group_uuid',
+        'service_port_range_end',
     )
 
     # mapping of properties to their schemas
@@ -68,6 +77,7 @@ class ServicePoolSelector(object):
         'service_pool_uuid': service_pool_uuid_schema,
         'service_protocol': service_protocol_schema,
         'service_pool_group_uuid': service_pool_group_uuid_schema,
+        'service_port_range_end': service_port_range_end_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -77,7 +87,7 @@ class ServicePoolSelector(object):
     }
 
     unique_keys = {
-        'my_key': 'service_port,service_protocol',
+        'my_key': 'service_port,service_protocol,service_port_range_end',
     }
 
 
@@ -177,6 +187,12 @@ class Service(object):
         required=False,
         update_allowed=True,
     )
+    override_application_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.4) Enable application layer specific features for the this specific service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -184,6 +200,7 @@ class Service(object):
         'enable_ssl',
         'override_network_profile_uuid',
         'port_range_end',
+        'override_application_profile_uuid',
     )
 
     # mapping of properties to their schemas
@@ -192,11 +209,13 @@ class Service(object):
         'enable_ssl': enable_ssl_schema,
         'override_network_profile_uuid': override_network_profile_uuid_schema,
         'port_range_end': port_range_end_schema,
+        'override_application_profile_uuid': override_application_profile_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'override_network_profile_uuid': 'networkprofile',
+        'override_application_profile_uuid': 'applicationprofile',
     }
 
 
@@ -334,12 +353,27 @@ class IPNetworkSubnet(object):
         required=False,
         update_allowed=True,
     )
+    subnet6_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Subnet for VirtualService IPv6 allocation with Vantage or Infoblox as the IPAM provider. Only one of subnet or subnet_uuid configuration is allowed."),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    subnet6_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Subnet UUID or Name or Prefix for VirtualService IPv6 allocation with AWS or OpenStack as the IPAM provider. Only one of subnet or subnet_uuid configuration is allowed."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'network_uuid',
         'subnet',
         'subnet_uuid',
+        'subnet6',
+        'subnet6_uuid',
     )
 
     # mapping of properties to their schemas
@@ -347,16 +381,20 @@ class IPNetworkSubnet(object):
         'network_uuid': network_uuid_schema,
         'subnet': subnet_schema,
         'subnet_uuid': subnet_uuid_schema,
+        'subnet6': subnet6_schema,
+        'subnet6_uuid': subnet6_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'subnet6': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
     }
 
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'subnet6': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -401,8 +439,15 @@ class VsSeVnic(object):
 
 
 
-class VsApicExtension(object):
+class VsApicExtension(AviResource):
+    resource_name = "vsapicextension"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     txn_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -432,6 +477,7 @@ class VsApicExtension(object):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'txn_uuid',
         'se_uuid',
         'vnic',
@@ -439,6 +485,7 @@ class VsApicExtension(object):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'txn_uuid': txn_uuid_schema,
         'se_uuid': se_uuid_schema,
         'vnic': vnic_schema,
@@ -694,6 +741,18 @@ class SeList(object):
         required=False,
         update_allowed=True,
     )
+    attach_ip_success_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.3)  (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    attach_ip_status_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) "),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -723,6 +782,8 @@ class SeList(object):
         'gslb_download',
         'geo_download',
         'geodb_download',
+        'attach_ip_success',
+        'attach_ip_status',
     )
 
     # mapping of properties to their schemas
@@ -753,6 +814,8 @@ class SeList(object):
         'gslb_download': gslb_download_schema,
         'geo_download': geo_download_schema,
         'geodb_download': geodb_download_schema,
+        'attach_ip_success': attach_ip_success_schema,
+        'attach_ip_status': attach_ip_status_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -861,7 +924,7 @@ class Vip(object):
     )
     ip_address_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) IP Address of the Vip."),
+        _("(Introduced in: 17.1.1) IPv4 Address of the Vip. For IPv6 address support please use ip6_address field"),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
@@ -925,7 +988,7 @@ class Vip(object):
     )
     floating_ip_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) Floating IP to associate with this Vip."),
+        _("(Introduced in: 17.1.1) Floating IPv4 to associate with this Vip."),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
@@ -961,6 +1024,39 @@ class Vip(object):
         required=False,
         update_allowed=True,
     )
+    ip6_address_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) IPv6 Address of the Vip."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    subnet6_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) If auto_allocate_ip is True, then the subnet for the Vip IPv6 address allocation. This field is applicable only if the VirtualService belongs to an Openstack or AWS cloud, in which case it is mandatory, if auto_allocate is selected."),
+        required=False,
+        update_allowed=True,
+    )
+    subnet6_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Subnet providing reachability for client facing Vip IPv6."),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    floating_ip6_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Floating IPv6 address to associate with this Vip."),
+        schema=IpAddr.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    floating_subnet6_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) If auto_allocate_floating_ip is True and more than one floating-ip subnets exist, then the subnet for the floating IPv6 address allocation."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -980,6 +1076,11 @@ class Vip(object):
         'avi_allocated_vip',
         'avi_allocated_fip',
         'ipam_network_subnet',
+        'ip6_address',
+        'subnet6_uuid',
+        'subnet6',
+        'floating_ip6',
+        'floating_subnet6_uuid',
     )
 
     # mapping of properties to their schemas
@@ -1000,24 +1101,35 @@ class Vip(object):
         'avi_allocated_vip': avi_allocated_vip_schema,
         'avi_allocated_fip': avi_allocated_fip_schema,
         'ipam_network_subnet': ipam_network_subnet_schema,
+        'ip6_address': ip6_address_schema,
+        'subnet6_uuid': subnet6_uuid_schema,
+        'subnet6': subnet6_schema,
+        'floating_ip6': floating_ip6_schema,
+        'floating_subnet6_uuid': floating_subnet6_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
+        'floating_ip6': getattr(IpAddr, 'field_references', {}),
         'discovered_networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'floating_ip': getattr(IpAddr, 'field_references', {}),
         'ipam_network_subnet': getattr(IPNetworkSubnet, 'field_references', {}),
+        'ip6_address': getattr(IpAddr, 'field_references', {}),
+        'subnet6': getattr(IpAddrPrefix, 'field_references', {}),
         'ip_address': getattr(IpAddr, 'field_references', {}),
     }
 
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'my_key': 'vip_id',
+        'floating_ip6': getattr(IpAddr, 'unique_keys', {}),
         'discovered_networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
         'floating_ip': getattr(IpAddr, 'unique_keys', {}),
         'ipam_network_subnet': getattr(IPNetworkSubnet, 'unique_keys', {}),
+        'ip6_address': getattr(IpAddr, 'unique_keys', {}),
+        'subnet6': getattr(IpAddrPrefix, 'unique_keys', {}),
         'ip_address': getattr(IpAddr, 'unique_keys', {}),
     }
 
@@ -1368,7 +1480,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     avi_allocated_vip_schema = properties.Schema(
@@ -1433,6 +1545,18 @@ class VirtualService(AviResource):
     remove_listening_port_on_vs_down_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("Remove listening port if VirtualService is down (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    close_client_conn_on_config_update_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) close client connection on vs config update (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    bulk_sync_kvcache_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7, 18.1.1) (This is a beta feature). Sync Key-Value cache to the new SEs when VS is scaled out. For ex: SSL sessions are stored using VS's Key-Value cache. When the VS is scaled out, the SSL session information is synced to the new SE, allowing existing SSL sessions to be reused on the new SE.  (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1527,7 +1651,7 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['NO_LABEL', 'SERVICE_LABEL']),
+            constraints.AllowedValues(['APPLICATION_LABEL', 'NO_LABEL', 'SERVICE_LABEL']),
         ],
     )
     enable_rhi_snat_schema = properties.Schema(
@@ -1552,7 +1676,7 @@ class VirtualService(AviResource):
     )
     ipam_network_subnet_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Subnet and/or Network for allocating VirtualService IP by IPAM Provider module."),
+        _("(Deprecated in: 17.1.1) Subnet and/or Network for allocating VirtualService IP by IPAM Provider module."),
         schema=IPNetworkSubnet.properties_schema,
         required=False,
         update_allowed=True,
@@ -1626,7 +1750,52 @@ class VirtualService(AviResource):
     )
     vsvip_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Mostly used during the creation of Shared VS, this fieldrefers to entities that can be shared across Virtual Services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Mostly used during the creation of Shared VS, this field refers to entities that can be shared across Virtual Services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    waf_policy_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) WAF policy for the Virtual Service. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    sp_pool_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) GSLB pools used to manage site-persistence functionality. Each site-persistence pool contains the virtualservices in all the other sites, that is auto-generated by the GSLB manager. This is a read-only field for the user."),
+        required=True,
+        update_allowed=False,
+    )
+    sp_pool_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.2) GSLB pools used to manage site-persistence functionality. Each site-persistence pool contains the virtualservices in all the other sites, that is auto-generated by the GSLB manager. This is a read-only field for the user. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        schema=sp_pool_uuids_item_schema,
+        required=False,
+        update_allowed=False,
+    )
+    use_vip_as_snat_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.9,17.2.3) Use the Virtual IP as the SNAT IP for health monitoring and sending traffic to the backend servers instead of the Service Engine interface IP. The caveat of enabling this option is that the VirtualService cannot be configued in an Active-Active HA mode. DNS based Multi VIP solution has to be used for HA & Non-disruptive Upgrade purposes. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    error_page_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.4) Error Page Profile to be used for this virtualservice.This profile is used to send the custom error page to the client generated by the proxy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    l4_policies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.7) L4 Policies applied to the data traffic of the Virtual Service"),
+        schema=L4Policies.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    l4_policies_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.7) L4 Policies applied to the data traffic of the Virtual Service"),
+        schema=l4_policies_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -1687,6 +1856,8 @@ class VirtualService(AviResource):
         'ssl_sess_cache_avg_size',
         'pool_group_uuid',
         'remove_listening_port_on_vs_down',
+        'close_client_conn_on_config_update',
+        'bulk_sync_kvcache',
         'description',
         'cloud_uuid',
         'east_west_placement',
@@ -1710,6 +1881,11 @@ class VirtualService(AviResource):
         'vip',
         'nsx_securitygroup',
         'vsvip_uuid',
+        'waf_policy_uuid',
+        'sp_pool_uuids',
+        'use_vip_as_snat',
+        'error_page_profile_uuid',
+        'l4_policies',
     )
 
     # mapping of properties to their schemas
@@ -1768,6 +1944,8 @@ class VirtualService(AviResource):
         'ssl_sess_cache_avg_size': ssl_sess_cache_avg_size_schema,
         'pool_group_uuid': pool_group_uuid_schema,
         'remove_listening_port_on_vs_down': remove_listening_port_on_vs_down_schema,
+        'close_client_conn_on_config_update': close_client_conn_on_config_update_schema,
+        'bulk_sync_kvcache': bulk_sync_kvcache_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
         'east_west_placement': east_west_placement_schema,
@@ -1791,6 +1969,11 @@ class VirtualService(AviResource):
         'vip': vip_schema,
         'nsx_securitygroup': nsx_securitygroup_schema,
         'vsvip_uuid': vsvip_uuid_schema,
+        'waf_policy_uuid': waf_policy_uuid_schema,
+        'sp_pool_uuids': sp_pool_uuids_schema,
+        'use_vip_as_snat': use_vip_as_snat_schema,
+        'error_page_profile_uuid': error_page_profile_uuid_schema,
+        'l4_policies': l4_policies_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1803,14 +1986,18 @@ class VirtualService(AviResource):
         'content_rewrite': getattr(ContentRewriteProfile, 'field_references', {}),
         'vip': getattr(Vip, 'field_references', {}),
         'snat_ip': getattr(IpAddr, 'field_references', {}),
+        'waf_policy_uuid': 'wafpolicy',
         'discovered_network_uuid': 'network',
         'sideband_profile': getattr(SidebandProfile, 'field_references', {}),
         'vrf_context_uuid': 'vrfcontext',
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'vsvip_uuid': 'vsvip',
+        'sp_pool_uuids': 'pool',
         'ssl_profile_uuid': 'sslprofile',
+        'error_page_profile_uuid': 'errorpageprofile',
         'traffic_clone_profile_uuid': 'trafficcloneprofile',
         'se_group_uuid': 'serviceenginegroup',
+        'l4_policies': getattr(L4Policies, 'field_references', {}),
         'requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'application_profile_uuid': 'applicationprofile',
         'pool_group_uuid': 'poolgroup',
@@ -1844,6 +2031,7 @@ class VirtualService(AviResource):
         'sideband_profile': getattr(SidebandProfile, 'unique_keys', {}),
         'requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'l4_policies': getattr(L4Policies, 'unique_keys', {}),
         'performance_limits': getattr(PerformanceLimits, 'unique_keys', {}),
         'http_policies': getattr(HTTPPolicies, 'unique_keys', {}),
         'floating_ip': getattr(IpAddr, 'unique_keys', {}),
@@ -1962,6 +2150,7 @@ class VsVip(AviResource):
 
 def resource_mapping():
     return {
+        'Avi::LBaaS::VsApicExtension': VsApicExtension,
         'Avi::LBaaS::VirtualService': VirtualService,
         'Avi::LBaaS::VsVip': VsVip,
     }

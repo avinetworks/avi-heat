@@ -199,6 +199,43 @@ class NTPServer(object):
 
 
 
+class AzureUserPassCredentials(object):
+    # all schemas
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Username for Azure subscription. Required only for username password based authentication."),
+        required=False,
+        update_allowed=True,
+    )
+    password_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Password for Azure subscription. Required only if username is provided."),
+        required=False,
+        update_allowed=True,
+    )
+    tenant_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Tenant or the active directory associated with the subscription. Required for user name password authentication."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'username',
+        'password',
+        'tenant_name',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'username': username_schema,
+        'password': password_schema,
+        'tenant_name': tenant_name_schema,
+    }
+
+
+
 class EmailConfiguration(object):
     # all schemas
     smtp_type_schema = properties.Schema(
@@ -259,6 +296,43 @@ class EmailConfiguration(object):
         'mail_server_port': mail_server_port_schema,
         'auth_username': auth_username_schema,
         'auth_password': auth_password_schema,
+    }
+
+
+
+class AzureServicePrincipalCredentials(object):
+    # all schemas
+    application_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Application Id created for Avi Controller. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+    authentication_token_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Authentication token created for the Avi Controller application. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+    tenant_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Tenant ID for the subscription. Required for application id based authentication only."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'application_id',
+        'authentication_token',
+        'tenant_id',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'application_id': application_id_schema,
+        'authentication_token': authentication_token_schema,
+        'tenant_id': tenant_id_schema,
     }
 
 
@@ -721,6 +795,15 @@ class SystemConfiguration(AviResource):
         required=False,
         update_allowed=True,
     )
+    default_license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the default license tier which would be used by new Clouds (Default: ENTERPRISE_18)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
 
     # properties list
     PROPERTIES = (
@@ -739,6 +822,7 @@ class SystemConfiguration(AviResource):
         'ssh_ciphers',
         'ssh_hmacs',
         'dns_virtualservice_uuids',
+        'default_license_tier',
     )
 
     # mapping of properties to their schemas
@@ -758,6 +842,7 @@ class SystemConfiguration(AviResource):
         'ssh_ciphers': ssh_ciphers_schema,
         'ssh_hmacs': ssh_hmacs_schema,
         'dns_virtualservice_uuids': dns_virtualservice_uuids_schema,
+        'default_license_tier': default_license_tier_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

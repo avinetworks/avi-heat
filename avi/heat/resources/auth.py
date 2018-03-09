@@ -186,6 +186,27 @@ class LdapUserBindSettings(object):
 
 
 
+class SamlIdentityProviderSettings(object):
+    # all schemas
+    metadata_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SAML IDP metadata"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'metadata',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'metadata': metadata_schema,
+    }
+
+
+
 class HTTPClientAuthenticationParams(object):
     # all schemas
     type_schema = properties.Schema(
@@ -245,49 +266,59 @@ class HTTPClientAuthenticationParams(object):
 
 
 
-class AuthMatchAttribute(object):
+class SamlServiceProviderNode(object):
     # all schemas
-    criteria_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("rule match criteria"),
-        required=False,
-        update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['AUTH_MATCH_CONTAINS', 'AUTH_MATCH_DOES_NOT_CONTAIN']),
-        ],
-    )
     name_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    values_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
+        _("(Introduced in: 17.2.3) Refers to the Cluster name identifier (Virtual IP or FQDN)."),
         required=True,
         update_allowed=False,
     )
-    values_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(""),
-        schema=values_item_schema,
+    entity_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Globally unique entityID for this node. Entity ID on the IDP should match this."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
+    )
+    single_signon_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Single Signon URL to be programmed on the IDP."),
+        required=False,
+        update_allowed=False,
+    )
+    signing_cert_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider signing certificate for metadata"),
+        required=False,
+        update_allowed=False,
+    )
+    signing_key_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider signing key for metadata"),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
     PROPERTIES = (
-        'criteria',
         'name',
-        'values',
+        'entity_id',
+        'single_signon_url',
+        'signing_cert',
+        'signing_key',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'criteria': criteria_schema,
         'name': name_schema,
-        'values': values_schema,
+        'entity_id': entity_id_schema,
+        'single_signon_url': single_signon_url_schema,
+        'signing_cert': signing_cert_schema,
+        'signing_key': signing_key_schema,
+    }
+
+    unique_keys = {
+        'my_key': 'name',
     }
 
 
@@ -325,6 +356,150 @@ class AuthTacacsPlusAttributeValuePair(object):
         'name': name_schema,
         'value': value_schema,
         'mandatory': mandatory_schema,
+    }
+
+
+
+class SamlServiceProviderSettings(object):
+    # all schemas
+    saml_entity_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Type of SAML endpoint (Default: AUTH_SAML_CLUSTER_VIP)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_SAML_CLUSTER_VIP', 'AUTH_SAML_DNS_FQDN']),
+        ],
+    )
+    fqdn_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) FQDN if entity type is DNS_FQDN "),
+        required=False,
+        update_allowed=True,
+    )
+    sp_nodes_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) Service Provider node information"),
+        schema=SamlServiceProviderNode.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    sp_nodes_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.3) Service Provider node information"),
+        schema=sp_nodes_item_schema,
+        required=False,
+        update_allowed=False,
+    )
+    org_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider Organization Name"),
+        required=False,
+        update_allowed=True,
+    )
+    org_display_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider Organization Display Name"),
+        required=False,
+        update_allowed=True,
+    )
+    org_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider Organization URL"),
+        required=False,
+        update_allowed=True,
+    )
+    tech_contact_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider technical contact name"),
+        required=False,
+        update_allowed=True,
+    )
+    tech_contact_email_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Service Provider technical contact email"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'saml_entity_type',
+        'fqdn',
+        'sp_nodes',
+        'org_name',
+        'org_display_name',
+        'org_url',
+        'tech_contact_name',
+        'tech_contact_email',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'saml_entity_type': saml_entity_type_schema,
+        'fqdn': fqdn_schema,
+        'sp_nodes': sp_nodes_schema,
+        'org_name': org_name_schema,
+        'org_display_name': org_display_name_schema,
+        'org_url': org_url_schema,
+        'tech_contact_name': tech_contact_name_schema,
+        'tech_contact_email': tech_contact_email_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'sp_nodes': getattr(SamlServiceProviderNode, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'sp_nodes': getattr(SamlServiceProviderNode, 'unique_keys', {}),
+    }
+
+
+
+class AuthMatchAttribute(object):
+    # all schemas
+    criteria_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("rule match criteria"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['AUTH_MATCH_CONTAINS', 'AUTH_MATCH_DOES_NOT_CONTAIN', 'AUTH_MATCH_REGEX']),
+        ],
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=False,
+        update_allowed=True,
+    )
+    values_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    values_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(""),
+        schema=values_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'criteria',
+        'name',
+        'values',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'criteria': criteria_schema,
+        'name': name_schema,
+        'values': values_schema,
     }
 
 
@@ -389,7 +564,7 @@ class AuthMatchGroupMembership(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['AUTH_MATCH_CONTAINS', 'AUTH_MATCH_DOES_NOT_CONTAIN']),
+            constraints.AllowedValues(['AUTH_MATCH_CONTAINS', 'AUTH_MATCH_DOES_NOT_CONTAIN', 'AUTH_MATCH_REGEX']),
         ],
     )
     groups_item_schema = properties.Schema(
@@ -448,7 +623,7 @@ class AuthMappingRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_ATTRIBUTE_REGEX', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME', 'ASSIGN_MATCHING_GROUP_REGEX']),
         ],
     )
     tenant_attribute_name_schema = properties.Schema(
@@ -476,7 +651,7 @@ class AuthMappingRule(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME']),
+            constraints.AllowedValues(['ASSIGN_ALL', 'ASSIGN_FROM_SELECT_LIST', 'ASSIGN_MATCHING_ATTRIBUTE_REGEX', 'ASSIGN_MATCHING_ATTRIBUTE_VALUE', 'ASSIGN_MATCHING_GROUP_NAME', 'ASSIGN_MATCHING_GROUP_REGEX']),
         ],
     )
     role_attribute_name_schema = properties.Schema(
@@ -737,6 +912,48 @@ class LdapAuthSettings(object):
 
 
 
+class SamlSettings(object):
+    # all schemas
+    idp_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) Configure remote Identity provider settings"),
+        schema=SamlIdentityProviderSettings.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    sp_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) Configure service provider settings for the Controller"),
+        schema=SamlServiceProviderSettings.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'idp',
+        'sp',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'idp': idp_schema,
+        'sp': sp_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'sp': getattr(SamlServiceProviderSettings, 'field_references', {}),
+        'idp': getattr(SamlIdentityProviderSettings, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'sp': getattr(SamlServiceProviderSettings, 'unique_keys', {}),
+        'idp': getattr(SamlIdentityProviderSettings, 'unique_keys', {}),
+    }
+
+
+
 class AuthProfile(AviResource):
     resource_name = "authprofile"
     # all schemas
@@ -758,7 +975,7 @@ class AuthProfile(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['AUTH_PROFILE_LDAP', 'AUTH_PROFILE_TACACS_PLUS']),
+            constraints.AllowedValues(['AUTH_PROFILE_LDAP', 'AUTH_PROFILE_SAML', 'AUTH_PROFILE_TACACS_PLUS']),
         ],
     )
     ldap_schema = properties.Schema(
@@ -782,6 +999,13 @@ class AuthProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    saml_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) SAML settings"),
+        schema=SamlSettings.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -797,6 +1021,7 @@ class AuthProfile(AviResource):
         'ldap',
         'http',
         'tacacs_plus',
+        'saml',
         'description',
     )
 
@@ -808,17 +1033,20 @@ class AuthProfile(AviResource):
         'ldap': ldap_schema,
         'http': http_schema,
         'tacacs_plus': tacacs_plus_schema,
+        'saml': saml_schema,
         'description': description_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'saml': getattr(SamlSettings, 'field_references', {}),
         'http': getattr(AuthProfileHTTPClientParams, 'field_references', {}),
         'tacacs_plus': getattr(TacacsPlusAuthSettings, 'field_references', {}),
         'ldap': getattr(LdapAuthSettings, 'field_references', {}),
     }
 
     unique_keys = {
+        'saml': getattr(SamlSettings, 'unique_keys', {}),
         'http': getattr(AuthProfileHTTPClientParams, 'unique_keys', {}),
         'tacacs_plus': getattr(TacacsPlusAuthSettings, 'unique_keys', {}),
         'ldap': getattr(LdapAuthSettings, 'unique_keys', {}),

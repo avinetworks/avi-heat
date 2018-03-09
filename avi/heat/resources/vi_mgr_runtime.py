@@ -13,6 +13,83 @@ from options import *
 from vi_mgr_common import *
 
 
+class AzureInfo(object):
+    # all schemas
+    vm_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Azure VM uuid for the SE VM"),
+        required=False,
+        update_allowed=True,
+    )
+    resource_group_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Resource group name for the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Name of the Azure VM"),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Subnet ID of the primary nic of the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    vnic_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) VNIC id of the primary nic of the VM"),
+        required=False,
+        update_allowed=True,
+    )
+    availability_set_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Name of the availability set of which the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+    fault_domain_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Fault domain within the availability set the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+    update_domain_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Update domain within the availability set the VM is a part of"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'vm_uuid',
+        'resource_group',
+        'name',
+        'subnet_id',
+        'vnic_id',
+        'availability_set',
+        'fault_domain',
+        'update_domain',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'vm_uuid': vm_uuid_schema,
+        'resource_group': resource_group_schema,
+        'name': name_schema,
+        'subnet_id': subnet_id_schema,
+        'vnic_id': vnic_id_schema,
+        'availability_set': availability_set_schema,
+        'fault_domain': fault_domain_schema,
+        'update_domain': update_domain_schema,
+    }
+
+
+
 class VIMgrVcenterRuntime(AviResource):
     resource_name = "vimgrvcenterruntime"
     # all schemas
@@ -28,7 +105,7 @@ class VIMgrVcenterRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(
@@ -279,7 +356,7 @@ class VIMgrHostRuntime(AviResource):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
+            constraints.AllowedValues(['CLOUD_APIC', 'CLOUD_AWS', 'CLOUD_AZURE', 'CLOUD_DOCKER_UCP', 'CLOUD_LINUXSERVER', 'CLOUD_MESOS', 'CLOUD_NONE', 'CLOUD_OPENSTACK', 'CLOUD_OSHIFT_K8S', 'CLOUD_RANCHER', 'CLOUD_VCA', 'CLOUD_VCENTER']),
         ],
     )
     name_schema = properties.Schema(

@@ -203,7 +203,7 @@ class HealthMonitorHttp(object):
     )
     exact_http_request_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.6) Use the exact http_request string as specified by user, without any automatic insert of headers like Host header. (Default: False)"),
+        _("(Introduced in: 17.1.6,17.2.2) Use the exact http_request string as specified by user, without any automatic insert of headers like Host header. (Default: False)"),
         required=False,
         update_allowed=True,
     )

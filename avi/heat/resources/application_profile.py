@@ -129,14 +129,20 @@ class DnsServiceApplicationProfile(object):
     )
     authoritative_domain_names_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.6) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for fqdns that are subdomains of this domain, and do not have any DNS record in Avi, are dropped/NXDomain error response sent. "),
+        _("(Introduced in: 17.1.6,17.2.2) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for FQDNs that are subdomains of this domain and do not have any DNS record in Avi are dropped or NXDomain response sent. "),
         required=True,
         update_allowed=False,
     )
     authoritative_domain_names_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(Introduced in: 17.1.6) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for fqdns that are subdomains of this domain, and do not have any DNS record in Avi, are dropped/NXDomain error response sent. "),
+        _("(Introduced in: 17.1.6,17.2.2) Domain names authoritatively serviced by this Virtual Service. These are configured as Ends-With semantics. Queries for FQDNs that are subdomains of this domain and do not have any DNS record in Avi are dropped or NXDomain response sent. "),
         schema=authoritative_domain_names_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    negative_caching_ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.4) Specifies the TTL value (in seconds) for SOA (Start of Authority) (corresponding to a authoritative domain owned by this DNS Virtual Service) record's minimum TTL served by the DNS Virtual Service (Units: SEC) (Default: 30)"),
         required=False,
         update_allowed=True,
     )
@@ -153,6 +159,7 @@ class DnsServiceApplicationProfile(object):
         'aaaa_empty_response',
         'ecs_stripping_enabled',
         'authoritative_domain_names',
+        'negative_caching_ttl',
     )
 
     # mapping of properties to their schemas
@@ -167,6 +174,7 @@ class DnsServiceApplicationProfile(object):
         'aaaa_empty_response': aaaa_empty_response_schema,
         'ecs_stripping_enabled': ecs_stripping_enabled_schema,
         'authoritative_domain_names': authoritative_domain_names_schema,
+        'negative_caching_ttl': negative_caching_ttl_schema,
     }
 
 
@@ -523,6 +531,18 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    enable_fire_and_forget_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Enable support for fire and forget feature. If enabled, request from client is forwarded to server even if client prematurely closes the connection (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    max_response_headers_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Maximum size in Kbytes of all the HTTP response headers. (Units: KB) (Default: 48)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -565,6 +585,8 @@ class HTTPApplicationProfile(object):
         'allow_dots_in_header_name',
         'disable_keepalive_posts_msie6',
         'enable_request_body_buffering',
+        'enable_fire_and_forget',
+        'max_response_headers_size',
     )
 
     # mapping of properties to their schemas
@@ -608,6 +630,8 @@ class HTTPApplicationProfile(object):
         'allow_dots_in_header_name': allow_dots_in_header_name_schema,
         'disable_keepalive_posts_msie6': disable_keepalive_posts_msie6_schema,
         'enable_request_body_buffering': enable_request_body_buffering_schema,
+        'enable_fire_and_forget': enable_fire_and_forget_schema,
+        'max_response_headers_size': max_response_headers_size_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -684,6 +708,12 @@ class ApplicationProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    preserve_client_port_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7) Specifies if we need to preserve client port while preseving client IP for backend connections. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -701,6 +731,7 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile',
         'dns_service_profile',
         'preserve_client_ip',
+        'preserve_client_port',
         'description',
     )
 
@@ -714,6 +745,7 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile': tcp_app_profile_schema,
         'dns_service_profile': dns_service_profile_schema,
         'preserve_client_ip': preserve_client_ip_schema,
+        'preserve_client_port': preserve_client_port_schema,
         'description': description_schema,
     }
 

@@ -11,6 +11,7 @@ from options import *
 from common import *
 from options import *
 from cloud_objects import *
+from network import *
 
 
 class VcenterDatastore(object):

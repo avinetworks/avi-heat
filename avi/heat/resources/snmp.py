@@ -11,6 +11,104 @@ from options import *
 from options import *
 
 
+class SnmpV3UserParams(object):
+    # all schemas
+    username_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP username to be used by SNMP clients for performing SNMP walk"),
+        required=False,
+        update_allowed=True,
+    )
+    auth_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP V3 user authentication type (Default: SNMP_V3_AUTH_MD5)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SNMP_V3_AUTH_MD5', 'SNMP_V3_AUTH_SHA']),
+        ],
+    )
+    auth_passphrase_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP V3 authentication passphrase"),
+        required=False,
+        update_allowed=True,
+    )
+    priv_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP V3 privacy setting (Default: SNMP_V3_PRIV_DES)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SNMP_V3_PRIV_AES', 'SNMP_V3_PRIV_DES']),
+        ],
+    )
+    priv_passphrase_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP V3 privacy passphrase"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'username',
+        'auth_type',
+        'auth_passphrase',
+        'priv_type',
+        'priv_passphrase',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'username': username_schema,
+        'auth_type': auth_type_schema,
+        'auth_passphrase': auth_passphrase_schema,
+        'priv_type': priv_type_schema,
+        'priv_passphrase': priv_passphrase_schema,
+    }
+
+
+
+class SnmpV3Configuration(object):
+    # all schemas
+    user_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) SNMP ver 3 user definition"),
+        schema=SnmpV3UserParams.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    engine_id_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Engine Id of the Avi Controller SNMP"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'user',
+        'engine_id',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'user': user_schema,
+        'engine_id': engine_id_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'user': getattr(SnmpV3UserParams, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'user': getattr(SnmpV3UserParams, 'unique_keys', {}),
+    }
+
+
+
 class SnmpTrapServer(object):
     # all schemas
     ip_addr_schema = properties.Schema(
@@ -23,7 +121,29 @@ class SnmpTrapServer(object):
     community_schema = properties.Schema(
         properties.Schema.STRING,
         _("The community string to communicate with the trap server."),
-        required=True,
+        required=False,
+        update_allowed=True,
+    )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP version support. V2 or V3 (Default: SNMP_VER2)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SNMP_VER2', 'SNMP_VER3']),
+        ],
+    )
+    user_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) SNMP version 3 configuration"),
+        schema=SnmpV3UserParams.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 16.5.4,17.2.5) The UDP port of the trap server. (Default: 162)"),
+        required=False,
         update_allowed=True,
     )
 
@@ -31,21 +151,30 @@ class SnmpTrapServer(object):
     PROPERTIES = (
         'ip_addr',
         'community',
+        'version',
+        'user',
+        'port',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'ip_addr': ip_addr_schema,
         'community': community_schema,
+        'version': version_schema,
+        'user': user_schema,
+        'port': port_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ip_addr': getattr(IpAddr, 'field_references', {}),
+        'user': getattr(SnmpV3UserParams, 'field_references', {}),
     }
 
     unique_keys = {
         'ip_addr': getattr(IpAddr, 'unique_keys', {}),
+        'my_key': 'ip_addr',
+        'user': getattr(SnmpV3UserParams, 'unique_keys', {}),
     }
 
 
@@ -70,12 +199,30 @@ class SnmpConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) SNMP version support. V2 or V3 (Default: SNMP_VER2)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SNMP_VER2', 'SNMP_VER3']),
+        ],
+    )
+    snmp_v3_config_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) SNMP version 3 configuration"),
+        schema=SnmpV3Configuration.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'community',
         'sys_location',
         'sys_contact',
+        'version',
+        'snmp_v3_config',
     )
 
     # mapping of properties to their schemas
@@ -83,6 +230,17 @@ class SnmpConfiguration(object):
         'community': community_schema,
         'sys_location': sys_location_schema,
         'sys_contact': sys_contact_schema,
+        'version': version_schema,
+        'snmp_v3_config': snmp_v3_config_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'snmp_v3_config': getattr(SnmpV3Configuration, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'snmp_v3_config': getattr(SnmpV3Configuration, 'unique_keys', {}),
     }
 
 

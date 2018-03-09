@@ -12,6 +12,56 @@ from options import *
 from common import *
 
 
+class AutoScaleMesosSettings(object):
+    # all schemas
+    force_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("Apply scaleout even when there are deployments inprogress. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'force',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'force': force_schema,
+    }
+
+
+
+class AutoScaleOpenStackSettings(object):
+    # all schemas
+    heat_scale_up_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale upthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
+        required=False,
+        update_allowed=True,
+    )
+    heat_scale_down_url_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale downthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'heat_scale_up_url',
+        'heat_scale_down_url',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'heat_scale_up_url': heat_scale_up_url_schema,
+        'heat_scale_down_url': heat_scale_down_url_schema,
+    }
+
+
+
 class ServerAutoScalePolicy(AviResource):
     resource_name = "serverautoscalepolicy"
     # all schemas
@@ -166,77 +216,6 @@ class ServerAutoScalePolicy(AviResource):
 
 
 
-class AutoScaleMesosSettings(object):
-    # all schemas
-    force_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _("Apply scaleout even when there are deployments inprogress. (Default: True)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'force',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'force': force_schema,
-    }
-
-
-
-class AutoScaleOpenStackSettings(object):
-    # all schemas
-    heat_scale_up_url_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale upthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
-        required=False,
-        update_allowed=True,
-    )
-    heat_scale_down_url_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Avi Controller will use this URL to scale downthe pool. Cloud connector will automatically update the membership. This is an alpha feature."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'heat_scale_up_url',
-        'heat_scale_down_url',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'heat_scale_up_url': heat_scale_up_url_schema,
-        'heat_scale_down_url': heat_scale_down_url_schema,
-    }
-
-
-
-class AutoScaleAWSSettings(object):
-    # all schemas
-    autoscaling_group_name_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Name of the AWS autoscaling group. The AWS autoscaling group should not be set up with scaling policies as it would result in unpredictable behavior when used together with Avi autoscaling policies."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'autoscaling_group_name',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'autoscaling_group_name': autoscaling_group_name_schema,
-    }
-
-
-
 class AutoScaleLaunchConfig(AviResource):
     resource_name = "autoscalelaunchconfig"
     # all schemas
@@ -265,13 +244,6 @@ class AutoScaleLaunchConfig(AviResource):
         required=False,
         update_allowed=True,
     )
-    aws_schema = properties.Schema(
-        properties.Schema.MAP,
-        _(""),
-        schema=AutoScaleAWSSettings.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
     mesos_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
@@ -285,6 +257,12 @@ class AutoScaleLaunchConfig(AviResource):
         required=False,
         update_allowed=True,
     )
+    use_external_asg_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.3) If set to True, ServerAutoscalePolicy will use the autoscaling group (external_autoscaling_groups) from Pool to perform scale up and scale down. Pool should have single autoscaling group configured. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -292,9 +270,9 @@ class AutoScaleLaunchConfig(AviResource):
         'name',
         'image_id',
         'openstack',
-        'aws',
         'mesos',
         'description',
+        'use_external_asg',
     )
 
     # mapping of properties to their schemas
@@ -303,21 +281,19 @@ class AutoScaleLaunchConfig(AviResource):
         'name': name_schema,
         'image_id': image_id_schema,
         'openstack': openstack_schema,
-        'aws': aws_schema,
         'mesos': mesos_schema,
         'description': description_schema,
+        'use_external_asg': use_external_asg_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'openstack': getattr(AutoScaleOpenStackSettings, 'field_references', {}),
-        'aws': getattr(AutoScaleAWSSettings, 'field_references', {}),
         'mesos': getattr(AutoScaleMesosSettings, 'field_references', {}),
     }
 
     unique_keys = {
         'openstack': getattr(AutoScaleOpenStackSettings, 'unique_keys', {}),
-        'aws': getattr(AutoScaleAWSSettings, 'unique_keys', {}),
         'mesos': getattr(AutoScaleMesosSettings, 'unique_keys', {}),
     }
 

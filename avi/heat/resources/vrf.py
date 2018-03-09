@@ -95,7 +95,13 @@ class BgpPeer(object):
     )
     local_as_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.6) Local AS to use for this ebgp peer. If specified, this will override the local AS configured at the VRF level"),
+        _("(Introduced in: 17.1.6,17.2.2) Local AS to use for this ebgp peer. If specified, this will override the local AS configured at the VRF level"),
+        required=False,
+        update_allowed=True,
+    )
+    shutdown_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Shutdown the bgp peer (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -116,6 +122,7 @@ class BgpPeer(object):
         'hold_time',
         'ebgp_multihop',
         'local_as',
+        'shutdown',
     )
 
     # mapping of properties to their schemas
@@ -134,6 +141,7 @@ class BgpPeer(object):
         'hold_time': hold_time_schema,
         'ebgp_multihop': ebgp_multihop_schema,
         'local_as': local_as_schema,
+        'shutdown': shutdown_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -144,7 +152,7 @@ class BgpPeer(object):
 
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
-        'my_key': 'peer_ip',
+        'my_key': 'peer_ip,subnet',
         'peer_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
@@ -355,6 +363,13 @@ class GatewayMonitor(object):
         required=False,
         update_allowed=True,
     )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) Subnet providing reachability for Multi-hop Gateway"),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -362,6 +377,7 @@ class GatewayMonitor(object):
         'gateway_monitor_interval',
         'gateway_monitor_fail_threshold',
         'gateway_monitor_success_threshold',
+        'subnet',
     )
 
     # mapping of properties to their schemas
@@ -370,14 +386,17 @@ class GatewayMonitor(object):
         'gateway_monitor_interval': gateway_monitor_interval_schema,
         'gateway_monitor_fail_threshold': gateway_monitor_fail_threshold_schema,
         'gateway_monitor_success_threshold': gateway_monitor_success_threshold_schema,
+        'subnet': subnet_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'gateway_ip': getattr(IpAddr, 'field_references', {}),
     }
 
     unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'gateway_ip': getattr(IpAddr, 'unique_keys', {}),
     }
 
@@ -514,6 +533,12 @@ class BgpProfile(object):
         required=False,
         update_allowed=True,
     )
+    shutdown_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Shutdown the bgp (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -525,6 +550,7 @@ class BgpProfile(object):
         'send_community',
         'community',
         'ip_communities',
+        'shutdown',
     )
 
     # mapping of properties to their schemas
@@ -537,6 +563,7 @@ class BgpProfile(object):
         'send_community': send_community_schema,
         'community': community_schema,
         'ip_communities': ip_communities_schema,
+        'shutdown': shutdown_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

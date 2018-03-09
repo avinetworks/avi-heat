@@ -15,6 +15,35 @@ from dos import *
 from analytics_policy import *
 
 
+class VssPlacement(object):
+    # all schemas
+    num_subcores_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Number of sub-cores that comprise a CPU core. (Default: 4)"),
+        required=False,
+        update_allowed=True,
+    )
+    core_nonaffinity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Degree of core non-affinity for VS placement. (Default: 2)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'num_subcores',
+        'core_nonaffinity',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'num_subcores': num_subcores_schema,
+        'core_nonaffinity': core_nonaffinity_schema,
+    }
+
+
+
 class VcenterClusters(object):
     # all schemas
     cluster_uuids_item_schema = properties.Schema(
@@ -52,6 +81,47 @@ class VcenterClusters(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'cluster_uuids': 'vimgrclusterruntime',
+    }
+
+
+
+class VcenterHosts(object):
+    # all schemas
+    host_uuids_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(""),
+        required=True,
+        update_allowed=False,
+    )
+    host_uuids_schema = properties.Schema(
+        properties.Schema.LIST,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        schema=host_uuids_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    include_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _(" (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'host_uuids',
+        'include',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'host_uuids': host_uuids_schema,
+        'include': include_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'host_uuids': 'vimgrhostruntime',
     }
 
 
@@ -173,47 +243,6 @@ class IptableRule(object):
         'src_port': getattr(PortRange, 'unique_keys', {}),
         'dst_port': getattr(PortRange, 'unique_keys', {}),
         'dnat_ip': getattr(IpAddr, 'unique_keys', {}),
-    }
-
-
-
-class VcenterHosts(object):
-    # all schemas
-    host_uuids_item_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=True,
-        update_allowed=False,
-    )
-    host_uuids_schema = properties.Schema(
-        properties.Schema.LIST,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
-        schema=host_uuids_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    include_schema = properties.Schema(
-        properties.Schema.BOOLEAN,
-        _(" (Default: False)"),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'host_uuids',
-        'include',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'host_uuids': host_uuids_schema,
-        'include': include_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'host_uuids': 'vimgrhostruntime',
     }
 
 
@@ -707,7 +736,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not. 0: Automatically determine based on hypervisor type. 1: Disable DSR unconditionally. ~[0,1]: Enable DSR unconditionally (Default: 0)"),
+        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not: 0: Automatically determine based on hypervisor type. 1: Disable DSR unconditionally. ~[0,1]: Enable DSR unconditionally.  (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -747,6 +776,22 @@ class ServiceEngineGroup(AviResource):
     se_vs_hb_max_pkts_in_batch_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("(Introduced in: 17.1.1) Maximum number of aggregated vs heartbeat packets to send in a batch. (Default: 8)"),
+        required=False,
+        update_allowed=True,
+    )
+    auto_rebalance_criteria_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) Set of criteria for SE Auto Rebalance."),
+        required=True,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['SE_AUTO_REBALANCE_CPS', 'SE_AUTO_REBALANCE_CPU', 'SE_AUTO_REBALANCE_MBPS', 'SE_AUTO_REBALANCE_OPEN_CONNS', 'SE_AUTO_REBALANCE_PPS']),
+        ],
+    )
+    auto_rebalance_criteria_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.3) Set of criteria for SE Auto Rebalance."),
+        schema=auto_rebalance_criteria_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -808,7 +853,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_udp_encap_ipc_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.2) Determines if SE-SE IPC messages are encapsulated in an UDP header. 0: Automatically determine based on hypervisor type. 1: Use UDP encap unconditionally. ~[0,1]: Don't use UDP encap. (Default: 0)"),
+        _("(Introduced in: 17.1.2) Determines if SE-SE IPC messages are encapsulated in an UDP header: 0: Automatically determine based on hypervisor type. 1: Use UDP encap unconditionally. ~[0,1]: Don't use UDP encap. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -900,7 +945,126 @@ class ServiceEngineGroup(AviResource):
     )
     ignore_rtt_threshold_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.6) Ignore RTT samples if it is above threshold (Units: MILLISECONDS) (Default: 5000)"),
+        _("(Introduced in: 17.1.6,17.2.2) Ignore RTT samples if it is above threshold (Units: MILLISECONDS) (Default: 5000)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_probe_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.2) TCP port on SE where echo service will be run (Default: 7)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_sb_dedicated_core_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 16.5.2, 17.1.9, 17.2.3) Sideband traffic will be handled by a dedicated core (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_sb_threads_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 16.5.2, 17.1.9, 17.2.3) Number of Sideband threads per SE (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    waf_mempool_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.3) Enable memory pool for WAF (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    waf_mempool_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.3) Memory pool size used for WAF (Units: KB) (Default: 64)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_bandwidth_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Select the SE bandwidth for the bandwidth license."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SE_BANDWIDTH_10000M', 'SE_BANDWIDTH_1000M', 'SE_BANDWIDTH_200M', 'SE_BANDWIDTH_25M', 'SE_BANDWIDTH_UNLIMITED']),
+        ],
+    )
+    license_type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) If no license type is specified then default license enforcement for the cloud type is chosen."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LIC_BACKEND_SERVERS', 'LIC_CORES', 'LIC_HOSTS', 'LIC_SE_BANDWIDTH', 'LIC_SOCKETS']),
+        ],
+    )
+    license_tier_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) Specifies the license tier which would be used. This field by default inherits the value from cloud."),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['ENTERPRISE_16', 'ENTERPRISE_18']),
+        ],
+    )
+    allow_burst_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.5) Allow SEs to be created using burst license"),
+        required=False,
+        update_allowed=True,
+    )
+    auto_rebalance_capacity_per_se_item_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.4) Capacities of SE for auto rebalance for each criteria."),
+        required=True,
+        update_allowed=False,
+    )
+    auto_rebalance_capacity_per_se_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.4) Capacities of SE for auto rebalance for each criteria."),
+        schema=auto_rebalance_capacity_per_se_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    host_gateway_monitor_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.4) Enable the host gateway monitor when service engine is deployed as docker container. Disabled by default. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    vss_placement_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.5) If set, Virtual Services will be placed on only a subset of the cores of an SE."),
+        schema=VssPlacement.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    flow_table_new_syn_max_entries_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.5) Maximum number of flow table entries that have not completed TCP three-way handshake yet (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_csum_offloads_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.14, 17.2.5) Stop using TCP/UDP and IP checksum offload features of NICs (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_gro_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.5) Disable Generic Receive Offload (GRO) in DPDK poll-mode driver packet receive path.  GRO is on by default on NICs that do not support LRO (Large Receive Offload) or do not gain performance boost from LRO. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_tso_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.5) Disable TCP Segmentation Offload (TSO) in DPDK poll-mode driver packet transmit path.  TSO is on by default on NICs that support it. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    enable_hsm_priming_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7) (This is a beta feature). Enable HSM key priming. If enabled, key handles on the hsm will be synced to SE before processing client connections. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -975,6 +1139,7 @@ class ServiceEngineGroup(AviResource):
         'service_ip_subnets',
         'se_vs_hb_max_vs_in_pkt',
         'se_vs_hb_max_pkts_in_batch',
+        'auto_rebalance_criteria',
         'cloud_uuid',
         'iptables',
         'enable_routing',
@@ -996,6 +1161,23 @@ class ServiceEngineGroup(AviResource):
         'ingress_access_mgmt',
         'ingress_access_data',
         'ignore_rtt_threshold',
+        'se_probe_port',
+        'se_sb_dedicated_core',
+        'se_sb_threads',
+        'waf_mempool',
+        'waf_mempool_size',
+        'se_bandwidth_type',
+        'license_type',
+        'license_tier',
+        'allow_burst',
+        'auto_rebalance_capacity_per_se',
+        'host_gateway_monitor',
+        'vss_placement',
+        'flow_table_new_syn_max_entries',
+        'disable_csum_offloads',
+        'disable_gro',
+        'disable_tso',
+        'enable_hsm_priming',
     )
 
     # mapping of properties to their schemas
@@ -1068,6 +1250,7 @@ class ServiceEngineGroup(AviResource):
         'service_ip_subnets': service_ip_subnets_schema,
         'se_vs_hb_max_vs_in_pkt': se_vs_hb_max_vs_in_pkt_schema,
         'se_vs_hb_max_pkts_in_batch': se_vs_hb_max_pkts_in_batch_schema,
+        'auto_rebalance_criteria': auto_rebalance_criteria_schema,
         'cloud_uuid': cloud_uuid_schema,
         'iptables': iptables_schema,
         'enable_routing': enable_routing_schema,
@@ -1089,6 +1272,23 @@ class ServiceEngineGroup(AviResource):
         'ingress_access_mgmt': ingress_access_mgmt_schema,
         'ingress_access_data': ingress_access_data_schema,
         'ignore_rtt_threshold': ignore_rtt_threshold_schema,
+        'se_probe_port': se_probe_port_schema,
+        'se_sb_dedicated_core': se_sb_dedicated_core_schema,
+        'se_sb_threads': se_sb_threads_schema,
+        'waf_mempool': waf_mempool_schema,
+        'waf_mempool_size': waf_mempool_size_schema,
+        'se_bandwidth_type': se_bandwidth_type_schema,
+        'license_type': license_type_schema,
+        'license_tier': license_tier_schema,
+        'allow_burst': allow_burst_schema,
+        'auto_rebalance_capacity_per_se': auto_rebalance_capacity_per_se_schema,
+        'host_gateway_monitor': host_gateway_monitor_schema,
+        'vss_placement': vss_placement_schema,
+        'flow_table_new_syn_max_entries': flow_table_new_syn_max_entries_schema,
+        'disable_csum_offloads': disable_csum_offloads_schema,
+        'disable_gro': disable_gro_schema,
+        'disable_tso': disable_tso_schema,
+        'enable_hsm_priming': enable_hsm_priming_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1106,6 +1306,7 @@ class ServiceEngineGroup(AviResource):
         'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
         'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
+        'vss_placement': getattr(VssPlacement, 'field_references', {}),
     }
 
     unique_keys = {
@@ -1120,6 +1321,7 @@ class ServiceEngineGroup(AviResource):
         'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
         'vcenter_clusters': getattr(VcenterClusters, 'unique_keys', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
+        'vss_placement': getattr(VssPlacement, 'unique_keys', {}),
     }
 
 

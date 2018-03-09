@@ -10,6 +10,7 @@ from options import *
 
 from common import *
 from options import *
+from vi_mgr_runtime import *
 
 
 class SeResources(object):
@@ -614,6 +615,12 @@ class vNIC(object):
         required=False,
         update_allowed=False,
     )
+    aggregator_chgd_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7)  (Default: False)"),
+        required=False,
+        update_allowed=False,
+    )
 
     # properties list
     PROPERTIES = (
@@ -642,6 +649,7 @@ class vNIC(object):
         'members',
         'is_hsm',
         'is_asm',
+        'aggregator_chgd',
     )
 
     # mapping of properties to their schemas
@@ -671,6 +679,7 @@ class vNIC(object):
         'members': members_schema,
         'is_hsm': is_hsm_schema,
         'is_asm': is_asm_schema,
+        'aggregator_chgd': aggregator_chgd_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -797,7 +806,7 @@ class ServiceEngine(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['SE_STATE_DISABLED', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_ENABLED']),
+            constraints.AllowedValues(['SE_STATE_DISABLED', 'SE_STATE_DISABLED_FORCE', 'SE_STATE_DISABLED_FOR_PLACEMENT', 'SE_STATE_ENABLED']),
         ],
     )
     container_type_schema = properties.Schema(

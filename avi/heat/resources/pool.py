@@ -339,18 +339,25 @@ class PGDeploymentRule(object):
 
 
 
-class PlacementNetwork(object):
+class DiscoveredNetwork(object):
     # all schemas
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=True,
         update_allowed=True,
     )
-    subnet_schema = properties.Schema(
+    subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("Discovered subnet for this IP."),
         schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("Discovered subnet for this IP."),
+        schema=subnet_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -670,53 +677,6 @@ class HTTPReselectRespCode(object):
 
 
 
-class DiscoveredNetwork(object):
-    # all schemas
-    network_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("Discovered network for this IP. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
-        required=True,
-        update_allowed=True,
-    )
-    subnet_item_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("Discovered subnet for this IP."),
-        schema=IpAddrPrefix.properties_schema,
-        required=True,
-        update_allowed=False,
-    )
-    subnet_schema = properties.Schema(
-        properties.Schema.LIST,
-        _("Discovered subnet for this IP."),
-        schema=subnet_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'network_uuid',
-        'subnet',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'network_uuid': network_uuid_schema,
-        'subnet': subnet_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
-        'network_uuid': 'network',
-    }
-
-    unique_keys = {
-        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
-    }
-
-
-
 class PoolGroup(AviResource):
     resource_name = "poolgroup"
     # all schemas
@@ -771,6 +731,12 @@ class PoolGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    implicit_priority_labels_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.9,17.2.3) Whether an implicit set of priority labels is generated. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,
         _("Name of the user who created the object."),
@@ -805,6 +771,7 @@ class PoolGroup(AviResource):
         'min_servers',
         'deployment_policy_uuid',
         'fail_action',
+        'implicit_priority_labels',
         'created_by',
         'cloud_config_cksum',
         'description',
@@ -820,6 +787,7 @@ class PoolGroup(AviResource):
         'min_servers': min_servers_schema,
         'deployment_policy_uuid': deployment_policy_uuid_schema,
         'fail_action': fail_action_schema,
+        'implicit_priority_labels': implicit_priority_labels_schema,
         'created_by': created_by_schema,
         'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
@@ -1001,7 +969,7 @@ class Server(object):
     )
     prst_hdr_val_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Header value for custom header persistence."),
+        _("Header value for custom header persistence. "),
         required=False,
         update_allowed=True,
     )
@@ -1223,7 +1191,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_STRING', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
         ],
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
@@ -1503,13 +1471,13 @@ class Pool(AviResource):
     )
     external_autoscale_groups_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS"),
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS and Azure"),
         required=True,
         update_allowed=False,
     )
     external_autoscale_groups_schema = properties.Schema(
         properties.Schema.LIST,
-        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS"),
+        _("(Introduced in: 17.1.2) Names of external auto-scale groups for pool servers. Currently available only for AWS and Azure"),
         schema=external_autoscale_groups_item_schema,
         required=False,
         update_allowed=True,
@@ -1517,6 +1485,18 @@ class Pool(AviResource):
     lb_algorithm_core_nonaffinity_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("(Introduced in: 17.1.3) Degree of non-affinity for core afffinity based server selection. (Default: 2)"),
+        required=False,
+        update_allowed=True,
+    )
+    gslb_sp_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Indicates if the pool is a site-persistence pool. "),
+        required=False,
+        update_allowed=False,
+    )
+    lookup_server_by_name_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.1.11,17.2.4) Allow server lookup by name. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -1587,6 +1567,8 @@ class Pool(AviResource):
         'nsx_securitygroup',
         'external_autoscale_groups',
         'lb_algorithm_core_nonaffinity',
+        'gslb_sp_enabled',
+        'lookup_server_by_name',
         'description',
         'cloud_uuid',
     )
@@ -1645,6 +1627,8 @@ class Pool(AviResource):
         'nsx_securitygroup': nsx_securitygroup_schema,
         'external_autoscale_groups': external_autoscale_groups_schema,
         'lb_algorithm_core_nonaffinity': lb_algorithm_core_nonaffinity_schema,
+        'gslb_sp_enabled': gslb_sp_enabled_schema,
+        'lookup_server_by_name': lookup_server_by_name_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
     }

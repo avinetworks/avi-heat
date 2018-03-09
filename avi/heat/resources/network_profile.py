@@ -31,7 +31,7 @@ class TCPProxyProfile(object):
     )
     idle_connection_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The duration for keepalive probes or session idle timeout. Max value is 3600 seconds, min is 60.  Set to 0 to allow infinite idle time. (Units: SEC) (Default: 600)"),
+        _("The duration for keepalive probes or session idle timeout. Max value is 3600 seconds, min is 5.  Set to 0 to allow infinite idle time. (Units: SEC) (Default: 600)"),
         required=False,
         update_allowed=True,
     )
@@ -104,6 +104,12 @@ class TCPProxyProfile(object):
         required=False,
         update_allowed=True,
     )
+    reorder_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.7) Controls the number of duplicate acks required to trigger retransmission. Setting a higher value reduces retransmission caused by packet reordering. A larger value is recommended in public cloud environments where packet reordering is quite common. The default value is 8 in public cloud platforms (AWS, Azure, GCP), and 3 in other environments."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -121,6 +127,7 @@ class TCPProxyProfile(object):
         'ip_dscp',
         'cc_algo',
         'aggressive_congestion_avoidance',
+        'reorder_threshold',
     )
 
     # mapping of properties to their schemas
@@ -139,6 +146,7 @@ class TCPProxyProfile(object):
         'ip_dscp': ip_dscp_schema,
         'cc_algo': cc_algo_schema,
         'aggressive_congestion_avoidance': aggressive_congestion_avoidance_schema,
+        'reorder_threshold': reorder_threshold_schema,
     }
 
 

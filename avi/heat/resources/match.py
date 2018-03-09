@@ -130,7 +130,7 @@ class MethodMatch(object):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT', 'HTTP_METHOD_TRACE']),
+            constraints.AllowedValues(['HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT']),
         ],
     )
     methods_schema = properties.Schema(

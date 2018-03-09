@@ -15,13 +15,13 @@ class GeoLocation(object):
     # all schemas
     latitude_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Latitude of the location."),
+        _("(Introduced in: 17.1.1) Latitude of the location. This is represented as degrees.minutes. The range is from -90.0 (south) to +90.0 (north)."),
         required=False,
         update_allowed=True,
     )
     longitude_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Longitude of the location."),
+        _("(Introduced in: 17.1.1) Longitude of the location. This is represented as degrees.minutes. The range is from -180.0 (west) to +180.0 (east)."),
         required=False,
         update_allowed=True,
     )
@@ -437,5 +437,117 @@ class HTTPLocalFile(object):
     properties_schema = {
         'content_type': content_type_schema,
         'file_content': file_content_schema,
+    }
+
+
+
+class Property(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Property name."),
+        required=True,
+        update_allowed=True,
+    )
+    value_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) Property value."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'value',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'value': value_schema,
+    }
+
+    unique_keys = {
+        'my_key': 'name',
+    }
+
+
+
+class SeNetworkSubnet(object):
+    # all schemas
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.4) "),
+        required=False,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.4) "),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'network_uuid',
+        'subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'network_uuid': network_uuid_schema,
+        'subnet': subnet_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+    }
+
+
+
+class PlacementNetwork(object):
+    # all schemas
+    network_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=True,
+        update_allowed=True,
+    )
+    subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _(""),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'network_uuid',
+        'subnet',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'network_uuid': network_uuid_schema,
+        'subnet': subnet_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'network_uuid': 'network',
+    }
+
+    unique_keys = {
+        'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 

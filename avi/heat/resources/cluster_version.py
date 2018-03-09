@@ -8,6 +8,7 @@ from avi.heat.avi_resource import AviResource
 from avi.heat.avi_resource import AviNestedResource
 from options import *
 
+from options import *
 
 
 class SeVersion(object):
@@ -24,17 +25,25 @@ class SeVersion(object):
         required=True,
         update_allowed=True,
     )
+    patch_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) Patch level for service engine"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'name',
         'version',
+        'patch',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'version': version_schema,
+        'patch': patch_schema,
     }
 
 
@@ -53,16 +62,24 @@ class ControllerVersion(object):
         required=True,
         update_allowed=True,
     )
+    patch_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.2) Patch level for controller"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'name',
         'version',
+        'patch',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'name': name_schema,
         'version': version_schema,
+        'patch': patch_schema,
     }
 

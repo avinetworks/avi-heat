@@ -168,6 +168,25 @@ class DnsRuleActionGslbSiteSelection(object):
     site_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.5) GSLB site name"),
+        required=True,
+        update_allowed=True,
+    )
+    is_site_preferred_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.5) When set to true, GSLB site is a preferred site. This setting comes into play when the site is down, as well as no configured fallback site is available (all fallback sites are also down), then any one available site is selected based on the default algorithm for GSLB pool member selection. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    fallback_site_names_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.5) GSLB fallback sites to use in case the desired site is down."),
+        required=True,
+        update_allowed=False,
+    )
+    fallback_site_names_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.5) GSLB fallback sites to use in case the desired site is down."),
+        schema=fallback_site_names_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -175,11 +194,15 @@ class DnsRuleActionGslbSiteSelection(object):
     # properties list
     PROPERTIES = (
         'site_name',
+        'is_site_preferred',
+        'fallback_site_names',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'site_name': site_name_schema,
+        'is_site_preferred': is_site_preferred_schema,
+        'fallback_site_names': fallback_site_names_schema,
     }
 
 
@@ -217,14 +240,14 @@ class DnsClientIpMatch(object):
     # all schemas
     client_ip_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.6) IP addresses to match against client IP"),
+        _("(Introduced in: 17.1.6,17.2.2) IP addresses to match against client IP"),
         schema=IpAddrMatch.properties_schema,
         required=True,
         update_allowed=True,
     )
     use_edns_client_subnet_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.6) Use the IP address from the EDNS client subnet option, if available, as the source IP address of the client. It should be noted that the edns subnet IP may not be a /32 IP address. (Default: False)"),
+        _("(Introduced in: 17.1.6,17.2.2) Use the IP address from the EDNS client subnet option, if available, as the source IP address of the client. It should be noted that the edns subnet IP may not be a /32 IP address. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -369,7 +392,7 @@ class DnsRuleMatchTarget(object):
     # all schemas
     client_ip_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.1) (Deprecated in: 17.1.6) IP addresses to match against client IP. From 17.1.6 release onwards, IP addresses needs to be configured in the client_ip_address field of this message."),
+        _("(Introduced in: 17.1.1) (Deprecated in: 17.1.6,17.2.2) IP addresses to match against client IP. From 17.1.6 release onwards, IP addresses needs to be configured in the client_ip_address field of this message."),
         schema=IpAddrMatch.properties_schema,
         required=False,
         update_allowed=True,
@@ -404,7 +427,7 @@ class DnsRuleMatchTarget(object):
     )
     client_ip_address_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.1.6) IP addresses to match against client IP or the EDNS client subnet IP"),
+        _("(Introduced in: 17.1.6,17.2.2) IP addresses to match against client IP or the EDNS client subnet IP"),
         schema=DnsClientIpMatch.properties_schema,
         required=False,
         update_allowed=True,

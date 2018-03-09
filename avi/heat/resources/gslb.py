@@ -158,13 +158,13 @@ class GslbGeoDbFile(object):
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) Geodb Filename in the Avi supported formats."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     format_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) This field indicates the file format. (Default: GSLB_GEODB_FILE_FORMAT_AVI)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['GSLB_GEODB_FILE_FORMAT_AVI', 'GSLB_GEODB_FILE_FORMAT_MAXMIND_CITY']),
         ],
@@ -327,6 +327,42 @@ class GslbGeoLocation(object):
 
 
 
+class GslbSiteDnsVs(object):
+    # all schemas
+    dns_vs_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) This field identifies the DNS VS uuid for this site."),
+        required=True,
+        update_allowed=True,
+    )
+    domain_names_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) This field identifies the subdomains that are hosted on the DNS VS. GslbService(s) whose FQDNs map to one of the subdomains will be hosted on this DNS VS. If no subdomains are configured, then the default behavior is to host all the GslbServices on this DNS VS."),
+        required=True,
+        update_allowed=False,
+    )
+    domain_names_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.3) This field identifies the subdomains that are hosted on the DNS VS. GslbService(s) whose FQDNs map to one of the subdomains will be hosted on this DNS VS. If no subdomains are configured, then the default behavior is to host all the GslbServices on this DNS VS."),
+        schema=domain_names_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'dns_vs_uuid',
+        'domain_names',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'dns_vs_uuid': dns_vs_uuid_schema,
+        'domain_names': domain_names_schema,
+    }
+
+
+
 class GslbGeoDbEntry(object):
     # all schemas
     priority_schema = properties.Schema(
@@ -425,7 +461,7 @@ class GslbPoolMember(object):
         _("(Introduced in: 17.1.1) Internal generated system-field."),
         schema=hm_proxies_item_schema,
         required=False,
-        update_allowed=False,
+        update_allowed=True,
     )
     cloud_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -566,8 +602,15 @@ class GslbGeoDbProfile(AviResource):
 
 
 
-class GslbSite(object):
+class GslbSite(AviResource):
+    resource_name = "gslbsite"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     cluster_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("UUID of the 'Cluster' object of the Controller Cluster in this site."),
@@ -620,13 +663,13 @@ class GslbSite(object):
     )
     dns_vs_uuids_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _("The list of DNS-VSes on which the GSes shall be placed. The site has to be an ACTIVE member."),
+        _("(Deprecated in: 17.2.3) The DNS VSes on which the GslbServices shall be placed. The site has to be an ACTIVE member.  This field is deprecated in 17.2.3 and replaced by 'dns_vses' field. "),
         required=True,
         update_allowed=False,
     )
     dns_vs_uuids_schema = properties.Schema(
         properties.Schema.LIST,
-        _("The list of DNS-VSes on which the GSes shall be placed. The site has to be an ACTIVE member."),
+        _("(Deprecated in: 17.2.3) The DNS VSes on which the GslbServices shall be placed. The site has to be an ACTIVE member.  This field is deprecated in 17.2.3 and replaced by 'dns_vses' field. "),
         schema=dns_vs_uuids_item_schema,
         required=False,
         update_allowed=True,
@@ -673,9 +716,24 @@ class GslbSite(object):
         required=False,
         update_allowed=True,
     )
+    dns_vses_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.3) This field identifies the DNS VS and the subdomains it hosts for Gslb services. "),
+        schema=GslbSiteDnsVs.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    dns_vses_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.3) This field identifies the DNS VS and the subdomains it hosts for Gslb services. "),
+        schema=dns_vses_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'cluster_uuid',
         'name',
         'address',
@@ -689,10 +747,12 @@ class GslbSite(object):
         'location',
         'hm_proxies',
         'ratio',
+        'dns_vses',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'cluster_uuid': cluster_uuid_schema,
         'name': name_schema,
         'address': address_schema,
@@ -706,16 +766,19 @@ class GslbSite(object):
         'location': location_schema,
         'hm_proxies': hm_proxies_schema,
         'ratio': ratio_schema,
+        'dns_vses': dns_vses_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'dns_vses': getattr(GslbSiteDnsVs, 'field_references', {}),
         'ip_addresses': getattr(IpAddr, 'field_references', {}),
         'location': getattr(GslbGeoLocation, 'field_references', {}),
         'hm_proxies': getattr(GslbHealthMonitorProxy, 'field_references', {}),
     }
 
     unique_keys = {
+        'dns_vses': getattr(GslbSiteDnsVs, 'unique_keys', {}),
         'ip_addresses': getattr(IpAddr, 'unique_keys', {}),
         'my_key': 'cluster_uuid',
         'location': getattr(GslbGeoLocation, 'unique_keys', {}),
@@ -724,8 +787,15 @@ class GslbSite(object):
 
 
 
-class GslbThirdPartySite(object):
+class GslbThirdPartySite(AviResource):
+    resource_name = "gslbthirdpartysite"
     # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
     cluster_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) Third-party-site identifier generated by Avi."),
@@ -774,6 +844,7 @@ class GslbThirdPartySite(object):
 
     # properties list
     PROPERTIES = (
+        'avi_version',
         'cluster_uuid',
         'name',
         'enabled',
@@ -784,6 +855,7 @@ class GslbThirdPartySite(object):
 
     # mapping of properties to their schemas
     properties_schema = {
+        'avi_version': avi_version_schema,
         'cluster_uuid': cluster_uuid_schema,
         'name': name_schema,
         'enabled': enabled_schema,
@@ -863,13 +935,13 @@ class Gslb(AviResource):
     )
     clear_on_max_retries_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Max retries after which the remote site is treatedas a fresh start. In fresh start all the configsare downloaded. (Default: 20)"),
+        _("Max retries after which the remote site is treated as a fresh start. In fresh start all the configs are downloaded. (Default: 20)"),
         required=False,
         update_allowed=True,
     )
     view_id_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("The view-id is used in maintenance mode to differentiate partitioned groups while they havethe same gslb namespace. Each partitioned groupwill be able to operate independently by using theview-id. (Default: 0)"),
+        _("The view-id is used in change-leader mode to differentiate partitioned groups while they have the same GSLB namespace. Each partitioned group will be able to operate independently by using the view-id. (Default: 0)"),
         required=False,
         update_allowed=False,
     )
@@ -893,6 +965,12 @@ class Gslb(AviResource):
         schema=GslbClientIpAddrGroup.properties_schema,
         required=False,
         update_allowed=True,
+    )
+    maintenance_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) This field disables the configuration operations on the leader for all federated objects.  CUD operations on Gslb, GslbService, GslbGeoDbProfile and other federated objects will be rejected. The rest-api disabling helps in upgrade scenarios where we don't want configuration sync operations to the Gslb member when the member is being upgraded.  This configuration programmatically blocks the leader from accepting new Gslb configuration when member sites are undergoing upgrade.  (Default: False)"),
+        required=False,
+        update_allowed=False,
     )
     is_federated_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -919,6 +997,7 @@ class Gslb(AviResource):
         'view_id',
         'third_party_sites',
         'client_ip_addr_group',
+        'maintenance_mode',
         'is_federated',
         'description',
     )
@@ -935,6 +1014,7 @@ class Gslb(AviResource):
         'view_id': view_id_schema,
         'third_party_sites': third_party_sites_schema,
         'client_ip_addr_group': client_ip_addr_group_schema,
+        'maintenance_mode': maintenance_mode_schema,
         'is_federated': is_federated_schema,
         'description': description_schema,
     }
@@ -966,7 +1046,7 @@ class GslbPool(object):
     )
     priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority of this pool of Members. If the priority of this is the highest in the group, DNS service picks up only this member for DNS responses. (Default: 10)"),
+        _("Priority of this pool of Members. The higher the number, the higher is the priority of the pool. The DNS Service chooses the pool with the highest priority that is operationally up. (Default: 10)"),
         required=False,
         update_allowed=True,
     )
@@ -1145,6 +1225,33 @@ class GslbService(AviResource):
         required=False,
         update_allowed=True,
     )
+    site_persistence_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.1) Enable site-persistence for the GslbService.  (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    application_persistence_profile_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) The federated application persistence associated with GslbService site persistence functionality.  You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    pool_algorithm_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.3) The load balancing algorithm will pick a GSLB pool within the GSLB service list of available pools. (Default: GSLB_SERVICE_ALGORITHM_PRIORITY)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['GSLB_SERVICE_ALGORITHM_GEO', 'GSLB_SERVICE_ALGORITHM_PRIORITY']),
+        ],
+    )
+    min_members_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.4) The minimum number of members to distribute traffic to. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
     is_federated_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
@@ -1179,6 +1286,10 @@ class GslbService(AviResource):
         'enabled',
         'use_edns_client_subnet',
         'wildcard_match',
+        'site_persistence_enabled',
+        'application_persistence_profile_uuid',
+        'pool_algorithm',
+        'min_members',
         'is_federated',
         'created_by',
         'description',
@@ -1199,6 +1310,10 @@ class GslbService(AviResource):
         'enabled': enabled_schema,
         'use_edns_client_subnet': use_edns_client_subnet_schema,
         'wildcard_match': wildcard_match_schema,
+        'site_persistence_enabled': site_persistence_enabled_schema,
+        'application_persistence_profile_uuid': application_persistence_profile_uuid_schema,
+        'pool_algorithm': pool_algorithm_schema,
+        'min_members': min_members_schema,
         'is_federated': is_federated_schema,
         'created_by': created_by_schema,
         'description': description_schema,
@@ -1208,6 +1323,7 @@ class GslbService(AviResource):
     field_references = {
         'health_monitor_uuids': 'healthmonitor',
         'down_response': getattr(GslbServiceDownResponse, 'field_references', {}),
+        'application_persistence_profile_uuid': 'applicationpersistenceprofile',
         'groups': getattr(GslbPool, 'field_references', {}),
     }
 
@@ -1220,8 +1336,10 @@ class GslbService(AviResource):
 
 def resource_mapping():
     return {
+        'Avi::LBaaS::GslbSite': GslbSite,
+        'Avi::LBaaS::GslbThirdPartySite': GslbThirdPartySite,
         'Avi::LBaaS::GslbGeoDbProfile': GslbGeoDbProfile,
-        'Avi::LBaaS::GslbService': GslbService,
         'Avi::LBaaS::Gslb': Gslb,
+        'Avi::LBaaS::GslbService': GslbService,
     }
 
