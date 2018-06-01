@@ -379,7 +379,7 @@ class CRL(object):
         properties.Schema.STRING,
         _("Last time CRL was refreshed by the system. This is an internal field used by the system"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -549,7 +549,7 @@ class SSLProfile(AviResource):
         properties.Schema.STRING,
         _("DH Parameters used in SSL. At this time, it is not configurable and is set to 2048 bits."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     prefer_client_cipher_ordering_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -568,6 +568,15 @@ class SSLProfile(AviResource):
         _("The amount of time before an SSL session expires. (Units: SEC) (Default: 86400)"),
         required=False,
         update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) SSL Profile Type. (Default: SSL_PROFILE_TYPE_APPLICATION)"),
+        required=False,
+        update_allowed=False,
+        constraints=[
+            constraints.AllowedValues(['SSL_PROFILE_TYPE_APPLICATION', 'SSL_PROFILE_TYPE_SYSTEM']),
+        ],
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
@@ -590,6 +599,7 @@ class SSLProfile(AviResource):
         'prefer_client_cipher_ordering',
         'enable_ssl_session_reuse',
         'ssl_session_timeout',
+        'type',
         'description',
     )
 
@@ -607,6 +617,7 @@ class SSLProfile(AviResource):
         'prefer_client_cipher_ordering': prefer_client_cipher_ordering_schema,
         'enable_ssl_session_reuse': enable_ssl_session_reuse_schema,
         'ssl_session_timeout': ssl_session_timeout_schema,
+        'type': type_schema,
         'description': description_schema,
     }
 
@@ -887,7 +898,7 @@ class PKIProfile(AviResource):
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list

@@ -60,6 +60,27 @@ class DosRateLimitProfile(object):
 
 
 
+class SipServiceApplicationProfile(object):
+    # all schemas
+    transaction_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.8) SIP transaction timeout in seconds. (Units: SEC) (Default: 32)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'transaction_timeout',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'transaction_timeout': transaction_timeout_schema,
+    }
+
+
+
 class DnsServiceApplicationProfile(object):
     # all schemas
     num_dns_ip_schema = properties.Schema(
@@ -98,13 +119,13 @@ class DnsServiceApplicationProfile(object):
     )
     edns_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.1) Enable DNS service to be aware of EDNS (Extension mechanism for DNS). EDNS extensions are parsed and shown in logs. For GSLB services, the EDNS subnet option can be used to influence Load Balancing. (Default: False)"),
+        _("(Introduced in: 17.1.1) Enable DNS service to be aware of EDNS (Extension mechanism for DNS). EDNS extensions are parsed and shown in logs. For GSLB services, the EDNS client subnet option can be used to influence Load Balancing. (Default: False)"),
         required=False,
         update_allowed=True,
     )
     edns_client_subnet_prefix_len_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.3) Specifies the ip address prefix length to use in the edns client subnet (ecs) option. When the incoming request does not have any ecs option and the prefix length is specified, we insert an ecs option in the request to upstream servers."),
+        _("(Introduced in: 17.1.3) Specifies the IP address prefix length to use in the EDNS client subnet (ECS) option. When the incoming request does not have any ECS option and the prefix length is specified, an ECS option is inserted in the request passed to upstream server. If the incoming request already has an ECS option, the prefix length (and correspondingly the address) in the ECS option is updated, with the minimum of the prefix length present in the incoming and the configured prefix length, before passing the request to upstream server."),
         required=False,
         update_allowed=True,
     )
@@ -542,6 +563,18 @@ class HTTPApplicationProfile(object):
         required=False,
         update_allowed=True,
     )
+    http2_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.1) Enable HTTP2 for traffic from clients to the virtual service.   (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    respond_with_100_continue_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.8) Avi will respond with 100-Continue response if Expect: 100-Continue header received from client (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -586,6 +619,8 @@ class HTTPApplicationProfile(object):
         'enable_request_body_buffering',
         'enable_fire_and_forget',
         'max_response_headers_size',
+        'http2_enabled',
+        'respond_with_100_continue',
     )
 
     # mapping of properties to their schemas
@@ -631,6 +666,8 @@ class HTTPApplicationProfile(object):
         'enable_request_body_buffering': enable_request_body_buffering_schema,
         'enable_fire_and_forget': enable_fire_and_forget_schema,
         'max_response_headers_size': max_response_headers_size_schema,
+        'http2_enabled': http2_enabled_schema,
+        'respond_with_100_continue': respond_with_100_continue_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -668,9 +705,9 @@ class ApplicationProfile(AviResource):
         properties.Schema.STRING,
         _("Specifies which application layer proxy is enabled for the virtual service."),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG']),
+            constraints.AllowedValues(['APPLICATION_PROFILE_TYPE_DNS', 'APPLICATION_PROFILE_TYPE_HTTP', 'APPLICATION_PROFILE_TYPE_L4', 'APPLICATION_PROFILE_TYPE_SIP', 'APPLICATION_PROFILE_TYPE_SSL', 'APPLICATION_PROFILE_TYPE_SYSLOG']),
         ],
     )
     http_profile_schema = properties.Schema(
@@ -707,6 +744,19 @@ class ApplicationProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    preserve_client_port_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7) Specifies if we need to preserve client port while preserving client IP for backend connections. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    sip_service_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.8) Specifies various SIP service related controls for virtual service."),
+        schema=SipServiceApplicationProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -724,6 +774,8 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile',
         'dns_service_profile',
         'preserve_client_ip',
+        'preserve_client_port',
+        'sip_service_profile',
         'description',
     )
 
@@ -737,6 +789,8 @@ class ApplicationProfile(AviResource):
         'tcp_app_profile': tcp_app_profile_schema,
         'dns_service_profile': dns_service_profile_schema,
         'preserve_client_ip': preserve_client_ip_schema,
+        'preserve_client_port': preserve_client_port_schema,
+        'sip_service_profile': sip_service_profile_schema,
         'description': description_schema,
     }
 
@@ -744,6 +798,7 @@ class ApplicationProfile(AviResource):
     field_references = {
         'dns_service_profile': getattr(DnsServiceApplicationProfile, 'field_references', {}),
         'tcp_app_profile': getattr(TCPApplicationProfile, 'field_references', {}),
+        'sip_service_profile': getattr(SipServiceApplicationProfile, 'field_references', {}),
         'http_profile': getattr(HTTPApplicationProfile, 'field_references', {}),
         'dos_rl_profile': getattr(DosRateLimitProfile, 'field_references', {}),
     }
@@ -751,6 +806,7 @@ class ApplicationProfile(AviResource):
     unique_keys = {
         'dns_service_profile': getattr(DnsServiceApplicationProfile, 'unique_keys', {}),
         'tcp_app_profile': getattr(TCPApplicationProfile, 'unique_keys', {}),
+        'sip_service_profile': getattr(SipServiceApplicationProfile, 'unique_keys', {}),
         'http_profile': getattr(HTTPApplicationProfile, 'unique_keys', {}),
         'dos_rl_profile': getattr(DosRateLimitProfile, 'unique_keys', {}),
     }

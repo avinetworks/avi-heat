@@ -95,7 +95,7 @@ class PriorityLabels(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -176,6 +176,10 @@ class PoolGroupMember(object):
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'pool_uuid': 'pool',
+    }
+
+    unique_keys = {
+        'my_key': 'pool_uuid,priority_label',
     }
 
 
@@ -361,27 +365,45 @@ class DiscoveredNetwork(object):
         required=False,
         update_allowed=True,
     )
+    subnet6_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) Discovered IPv6 subnet for this IP."),
+        schema=IpAddrPrefix.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    subnet6_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.1) Discovered IPv6 subnet for this IP."),
+        schema=subnet6_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'network_uuid',
         'subnet',
+        'subnet6',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'network_uuid': network_uuid_schema,
         'subnet': subnet_schema,
+        'subnet6': subnet6_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'subnet6': getattr(IpAddrPrefix, 'field_references', {}),
         'network_uuid': 'network',
     }
 
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'subnet6': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -413,7 +435,7 @@ class FailAction(object):
     )
     backup_pool_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Backup Pool when pool experiences a failure"),
+        _("(Deprecated in: 18.1.2) Backup Pool when pool experiences a failure"),
         schema=FailActionBackupPool.properties_schema,
         required=False,
         update_allowed=True,
@@ -524,12 +546,6 @@ class PoolGroupDeploymentPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
-    cloud_uuid_schema = properties.Schema(
-        properties.Schema.STRING,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
 
     # properties list
     PROPERTIES = (
@@ -543,7 +559,6 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio',
         'auto_disable_old_prod_pools',
         'description',
-        'cloud_uuid',
     )
 
     # mapping of properties to their schemas
@@ -558,7 +573,6 @@ class PoolGroupDeploymentPolicy(AviResource):
         'target_test_traffic_ratio': target_test_traffic_ratio_schema,
         'auto_disable_old_prod_pools': auto_disable_old_prod_pools_schema,
         'description': description_schema,
-        'cloud_uuid': cloud_uuid_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -759,7 +773,7 @@ class PoolGroup(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -1020,13 +1034,13 @@ class Server(object):
         _("(Introduced in: 17.1.1) (internal-use) Geographic location of the server.Currently only for internal usage."),
         schema=GeoLocation.properties_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     autoscaling_group_name_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.2) Name of autoscaling group this server belongs to."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -1191,7 +1205,7 @@ class Pool(AviResource):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_STRING', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
+            constraints.AllowedValues(['LB_ALGORITHM_CONSISTENT_HASH_CALLID', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_HEADER', 'LB_ALGORITHM_CONSISTENT_HASH_CUSTOM_STRING', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS', 'LB_ALGORITHM_CONSISTENT_HASH_SOURCE_IP_ADDRESS_AND_PORT', 'LB_ALGORITHM_CONSISTENT_HASH_URI']),
         ],
     )
     lb_algorithm_consistent_hash_hdr_schema = properties.Schema(
@@ -1330,7 +1344,7 @@ class Pool(AviResource):
         properties.Schema.STRING,
         _("Virtual Routing Context that the pool is bound to. This is used to provide the isolation of the set of networks the pool is attached to. The pool inherits the Virtual Routing Conext of the Virtual Service, and this field is used only internally, and is set by pb-transform. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     ipaddrgroup_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1389,7 +1403,7 @@ class Pool(AviResource):
     )
     ab_pool_schema = properties.Schema(
         properties.Schema.MAP,
-        _("A/B pool configuration."),
+        _("(Deprecated in: 18.1.2) A/B pool configuration."),
         schema=AbPool.properties_schema,
         required=False,
         update_allowed=True,
@@ -1403,13 +1417,13 @@ class Pool(AviResource):
     )
     a_pool_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Name of container cloud application that constitutes A pool in a A-B pool configuration, if different from VS app"),
+        _("(Deprecated in: 18.1.2) Name of container cloud application that constitutes A pool in a A-B pool configuration, if different from VS app"),
         required=False,
         update_allowed=True,
     )
     ab_priority_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Priority of this pool in a A-B pool pair. Internally used"),
+        _("(Deprecated in: 18.1.2) Priority of this pool in a A-B pool pair. Internally used"),
         required=False,
         update_allowed=True,
     )
@@ -1510,7 +1524,7 @@ class Pool(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list

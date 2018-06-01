@@ -9,6 +9,7 @@ from avi.heat.avi_resource import AviNestedResource
 from options import *
 
 from options import *
+from match import *
 
 
 class HttpCacheConfig(object):
@@ -21,7 +22,7 @@ class HttpCacheConfig(object):
     )
     xcache_header_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Add an X-Cache header to content served from cache, which indicates to the client that the object was server from an intermediate cache. (Default: True)"),
+        _("Add an X-Cache header to content served from cache, which indicates to the client that the object was served from an intermediate cache. (Default: True)"),
         required=False,
         update_allowed=True,
     )
@@ -131,6 +132,19 @@ class HttpCacheConfig(object):
         required=False,
         update_allowed=True,
     )
+    uri_non_cacheable_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) Non-cacheable URI configuration with match criteria."),
+        schema=PathMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ignore_request_cache_control_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.2) Ignore client's cache control headers when fetching or storing from and to the cache. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -149,6 +163,8 @@ class HttpCacheConfig(object):
         'aggressive',
         'mime_types_black_list',
         'mime_types_black_group_uuids',
+        'uri_non_cacheable',
+        'ignore_request_cache_control',
     )
 
     # mapping of properties to their schemas
@@ -168,11 +184,18 @@ class HttpCacheConfig(object):
         'aggressive': aggressive_schema,
         'mime_types_black_list': mime_types_black_list_schema,
         'mime_types_black_group_uuids': mime_types_black_group_uuids_schema,
+        'uri_non_cacheable': uri_non_cacheable_schema,
+        'ignore_request_cache_control': ignore_request_cache_control_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'uri_non_cacheable': getattr(PathMatch, 'field_references', {}),
         'mime_types_black_group_uuids': 'stringgroup',
         'mime_types_group_uuids': 'stringgroup',
+    }
+
+    unique_keys = {
+        'uri_non_cacheable': getattr(PathMatch, 'unique_keys', {}),
     }
 

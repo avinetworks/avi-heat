@@ -132,19 +132,19 @@ class ErrorPageProfile(AviResource):
     )
     company_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.2.4) Name of the company to show in error page"),
+        _("(Introduced in: 17.2.4) (Deprecated in: 18.1.1) Name of the company to show in error page"),
         required=False,
         update_allowed=True,
     )
     app_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.2.4) Name of the Virtual Service which generated the error page"),
+        _("(Introduced in: 17.2.4) (Deprecated in: 18.1.1) Name of the Virtual Service which generated the error page"),
         required=False,
         update_allowed=True,
     )
     host_name_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.2.4) Fully qualified domain name for which the error page is generated"),
+        _("(Introduced in: 17.2.4) (Deprecated in: 18.1.1) Fully qualified domain name for which the error page is generated"),
         required=False,
         update_allowed=True,
     )

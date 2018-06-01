@@ -158,13 +158,13 @@ class GslbGeoDbFile(object):
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) Geodb Filename in the Avi supported formats."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     format_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) This field indicates the file format. (Default: GSLB_GEODB_FILE_FORMAT_AVI)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['GSLB_GEODB_FILE_FORMAT_AVI', 'GSLB_GEODB_FILE_FORMAT_MAXMIND_CITY']),
         ],
@@ -564,7 +564,7 @@ class GslbGeoDbProfile(AviResource):
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
@@ -943,7 +943,7 @@ class Gslb(AviResource):
         properties.Schema.NUMBER,
         _("The view-id is used in change-leader mode to differentiate partitioned groups while they have the same GSLB namespace. Each partitioned group will be able to operate independently by using the view-id. (Default: 0)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     third_party_sites_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -970,13 +970,13 @@ class Gslb(AviResource):
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.2.1) This field disables the configuration operations on the leader for all federated objects.  CUD operations on Gslb, GslbService, GslbGeoDbProfile and other federated objects will be rejected. The rest-api disabling helps in upgrade scenarios where we don't want configuration sync operations to the Gslb member when the member is being upgraded.  This configuration programmatically blocks the leader from accepting new Gslb configuration when member sites are undergoing upgrade.  (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     is_federated_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
@@ -1112,7 +1112,6 @@ class GslbPool(object):
     }
 
     unique_keys = {
-        'my_key': 'priority',
         'members': getattr(GslbPoolMember, 'unique_keys', {}),
     }
 
@@ -1256,7 +1255,7 @@ class GslbService(AviResource):
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field indicates that this object is replicated across GSLB federation. (Default: True)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     created_by_schema = properties.Schema(
         properties.Schema.STRING,

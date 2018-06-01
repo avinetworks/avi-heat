@@ -23,6 +23,7 @@ from dns_policy import *
 from content_rewrite_profile import *
 from traffic_clone_profile import *
 from error_page import *
+from l4_policy import *
 
 
 class ServicePoolSelector(object):
@@ -45,7 +46,7 @@ class ServicePoolSelector(object):
         required=False,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH']),
+            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH', 'PROTOCOL_TYPE_UDP_PROXY']),
         ],
     )
     service_pool_group_uuid_schema = properties.Schema(
@@ -412,7 +413,7 @@ class VsSeVnic(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_FE', 'VNIC_TYPE_INT', 'VNIC_TYPE_INT_PRIMARY', 'VNIC_TYPE_INT_SECONDARY']),
+            constraints.AllowedValues(['VNIC_TYPE_BE', 'VNIC_TYPE_FE']),
         ],
     )
     lif_schema = properties.Schema(
@@ -1448,7 +1449,7 @@ class VirtualService(AviResource):
         properties.Schema.STRING,
         _("Specify if this is a normal Virtual Service, or if it is the parent or child of an SNI-enabled virtual hosted Virtual Service. (Default: VS_TYPE_NORMAL)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['VS_TYPE_NORMAL', 'VS_TYPE_VH_CHILD', 'VS_TYPE_VH_PARENT']),
         ],
@@ -1480,7 +1481,7 @@ class VirtualService(AviResource):
     )
     auto_allocate_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Deprecated in: 17.1.1) Auto-allocate VIP from the provided subnet. (Default: False)"),
+        _("(Deprecated in: 17.1.1) Auto-allocate VIP from the provided subnet."),
         required=False,
         update_allowed=True,
     )
@@ -1493,7 +1494,7 @@ class VirtualService(AviResource):
     )
     auto_allocate_floating_ip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Deprecated in: 17.1.1) Auto-allocate floating/elastic IP from the Cloud infrastructure. (Default: False)"),
+        _("(Deprecated in: 17.1.1) Auto-allocate floating/elastic IP from the Cloud infrastructure."),
         required=False,
         update_allowed=True,
     )
@@ -1514,13 +1515,13 @@ class VirtualService(AviResource):
     )
     avi_allocated_vip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Deprecated in: 17.1.1) (internal-use) VIP allocated by Avi in the Cloud infrastructure. (Default: False)"),
+        _("(Deprecated in: 17.1.1) (internal-use) VIP allocated by Avi in the Cloud infrastructure."),
         required=False,
         update_allowed=True,
     )
     avi_allocated_fip_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Deprecated in: 17.1.1) (internal-use) FIP allocated by Avi in the Cloud infrastructure. (Default: False)"),
+        _("(Deprecated in: 17.1.1) (internal-use) FIP allocated by Avi in the Cloud infrastructure."),
         required=False,
         update_allowed=True,
     )
@@ -1583,6 +1584,12 @@ class VirtualService(AviResource):
         required=False,
         update_allowed=True,
     )
+    bulk_sync_kvcache_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.1) (This is a beta feature). Sync Key-Value cache to the new SEs when VS is scaled out. For ex: SSL sessions are stored using VS's Key-Value cache. When the VS is scaled out, the SSL session information is synced to the new SE, allowing existing SSL sessions to be reused on the new SE.  (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -1593,7 +1600,7 @@ class VirtualService(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     east_west_placement_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -1773,7 +1780,7 @@ class VirtualService(AviResource):
     )
     vsvip_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Mostly used during the creation of Shared VS, this fieldrefers to entities that can be shared across Virtual Services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        _("(Introduced in: 17.1.1) Mostly used during the creation of Shared VS, this field refers to entities that can be shared across Virtual Services. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
     )
@@ -1807,6 +1814,44 @@ class VirtualService(AviResource):
         _("(Introduced in: 17.2.4) Error Page Profile to be used for this virtualservice.This profile is used to send the custom error page to the client generated by the proxy You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
         update_allowed=True,
+    )
+    l4_policies_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.7) L4 Policies applied to the data traffic of the Virtual Service"),
+        schema=L4Policies.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    l4_policies_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.7) L4 Policies applied to the data traffic of the Virtual Service"),
+        schema=l4_policies_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    traffic_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.8) Knob to enable the Virtual Service traffic on its assigned service engines. This setting is effective only when the enabled flag is set to True. (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
+    apic_contract_graph_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.12,18.1.2) The name of the Contract/Graph associated with the Virtual Service. Should be in the <Contract name>:<Graph name> format. This is applicable only for Service Integration mode with Cisco APIC Controller "),
+        required=False,
+        update_allowed=True,
+    )
+    vsvip_cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.9) Checksum of cloud configuration for VsVip. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
+    azure_availability_set_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.12, 18.1.2) (internal-use)Applicable for Azure only. Azure Availability set to which this VS is associated. Internally set by the cloud connector"),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
@@ -1866,6 +1911,7 @@ class VirtualService(AviResource):
         'pool_group_uuid',
         'remove_listening_port_on_vs_down',
         'close_client_conn_on_config_update',
+        'bulk_sync_kvcache',
         'description',
         'cloud_uuid',
         'east_west_placement',
@@ -1893,6 +1939,11 @@ class VirtualService(AviResource):
         'sp_pool_uuids',
         'use_vip_as_snat',
         'error_page_profile_uuid',
+        'l4_policies',
+        'traffic_enabled',
+        'apic_contract_graph',
+        'vsvip_cloud_config_cksum',
+        'azure_availability_set',
     )
 
     # mapping of properties to their schemas
@@ -1952,6 +2003,7 @@ class VirtualService(AviResource):
         'pool_group_uuid': pool_group_uuid_schema,
         'remove_listening_port_on_vs_down': remove_listening_port_on_vs_down_schema,
         'close_client_conn_on_config_update': close_client_conn_on_config_update_schema,
+        'bulk_sync_kvcache': bulk_sync_kvcache_schema,
         'description': description_schema,
         'cloud_uuid': cloud_uuid_schema,
         'east_west_placement': east_west_placement_schema,
@@ -1979,6 +2031,11 @@ class VirtualService(AviResource):
         'sp_pool_uuids': sp_pool_uuids_schema,
         'use_vip_as_snat': use_vip_as_snat_schema,
         'error_page_profile_uuid': error_page_profile_uuid_schema,
+        'l4_policies': l4_policies_schema,
+        'traffic_enabled': traffic_enabled_schema,
+        'apic_contract_graph': apic_contract_graph_schema,
+        'vsvip_cloud_config_cksum': vsvip_cloud_config_cksum_schema,
+        'azure_availability_set': azure_availability_set_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -2002,6 +2059,7 @@ class VirtualService(AviResource):
         'error_page_profile_uuid': 'errorpageprofile',
         'traffic_clone_profile_uuid': 'trafficcloneprofile',
         'se_group_uuid': 'serviceenginegroup',
+        'l4_policies': getattr(L4Policies, 'field_references', {}),
         'requests_rate_limit': getattr(RateProfile, 'field_references', {}),
         'application_profile_uuid': 'applicationprofile',
         'pool_group_uuid': 'poolgroup',
@@ -2035,6 +2093,7 @@ class VirtualService(AviResource):
         'sideband_profile': getattr(SidebandProfile, 'unique_keys', {}),
         'requests_rate_limit': getattr(RateProfile, 'unique_keys', {}),
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'l4_policies': getattr(L4Policies, 'unique_keys', {}),
         'performance_limits': getattr(PerformanceLimits, 'unique_keys', {}),
         'http_policies': getattr(HTTPPolicies, 'unique_keys', {}),
         'floating_ip': getattr(IpAddr, 'unique_keys', {}),
@@ -2112,6 +2171,12 @@ class VsVip(AviResource):
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) "),
         required=False,
+        update_allowed=False,
+    )
+    vsvip_cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.9) Checksum of cloud configuration for VsVip. Internally set by cloud connector"),
+        required=False,
         update_allowed=True,
     )
 
@@ -2124,6 +2189,7 @@ class VsVip(AviResource):
         'vrf_context_uuid',
         'east_west_placement',
         'cloud_uuid',
+        'vsvip_cloud_config_cksum',
     )
 
     # mapping of properties to their schemas
@@ -2135,6 +2201,7 @@ class VsVip(AviResource):
         'vrf_context_uuid': vrf_context_uuid_schema,
         'east_west_placement': east_west_placement_schema,
         'cloud_uuid': cloud_uuid_schema,
+        'vsvip_cloud_config_cksum': vsvip_cloud_config_cksum_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

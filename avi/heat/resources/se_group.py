@@ -13,6 +13,7 @@ from options import *
 from vi_mgr_common import *
 from dos import *
 from analytics_policy import *
+from vip_autoscale import *
 
 
 class VssPlacement(object):
@@ -628,7 +629,7 @@ class ServiceEngineGroup(AviResource):
     )
     os_reserved_memory_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Amount of extra memory to be reserved for use by the Operating System on a Service Engine. (Default: 0)"),
+        _("Amount of extra memory to be reserved for use by the Operating System on a Service Engine. (Units: MB) (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -736,7 +737,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
+        _("(Introduced in: 17.1.1) Determines if DSR from secondary SE is active or not: 0: Automatically determine based on hypervisor type. 1: Disable DSR unconditionally. ~[0,1]: Enable DSR unconditionally.  (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -785,7 +786,7 @@ class ServiceEngineGroup(AviResource):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['SE_AUTO_REBALANCE_CPU', 'SE_AUTO_REBALANCE_MBPS', 'SE_AUTO_REBALANCE_OPEN_CONNS', 'SE_AUTO_REBALANCE_PPS']),
+            constraints.AllowedValues(['SE_AUTO_REBALANCE_CPS', 'SE_AUTO_REBALANCE_CPU', 'SE_AUTO_REBALANCE_MBPS', 'SE_AUTO_REBALANCE_OPEN_CONNS', 'SE_AUTO_REBALANCE_PPS']),
         ],
     )
     auto_rebalance_criteria_schema = properties.Schema(
@@ -799,7 +800,7 @@ class ServiceEngineGroup(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     iptables_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -853,7 +854,7 @@ class ServiceEngineGroup(AviResource):
     )
     se_udp_encap_ipc_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.2) Determines if SE-SE IPC messages are encapsulated in an UDP header :     0      : Automatically determine based on hypervisor type    1      : Use UDP encap unconditionally    ~[0,1] : Don't use UDP encap (Default: 0)"),
+        _("(Introduced in: 17.1.2) Determines if SE-SE IPC messages are encapsulated in an UDP header: 0: Automatically determine based on hypervisor type. 1: Use UDP encap unconditionally. ~[0,1]: Don't use UDP encap. (Default: 0)"),
         required=False,
         update_allowed=True,
     )
@@ -1033,7 +1034,7 @@ class ServiceEngineGroup(AviResource):
     )
     vss_placement_schema = properties.Schema(
         properties.Schema.MAP,
-        _("(Introduced in: 17.2.5) If set, Virtual Services will be placed on only a subset of the cores of an SE."),
+        _("(Introduced in: 17.2.5) Parameters to place Virtual Services on only a subset of the cores of an SE."),
         schema=VssPlacement.properties_schema,
         required=False,
         update_allowed=True,
@@ -1044,9 +1045,9 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
-    minimum_required_config_mem_mb_schema = properties.Schema(
+    minimum_required_config_memory_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 18.1.1) Required available config memory to apply any configuration (Units: MB) (Default: 4)"),
+        _("(Introduced in: 18.1.1) (Deprecated in: 18.1.2) Required available config memory to apply any configuration (Units: PERCENT)"),
         required=False,
         update_allowed=True,
     )
@@ -1068,6 +1069,12 @@ class ServiceEngineGroup(AviResource):
         required=False,
         update_allowed=True,
     )
+    enable_hsm_priming_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7, 18.1.1) (This is a beta feature). Enable HSM key priming. If enabled, key handles on the hsm will be synced to SE before processing client connections. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
     service_ip6_subnets_item_schema = properties.Schema(
         properties.Schema.MAP,
         _("(Introduced in: 18.1.1) IPv6 Subnets assigned to the SE group. Required for VS group placement."),
@@ -1079,6 +1086,116 @@ class ServiceEngineGroup(AviResource):
         properties.Schema.LIST,
         _("(Introduced in: 18.1.1) IPv6 Subnets assigned to the SE group. Required for VS group placement."),
         schema=service_ip6_subnets_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    se_tracert_port_range_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.8) Traceroute port range"),
+        schema=PortRange.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    distribute_queues_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.8) Distributes queue ownership among cores so multiple cores handle dispatcher duties. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    additional_config_memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) (Deprecated in: 18.1.2) Indicates the percent of config memory used for config updates. (Units: PERCENT)"),
+        required=False,
+        update_allowed=True,
+    )
+    vss_placement_enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.1) If set, Virtual Services will be placed on only a subset of the cores of an SE. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    enable_multi_lb_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.10, 18.1.2) Applicable only for Azure cloud with Basic SKU LB. If set, additional Azure LBs will be automatically created if resources in existing LB are exhausted. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    n_log_streaming_threads_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.12, 18.1.2) Number of threads to use for log streaming. (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    free_list_size_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.10) Number of entries in the free list (Default: 1024)"),
+        required=False,
+        update_allowed=True,
+    )
+    max_rules_per_lb_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.12, 18.1.2) Applicable to Azure platform only. Maximum number of rules per Azure LB.  (Default: 150)"),
+        required=False,
+        update_allowed=True,
+    )
+    max_public_ips_per_lb_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.12, 18.1.2) Applicable to Azure platform only. Maximum number of public IPs per Azure LB.  (Default: 30)"),
+        required=False,
+        update_allowed=True,
+    )
+    waf_learning_memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Amount of memory reserved on SE for WAF learning. This can be atmost 5% of SE memory. (Units: MB) (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    waf_learning_interval_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Frequency with which SE publishes WAF learning. (Units: MIN) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    self_se_election_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.2) Enable SEs to elect a primary amongst themselves in the absence of a connectivity to controller. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    vip_asg_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) When vip_asg is set, Vip configuration will be managed by Avi.User will be able to configure vip_asg or Vips individually at the time of create."),
+        schema=VipAutoscaleGroup.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    minimum_connection_memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Indicates the percent of memory reserved for connections. (Units: PERCENT) (Default: 20)"),
+        required=False,
+        update_allowed=True,
+    )
+    shm_minimum_config_memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Minimum required shared memory to apply any configuration. (Units: MB) (Default: 4)"),
+        required=False,
+        update_allowed=True,
+    )
+    heap_minimum_config_memory_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Minimum required heap memory to apply any configuration. (Units: MB) (Default: 8)"),
+        required=False,
+        update_allowed=True,
+    )
+    disable_se_memory_check_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.2) If set, disable the config memory check done in service engine. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    memory_for_config_update_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Indicates the percent of memory reserved for config updates. (Units: PERCENT) (Default: 15)"),
         required=False,
         update_allowed=True,
     )
@@ -1188,11 +1305,30 @@ class ServiceEngineGroup(AviResource):
         'host_gateway_monitor',
         'vss_placement',
         'flow_table_new_syn_max_entries',
-        'minimum_required_config_mem_mb',
+        'minimum_required_config_memory',
         'disable_csum_offloads',
         'disable_gro',
         'disable_tso',
+        'enable_hsm_priming',
         'service_ip6_subnets',
+        'se_tracert_port_range',
+        'distribute_queues',
+        'additional_config_memory',
+        'vss_placement_enabled',
+        'enable_multi_lb',
+        'n_log_streaming_threads',
+        'free_list_size',
+        'max_rules_per_lb',
+        'max_public_ips_per_lb',
+        'waf_learning_memory',
+        'waf_learning_interval',
+        'self_se_election',
+        'vip_asg',
+        'minimum_connection_memory',
+        'shm_minimum_config_memory',
+        'heap_minimum_config_memory',
+        'disable_se_memory_check',
+        'memory_for_config_update',
     )
 
     # mapping of properties to their schemas
@@ -1300,11 +1436,30 @@ class ServiceEngineGroup(AviResource):
         'host_gateway_monitor': host_gateway_monitor_schema,
         'vss_placement': vss_placement_schema,
         'flow_table_new_syn_max_entries': flow_table_new_syn_max_entries_schema,
-        'minimum_required_config_mem_mb': minimum_required_config_mem_mb_schema,
+        'minimum_required_config_memory': minimum_required_config_memory_schema,
         'disable_csum_offloads': disable_csum_offloads_schema,
         'disable_gro': disable_gro_schema,
         'disable_tso': disable_tso_schema,
+        'enable_hsm_priming': enable_hsm_priming_schema,
         'service_ip6_subnets': service_ip6_subnets_schema,
+        'se_tracert_port_range': se_tracert_port_range_schema,
+        'distribute_queues': distribute_queues_schema,
+        'additional_config_memory': additional_config_memory_schema,
+        'vss_placement_enabled': vss_placement_enabled_schema,
+        'enable_multi_lb': enable_multi_lb_schema,
+        'n_log_streaming_threads': n_log_streaming_threads_schema,
+        'free_list_size': free_list_size_schema,
+        'max_rules_per_lb': max_rules_per_lb_schema,
+        'max_public_ips_per_lb': max_public_ips_per_lb_schema,
+        'waf_learning_memory': waf_learning_memory_schema,
+        'waf_learning_interval': waf_learning_interval_schema,
+        'self_se_election': self_se_election_schema,
+        'vip_asg': vip_asg_schema,
+        'minimum_connection_memory': minimum_connection_memory_schema,
+        'shm_minimum_config_memory': shm_minimum_config_memory_schema,
+        'heap_minimum_config_memory': heap_minimum_config_memory_schema,
+        'disable_se_memory_check': disable_se_memory_check_schema,
+        'memory_for_config_update': memory_for_config_update_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1318,8 +1473,10 @@ class ServiceEngineGroup(AviResource):
         'mgmt_network_uuid': 'network',
         'vcenter_datastores': getattr(VcenterDatastore, 'field_references', {}),
         'mgmt_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'vip_asg': getattr(VipAutoscaleGroup, 'field_references', {}),
         'service_ip6_subnets': getattr(IpAddrPrefix, 'field_references', {}),
         'floating_intf_ip': getattr(IpAddr, 'field_references', {}),
+        'se_tracert_port_range': getattr(PortRange, 'field_references', {}),
         'vcenter_clusters': getattr(VcenterClusters, 'field_references', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'field_references', {}),
         'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'field_references', {}),
@@ -1335,8 +1492,10 @@ class ServiceEngineGroup(AviResource):
         'realtime_se_metrics': getattr(MetricsRealTimeUpdate, 'unique_keys', {}),
         'vcenter_datastores': getattr(VcenterDatastore, 'unique_keys', {}),
         'mgmt_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'vip_asg': getattr(VipAutoscaleGroup, 'unique_keys', {}),
         'service_ip6_subnets': getattr(IpAddrPrefix, 'unique_keys', {}),
         'floating_intf_ip': getattr(IpAddr, 'unique_keys', {}),
+        'se_tracert_port_range': getattr(PortRange, 'unique_keys', {}),
         'vcenter_clusters': getattr(VcenterClusters, 'unique_keys', {}),
         'se_dos_profile': getattr(DosThresholdProfile, 'unique_keys', {}),
         'vss_placement': getattr(VssPlacement, 'unique_keys', {}),

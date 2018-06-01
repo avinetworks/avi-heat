@@ -396,17 +396,25 @@ class LinuxConfiguration(object):
         required=False,
         update_allowed=True,
     )
+    cis_mode_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.8) Enforce CIS benchmark recommendations for Avi Controller and Service Engines. The enforcement is as per CIS DIL 1.0.1 level 2, for applicable controls. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'motd',
         'banner',
+        'cis_mode',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'motd': motd_schema,
         'banner': banner_schema,
+        'cis_mode': cis_mode_schema,
     }
 
 
@@ -452,7 +460,7 @@ class PortalConfiguration(object):
     )
     sslprofile_uuid_schema = properties.Schema(
         properties.Schema.STRING,
-        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'. (Default: System-Standard)"),
+        _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'. (Default: System-Standard-Portal)"),
         required=False,
         update_allowed=True,
     )
@@ -726,7 +734,7 @@ class SystemConfiguration(AviResource):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     snmp_configuration_schema = properties.Schema(
         properties.Schema.MAP,

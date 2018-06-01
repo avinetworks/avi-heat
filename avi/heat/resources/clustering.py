@@ -58,6 +58,19 @@ class ClusterNode(object):
         required=False,
         update_allowed=True,
     )
+    categories_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) Optional service categories that a node can be assigned (e.g. SYSTEM, INFRASTRUCTURE or ANALYTICS)"),
+        required=True,
+        update_allowed=False,
+    )
+    categories_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.1) Optional service categories that a node can be assigned (e.g. SYSTEM, INFRASTRUCTURE or ANALYTICS)"),
+        schema=categories_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -68,6 +81,7 @@ class ClusterNode(object):
         'vm_mor',
         'vm_hostname',
         'public_ip_or_name',
+        'categories',
     )
 
     # mapping of properties to their schemas
@@ -79,6 +93,7 @@ class ClusterNode(object):
         'vm_mor': vm_mor_schema,
         'vm_hostname': vm_hostname_schema,
         'public_ip_or_name': public_ip_or_name_schema,
+        'categories': categories_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality

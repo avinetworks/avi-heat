@@ -12,50 +12,55 @@ from options import *
 from match import *
 
 
-class ClientLogStreamingConfig(object):
+class StreamingSyslogConfig(object):
     # all schemas
-    external_server_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) The destination server IP address or hostname. If a name is provided, this should be resolvable on Avi Service Engines."),
-        required=True,
-        update_allowed=True,
-    )
-    external_server_port_schema = properties.Schema(
+    facility_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) The destination server's service port. (Default: 514)"),
+        _("(Introduced in: 18.1.1) Facility value, as defined in RFC5424, must be between 0 and 23 inclusive. (Default: 16)"),
         required=False,
         update_allowed=True,
     )
-    log_types_to_send_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.1.1) Type of logs to stream to the external server. Default is LOGS_ALL, i.e., send all logs. (Default: LOGS_ALL)"),
+    significant_log_severity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Severity code, as defined in RFC5424, for significant logs. This must be between 0 and 7 inclusive. (Default: 4)"),
         required=False,
         update_allowed=True,
-        constraints=[
-            constraints.AllowedValues(['LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY', 'LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT']),
-        ],
     )
-    max_logs_per_second_schema = properties.Schema(
+    filtered_log_severity_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Introduced in: 17.1.1) Maximum number of logs per second streamed to the remote server. By default, 100 logs per second are streamed. Set this to zero(0) to not enforce any limit. (Default: 100)"),
+        _("(Introduced in: 18.1.1) Severity code, as defined in RFC5424, for filtered logs. This must be between 0 and 7 inclusive. (Default: 5)"),
+        required=False,
+        update_allowed=True,
+    )
+    non_significant_log_severity_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Severity code, as defined in RFC5424, for non-significant logs. This must be between 0 and 7 inclusive. (Default: 6)"),
+        required=False,
+        update_allowed=True,
+    )
+    hostname_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) String to use as the hostname in the syslog messages. This string can contain only printable ASCII characters (hex 21 to hex 7E; no space allowed)."),
         required=False,
         update_allowed=True,
     )
 
     # properties list
     PROPERTIES = (
-        'external_server',
-        'external_server_port',
-        'log_types_to_send',
-        'max_logs_per_second',
+        'facility',
+        'significant_log_severity',
+        'filtered_log_severity',
+        'non_significant_log_severity',
+        'hostname',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
-        'external_server': external_server_schema,
-        'external_server_port': external_server_port_schema,
-        'log_types_to_send': log_types_to_send_schema,
-        'max_logs_per_second': max_logs_per_second_schema,
+        'facility': facility_schema,
+        'significant_log_severity': significant_log_severity_schema,
+        'filtered_log_severity': filtered_log_severity_schema,
+        'non_significant_log_severity': non_significant_log_severity_schema,
+        'hostname': hostname_schema,
     }
 
 
@@ -110,6 +115,188 @@ class ClientLogConfiguration(object):
         'significant_log_processing': significant_log_processing_schema,
         'filtered_log_processing': filtered_log_processing_schema,
         'non_significant_log_processing': non_significant_log_processing_schema,
+    }
+
+
+
+class SensitiveFieldRule(object):
+    # all schemas
+    name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.10, 18.1.2) Name of the rule"),
+        required=False,
+        update_allowed=True,
+    )
+    index_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.10, 18.1.2) Index of the rule"),
+        required=False,
+        update_allowed=True,
+    )
+    enabled_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.10, 18.1.2) Enable rule to match the sensitive fields. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    match_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.10, 18.1.2) Criterion to use for matching in the Log."),
+        schema=StringMatch.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    action_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.10, 18.1.2) Action for the matched log field, for instance the matched field can be removed or masked off. (Default: LOG_FIELD_REMOVE)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOG_FIELD_MASKOFF', 'LOG_FIELD_REMOVE']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'name',
+        'index',
+        'enabled',
+        'match',
+        'action',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'name': name_schema,
+        'index': index_schema,
+        'enabled': enabled_schema,
+        'match': match_schema,
+        'action': action_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'match': getattr(StringMatch, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'my_key': 'name',
+        'match': getattr(StringMatch, 'unique_keys', {}),
+    }
+
+
+
+class ClientLogStreamingConfig(object):
+    # all schemas
+    external_server_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) The destination server IP address or hostname. If a name is provided, this should be resolvable on Avi Service Engines."),
+        required=True,
+        update_allowed=True,
+    )
+    external_server_port_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) The destination server's service port. (Default: 514)"),
+        required=False,
+        update_allowed=True,
+    )
+    protocol_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) Protocol to use for streaming logs. (Default: LOG_STREAMING_PROTOCOL_UDP)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOG_STREAMING_PROTOCOL_SYSLOG_OVER_TCP', 'LOG_STREAMING_PROTOCOL_SYSLOG_OVER_UDP', 'LOG_STREAMING_PROTOCOL_TCP', 'LOG_STREAMING_PROTOCOL_UDP']),
+        ],
+    )
+    log_types_to_send_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.1.1) Type of logs to stream to the external server. Default is LOGS_ALL, i.e., send all logs. (Default: LOGS_ALL)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['LOGS_ALL', 'LOGS_SIGNIFICANT_ONLY', 'LOGS_UDF_ONLY', 'LOGS_UDF_SIGNIFICANT']),
+        ],
+    )
+    max_logs_per_second_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.1.1) Maximum number of logs per second streamed to the remote server. By default, 100 logs per second are streamed. Set this to zero(0) to not enforce any limit. (Default: 100)"),
+        required=False,
+        update_allowed=True,
+    )
+    syslog_config_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) Syslog configuration if a Syslog-based protocol is specified for streaming."),
+        schema=StreamingSyslogConfig.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'external_server',
+        'external_server_port',
+        'protocol',
+        'log_types_to_send',
+        'max_logs_per_second',
+        'syslog_config',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'external_server': external_server_schema,
+        'external_server_port': external_server_port_schema,
+        'protocol': protocol_schema,
+        'log_types_to_send': log_types_to_send_schema,
+        'max_logs_per_second': max_logs_per_second_schema,
+        'syslog_config': syslog_config_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'syslog_config': getattr(StreamingSyslogConfig, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'syslog_config': getattr(StreamingSyslogConfig, 'unique_keys', {}),
+    }
+
+
+
+class SensitiveLogProfile(object):
+    # all schemas
+    header_field_rules_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.10, 18.1.2) Match sensitive header fields in HTTP application log."),
+        schema=SensitiveFieldRule.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    header_field_rules_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.10, 18.1.2) Match sensitive header fields in HTTP application log."),
+        schema=header_field_rules_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'header_field_rules',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'header_field_rules': header_field_rules_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'header_field_rules': getattr(SensitiveFieldRule, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'header_field_rules': getattr(SensitiveFieldRule, 'unique_keys', {}),
     }
 
 
@@ -443,7 +630,7 @@ class AnalyticsProfile(AviResource):
     )
     disable_server_analytics_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("Disable analytics on backend servers. This may be desired in container environment when there are large number of  ephemeral servers (Default: False)"),
+        _("Disable analytics on backend servers. This may be desired in container environment when there are large number of ephemeral servers. Additionally, no healthscore of servers is computed when server analytics is disabled. (Default: False)"),
         required=False,
         update_allowed=True,
     )
@@ -546,6 +733,25 @@ class AnalyticsProfile(AviResource):
         required=False,
         update_allowed=True,
     )
+    disable_ondemand_metrics_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.1) Virtual Service (VS) metrics are processed only when there is live data traffic on the VS. In case, VS is idle for a period of time as specified by ondemand_metrics_idle_timeout then metrics processing is suspended for that VS. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    ondemand_metrics_idle_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) This flag sets the time duration of no live data traffic after which Virtual Service metrics processing is suspended. It is applicable only when disable_ondemand_metrics is set to false. (Units: SECONDS) (Default: 1800)"),
+        required=False,
+        update_allowed=True,
+    )
+    sensitive_log_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.10, 18.1.2) Rules applied to the HTTP application log for filtering sensitive information."),
+        schema=SensitiveLogProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -616,6 +822,9 @@ class AnalyticsProfile(AviResource):
         'resp_code_block',
         'exclude_server_dns_error_as_error',
         'exclude_dns_policy_drop_as_significant',
+        'disable_ondemand_metrics',
+        'ondemand_metrics_idle_timeout',
+        'sensitive_log_profile',
     )
 
     # mapping of properties to their schemas
@@ -687,17 +896,22 @@ class AnalyticsProfile(AviResource):
         'resp_code_block': resp_code_block_schema,
         'exclude_server_dns_error_as_error': exclude_server_dns_error_as_error_schema,
         'exclude_dns_policy_drop_as_significant': exclude_dns_policy_drop_as_significant_schema,
+        'disable_ondemand_metrics': disable_ondemand_metrics_schema,
+        'ondemand_metrics_idle_timeout': ondemand_metrics_idle_timeout_schema,
+        'sensitive_log_profile': sensitive_log_profile_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'ranges': getattr(HTTPStatusRange, 'field_references', {}),
+        'sensitive_log_profile': getattr(SensitiveLogProfile, 'field_references', {}),
         'client_log_config': getattr(ClientLogConfiguration, 'field_references', {}),
         'client_log_streaming_config': getattr(ClientLogStreamingConfig, 'field_references', {}),
     }
 
     unique_keys = {
         'ranges': getattr(HTTPStatusRange, 'unique_keys', {}),
+        'sensitive_log_profile': getattr(SensitiveLogProfile, 'unique_keys', {}),
         'client_log_config': getattr(ClientLogConfiguration, 'unique_keys', {}),
         'client_log_streaming_config': getattr(ClientLogStreamingConfig, 'unique_keys', {}),
     }

@@ -100,7 +100,7 @@ class ControllerProperties(AviResource):
     )
     dns_refresh_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: MIN) (Default: 60)"),
+        _("Period for refresh pool and gslb DNS job (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -136,13 +136,13 @@ class ControllerProperties(AviResource):
     )
     cluster_ip_gratuitous_arp_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: MIN) (Default: 60)"),
+        _("Period for cluster ip gratuitous arp job (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
     vs_key_rotate_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: MIN) (Default: 60)"),
+        _("Period for rotate VS keys job (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -178,7 +178,7 @@ class ControllerProperties(AviResource):
     )
     secure_channel_cleanup_timeout_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: MIN) (Default: 60)"),
+        _("Period for secure channel cleanup job (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -196,7 +196,7 @@ class ControllerProperties(AviResource):
     )
     persistence_key_rotate_period_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _(" (Units: MIN) (Default: 60)"),
+        _("Period for rotate app persistence keys job (Units: MIN) (Default: 60)"),
         required=False,
         update_allowed=True,
     )
@@ -303,6 +303,42 @@ class ControllerProperties(AviResource):
         required=False,
         update_allowed=True,
     )
+    cleanup_expired_authtoken_timeout_period_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Period for auth token cleanup job (Units: MIN) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    cleanup_sessions_timeout_period_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Period for sessions cleanup job (Units: MIN) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    consistency_check_timeout_period_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Period for consistency check job (Units: MIN) (Default: 60)"),
+        required=False,
+        update_allowed=True,
+    )
+    process_locked_useraccounts_timeout_period_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Period for process locked user accounts job (Units: MIN) (Default: 1)"),
+        required=False,
+        update_allowed=True,
+    )
+    process_pki_profile_timeout_period_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.1) Period for process PKI profile job (Units: MIN) (Default: 1440)"),
+        required=False,
+        update_allowed=True,
+    )
+    enable_memory_balancer_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.8) Enable/Disable Memory Balancer (Default: True)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -353,6 +389,12 @@ class ControllerProperties(AviResource):
         'vs_se_attach_ip_fail',
         'max_seq_attach_ip_failures',
         'safenet_hsm_version',
+        'cleanup_expired_authtoken_timeout_period',
+        'cleanup_sessions_timeout_period',
+        'consistency_check_timeout_period',
+        'process_locked_useraccounts_timeout_period',
+        'process_pki_profile_timeout_period',
+        'enable_memory_balancer',
     )
 
     # mapping of properties to their schemas
@@ -404,6 +446,12 @@ class ControllerProperties(AviResource):
         'vs_se_attach_ip_fail': vs_se_attach_ip_fail_schema,
         'max_seq_attach_ip_failures': max_seq_attach_ip_failures_schema,
         'safenet_hsm_version': safenet_hsm_version_schema,
+        'cleanup_expired_authtoken_timeout_period': cleanup_expired_authtoken_timeout_period_schema,
+        'cleanup_sessions_timeout_period': cleanup_sessions_timeout_period_schema,
+        'consistency_check_timeout_period': consistency_check_timeout_period_schema,
+        'process_locked_useraccounts_timeout_period': process_locked_useraccounts_timeout_period_schema,
+        'process_pki_profile_timeout_period': process_pki_profile_timeout_period_schema,
+        'enable_memory_balancer': enable_memory_balancer_schema,
     }
 
 

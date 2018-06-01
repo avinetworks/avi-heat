@@ -48,7 +48,7 @@ class MatchReplacePair(object):
     match_string_schema = properties.Schema(
         properties.Schema.STRING,
         _("String to be matched."),
-        required=False,
+        required=True,
         update_allowed=True,
     )
     replacement_string_schema = properties.Schema(
@@ -77,6 +77,7 @@ class MatchReplacePair(object):
     }
 
     unique_keys = {
+        'my_key': 'match_string',
         'replacement_string': getattr(ReplaceStringVar, 'unique_keys', {}),
     }
 

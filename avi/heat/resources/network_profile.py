@@ -104,6 +104,18 @@ class TCPProxyProfile(object):
         required=False,
         update_allowed=True,
     )
+    reorder_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.7) Controls the number of duplicate acks required to trigger retransmission. Setting a higher value reduces retransmission caused by packet reordering. A larger value is recommended in public cloud environments where packet reordering is quite common. The default value is 8 in public cloud platforms (AWS, Azure, GCP), and 3 in other environments."),
+        required=False,
+        update_allowed=True,
+    )
+    min_rexmt_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.8) The minimum wait time (in millisec) to retransmit packet (Units: MILLISECONDS)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -121,6 +133,8 @@ class TCPProxyProfile(object):
         'ip_dscp',
         'cc_algo',
         'aggressive_congestion_avoidance',
+        'reorder_threshold',
+        'min_rexmt_timeout',
     )
 
     # mapping of properties to their schemas
@@ -139,6 +153,29 @@ class TCPProxyProfile(object):
         'ip_dscp': ip_dscp_schema,
         'cc_algo': cc_algo_schema,
         'aggressive_congestion_avoidance': aggressive_congestion_avoidance_schema,
+        'reorder_threshold': reorder_threshold_schema,
+        'min_rexmt_timeout': min_rexmt_timeout_schema,
+    }
+
+
+
+class UDPProxyProfile(object):
+    # all schemas
+    session_idle_timeout_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.8) The amount of time (in sec) for which a flow needs to be idle before it is deleted. (Units: SEC) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'session_idle_timeout',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'session_idle_timeout': session_idle_timeout_schema,
     }
 
 
@@ -215,9 +252,9 @@ class NetworkProfileUnion(object):
         properties.Schema.STRING,
         _("Configure one of either proxy or fast path profiles. (Default: PROTOCOL_TYPE_TCP_PROXY)"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH']),
+            constraints.AllowedValues(['PROTOCOL_TYPE_TCP_FAST_PATH', 'PROTOCOL_TYPE_TCP_PROXY', 'PROTOCOL_TYPE_UDP_FAST_PATH', 'PROTOCOL_TYPE_UDP_PROXY']),
         ],
     )
     tcp_proxy_profile_schema = properties.Schema(
@@ -241,6 +278,13 @@ class NetworkProfileUnion(object):
         required=False,
         update_allowed=True,
     )
+    udp_proxy_profile_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.8) "),
+        schema=UDPProxyProfile.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -248,6 +292,7 @@ class NetworkProfileUnion(object):
         'tcp_proxy_profile',
         'tcp_fast_path_profile',
         'udp_fast_path_profile',
+        'udp_proxy_profile',
     )
 
     # mapping of properties to their schemas
@@ -256,18 +301,21 @@ class NetworkProfileUnion(object):
         'tcp_proxy_profile': tcp_proxy_profile_schema,
         'tcp_fast_path_profile': tcp_fast_path_profile_schema,
         'udp_fast_path_profile': udp_fast_path_profile_schema,
+        'udp_proxy_profile': udp_proxy_profile_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'tcp_proxy_profile': getattr(TCPProxyProfile, 'field_references', {}),
         'tcp_fast_path_profile': getattr(TCPFastPathProfile, 'field_references', {}),
+        'udp_proxy_profile': getattr(UDPProxyProfile, 'field_references', {}),
         'udp_fast_path_profile': getattr(UDPFastPathProfile, 'field_references', {}),
     }
 
     unique_keys = {
         'tcp_proxy_profile': getattr(TCPProxyProfile, 'unique_keys', {}),
         'tcp_fast_path_profile': getattr(TCPFastPathProfile, 'unique_keys', {}),
+        'udp_proxy_profile': getattr(UDPProxyProfile, 'unique_keys', {}),
         'udp_fast_path_profile': getattr(UDPFastPathProfile, 'unique_keys', {}),
     }
 

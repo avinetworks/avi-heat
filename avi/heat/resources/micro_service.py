@@ -128,6 +128,12 @@ class MicroService(AviResource):
         required=False,
         update_allowed=True,
     )
+    cloud_config_cksum_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) Checksum of cloud configuration for Microservice. Internally set by cloud connector"),
+        required=False,
+        update_allowed=True,
+    )
     description_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
@@ -144,6 +150,7 @@ class MicroService(AviResource):
         'ip_list',
         'containers',
         'created_by',
+        'cloud_config_cksum',
         'description',
     )
 
@@ -156,6 +163,7 @@ class MicroService(AviResource):
         'ip_list': ip_list_schema,
         'containers': containers_schema,
         'created_by': created_by_schema,
+        'cloud_config_cksum': cloud_config_cksum_schema,
         'description': description_schema,
     }
 

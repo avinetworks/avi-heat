@@ -141,7 +141,7 @@ class RateProfile(object):
         properties.Schema.MAP,
         _("Action to perform upon rate limiting"),
         schema=RateLimiterAction.properties_schema,
-        required=False,
+        required=True,
         update_allowed=True,
     )
     http_header_schema = properties.Schema(

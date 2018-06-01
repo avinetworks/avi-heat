@@ -109,7 +109,7 @@ class TrafficCloneProfile(AviResource):
         properties.Schema.STRING,
         _("(Introduced in: 17.1.1) "),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
