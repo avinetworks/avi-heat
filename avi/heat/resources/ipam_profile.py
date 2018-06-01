@@ -227,6 +227,25 @@ class IpamDnsAzureProfile(object):
         required=False,
         update_allowed=True,
     )
+    use_standard_alb_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7) Use Standard SKU Azure Load Balancer. By default Basic SKU Load Balancer is used. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    egress_service_subnets_item_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) Used for allocating egress service source IPs."),
+        required=True,
+        update_allowed=False,
+    )
+    egress_service_subnets_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 17.2.8) Used for allocating egress service source IPs."),
+        schema=egress_service_subnets_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -238,6 +257,8 @@ class IpamDnsAzureProfile(object):
         'usable_network_uuids',
         'use_enhanced_ha',
         'usable_domains',
+        'use_standard_alb',
+        'egress_service_subnets',
     )
 
     # mapping of properties to their schemas
@@ -250,6 +271,8 @@ class IpamDnsAzureProfile(object):
         'usable_network_uuids': usable_network_uuids_schema,
         'use_enhanced_ha': use_enhanced_ha_schema,
         'usable_domains': usable_domains_schema,
+        'use_standard_alb': use_standard_alb_schema,
+        'egress_service_subnets': egress_service_subnets_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -404,6 +427,12 @@ class IpamDnsAwsProfile(object):
         required=False,
         update_allowed=True,
     )
+    publish_vip_to_public_zone_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.10) If enabled and the virtual service is not floating ip capable, vip will be published to both private and public zones. This flag is applicable only for AWS DNS profile. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -418,6 +447,7 @@ class IpamDnsAwsProfile(object):
         'iam_assume_role',
         'zones',
         'ttl',
+        'publish_vip_to_public_zone',
     )
 
     # mapping of properties to their schemas
@@ -433,6 +463,7 @@ class IpamDnsAwsProfile(object):
         'iam_assume_role': iam_assume_role_schema,
         'zones': zones_schema,
         'ttl': ttl_schema,
+        'publish_vip_to_public_zone': publish_vip_to_public_zone_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -530,17 +561,57 @@ class IpamDnsGCPProfile(object):
         required=False,
         update_allowed=True,
     )
+    use_gcp_network_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.2) Use Google Cloud Platform Network for VIP allocation. By default Avi Vantage Network is used for VIP allocation. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    region_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) Google Cloud Platform Region Name. This is required if Google Cloud Platform Network is used for VIP allocation."),
+        required=False,
+        update_allowed=True,
+    )
+    network_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) Google Cloud Platform Network Name. VIP will be allocated from this Network. This is required if Google Cloud Platform Network is used for VIP allocation."),
+        required=False,
+        update_allowed=True,
+    )
+    project_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) Google Cloud Platform Project Name. This is required if Google Cloud Platform Network is used for VIP allocation. This field is optional. By default it will use the value of the field network_project_name"),
+        required=False,
+        update_allowed=True,
+    )
+    network_project_name_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) Google Cloud Platform Network Project Name. This is the host project in which Google Cloud Platform Network resides."),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'usable_network_uuids',
         'match_se_group_subnet',
+        'use_gcp_network',
+        'region_name',
+        'network_name',
+        'project_name',
+        'network_project_name',
     )
 
     # mapping of properties to their schemas
     properties_schema = {
         'usable_network_uuids': usable_network_uuids_schema,
         'match_se_group_subnet': match_se_group_subnet_schema,
+        'use_gcp_network': use_gcp_network_schema,
+        'region_name': region_name_schema,
+        'network_name': network_name_schema,
+        'project_name': project_name_schema,
+        'network_project_name': network_project_name_schema,
     }
 
 
@@ -774,7 +845,7 @@ class IpamDnsProviderProfile(AviResource):
         properties.Schema.STRING,
         _("Provider Type for the IPAM/DNS Provider profile"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['IPAMDNS_TYPE_AWS', 'IPAMDNS_TYPE_AWS_DNS', 'IPAMDNS_TYPE_AZURE', 'IPAMDNS_TYPE_AZURE_DNS', 'IPAMDNS_TYPE_CUSTOM', 'IPAMDNS_TYPE_CUSTOM_DNS', 'IPAMDNS_TYPE_GCP', 'IPAMDNS_TYPE_INFOBLOX', 'IPAMDNS_TYPE_INFOBLOX_DNS', 'IPAMDNS_TYPE_INTERNAL', 'IPAMDNS_TYPE_INTERNAL_DNS', 'IPAMDNS_TYPE_OPENSTACK']),
         ],
@@ -837,7 +908,7 @@ class IpamDnsProviderProfile(AviResource):
     )
     allocate_ip_in_vrf_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.2.4) If this flag is set, only allocate IP from networks in the Virtual Service VRF. (Default: False)"),
+        _("(Introduced in: 17.2.4) If this flag is set, only allocate IP from networks in the Virtual Service VRF. Applicable for Avi Vantage IPAM only (Default: False)"),
         required=False,
         update_allowed=True,
     )

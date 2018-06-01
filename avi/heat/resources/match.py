@@ -130,7 +130,7 @@ class MethodMatch(object):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT', 'HTTP_METHOD_TRACE']),
+            constraints.AllowedValues(['HTTP_METHOD_CONNECT', 'HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT', 'HTTP_METHOD_TRACE']),
         ],
     )
     methods_schema = properties.Schema(
@@ -995,7 +995,7 @@ class PathMatch(object):
     # all schemas
     match_criteria_schema = properties.Schema(
         properties.Schema.STRING,
-        _("Criterion to use for matching the path in the HTTP request URI"),
+        _("Criterion to use for matching the path in the HTTP request URI. (Default: CONTAINS)"),
         required=True,
         update_allowed=True,
         constraints=[

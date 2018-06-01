@@ -100,6 +100,38 @@ class HealthMonitorTcp(object):
 
 
 
+class HealthMonitorSIP(object):
+    # all schemas
+    sip_request_code_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) Specify the SIP request to be sent to the server."),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['SIP_OPTIONS']),
+        ],
+    )
+    sip_response_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) String to match in server response, max length is 512 characters. By default it checks for SIP/2.0 in payload."),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'sip_request_code',
+        'sip_response',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'sip_request_code': sip_request_code_schema,
+        'sip_response': sip_response_schema,
+    }
+
+
+
 class HealthMonitorExternal(object):
     # all schemas
     command_path_schema = properties.Schema(
@@ -372,9 +404,9 @@ class HealthMonitor(AviResource):
         properties.Schema.STRING,
         _("Type of the health monitor."),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_PING', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_UDP']),
+            constraints.AllowedValues(['HEALTH_MONITOR_DNS', 'HEALTH_MONITOR_EXTERNAL', 'HEALTH_MONITOR_GSLB', 'HEALTH_MONITOR_HTTP', 'HEALTH_MONITOR_HTTPS', 'HEALTH_MONITOR_PING', 'HEALTH_MONITOR_SIP', 'HEALTH_MONITOR_TCP', 'HEALTH_MONITOR_UDP']),
         ],
     )
     tcp_monitor_schema = properties.Schema(
@@ -423,13 +455,20 @@ class HealthMonitor(AviResource):
         properties.Schema.NUMBER,
         _("Use this port instead of the port defined for the server in the Pool. If the monitor succeeds to this port, the load balanced traffic will still be sent to the port of the server defined within the Pool."),
         required=False,
+        update_allowed=False,
+    )
+    sip_monitor_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.8) Health monitor for SIP."),
+        schema=HealthMonitorSIP.properties_schema,
+        required=False,
         update_allowed=True,
     )
     is_federated_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,
@@ -454,6 +493,7 @@ class HealthMonitor(AviResource):
         'udp_monitor',
         'dns_monitor',
         'monitor_port',
+        'sip_monitor',
         'is_federated',
         'description',
     )
@@ -474,6 +514,7 @@ class HealthMonitor(AviResource):
         'udp_monitor': udp_monitor_schema,
         'dns_monitor': dns_monitor_schema,
         'monitor_port': monitor_port_schema,
+        'sip_monitor': sip_monitor_schema,
         'is_federated': is_federated_schema,
         'description': description_schema,
     }
@@ -482,6 +523,7 @@ class HealthMonitor(AviResource):
     field_references = {
         'https_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
         'dns_monitor': getattr(HealthMonitorDNS, 'field_references', {}),
+        'sip_monitor': getattr(HealthMonitorSIP, 'field_references', {}),
         'tcp_monitor': getattr(HealthMonitorTcp, 'field_references', {}),
         'udp_monitor': getattr(HealthMonitorUdp, 'field_references', {}),
         'http_monitor': getattr(HealthMonitorHttp, 'field_references', {}),
@@ -491,6 +533,7 @@ class HealthMonitor(AviResource):
     unique_keys = {
         'https_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),
         'dns_monitor': getattr(HealthMonitorDNS, 'unique_keys', {}),
+        'sip_monitor': getattr(HealthMonitorSIP, 'unique_keys', {}),
         'tcp_monitor': getattr(HealthMonitorTcp, 'unique_keys', {}),
         'udp_monitor': getattr(HealthMonitorUdp, 'unique_keys', {}),
         'http_monitor': getattr(HealthMonitorHttp, 'unique_keys', {}),

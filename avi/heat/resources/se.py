@@ -11,6 +11,7 @@ from options import *
 from common import *
 from options import *
 from vi_mgr_runtime import *
+from pool import *
 
 
 class SeResources(object):
@@ -164,7 +165,7 @@ class MemberInterface(object):
         properties.Schema.STRING,
         _("(Introduced in: 17.1.5) "),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -198,49 +199,49 @@ class ConVip(object):
     )
     virtual_network_id_item_schema = properties.Schema(
         properties.Schema.STRING,
-        _(""),
+        _("(Deprecated in: 18.1.1) "),
         required=True,
         update_allowed=False,
     )
     virtual_network_id_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _("(Deprecated in: 18.1.1) "),
         schema=virtual_network_id_item_schema,
         required=False,
         update_allowed=True,
     )
     subnet_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(Deprecated in: 18.1.1) "),
         schema=IpAddrPrefix.properties_schema,
         required=True,
         update_allowed=False,
     )
     subnet_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
+        _("(Deprecated in: 18.1.1) "),
         schema=subnet_item_schema,
         required=False,
         update_allowed=True,
     )
     vip6_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
+        _("(Introduced in: 18.1.1) "),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
     )
-    subnet6_item_schema = properties.Schema(
+    networks_item_schema = properties.Schema(
         properties.Schema.MAP,
-        _(""),
-        schema=IpAddrPrefix.properties_schema,
+        _("(Introduced in: 18.1.1) "),
+        schema=DiscoveredNetwork.properties_schema,
         required=True,
         update_allowed=False,
     )
-    subnet6_schema = properties.Schema(
+    networks_schema = properties.Schema(
         properties.Schema.LIST,
-        _(""),
-        schema=subnet6_item_schema,
+        _("(Introduced in: 18.1.1) "),
+        schema=networks_item_schema,
         required=False,
         update_allowed=True,
     )
@@ -251,7 +252,7 @@ class ConVip(object):
         'virtual_network_id',
         'subnet',
         'vip6',
-        'subnet6',
+        'networks',
     )
 
     # mapping of properties to their schemas
@@ -260,21 +261,21 @@ class ConVip(object):
         'virtual_network_id': virtual_network_id_schema,
         'subnet': subnet_schema,
         'vip6': vip6_schema,
-        'subnet6': subnet6_schema,
+        'networks': networks_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
         'subnet': getattr(IpAddrPrefix, 'field_references', {}),
         'vip': getattr(IpAddr, 'field_references', {}),
-        'subnet6': getattr(IpAddrPrefix, 'field_references', {}),
+        'networks': getattr(DiscoveredNetwork, 'field_references', {}),
         'vip6': getattr(IpAddr, 'field_references', {}),
     }
 
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'vip': getattr(IpAddr, 'unique_keys', {}),
-        'subnet6': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'networks': getattr(DiscoveredNetwork, 'unique_keys', {}),
         'vip6': getattr(IpAddr, 'unique_keys', {}),
     }
 
@@ -432,7 +433,7 @@ class VlanInterface(object):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     ip6_autocfg_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -482,37 +483,37 @@ class vNIC(object):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     mac_address_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
     )
     connected_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     is_mgmt_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     network_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     network_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     dhcp_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -524,7 +525,7 @@ class vNIC(object):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
@@ -536,43 +537,43 @@ class vNIC(object):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     vlan_id_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(" (Default: 0)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     pci_id_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     linux_name_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     port_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     del_pending_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     mtu_schema = properties.Schema(
         properties.Schema.NUMBER,
         _(" (Default: 1500)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     vnic_networks_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -592,7 +593,7 @@ class vNIC(object):
         properties.Schema.BOOLEAN,
         _(" (Default: True)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     vrf_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -604,7 +605,7 @@ class vNIC(object):
         properties.Schema.NUMBER,
         _(" (Default: 0)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     vlan_interfaces_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -624,7 +625,7 @@ class vNIC(object):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     members_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -638,25 +639,31 @@ class vNIC(object):
         _(""),
         schema=members_item_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     is_hsm_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     is_asm_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     ip6_autocfg_enabled_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _("(Introduced in: 18.1.1) Enable IPv6 auto configuration (Default: True)"),
         required=False,
         update_allowed=True,
+    )
+    aggregator_chgd_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 17.2.7)  (Default: False)"),
+        required=False,
+        update_allowed=False,
     )
 
     # properties list
@@ -687,6 +694,7 @@ class vNIC(object):
         'is_hsm',
         'is_asm',
         'ip6_autocfg_enabled',
+        'aggregator_chgd',
     )
 
     # mapping of properties to their schemas
@@ -717,6 +725,7 @@ class vNIC(object):
         'is_hsm': is_hsm_schema,
         'is_asm': is_asm_schema,
         'ip6_autocfg_enabled': ip6_autocfg_enabled_schema,
+        'aggregator_chgd': aggregator_chgd_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -756,21 +765,21 @@ class ServiceEngine(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     mgmt_vnic_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=vNIC.properties_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     resources_schema = properties.Schema(
         properties.Schema.MAP,
         _(""),
         schema=SeResources.properties_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     data_vnics_item_schema = properties.Schema(
         properties.Schema.MAP,
@@ -784,25 +793,25 @@ class ServiceEngine(AviResource):
         _(""),
         schema=data_vnics_item_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     controller_ip_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     host_uuid_schema = properties.Schema(
         properties.Schema.STRING,
         _(" You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     controller_created_schema = properties.Schema(
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     se_group_uuid_schema = properties.Schema(
         properties.Schema.STRING,
@@ -814,19 +823,19 @@ class ServiceEngine(AviResource):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     flavor_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     hypervisor_schema = properties.Schema(
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['DEFAULT', 'KVM', 'VMWARE_ESX', 'VMWARE_VSAN', 'XEN']),
         ],
@@ -835,7 +844,7 @@ class ServiceEngine(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     enable_state_schema = properties.Schema(
         properties.Schema.STRING,
@@ -850,7 +859,7 @@ class ServiceEngine(AviResource):
         properties.Schema.STRING,
         _(" (Default: CONTAINER_TYPE_HOST)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['CONTAINER_TYPE_BRIDGE', 'CONTAINER_TYPE_HOST', 'CONTAINER_TYPE_HOST_DPDK']),
         ],

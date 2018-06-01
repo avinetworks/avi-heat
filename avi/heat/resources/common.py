@@ -281,31 +281,31 @@ class GcpInfo(object):
         properties.Schema.STRING,
         _("Project this SE belongs to"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
     )
     zone_schema = properties.Schema(
         properties.Schema.STRING,
         _("Zone this SE is part of"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
     )
     network_schema = properties.Schema(
         properties.Schema.STRING,
         _("Network this SE is assigned"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
     )
     subnet_schema = properties.Schema(
         properties.Schema.STRING,
         _("Subnet assigned to this SE"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     hostname_schema = properties.Schema(
         properties.Schema.STRING,
         _("Hostname of this SE"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list

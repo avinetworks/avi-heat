@@ -605,7 +605,7 @@ class SeRuntimeProperties(object):
         properties.Schema.NUMBER,
         _("(Deprecated in: 17.1.1) Deprecated (Units: MBPS) (Default: 10000)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     se_hb_persist_fudge_bits_schema = properties.Schema(
         properties.Schema.NUMBER,
@@ -895,6 +895,12 @@ class SeRuntimeProperties(object):
         required=False,
         update_allowed=True,
     )
+    lb_batch_push_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.8) How often to push the LB IPC messages in the main loop. The value is the number of times the loop has to run before pushing the batch. i.e, a value of 1 means the batch is pushed every time the loop runs (Default: 5)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -1004,6 +1010,7 @@ class SeRuntimeProperties(object):
         'disable_tso',
         'se_dp_vnic_restart_on_queue_stall_count',
         'se_dp_vnic_stall_se_restart_window',
+        'lb_batch_push_frequency',
     )
 
     # mapping of properties to their schemas
@@ -1114,6 +1121,7 @@ class SeRuntimeProperties(object):
         'disable_tso': disable_tso_schema,
         'se_dp_vnic_restart_on_queue_stall_count': se_dp_vnic_restart_on_queue_stall_count_schema,
         'se_dp_vnic_stall_se_restart_window': se_dp_vnic_stall_se_restart_window_schema,
+        'lb_batch_push_frequency': lb_batch_push_frequency_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
@@ -1467,7 +1475,7 @@ class SeBootupProperties(object):
     )
     se_tunnel_mode_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("(Deprecated in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally (Default: 0)"),
+        _("(Deprecated in: 17.1.1) Determines if DSR from secondary SE is active or not:     0      : Automatically determine based on hypervisor type    1      : Disable DSR unconditionally    ~[0,1] : Enable DSR unconditionally"),
         required=False,
         update_allowed=True,
     )
@@ -1569,7 +1577,7 @@ class SeBootupProperties(object):
     )
     distribute_queues_schema = properties.Schema(
         properties.Schema.BOOLEAN,
-        _("(Introduced in: 17.1.1) Distributes queue ownership among cores so multiple cores handle dispatcher duties. (Default: True)"),
+        _("(Introduced in: 17.1.1) (Deprecated in: 17.2.8) Deprecated (Default: True)"),
         required=False,
         update_allowed=True,
     )

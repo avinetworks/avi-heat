@@ -15,7 +15,7 @@ class BgpPeer(object):
     # all schemas
     remote_as_schema = properties.Schema(
         properties.Schema.NUMBER,
-        _("Peer Autonomous System ID (Default: 1)"),
+        _("Peer Autonomous System ID"),
         required=False,
         update_allowed=True,
     )
@@ -23,14 +23,14 @@ class BgpPeer(object):
         properties.Schema.MAP,
         _("IP Address of the BGP Peer"),
         schema=IpAddr.properties_schema,
-        required=True,
+        required=False,
         update_allowed=True,
     )
     subnet_schema = properties.Schema(
         properties.Schema.MAP,
         _("Subnet providing reachability for Peer"),
         schema=IpAddrPrefix.properties_schema,
-        required=True,
+        required=False,
         update_allowed=True,
     )
     md5_secret_schema = properties.Schema(
@@ -101,14 +101,14 @@ class BgpPeer(object):
     )
     peer_ip6_schema = properties.Schema(
         properties.Schema.MAP,
-        _("IPv6 Address of the BGP Peer"),
+        _("(Introduced in: 18.1.1) IPv6 Address of the BGP Peer"),
         schema=IpAddr.properties_schema,
         required=False,
         update_allowed=True,
     )
     subnet6_schema = properties.Schema(
         properties.Schema.MAP,
-        _("Subnet v6 providing reachability for Peer"),
+        _("(Introduced in: 18.1.1) Subnet v6 providing reachability for Peer"),
         schema=IpAddrPrefix.properties_schema,
         required=False,
         update_allowed=True,
@@ -173,7 +173,7 @@ class BgpPeer(object):
     unique_keys = {
         'subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
         'subnet6': getattr(IpAddrPrefix, 'unique_keys', {}),
-        'my_key': 'peer_ip,subnet',
+        'my_key': 'peer_ip,subnet,peer_ip6,subnet6',
         'peer_ip6': getattr(IpAddr, 'unique_keys', {}),
         'peer_ip': getattr(IpAddr, 'unique_keys', {}),
     }
@@ -641,7 +641,7 @@ class VrfContext(AviResource):
         properties.Schema.BOOLEAN,
         _(" (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     gateway_mon_item_schema = properties.Schema(
         properties.Schema.MAP,

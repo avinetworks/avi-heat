@@ -275,6 +275,48 @@ class DnsClientIpMatch(object):
 
 
 
+class DnsRuleDnsRrSet(object):
+    # all schemas
+    resource_record_set_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) DNS resource record set - (records in the resource record set share the DNS domain name, type, and class)"),
+        schema=DnsRrSet.properties_schema,
+        required=True,
+        update_allowed=True,
+    )
+    section_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) DNS message section for the resource record set (Default: DNS_MESSAGE_SECTION_ANSWER)"),
+        required=False,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_MESSAGE_SECTION_ADDITIONAL', 'DNS_MESSAGE_SECTION_ANSWER', 'DNS_MESSAGE_SECTION_AUTHORITY', 'DNS_MESSAGE_SECTION_QUESTION']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'resource_record_set',
+        'section',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'resource_record_set': resource_record_set_schema,
+        'section': section_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'resource_record_set': getattr(DnsRrSet, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'resource_record_set': getattr(DnsRrSet, 'unique_keys', {}),
+    }
+
+
+
 class DnsRuleActionResponse(object):
     # all schemas
     rcode_schema = properties.Schema(
@@ -298,12 +340,27 @@ class DnsRuleActionResponse(object):
         required=False,
         update_allowed=True,
     )
+    resource_record_sets_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) DNS resource record sets - (resource record set share the DNS domain name, type, and class)"),
+        schema=DnsRuleDnsRrSet.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    resource_record_sets_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.2) DNS resource record sets - (resource record set share the DNS domain name, type, and class)"),
+        schema=resource_record_sets_item_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'rcode',
         'truncation',
         'authoritative',
+        'resource_record_sets',
     )
 
     # mapping of properties to their schemas
@@ -311,6 +368,16 @@ class DnsRuleActionResponse(object):
         'rcode': rcode_schema,
         'truncation': truncation_schema,
         'authoritative': authoritative_schema,
+        'resource_record_sets': resource_record_sets_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'resource_record_sets': getattr(DnsRuleDnsRrSet, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'resource_record_sets': getattr(DnsRuleDnsRrSet, 'unique_keys', {}),
     }
 
 

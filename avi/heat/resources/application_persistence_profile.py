@@ -225,7 +225,7 @@ class ApplicationPersistenceProfile(AviResource):
         properties.Schema.STRING,
         _("Method used to persist clients to the same server for a duration of time or a session. (Default: PERSISTENCE_TYPE_CLIENT_IP_ADDRESS)"),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
         constraints=[
             constraints.AllowedValues(['PERSISTENCE_TYPE_APP_COOKIE', 'PERSISTENCE_TYPE_CLIENT_IPV6_ADDRESS', 'PERSISTENCE_TYPE_CLIENT_IP_ADDRESS', 'PERSISTENCE_TYPE_CUSTOM_HTTP_HEADER', 'PERSISTENCE_TYPE_GSLB_SITE', 'PERSISTENCE_TYPE_HTTP_COOKIE', 'PERSISTENCE_TYPE_TLS']),
         ],
@@ -262,7 +262,7 @@ class ApplicationPersistenceProfile(AviResource):
         properties.Schema.BOOLEAN,
         _("(Introduced in: 17.1.3) This field describes the object's replication scope. If the field is set to false, then the object is visible within the controller-cluster and its associated service-engines.  If the field is set to true, then the object is replicated across the federation.   (Default: False)"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     description_schema = properties.Schema(
         properties.Schema.STRING,

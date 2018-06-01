@@ -13,6 +13,67 @@ from options import *
 from debug_controller import *
 
 
+class DebugSeFault(object):
+    # all schemas
+    se_malloc_fail_type_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail this SE malloc type. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_malloc_fail_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail SE malloc type at this frequency. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_shm_malloc_fail_type_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail this SE SHM malloc type. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_shm_malloc_fail_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail SE SHM malloc type at this frequency. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_waf_alloc_fail_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail SE WAF allocation at this frequency. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+    se_waf_learning_alloc_fail_frequency_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Fail SE WAF learning allocation at this frequency. (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'se_malloc_fail_type',
+        'se_malloc_fail_frequency',
+        'se_shm_malloc_fail_type',
+        'se_shm_malloc_fail_frequency',
+        'se_waf_alloc_fail_frequency',
+        'se_waf_learning_alloc_fail_frequency',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'se_malloc_fail_type': se_malloc_fail_type_schema,
+        'se_malloc_fail_frequency': se_malloc_fail_frequency_schema,
+        'se_shm_malloc_fail_type': se_shm_malloc_fail_type_schema,
+        'se_shm_malloc_fail_frequency': se_shm_malloc_fail_frequency_schema,
+        'se_waf_alloc_fail_frequency': se_waf_alloc_fail_frequency_schema,
+        'se_waf_learning_alloc_fail_frequency': se_waf_learning_alloc_fail_frequency_schema,
+    }
+
+
+
 class DebugSeAgent(object):
     # all schemas
     sub_module_schema = properties.Schema(
@@ -21,7 +82,7 @@ class DebugSeAgent(object):
         required=True,
         update_allowed=True,
         constraints=[
-            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
+            constraints.AllowedValues(['ALERT_MGR_DEBUG', 'APIC_AGENT_DEBUG', 'AUTOSCALE_MGR_DEBUG', 'CLOUD_CONNECTOR_DEBUG', 'EVENT_API_DEBUG', 'HS_MGR_DEBUG', 'JOB_MGR_DEBUG', 'MESOS_METRICS_DEBUG', 'METRICS_MANAGER_DEBUG', 'METRICS_MGR_DEBUG', 'NSX_AGENT_DEBUG', 'REDIS_INFRA_DEBUG', 'RES_MGR_DEBUG', 'RPC_INFRA_DEBUG', 'SE_AGENT_CPU_UTIL_DEBUG', 'SE_AGENT_DEBUG', 'SE_AGENT_METRICS_DEBUG', 'SE_MGR_DEBUG', 'STATECACHE_MGR_DEBUG', 'TASK_QUEUE_DEBUG', 'TRANSACTION_DEBUG', 'VIRTUALSERVICE_DEBUG', 'VI_MGR_DEBUG']),
         ],
     )
     trace_level_schema = properties.Schema(
@@ -42,12 +103,19 @@ class DebugSeAgent(object):
             constraints.AllowedValues(['LOG_LEVEL_DISABLED', 'LOG_LEVEL_ERROR', 'LOG_LEVEL_INFO', 'LOG_LEVEL_WARNING']),
         ],
     )
+    log_every_n_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.7) Log every nth message (Default: 0)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
         'sub_module',
         'trace_level',
         'log_level',
+        'log_every_n',
     )
 
     # mapping of properties to their schemas
@@ -55,6 +123,7 @@ class DebugSeAgent(object):
         'sub_module': sub_module_schema,
         'trace_level': trace_level_schema,
         'log_level': log_level_schema,
+        'log_every_n': log_every_n_schema,
     }
 
     unique_keys = {
@@ -181,6 +250,13 @@ class DebugServiceEngine(AviResource):
         required=False,
         update_allowed=True,
     )
+    fault_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) Params for SE fault injection."),
+        schema=DebugSeFault.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -189,6 +265,7 @@ class DebugServiceEngine(AviResource):
         'seagent_debug',
         'flags',
         'cpu_shares',
+        'fault',
     )
 
     # mapping of properties to their schemas
@@ -198,16 +275,19 @@ class DebugServiceEngine(AviResource):
         'seagent_debug': seagent_debug_schema,
         'flags': flags_schema,
         'cpu_shares': cpu_shares_schema,
+        'fault': fault_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
+        'fault': getattr(DebugSeFault, 'field_references', {}),
         'flags': getattr(DebugSeDataplane, 'field_references', {}),
         'seagent_debug': getattr(DebugSeAgent, 'field_references', {}),
         'cpu_shares': getattr(DebugSeCpuShares, 'field_references', {}),
     }
 
     unique_keys = {
+        'fault': getattr(DebugSeFault, 'unique_keys', {}),
         'flags': getattr(DebugSeDataplane, 'unique_keys', {}),
         'seagent_debug': getattr(DebugSeAgent, 'unique_keys', {}),
         'cpu_shares': getattr(DebugSeCpuShares, 'unique_keys', {}),
@@ -451,7 +531,7 @@ class DebugVirtualService(AviResource):
         properties.Schema.STRING,
         _(""),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list

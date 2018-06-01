@@ -189,6 +189,118 @@ class DnsAAAARdata(object):
 
 
 
+class DnsRrSet(object):
+    # all schemas
+    fqdn_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) Fully Qualified Domain Name"),
+        required=True,
+        update_allowed=True,
+    )
+    type_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.2) DNS record type"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['DNS_RECORD_A', 'DNS_RECORD_AAAA', 'DNS_RECORD_ANY', 'DNS_RECORD_AXFR', 'DNS_RECORD_CNAME', 'DNS_RECORD_DNSKEY', 'DNS_RECORD_HINFO', 'DNS_RECORD_MX', 'DNS_RECORD_NS', 'DNS_RECORD_OPT', 'DNS_RECORD_OTHER', 'DNS_RECORD_PTR', 'DNS_RECORD_RP', 'DNS_RECORD_RRSIG', 'DNS_RECORD_SOA', 'DNS_RECORD_SRV', 'DNS_RECORD_TXT']),
+        ],
+    )
+    ttl_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Time To Live for this DNS record"),
+        required=True,
+        update_allowed=True,
+    )
+    ip_addresses_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) IP address in A record"),
+        schema=DnsARdata.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip_addresses_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.2) IP address in A record"),
+        schema=ip_addresses_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    cname_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) Canonical name in CNAME record"),
+        schema=DnsCnameRdata.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    nses_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) Name Server information in NS record"),
+        schema=DnsNsRdata.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    nses_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.2) Name Server information in NS record"),
+        schema=nses_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+    ip6_addresses_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) IPv6 address in AAAA record"),
+        schema=DnsAAAARdata.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    ip6_addresses_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.2) IPv6 address in AAAA record"),
+        schema=ip6_addresses_item_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'fqdn',
+        'type',
+        'ttl',
+        'ip_addresses',
+        'cname',
+        'nses',
+        'ip6_addresses',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'fqdn': fqdn_schema,
+        'type': type_schema,
+        'ttl': ttl_schema,
+        'ip_addresses': ip_addresses_schema,
+        'cname': cname_schema,
+        'nses': nses_schema,
+        'ip6_addresses': ip6_addresses_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'ip_addresses': getattr(DnsARdata, 'field_references', {}),
+        'cname': getattr(DnsCnameRdata, 'field_references', {}),
+        'nses': getattr(DnsNsRdata, 'field_references', {}),
+        'ip6_addresses': getattr(DnsAAAARdata, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'ip_addresses': getattr(DnsARdata, 'unique_keys', {}),
+        'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
+        'nses': getattr(DnsNsRdata, 'unique_keys', {}),
+        'ip6_addresses': getattr(DnsAAAARdata, 'unique_keys', {}),
+    }
+
+
+
 class DnsInfo(object):
     # all schemas
     fqdn_schema = properties.Schema(
@@ -270,6 +382,7 @@ class DnsInfo(object):
 
     unique_keys = {
         'cname': getattr(DnsCnameRdata, 'unique_keys', {}),
+        'my_key': 'fqdn',
     }
 
 

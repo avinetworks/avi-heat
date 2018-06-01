@@ -272,31 +272,31 @@ class SamlServiceProviderNode(object):
         properties.Schema.STRING,
         _("(Introduced in: 17.2.3) Refers to the Cluster name identifier (Virtual IP or FQDN)."),
         required=True,
-        update_allowed=True,
+        update_allowed=False,
     )
     entity_id_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.2.3) Globally unique entityID for this node. Entity ID on the IDP should match this."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     single_signon_url_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.2.3) Single Signon URL to be programmed on the IDP."),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     signing_cert_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.2.3) Service Provider signing certificate for metadata"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     signing_key_schema = properties.Schema(
         properties.Schema.STRING,
         _("(Introduced in: 17.2.3) Service Provider signing key for metadata"),
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
 
     # properties list
@@ -389,7 +389,7 @@ class SamlServiceProviderSettings(object):
         _("(Introduced in: 17.2.3) Service Provider node information"),
         schema=sp_nodes_item_schema,
         required=False,
-        update_allowed=True,
+        update_allowed=False,
     )
     org_name_schema = properties.Schema(
         properties.Schema.STRING,

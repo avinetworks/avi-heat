@@ -187,21 +187,9 @@ class SingleLicense(object):
         required=True,
         update_allowed=True,
     )
-    throughput_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of Service Engine cores in non-container clouds"),
-        required=False,
-        update_allowed=True,
-    )
-    backend_servers_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
         required=False,
         update_allowed=True,
     )
@@ -221,12 +209,6 @@ class SingleLicense(object):
         properties.Schema.LIST,
         _(""),
         schema=license_tier_item_schema,
-        required=False,
-        update_allowed=True,
-    )
-    max_apps_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
         required=False,
         update_allowed=True,
     )
@@ -321,12 +303,9 @@ class SingleLicense(object):
         'start_on',
         'valid_until',
         'customer_name',
-        'throughput',
         'cores',
-        'backend_servers',
         'max_ses',
         'license_tier',
-        'max_apps',
         'license_string',
         'license_id',
         'version',
@@ -346,12 +325,9 @@ class SingleLicense(object):
         'start_on': start_on_schema,
         'valid_until': valid_until_schema,
         'customer_name': customer_name_schema,
-        'throughput': throughput_schema,
         'cores': cores_schema,
-        'backend_servers': backend_servers_schema,
         'max_ses': max_ses_schema,
         'license_tier': license_tier_schema,
-        'max_apps': max_apps_schema,
         'license_string': license_string_schema,
         'license_id': license_id_schema,
         'version': version_schema,
@@ -490,21 +466,9 @@ class ControllerLicense(AviResource):
         required=True,
         update_allowed=True,
     )
-    throughput_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
     cores_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of Service Engine cores in non-container clouds"),
-        required=False,
-        update_allowed=True,
-    )
-    backend_servers_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
         required=False,
         update_allowed=True,
     )
@@ -524,18 +488,6 @@ class ControllerLicense(AviResource):
     max_ses_schema = properties.Schema(
         properties.Schema.NUMBER,
         _("Number of Service Engines hosts in container clouds"),
-        required=False,
-        update_allowed=True,
-    )
-    max_apps_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _(""),
-        required=False,
-        update_allowed=True,
-    )
-    max_vses_schema = properties.Schema(
-        properties.Schema.NUMBER,
-        _("Deprecated"),
         required=False,
         update_allowed=True,
     )
@@ -641,13 +593,9 @@ class ControllerLicense(AviResource):
         'start_on',
         'valid_until',
         'customer_name',
-        'throughput',
         'cores',
-        'backend_servers',
         'license_tier',
         'max_ses',
-        'max_apps',
-        'max_vses',
         'sockets',
         'licenses',
         'se_bandwidth_limits',
@@ -666,13 +614,9 @@ class ControllerLicense(AviResource):
         'start_on': start_on_schema,
         'valid_until': valid_until_schema,
         'customer_name': customer_name_schema,
-        'throughput': throughput_schema,
         'cores': cores_schema,
-        'backend_servers': backend_servers_schema,
         'license_tier': license_tier_schema,
         'max_ses': max_ses_schema,
-        'max_apps': max_apps_schema,
-        'max_vses': max_vses_schema,
         'sockets': sockets_schema,
         'licenses': licenses_schema,
         'se_bandwidth_limits': se_bandwidth_limits_schema,

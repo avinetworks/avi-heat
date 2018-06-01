@@ -10,6 +10,7 @@ from options import *
 
 from options import *
 from common import *
+from match import *
 
 
 class WafDataFile(object):
@@ -37,53 +38,6 @@ class WafDataFile(object):
     properties_schema = {
         'name': name_schema,
         'data': data_schema,
-    }
-
-
-
-class WafExcludeListEntry(object):
-    # all schemas
-    client_subnet_schema = properties.Schema(
-        properties.Schema.MAP,
-        _("(Introduced in: 17.2.1) Client IP Subnet to exclude for WAF rules."),
-        schema=IpAddrPrefix.properties_schema,
-        required=False,
-        update_allowed=True,
-    )
-    uri_path_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.2.1) URI Path to exclude for WAF rules."),
-        required=False,
-        update_allowed=True,
-    )
-    match_element_schema = properties.Schema(
-        properties.Schema.STRING,
-        _("(Introduced in: 17.2.1) match_element can be 'ARGS:xxx', 'ARGS_GET:xxx', 'ARGS_POST:xxx''ARGS_NAMES:xxx, 'QUERY_STRING', 'REQUEST_BASENAME', 'REQUEST_BODY', 'REQUEST_URI', 'REQUEST_URI_RAW', 'REQUEST_COOKIES:xxx', 'REQUEST_HEADERS:xxx' and 'RESPONSE_HEADERS:xxx'. These match_elements in the HTTP Transcation (if present) will be excluded when executing WAF Rules."),
-        required=False,
-        update_allowed=True,
-    )
-
-    # properties list
-    PROPERTIES = (
-        'client_subnet',
-        'uri_path',
-        'match_element',
-    )
-
-    # mapping of properties to their schemas
-    properties_schema = {
-        'client_subnet': client_subnet_schema,
-        'uri_path': uri_path_schema,
-        'match_element': match_element_schema,
-    }
-
-    # for supporting get_avi_uuid_by_name functionality
-    field_references = {
-        'client_subnet': getattr(IpAddrPrefix, 'field_references', {}),
-    }
-
-    unique_keys = {
-        'client_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
     }
 
 
@@ -136,7 +90,7 @@ class WafConfig(object):
         required=True,
         update_allowed=False,
         constraints=[
-            constraints.AllowedValues(['HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT', 'HTTP_METHOD_TRACE']),
+            constraints.AllowedValues(['HTTP_METHOD_CONNECT', 'HTTP_METHOD_DELETE', 'HTTP_METHOD_GET', 'HTTP_METHOD_HEAD', 'HTTP_METHOD_OPTIONS', 'HTTP_METHOD_POST', 'HTTP_METHOD_PUT', 'HTTP_METHOD_TRACE']),
         ],
     )
     allowed_methods_schema = properties.Schema(
@@ -240,6 +194,12 @@ class WafConfig(object):
         required=False,
         update_allowed=True,
     )
+    max_execution_time_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 17.2.12, 18.1.2) The maximum period of time WAF processing is allowed to take for a single request. If this time is exceeded, the request will be flagged or rejected, depending on the WAF policy mode. (Units: MILLISECONDS) (Default: 50)"),
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -260,6 +220,7 @@ class WafConfig(object):
         'cookie_format_version',
         'buffer_response_body_for_inspection',
         'regex_match_limit',
+        'max_execution_time',
     )
 
     # mapping of properties to their schemas
@@ -281,6 +242,95 @@ class WafConfig(object):
         'cookie_format_version': cookie_format_version_schema,
         'buffer_response_body_for_inspection': buffer_response_body_for_inspection_schema,
         'regex_match_limit': regex_match_limit_schema,
+        'max_execution_time': max_execution_time_schema,
+    }
+
+
+
+class WafLearning(object):
+    # all schemas
+    enable_schema = properties.Schema(
+        properties.Schema.BOOLEAN,
+        _("(Introduced in: 18.1.2) Enable Learning for WAF policy. (Default: False)"),
+        required=False,
+        update_allowed=True,
+    )
+    sampling_percent_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Sampling percent of the requests subjected to WAF learning. (Units: PERCENT) (Default: 10)"),
+        required=False,
+        update_allowed=True,
+    )
+    confidence_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Confidence level used to derive rules from the WAF learning. (Units: PERCENT) (Default: 90)"),
+        required=False,
+        update_allowed=True,
+    )
+    path_summarization_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Suffix Summarization threshold used to compress paths. (Default: 5)"),
+        required=False,
+        update_allowed=True,
+    )
+    arg_summarization_threshold_schema = properties.Schema(
+        properties.Schema.NUMBER,
+        _("(Introduced in: 18.1.2) Suffix Summarization threshold used to compress args. (Default: 3)"),
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'enable',
+        'sampling_percent',
+        'confidence',
+        'path_summarization_threshold',
+        'arg_summarization_threshold',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'enable': enable_schema,
+        'sampling_percent': sampling_percent_schema,
+        'confidence': confidence_schema,
+        'path_summarization_threshold': path_summarization_threshold_schema,
+        'arg_summarization_threshold': arg_summarization_threshold_schema,
+    }
+
+
+
+class WafExclusionType(object):
+    # all schemas
+    match_op_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) String Operation to use for matching the Exclusion. (Default: EQUALS)"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['BEGINS_WITH', 'CONTAINS', 'DOES_NOT_BEGIN_WITH', 'DOES_NOT_CONTAIN', 'DOES_NOT_END_WITH', 'DOES_NOT_EQUAL', 'ENDS_WITH', 'EQUALS', 'REGEX_DOES_NOT_MATCH', 'REGEX_MATCH']),
+        ],
+    )
+    match_case_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.8) Case sensitivity to use for the matching. (Default: SENSITIVE)"),
+        required=True,
+        update_allowed=True,
+        constraints=[
+            constraints.AllowedValues(['INSENSITIVE', 'SENSITIVE']),
+        ],
+    )
+
+    # properties list
+    PROPERTIES = (
+        'match_op',
+        'match_case',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'match_op': match_op_schema,
+        'match_case': match_case_schema,
     }
 
 
@@ -355,6 +405,64 @@ class WafProfile(AviResource):
     unique_keys = {
         'files': getattr(WafDataFile, 'unique_keys', {}),
         'config': getattr(WafConfig, 'unique_keys', {}),
+    }
+
+
+
+class WafExcludeListEntry(object):
+    # all schemas
+    client_subnet_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.1) Client IP Subnet to exclude for WAF rules."),
+        schema=IpAddrPrefix.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+    uri_path_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) URI Path to exclude for WAF rules."),
+        required=False,
+        update_allowed=True,
+    )
+    match_element_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 17.2.1) match_element can be 'ARGS:xxx', 'ARGS_GET:xxx', 'ARGS_POST:xxx''ARGS_NAMES:xxx, 'QUERY_STRING', 'REQUEST_BASENAME', 'REQUEST_BODY', 'REQUEST_URI', 'REQUEST_URI_RAW', 'REQUEST_COOKIES:xxx', 'REQUEST_HEADERS:xxx' and 'RESPONSE_HEADERS:xxx'. These match_elements in the HTTP Transcation (if present) will be excluded when executing WAF Rules."),
+        required=False,
+        update_allowed=True,
+    )
+    uri_match_criteria_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 17.2.8) Criteria for URI matching."),
+        schema=WafExclusionType.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'client_subnet',
+        'uri_path',
+        'match_element',
+        'uri_match_criteria',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'client_subnet': client_subnet_schema,
+        'uri_path': uri_path_schema,
+        'match_element': match_element_schema,
+        'uri_match_criteria': uri_match_criteria_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'client_subnet': getattr(IpAddrPrefix, 'field_references', {}),
+        'uri_match_criteria': getattr(WafExclusionType, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'client_subnet': getattr(IpAddrPrefix, 'unique_keys', {}),
+        'uri_match_criteria': getattr(WafExclusionType, 'unique_keys', {}),
     }
 
 
@@ -612,6 +720,19 @@ class WafPolicy(AviResource):
         required=False,
         update_allowed=True,
     )
+    waf_crs_uuid_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) WAF core ruleset used for the CRS part of this Policy. You can either provide UUID or provide a name with the prefix 'get_avi_uuid_by_name:', e.g., 'get_avi_uuid_by_name:my_obj_name'."),
+        required=False,
+        update_allowed=True,
+    )
+    learning_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.2) Configure parameters for WAF learning."),
+        schema=WafLearning.properties_schema,
+        required=False,
+        update_allowed=True,
+    )
 
     # properties list
     PROPERTIES = (
@@ -625,6 +746,8 @@ class WafPolicy(AviResource):
         'post_crs_groups',
         'paranoia_level',
         'created_by',
+        'waf_crs_uuid',
+        'learning',
     )
 
     # mapping of properties to their schemas
@@ -639,20 +762,96 @@ class WafPolicy(AviResource):
         'post_crs_groups': post_crs_groups_schema,
         'paranoia_level': paranoia_level_schema,
         'created_by': created_by_schema,
+        'waf_crs_uuid': waf_crs_uuid_schema,
+        'learning': learning_schema,
     }
 
     # for supporting get_avi_uuid_by_name functionality
     field_references = {
-        'post_crs_groups': getattr(WafRuleGroup, 'field_references', {}),
-        'pre_crs_groups': getattr(WafRuleGroup, 'field_references', {}),
-        'waf_profile_uuid': 'wafprofile',
         'crs_groups': getattr(WafRuleGroup, 'field_references', {}),
+        'pre_crs_groups': getattr(WafRuleGroup, 'field_references', {}),
+        'post_crs_groups': getattr(WafRuleGroup, 'field_references', {}),
+        'learning': getattr(WafLearning, 'field_references', {}),
+        'waf_profile_uuid': 'wafprofile',
+        'waf_crs_uuid': 'wafcrs',
     }
 
     unique_keys = {
         'post_crs_groups': getattr(WafRuleGroup, 'unique_keys', {}),
         'pre_crs_groups': getattr(WafRuleGroup, 'unique_keys', {}),
         'crs_groups': getattr(WafRuleGroup, 'unique_keys', {}),
+        'learning': getattr(WafLearning, 'unique_keys', {}),
+    }
+
+
+
+class WafCRS(AviResource):
+    resource_name = "wafcrs"
+    # all schemas
+    avi_version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("Avi Version to use for the object. Default is 16.4.2. If you plan to use any fields introduced after 16.4.2, then this needs to be explicitly set."),
+        required=False,
+        update_allowed=True,
+    )
+    version_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) The version of this Ruleset object."),
+        required=True,
+        update_allowed=False,
+    )
+    release_date_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) The release date of this version in RFC 3339 / ISO 8601 format."),
+        required=True,
+        update_allowed=False,
+    )
+    description_schema = properties.Schema(
+        properties.Schema.STRING,
+        _("(Introduced in: 18.1.1) A short description of this ruleset."),
+        required=True,
+        update_allowed=False,
+    )
+    groups_item_schema = properties.Schema(
+        properties.Schema.MAP,
+        _("(Introduced in: 18.1.1) WAF Rules are sorted in groups based on their characterization."),
+        schema=WafRuleGroup.properties_schema,
+        required=True,
+        update_allowed=False,
+    )
+    groups_schema = properties.Schema(
+        properties.Schema.LIST,
+        _("(Introduced in: 18.1.1) WAF Rules are sorted in groups based on their characterization."),
+        schema=groups_item_schema,
+        required=False,
+        update_allowed=False,
+    )
+
+    # properties list
+    PROPERTIES = (
+        'avi_version',
+        'version',
+        'release_date',
+        'description',
+        'groups',
+    )
+
+    # mapping of properties to their schemas
+    properties_schema = {
+        'avi_version': avi_version_schema,
+        'version': version_schema,
+        'release_date': release_date_schema,
+        'description': description_schema,
+        'groups': groups_schema,
+    }
+
+    # for supporting get_avi_uuid_by_name functionality
+    field_references = {
+        'groups': getattr(WafRuleGroup, 'field_references', {}),
+    }
+
+    unique_keys = {
+        'groups': getattr(WafRuleGroup, 'unique_keys', {}),
     }
 
 
@@ -660,6 +859,7 @@ class WafPolicy(AviResource):
 def resource_mapping():
     return {
         'Avi::LBaaS::WafPolicy': WafPolicy,
+        'Avi::LBaaS::WafCRS': WafCRS,
         'Avi::LBaaS::WafProfile': WafProfile,
     }
 
