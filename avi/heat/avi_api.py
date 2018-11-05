@@ -194,7 +194,7 @@ class ApiSession(Session):
                  port=None, timeout=60, api_version=None,
                  retry_conxn_errors=True, data_log=False,
                  avi_credentials=None, session_id=None, csrftoken=None,
-                 lazy_authentication=False):
+                 lazy_authentication=False, max_api_retries=None):
         """
          ApiSession takes ownership of avi_credentials and may update the
          information inside it.
@@ -227,12 +227,14 @@ class ApiSession(Session):
         self.verify = verify
         self.retry_conxn_errors = retry_conxn_errors
         self.remote_api_version = {}
+        self.session_cookie_name = ''
         self.user_hdrs = {}
         self.data_log = data_log
         self.num_session_retries = 0
         self.retry_wait_time = 0
-        self.max_session_retries = self.MAX_API_RETRIES
-
+        self.max_session_retries = (
+            self.MAX_API_RETRIES if max_api_retries is None
+            else int(max_api_retries))
         # Refer Notes 01 and 02
         k_port = port if port else 443
         if self.avi_credentials.controller.startswith('http'):
@@ -369,7 +371,7 @@ class ApiSession(Session):
             tenant_uuid=None, verify=False, port=None, timeout=60,
             retry_conxn_errors=True, api_version=None, data_log=False,
             avi_credentials=None, session_id=None, csrftoken=None,
-            lazy_authentication=False):
+            lazy_authentication=False, max_api_retries=None):
         """
         returns the session object for same user and tenant
         calls init if session dose not exist and adds it to session cache
@@ -410,7 +412,8 @@ class ApiSession(Session):
                 timeout=timeout, retry_conxn_errors=retry_conxn_errors,
                 api_version=api_version, data_log=data_log,
                 avi_credentials=avi_credentials,
-                lazy_authentication=lazy_authentication)
+                lazy_authentication=lazy_authentication,
+                max_api_retries=max_api_retries)
             ApiSession._clean_inactive_sessions()
         return user_session
 
@@ -439,8 +442,10 @@ class ApiSession(Session):
             body["token"] = self.avi_credentials.token
         else:
             raise APIError("Neither user password or token provided")
-        logger.debug('authenticating user %s ', self.avi_credentials.username)
+        logger.debug('authenticating user %s prefix %s',
+                     self.avi_credentials.username, self.prefix)
         self.cookies.clear()
+        err = None
         try:
             rsp = super(ApiSession, self).post(self.prefix+"/login", body,
                                                timeout=self.timeout)
@@ -448,12 +453,13 @@ class ApiSession(Session):
             if rsp.status_code == 200:
                 self.num_session_retries = 0
                 self.remote_api_version = rsp.json().get('version', {})
+                self.session_cookie_name = rsp.json().get('session_cookie_name', 'sessionid')
                 self.headers.update(self.user_hdrs)
                 if rsp.cookies and 'csrftoken' in rsp.cookies:
                     csrftoken = rsp.cookies['csrftoken']
                     sessionDict[self.key] = {
                         'csrftoken': csrftoken,
-                        'session_id': rsp.cookies['sessionid'],
+                        'session_id': rsp.cookies[self.session_cookie_name],
                         'last_used': datetime.utcnow(),
                         'api': self,
                         'connected': True
@@ -461,10 +467,16 @@ class ApiSession(Session):
                 logger.debug("authentication success for user %s",
                              self.avi_credentials.username)
                 return
+            else:
+                logger.error("Error status code %s msg %s", rsp.status_code,
+                             rsp.text)
+                err = APIError('Status Code %s msg %s' % (
+                    rsp.status_code, rsp.text), rsp)
         except (ConnectionError, SSLError) as e:
             if not self.retry_conxn_errors:
                 raise
             logger.warning('Connection error retrying %s', e)
+            err = e
         # comes here only if there was either exception or login was not
         # successful
         if self.retry_wait_time:
@@ -472,9 +484,9 @@ class ApiSession(Session):
         self.num_session_retries += 1
         if self.num_session_retries > self.max_session_retries:
             self.num_session_retries = 0
-            raise APIError(
-                "giving up after %d retries connection failure %s" %
-                (self.max_session_retries, True))
+            logger.error("giving up after %d retries connection failure %s" % (
+                self.max_session_retries, True))
+            raise err
         self.authenticate_session()
         return
 
@@ -492,13 +504,6 @@ class ApiSession(Session):
         if self.key in sessionDict and 'csrftoken' in sessionDict.get(self.key):
             api_hdrs['X-CSRFToken'] = sessionDict.get(self.key)['csrftoken']
             # Added Cookie to handle single session
-            api_hdrs['Cookie'] = "[<Cookie csrftoken=%s " \
-                                 "for %s/>, " \
-                                 "<Cookie sessionid=%s " \
-                                 "for %s/>]" %(sessionDict[self.key]['csrftoken'],
-                                               self.avi_credentials.controller,
-                                               sessionDict[self.key]['session_id'],
-                                               self.avi_credentials.controller)
         else:
             self.authenticate_session()
             api_hdrs['X-CSRFToken'] = sessionDict.get(self.key)['csrftoken']
@@ -554,18 +559,28 @@ class ApiSession(Session):
         api_hdrs = self._get_api_headers(tenant, tenant_uuid, timeout, headers,
                                          api_version)
         connection_error = False
+        err = None
+        cookies = {
+            'csrftoken': api_hdrs['X-CSRFToken'],
+        }
+        try:
+            cookies[self.session_cookie_name] = \
+                sessionDict[self.key]['session_id']
+        except KeyError:
+            pass
         try:
             if (data is not None) and (type(data) == dict):
                 resp = fn(fullpath, data=json.dumps(data), headers=api_hdrs,
-                          timeout=timeout, **kwargs)
+                          timeout=timeout, cookies=cookies, **kwargs)
             else:
                 resp = fn(fullpath, data=data, headers=api_hdrs,
-                          timeout=timeout, **kwargs)
+                          timeout=timeout, cookies=cookies, **kwargs)
         except (ConnectionError, SSLError) as e:
             logger.warning('Connection error retrying %s', e)
             if not self.retry_conxn_errors:
                 raise
             connection_error = True
+            err = e
         except Exception as e:
             logger.error('Error in Requests library %s', e)
             raise
@@ -594,9 +609,13 @@ class ApiSession(Session):
                 # Added this such that any code which re-tries can succeed
                 # eventually.
                 self.num_session_retries = 0
-                raise APIError(
-                    "giving up after %d retries connection failure %s" %
-                    (self.max_session_retries, connection_error))
+                if not connection_error:
+                    err = APIError('Status Code %s msg %s' % (
+                        resp.status_code, resp.text), resp)
+                logger.error(
+                    "giving up after %d retries conn failure %s err %s" % (
+                        self.max_session_retries, connection_error, err))
+                raise err
             # should restore the updated_hdrs to one passed down
             resp = self._api(api_name, path, tenant, tenant_uuid, data,
                              headers=headers, api_version=api_version,
