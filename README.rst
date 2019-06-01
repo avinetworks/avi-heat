@@ -41,9 +41,10 @@ Installation Steps
 NOTE: RHEL OSP 13 Steps:
    Create a yaml file to add to your deployment script options
 
-   ::
-   ...
-       heat-avi.yaml
+
+.. code-block:: YAML
+   cat heat-avi.yaml
+    ...
        parameter_defaults:
           HeatEnginePluginDirs: ['/usr/share/avi/heat']
           HeatEngineOptVolumes:
@@ -53,7 +54,7 @@ NOTE: RHEL OSP 13 Steps:
              heat::config::heat_config:
                DEFAULT/avi_controller:
                   value: <FQDN>
-   ...
+    ...
 
    If you choice to use option 1 in step 3 you can eliminate ControllerExtraConfig part.
 
