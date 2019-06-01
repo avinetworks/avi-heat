@@ -38,6 +38,24 @@ Installation Steps
     $> service heat-engine restart
 
 
+NOTE: RHEL OSP 13 Steps:
+   Create a yaml file to add to your deployment script options
+
+   ::
+       heat-avi.yaml
+       parameter_defaults:
+          HeatEnginePluginDirs: ['/usr/share/avi/heat']
+          HeatEngineOptVolumes:
+             - /usr/share/avi:/usr/lib/python2.7/site-packages/avi:ro
+
+         ControllerExtraConfig:
+             heat::config::heat_config:
+               DEFAULT/avi_controller:
+                  value: <FQDN>
+
+   If you choice to use option 1 in step 3 you can eliminate ControllerExtraConfig part.
+
+
 5. For implementing AutoScalingGroup, Heat engines use the credentials configured under
 stack_domain_admin variable /etc/heat.conf. So, an AutoScalingGroup with template
 containing Avi resouces will work only if the Heat Engine can login to Avi Controller
