@@ -17,7 +17,7 @@ Installation Steps
     plugin_dirs = '/usr/local/lib/python2.7/dist-packages/avi/heat'
 
    RHEL::
-
+‰
     plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
 
 3. Provide the IP address or FQDN for the Avi Controller. Use one of the following options:
@@ -38,26 +38,22 @@ Installation Steps
     $> service heat-engine restart
 
 
-NOTE: RHEL OSP 13 Steps:
-   Create a yaml file to add to your deployment script options
+REQUIRED FOR RED HAT OSP 13
 
+NOTE. Create a yaml file to add to your deployment script options::
 
-.. code-block:: YAML
-   cat heat-avi.yaml
-    ...
-       parameter_defaults:
-          HeatEnginePluginDirs: ['/usr/share/avi/heat']
-          HeatEngineOptVolumes:
+    $> cat heat-avi.yaml 
+
+     parameter_defaults:
+         HeatEnginePluginDirs: ['/usr/share/avi/heat']
+         HeatEngineOptVolumes:
              - /usr/share/avi:/usr/lib/python2.7/site-packages/avi:ro
-
          ControllerExtraConfig:
              heat::config::heat_config:
                DEFAULT/avi_controller:
                   value: <FQDN>
-    ...
 
-   If you choice to use option 1 in step 3 you can eliminate ControllerExtraConfig part.
-
+Add it to your deployment script. If you are not using Option 2 in step 3 you can remove the ControllerExtraConfig
 
 5. For implementing AutoScalingGroup, Heat engines use the credentials configured under
 stack_domain_admin variable /etc/heat.conf. So, an AutoScalingGroup with template
