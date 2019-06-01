@@ -53,7 +53,8 @@ NOTE: RHEL OSP 13 Steps:
              heat::config::heat_config:
                DEFAULT/avi_controller:
                   value: <FQDN>
-   ... 
+   ...
+
    If you choice to use option 1 in step 3 you can eliminate ControllerExtraConfig part.
 
 
