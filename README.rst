@@ -40,9 +40,9 @@ Installation Steps
 
 REQUIRED FOR RED HAT OSP 13
 
-NOTE. Create a yaml file to add to your deployment script options::
+NOTE: Create a yaml file to add to your deployment script options::
 
-    $> cat heat-avi.yaml 
+    $> cat heat-avi.yaml
 
      parameter_defaults:
          HeatEnginePluginDirs: ['/usr/share/avi/heat']
@@ -69,7 +69,7 @@ For example, consider the following settings in /etc/heat.conf::
 
 In this case, you need to create a user named "heat_domain_admin" on Avi Controller
 using the same password as defined
-in the heat.conf. 
+in the heat.conf.
 We recommend granting this user Tenant-Admin role in all tenants so that any
 Avi resource can be created, updated, or deleted via the templates used in
 AutoScalingGroup. However, if this is deemed a security issue, you can create
@@ -127,16 +127,16 @@ use "openstack orchestration resource type show Avi::LBaaS::Pool" when heat CLI 
     ...
      "properties": {
        "lb_algorithm": {
-         "description": "The load balancing algorithm will pick a server within the pool's list of available servers.", 
-         "required": false, 
-         "update_allowed": true, 
-         "type": "string", 
-         "immutable": false, 
+         "description": "The load balancing algorithm will pick a server within the pool's list of available servers.",
+         "required": false,
+         "update_allowed": true,
+         "type": "string",
+         "immutable": false,
          "constraints": [
            {
              "allowed_values": [
-               "LB_ALGORITHM_ROUND_ROBIN", 
-               "LB_ALGORITHM_LEAST_LOAD", 
+               "LB_ALGORITHM_ROUND_ROBIN",
+               "LB_ALGORITHM_LEAST_LOAD",
     ...
 
 For properties that need UUIDs, you can specify a name but prefixed with string "get_avi_uuid_by_name:"::
@@ -235,4 +235,3 @@ attribute "vip" that is only available from versions 17.1.1 and beyond::
         services:
           - port: 80
     ...
-
