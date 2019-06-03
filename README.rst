@@ -17,7 +17,7 @@ Installation Steps
     plugin_dirs = '/usr/local/lib/python2.7/dist-packages/avi/heat'
 
    RHEL::
-‰
+
     plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
 
 3. Provide the IP address or FQDN for the Avi Controller. Use one of the following options:
