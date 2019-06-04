@@ -1,47 +1,51 @@
-Avi Heat Resources
-------------------
+= Avi Heat Resources
+
 
 Heat resources for Avi Objects
 
 .. contents:: Table of Contents
 
-Installation Steps
-==================
+== Installation Steps
 
-1. Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
+. Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
 
-2. Update your /etc/heat/heat.conf and add the following in the [Default] section:
+. Update your /etc/heat/heat.conf and add the following in the [Default] section:
 
-   Ubuntu::
+Ubuntu
 
+----
     plugin_dirs = '/usr/local/lib/python2.7/dist-packages/avi/heat'
+----
 
-   RHEL::
-
+Red Hat (RHEL / CentOS)
+----
     plugin_dirs = '/usr/lib/python2.7/site-packages/avi/heat'
+----
 
-3. Provide the IP address or FQDN for the Avi Controller. Use one of the following options:
+. Provide the IP address or FQDN for the Avi Controller. Use one of the following options:
 
-   OPTION 1: In heat.conf
-     Update your /etc/heat/heat.conf and add the following in the [Default] section:
+  OPTION 1: In heat.conf
+  Update your /etc/heat/heat.conf and add the following in the [Default] section:
 
-   ::
-
+----
        avi_controller = '10.10.25.200'
-
-   OPTION 2: Via avi-lbaas service in keystone catalog
-     Please refer to Avi Knowledge Brief at https://avinetworks.com/docs/18.2/installing-the-lbaas-driver-cli-shell-openstack/#adding-a-keystone-catalog-entry-for-avi-vantage for details on how to define avi-lbaas service and an endpoint for it in your keystone catalog.
+----
 
 
-4. Restart heat-engine after adding this. For example::
+    OPTION 2: Via avi-lbaas service in keystone catalog
+   Please refer to Avi Knowledge Brief at https://avinetworks.com/docs/18.2/installing-the-lbaas-driver-cli-shell-openstack/#adding-a-keystone-catalog-entry-for-avi-vantage for details on how to define avi-lbaas service and an endpoint for it in your keystone catalog.
+
+    
+ 
+. Restart heat-engine after adding this. For example::
 
     $> service heat-engine restart
 
+== Red Hat OSP 13 / 14 and TripleO
 
-REQUIRED FOR RED HAT OSP 13
+Create a yaml file to add to your deployment script options
 
-NOTE: Create a yaml file to add to your deployment script options::
-
+----
     $> cat heat-avi.yaml
 
      parameter_defaults:
@@ -53,19 +57,21 @@ NOTE: Create a yaml file to add to your deployment script options::
                DEFAULT/avi_controller:
                   value: <FQDN>
 
+----
+
 Add it to your deployment script. If you are not using Option 2 in step 3 you can remove the ControllerExtraConfig
 
-5. For implementing AutoScalingGroup, Heat engines use the credentials configured under
+. For implementing AutoScalingGroup, Heat engines use the credentials configured under
 stack_domain_admin variable /etc/heat.conf. So, an AutoScalingGroup with template
 containing Avi resouces will work only if the Heat Engine can login to Avi Controller
 using those same stack_domain_admin credentials.
 
 For example, consider the following settings in /etc/heat.conf::
 
-    ...
+----
     stack_domain_admin = heat_domain_admin
     stack_domain_admin_password = abc123
-    ...
+----
 
 In this case, you need to create a user named "heat_domain_admin" on Avi Controller
 using the same password as defined
@@ -79,11 +85,12 @@ new user.
 The following picture shows how to create such
 user in Avi UI.
 
-.. image:: heat_user_on_avi.png
-   :scale: 50 %
+image::heat_user_on_avi.png[heat-user]
+
 
 Alternatively, you can perform a POST API for /api/user URI with the following data
 (role_ref needs to be replaced with the url corresponding to the Tenant-Admin role)::
+----
     {
         "username": "heat_domain_admin",
         "password": "abc123",
@@ -94,23 +101,23 @@ Alternatively, you can perform a POST API for /api/user URI with the following d
         "default_tenant_uuid": "admin",
         "require_password_confirmation": False,
     }
+----
 
 The following picture shows a more restricted custom role on Avi that only allows
 write access to the Pool resource. By assigning such a role to the stack_domain_admin user
 instead of Tenant-Admin role, one can allow an AutoScalingGroup to automatically
 add members to a group, but not allow write access to any other objects in the system.
 
-.. image:: custom_role_on_avi.png
-   :scale: 50 %
+image::custom_role_on_avi.png[custom]
 
 
-Usage Notes
-===========
+== Usage Notes
 
 Once installed, Heat will expose Avi resource types that users can specify in their heat templates.
 For a full list of resource types, use the following command (or use "openstack orchestration
 resource type list" when heat CLI client is not available)::
 
+----
     $> heat resource-type-list | grep Avi
     ...
     | Avi::LBaaS::Pool                          |
@@ -118,13 +125,14 @@ resource type list" when heat CLI client is not available)::
     | Avi::LBaaS::Role                          |
     | Avi::LBaaS::SSLProfile                    |
     | Avi::LBaaS::SeProperties                  |
-    ...
+----   
 
 For a full list of attributes available for any resource type, use the following command (or
 use "openstack orchestration resource type show Avi::LBaaS::Pool" when heat CLI client is not available)::
- 
+
+----
     $> heat resource-type-show Avi::LBaaS::Pool
-    ...
+
      "properties": {
        "lb_algorithm": {
          "description": "The load balancing algorithm will pick a server within the pool's list of available servers.",
@@ -137,16 +145,16 @@ use "openstack orchestration resource type show Avi::LBaaS::Pool" when heat CLI 
              "allowed_values": [
                "LB_ALGORITHM_ROUND_ROBIN",
                "LB_ALGORITHM_LEAST_LOAD",
-    ...
+----
 
 For properties that need UUIDs, you can specify a name but prefixed with string "get_avi_uuid_by_name:"::
 
-    ...
+----
     member:
       type: Avi::LBaaS::Pool::Server
       properties:
         pool_uuid:  get_avi_uuid_by_name:testpool
-    ...
+----
 
 Internally, heat-engine would perform an API call to resolve the provided name into Avi UUID.
 For a complete example, please refer to test-member.yaml in examples directory: https://github.com/avinetworks/avi-heat/blob/master/examples/test-member.yaml.
@@ -155,11 +163,11 @@ For a complete example, please refer to test-member.yaml in examples directory: 
 If you want to provide the name for a UUID property via an input parameter to your template,
 please refer to the example in test-member-pool-as-param.yaml: https://github.com/avinetworks/avi-heat/blob/master/examples/test-member-pool-as-param.yaml::
 
-    ...
+----
     parameters:
      pool_name:
        type: string
-    ...
+
     resources:
      member:
        type: Avi::LBaaS::Pool::Server
@@ -169,11 +177,10 @@ please refer to the example in test-member-pool-as-param.yaml: https://github.co
              template: get_avi_uuid_by_name:pname
              params:
                pname: { get_param: pool_name }
-    ...
+----
 
 
-Versioning
-~~~~~~~~~~
+== Versioning
 
 Starting version 17.1.X, Avi Vantage supports API versioning and backwards compatability.
 Avi Heat plugin leverages this backwards compatability. Thus, any
@@ -201,7 +208,7 @@ be used in that resource's definition in that template.
 
 Consider the following example snippet for using Avi::LBaaS::VirtualService resource type::
 
-    ...
+----
     vs:
       type: Avi::LBaaS::VirtualService
       properties:
@@ -212,7 +219,7 @@ Consider the following example snippet for using Avi::LBaaS::VirtualService reso
           type: V4
         services:
           - port: 80
-    ...
+----
 
 The above does not use any attributes with "(Introduced in: <version>)" annotation in their
 descriptions. Hence, the resource doesn't need to have the "avi_version" attribute set. Suppose
@@ -220,7 +227,7 @@ you want to use the concept of shared VIPs introduced in Avi Vantage version 17.
 following template shows the exact same VirtualSerice definition as above but using the
 attribute "vip" that is only available from versions 17.1.1 and beyond::
 
-    ...
+----
     vs:
       type: Avi::LBaaS::VirtualService
       properties:
@@ -234,4 +241,4 @@ attribute "vip" that is only available from versions 17.1.1 and beyond::
             vip_id: myvip
         services:
           - port: 80
-    ...
+----
