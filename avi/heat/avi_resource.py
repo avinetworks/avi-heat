@@ -70,9 +70,18 @@ class AviResource(resource.Resource):
         if address:
             return address
         try:
-            endpoint = self.client("keystone").url_for(
-                service_type="avi-lbaas",
-                endpoint_type="publicURL")
+            c = self.client('keystone')
+            if not hasattr(c, 'url_for'):
+                c = self.client_plugin('keystone')
+
+            if not hasattr(c, 'url_for'):
+                LOG.error("Couldn't find keystone plugin or client to ",
+                          "get url_for avi-lbaas service, Avi driver ",
+                          "will not work!")
+                return None
+
+            endpoint = c.url_for(service_type="avi-lbaas",
+                                 endpoint_type="publicURL")
             address = endpoint.split("//")[1].split("/")[0]
         except Exception as e:
             LOG.exception("Error during finding avi address: %s", e)
