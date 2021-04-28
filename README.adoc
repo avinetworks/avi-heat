@@ -3,6 +3,11 @@ OpenStack Heat resources for Avi Objects
 :toc:
 
 
+== Support Matrix
+
+- Supported OpenStack Releases: Queens, Rocky
+- Supported RedHat OSP: 13, 14
+
 == Installation Steps
 
 . Install the AviHeat PIP Package from https://github.com/avinetworks/avi-heat/releases
